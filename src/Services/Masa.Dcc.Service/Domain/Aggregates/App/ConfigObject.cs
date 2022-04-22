@@ -1,7 +1,7 @@
-﻿namespace Masa.Dcc.Service.Admin.Domain.Aggregates.Config
+﻿namespace Masa.Dcc.Service.Admin.Domain.Aggregates
 {
     [Table("ConfigObjects")]
-    public class ConfigObject : AuditAggregateRoot<Guid, Guid>, ISoftDelete
+    public class ConfigObject : BaseEntity<int, Guid>
     {
         [Comment("Name")]
         [Required(ErrorMessage = "Config object name is required")]

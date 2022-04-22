@@ -1,5 +1,5 @@
 ﻿using Masa.Contrib.BasicAbility.Pm;
-using Microsoft.AspNetCore.Mvc;
+using Masa.Dcc.Service.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,14 +54,13 @@ var app = builder.Services
         options.RegisterValidatorsFromAssemblyContaining<Program>();
     })
     .AddTransient(typeof(IMiddleware<>), typeof(ValidatorMiddleware<>))
-    //.AddDomainEventBus(options =>
-    //{
-    //    options.UseEventBus()
-    //           .UseUoW<ShopDbContext>(dbOptions => dbOptions.UseSqlite("DataSource=:memory:"))
-    //           .UseDaprEventBus<IntegrationEventLogService>()
-    //           .UseEventLog<ShopDbContext>()
-    //           .UseRepository<ShopDbContext>();
-    //})
+    .AddDomainEventBus(options =>
+    {
+        options.UseEventBus()
+               //.UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseSoftDelete())
+               .UseEventLog<DccDbContext>()
+               .UseRepository<DccDbContext>();
+    })
     .AddServices(builder);
 
 // Configure the HTTP request pipeline.

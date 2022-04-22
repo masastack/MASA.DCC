@@ -4,7 +4,7 @@
     {
         public OrderCreateCommandValidator()
         {
-            RuleFor(cmd => cmd.Items).Must(cmd => cmd.Any()).WithMessage("the order items cannot be empty");
+            //RuleFor(cmd => cmd.Items).Must(cmd => cmd.Any()).WithMessage("the order items cannot be empty");
         }
     }
 }

@@ -1,10 +1,8 @@
 ﻿namespace Masa.Dcc.Service.Infrastructure
 {
-    public class ShopDbContext : IntegrationEventLogContext
+    public class DccDbContext : MasaDbContext
     {
-        public DbSet<Order> Orders { get; set; } = default!;
-
-        public ShopDbContext(MasaDbContextOptions<ShopDbContext> options) : base(options)
+        public DccDbContext(MasaDbContextOptions<DccDbContext> options) : base(options)
         {
 
         }

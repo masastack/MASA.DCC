@@ -2,6 +2,6 @@
 {
     public record OrderCreateCommand : DomainCommand
     {
-        public List<OrderItem> Items { get; set; } = new();
+        //public List<OrderItem> Items { get; set; } = new();
     }
 }

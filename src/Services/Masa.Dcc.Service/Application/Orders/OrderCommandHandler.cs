@@ -2,20 +2,20 @@
 {
     public class OrderCommandHandler
     {
-        private readonly OrderDomainService _domainService;
+        //private readonly OrderDomainService _domainService;
 
-        public OrderCommandHandler(OrderDomainService domainService)
-        {
-            _domainService = domainService;
-        }
+        //public OrderCommandHandler(OrderDomainService domainService)
+        //{
+        //    _domainService = domainService;
+        //}
 
-        [EventHandler(Order = 1)]
-        public async Task CreateHandleAsync(OrderCreateCommand command)
-        {
-            await _domainService.PlaceOrderAsync();
-            //you work
-            await Task.CompletedTask;
-        }
+        //[EventHandler(Order = 1)]
+        //public async Task CreateHandleAsync(OrderCreateCommand command)
+        //{
+        //    await _domainService.PlaceOrderAsync();
+        //    //you work
+        //    await Task.CompletedTask;
+        //}
     }
 
     public class OrderStockHandler : CommandHandler<OrderCreateCommand>

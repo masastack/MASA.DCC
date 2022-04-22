@@ -28,7 +28,7 @@
             {
                 _logger.LogWarning("Validation errors - {CommandType} - Command: {@Command} - Errors: {@ValidationErrors}", typeName, action, failures);
 
-                throw new ValidationException("Validation exception", failures);
+                throw new FluentValidation.ValidationException("Validation exception", failures);
             }
 
             await next();

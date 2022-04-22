@@ -1,9 +1,8 @@
-﻿namespace MASA.PM.Service.Admin.Infrastructure.Entities
+﻿namespace Masa.Dcc.Service.Admin.Domain.Aggregates
 {
     [Table("Labels")]
-    [Index(nameof(Name), nameof(IsDeleted), Name = "IX_Name")]
     [Index(nameof(TypeCode), nameof(IsDeleted), Name = "IX_TypeCode")]
-    public class Label : AuditAggregateRoot<Guid, Guid>, ISoftDelete
+    public class Label : BaseEntity<int, Guid>
     {
         [Comment("Name")]
         [Required(ErrorMessage = "Label name is required")]

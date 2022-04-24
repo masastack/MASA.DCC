@@ -18,7 +18,7 @@
         [Range(1, int.MaxValue)]
         public int ConfigObjectId { get; private set; }
 
-        private ConfigObject? ConfigObject { get; set; }
+        public ConfigObject? ConfigObject { get; set; }
 
         public AppConfigObject(int environmentClusterId, int appId, int configObjectId)
         {

@@ -2,6 +2,5 @@
 {
     public record AddPublicConfigObjectCommand(AddPublicConfigObjectDto AddPublicConfigObject) : Command
     {
-
     }
 }

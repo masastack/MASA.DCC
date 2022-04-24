@@ -10,7 +10,6 @@ public class AppService : ServiceBase
     {
         _pmClient = pmClient;
         App.MapGet("api/v1/app/{Id}", GetAsync);
-        App.MapGet("api/v1/project/{Id}", GetAsync);
         App.MapPost("api/v1/projects/app", GetListByProjectIdsAsync);
         App.MapGet("api/v1/appWhitEnvCluster/{Id}", GetWithEnvironmentClusterAsync);
     }

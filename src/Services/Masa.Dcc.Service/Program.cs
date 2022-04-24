@@ -1,5 +1,5 @@
-﻿using Masa.Contrib.BasicAbility.Pm;
-using Masa.Dcc.Service.Infrastructure;
+﻿
+using Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,32 +22,7 @@ builder.Services.AddPmClient("https://pm-service-dev.masastack.com/");
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen(options =>
-    {
-        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.ApiKey,
-            Scheme = "Bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer xxxxxxxxxxxxxxx\"",
-        });
-        options.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                new string[] {}
-            }
-        });
-    })
+    .AddSwaggerGen()
     .AddTransient(typeof(IMiddleware<>), typeof(LogMiddleware<>))
     .AddFluentValidation(options =>
     {
@@ -56,8 +31,9 @@ var app = builder.Services
     .AddTransient(typeof(IMiddleware<>), typeof(ValidatorMiddleware<>))
     .AddDomainEventBus(options =>
     {
-        options.UseEventBus()
-               //.UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseSoftDelete())
+        options.UseDaprEventBus<IntegrationEventLogService>(options => options.UseEventLog<DccDbContext>())
+               .UseEventBus()
+               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseSoftDelete())
                .UseEventLog<DccDbContext>()
                .UseRepository<DccDbContext>();
     })

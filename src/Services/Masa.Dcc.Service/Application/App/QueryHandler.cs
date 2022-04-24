@@ -9,9 +9,10 @@
             _publicConfigRepository = publicConfigRepository;
         }
 
+        [EventHandler]
         public async Task GetPublicConfigsAsync(PublicConfigsQuery query)
         {
-            var result = await _publicConfigRepository.GetListAsync();
+            IEnumerable<PublicConfig> result = await _publicConfigRepository.GetListAsync();
             query.Result = result.Select(p => new PublicConfigDto
             {
                 Id = p.Id,

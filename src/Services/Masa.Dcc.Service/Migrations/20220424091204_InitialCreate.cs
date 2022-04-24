@@ -52,6 +52,27 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ConfigObjects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "Name"),
+                    FormatLabelId = table.Column<int>(type: "int", nullable: false, comment: "Format"),
+                    TypeLabelId = table.Column<int>(type: "int", nullable: false, comment: "Type"),
+                    RelationConfigObjectId = table.Column<int>(type: "int", nullable: false, comment: "Relation config object Id"),
+                    Creator = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Modifier = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModificationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConfigObjects", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "IntegrationEventLog",
                 columns: table => new
                 {
@@ -110,33 +131,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PublicConfigs", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ConfigObjects",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false, comment: "Name"),
-                    FormatLabelId = table.Column<int>(type: "int", nullable: false, comment: "Format"),
-                    TypeLabelId = table.Column<int>(type: "int", nullable: false, comment: "Type"),
-                    RelationConfigObjectId = table.Column<int>(type: "int", nullable: false, comment: "Relation config object Id"),
-                    AppConfigObjectId = table.Column<int>(type: "int", nullable: true),
-                    Creator = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Modifier = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ModificationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConfigObjects", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ConfigObjects_AppConfigObjects_AppConfigObjectId",
-                        column: x => x.AppConfigObjectId,
-                        principalTable: "AppConfigObjects",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -204,11 +198,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ConfigObjects_AppConfigObjectId",
-                table: "ConfigObjects",
-                column: "AppConfigObjectId");
-
-            migrationBuilder.CreateIndex(
                 name: "index_eventid_version",
                 table: "IntegrationEventLog",
                 columns: new[] { "EventId", "RowVersion" });
@@ -242,6 +231,9 @@ namespace Masa.Dcc.Service.Admin.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AppConfigObjects");
+
+            migrationBuilder.DropTable(
                 name: "AppSecrets");
 
             migrationBuilder.DropTable(
@@ -261,9 +253,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
 
             migrationBuilder.DropTable(
                 name: "PublicConfigs");
-
-            migrationBuilder.DropTable(
-                name: "AppConfigObjects");
         }
     }
 }

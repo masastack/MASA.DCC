@@ -21,10 +21,6 @@
 
         public ConfigObjectMain? ConfigObjectMain { get; private set; }
 
-        public Label.Aggregates.Label FormatLabel { get; private set; } = null!;
-
-        public Label.Aggregates.Label TypeLabel { get; private set; } = null!;
-
         public ConfigObject(string name, int formatLabelId, int typeLabelId, int relationConfigObjectId = 0)
         {
             Name = name;

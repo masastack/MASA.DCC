@@ -1,15 +1,19 @@
-﻿
-namespace Masa.Dcc.Service.Admin.Application.App
+﻿namespace Masa.Dcc.Service.Admin.Application.App
 {
     public class CommandHandler
     {
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
+        private readonly IConfigObjectRepository _configObjectRepository;
 
-        public CommandHandler(IPublicConfigRepository publicConfigRepository, IPublicConfigObjectRepository publicConfigObjectRepository)
+        public CommandHandler(
+            IPublicConfigRepository publicConfigRepository,
+            IPublicConfigObjectRepository publicConfigObjectRepository,
+            IConfigObjectRepository configObjectRepository)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
+            _configObjectRepository = configObjectRepository;
         }
 
         #region PublicConfig
@@ -45,22 +49,35 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
         #endregion
 
-        #region PublicConfigObject
+        #region ConfigObject
 
-        public async Task AddPublicConfigObjectAsync(AddPublicConfigObjectCommand command)
+        [EventHandler(1)]
+        public async Task AddConfigObjectAsync(AddConfigObjectCommand command)
         {
-            var publicConfigObject = command.AddPublicConfigObject;
+            var configObject = command.ConfigObject;
 
-            await _publicConfigObjectRepository.AddAsync(
-                new PublicConfigObject(publicConfigObject.ConfigObjectId, publicConfigObject.EnvironmentClusterId));
+            var configObjectEntity = await _configObjectRepository.AddAsync(
+                new ConfigObject(configObject.Name, configObject.FormatLabelId, configObject.TypeLabelId));
+
+            command.ConfigObjectId = configObjectEntity.Id;
         }
 
-        public async Task RemovePublicConfigObjectAsync(RemovePublicConfigObjectCommand command)
+        [EventHandler(2)]
+        public async Task AddPublicConfigObjectAsync(AddConfigObjectCommand command)
         {
-            var publicConfigEntity = await _publicConfigObjectRepository.FindAsync(p => p.Id == command.PublicConfigObjectId)
-                ?? throw new UserFriendlyException("PublicConfig not exist");
+            var configObject = command.ConfigObject;
 
-            await _publicConfigObjectRepository.RemoveAsync(publicConfigEntity);
+            await _publicConfigObjectRepository.AddAsync(
+                new PublicConfigObject(command.ConfigObjectId, configObject.EnvironmentClusterId));
+        }
+
+        [EventHandler]
+        public async Task RemovePublicConfigObjectAsync(RemoveConfigObjectCommand command)
+        {
+            var configEntity = await _configObjectRepository.FindAsync(p => p.Id == command.ConfigObjectId)
+                ?? throw new UserFriendlyException("config object not exist");
+
+            await _configObjectRepository.RemoveAsync(configEntity);
         }
 
         #endregion

@@ -5,30 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Masa.Dcc.Service.Admin.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "AppConfigObjects",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EnvironmentClusterId = table.Column<int>(type: "int", nullable: false, comment: "EnvironmentClusterId"),
-                    AppId = table.Column<int>(type: "int", nullable: false, comment: "AppId"),
-                    ConfigObjectId = table.Column<int>(type: "int", nullable: false, comment: "ConfigObjectId"),
-                    Creator = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Modifier = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ModificationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AppConfigObjects", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "AppSecrets",
                 columns: table => new
@@ -134,6 +114,32 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AppConfigObjects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EnvironmentClusterId = table.Column<int>(type: "int", nullable: false, comment: "EnvironmentClusterId"),
+                    AppId = table.Column<int>(type: "int", nullable: false, comment: "AppId"),
+                    ConfigObjectId = table.Column<int>(type: "int", nullable: false, comment: "ConfigObjectId"),
+                    Creator = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Modifier = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModificationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppConfigObjects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AppConfigObjects_ConfigObjects_ConfigObjectId",
+                        column: x => x.ConfigObjectId,
+                        principalTable: "ConfigObjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ConfigObjectMains",
                 columns: table => new
                 {
@@ -190,6 +196,11 @@ namespace Masa.Dcc.Service.Admin.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AppConfigObjects_ConfigObjectId",
+                table: "AppConfigObjects",
+                column: "ConfigObjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ConfigObjectMains_ConfigObjectId",

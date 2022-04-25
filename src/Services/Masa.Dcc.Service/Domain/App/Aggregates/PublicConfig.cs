@@ -12,8 +12,8 @@
         [Required]
         public string Description { get; private set; }
 
-        private readonly List<PublicConfigObject> publicConfigObjects = new();
-        public IReadOnlyCollection<PublicConfigObject> PublicConfigObjects => publicConfigObjects;
+        private readonly List<PublicConfigObject> _publicConfigObjects = new();
+        public IReadOnlyCollection<PublicConfigObject> PublicConfigObjects => _publicConfigObjects;
 
         public PublicConfig(string name, string identity, string description = "")
         {
@@ -30,7 +30,7 @@
 
         public void AddConfigObject(int configObjectId, int envClusterId)
         {
-            publicConfigObjects.Add(new PublicConfigObject(configObjectId, envClusterId));
+            _publicConfigObjects.Add(new PublicConfigObject(configObjectId, envClusterId));
         }
     }
 }

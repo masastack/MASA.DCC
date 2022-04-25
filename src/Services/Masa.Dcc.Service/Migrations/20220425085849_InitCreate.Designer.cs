@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Dcc.Service.Admin.Migrations
 {
     [DbContext(typeof(DccDbContext))]
-    [Migration("20220424091204_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220425085849_InitCreate")]
+    partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -108,6 +108,8 @@ namespace Masa.Dcc.Service.Admin.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ConfigObjectId");
 
                     b.ToTable("AppConfigObjects");
                 });
@@ -377,6 +379,17 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.HasIndex(new[] { "TypeCode", "IsDeleted" }, "IX_TypeCode");
 
                     b.ToTable("Labels");
+                });
+
+            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.AppConfigObject", b =>
+                {
+                    b.HasOne("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", "ConfigObject")
+                        .WithMany()
+                        .HasForeignKey("ConfigObjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ConfigObject");
                 });
 
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObjectMain", b =>

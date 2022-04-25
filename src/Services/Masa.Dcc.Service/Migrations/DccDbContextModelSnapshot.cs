@@ -107,6 +107,8 @@ namespace Masa.Dcc.Service.Admin.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ConfigObjectId");
+
                     b.ToTable("AppConfigObjects");
                 });
 
@@ -375,6 +377,17 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.HasIndex(new[] { "TypeCode", "IsDeleted" }, "IX_TypeCode");
 
                     b.ToTable("Labels");
+                });
+
+            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.AppConfigObject", b =>
+                {
+                    b.HasOne("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", "ConfigObject")
+                        .WithMany()
+                        .HasForeignKey("ConfigObjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ConfigObject");
                 });
 
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObjectMain", b =>

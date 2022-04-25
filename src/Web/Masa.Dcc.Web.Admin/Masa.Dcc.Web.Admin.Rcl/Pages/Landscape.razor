@@ -1,0 +1,157 @@
+﻿@page "/Landscape"
+@inherits MasaCompontentBase
+
+<div class="d-flex">
+    <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 110px );">
+        <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 206px );">
+            <MList Width="194">
+                <MListItemGroup Class="rounded-2"
+                                @bind-Value="_selectedEnvId"
+                                Mandatory
+                                Color="#A3AED0">
+                    @foreach (var env in _environments)
+                    {
+                        <MListItem Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
+                            <ItemContent>
+                                <MListItemContent>
+                                    <MListItemTitle>@env.Name</MListItemTitle>
+                                </MListItemContent>
+                                @if (context.Active)
+                                {
+                                    <MListItemIcon Class="d-flex align-center pt-1">
+                                        <MButton StopPropagation Icon>
+                                            <MIcon>mdi-pencil</MIcon>
+                                        </MButton>
+                                    </MListItemIcon>
+                                }
+                            </ItemContent>
+                        </MListItem>
+                    }
+                </MListItemGroup>
+            </MList>
+        </div>
+        <MButton Width="194" Tile Text Style="height: 54px; border: dashed 1px rgba(0, 0, 0, 0.12); position: fixed; left:24px; right:24px; bottom: 24px;">
+            <MIcon Left>mdi-plus</MIcon>@T("Add Environment")
+        </MButton>
+    </MNavigationDrawer>
+    <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
+        <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:102px;background:#fff;padding:0 12px;">
+            <MCard Style="padding-right: 150px;">
+
+                <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
+                    @foreach (var cluster in _clusters)
+                    {
+                        StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
+                        <MTab Style="max-width:150px;" Value="envClusterId" OnClick="()=>GetProjectByEnvClusterIdAsync(cluster.EnvironmentClusterId)">
+                            <MTooltip Top>
+                                <ActivatorContent>
+                                    <div class="text-overflow" @attributes="@context.Attrs">@cluster.Name</div>
+                                </ActivatorContent>
+                                <ChildContent>
+                                    <span>@cluster.Name</span>
+                                </ChildContent>
+                            </MTooltip>
+                            @if (cluster.EnvironmentClusterId == _selectEnvClusterId.AsT1)
+                            {
+                                <MButton StopPropagation Icon>
+                                    <MIcon>mdi-pencil</MIcon>
+                                </MButton>
+                            }
+                        </MTab>
+                    }
+                </MTabs>
+            </MCard>
+            <MButton Tile Text Style="position:fixed; right:48px; height: 54px; border: dashed 1px rgba(0, 0, 0, 0.12);">
+                <MIcon Left>mdi-plus</MIcon>@T("Add Cluster")
+            </MButton>
+        </MRow>
+        <div class="rounded-5 mt-6 py-2" style="height:calc(100vh - 234px );background:#fff;display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
+            <div>
+                <MExpansionPanels Flat Accordion>
+                    @foreach (var project in _projects)
+                    {
+                        var apps = _apps.Where(app => app.ProjectId == project.Id && app.EnvironmentClusters.Select(envCluster => envCluster.Id).Contains(_selectEnvClusterId.AsT1)).ToList();
+                        <MExpansionPanel Style="margin-bottom: 12px; border-radius: 20px;">
+                            <MExpansionPanelHeader>
+                                <span style="display:flex;align-items:center;margin-right:10px;">
+                                    <div class="text-h6">
+                                        @project.Name
+                                        <span class="ml-2 text-caption">|</span>
+                                        <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>
+                                        <div class="text-caption d-flex" style="padding:0">
+                                            @{
+                                                string backgroundColor;
+                                                switch (project.LabelName.ToLower())
+                                                {
+                                                    case "basic ability":
+                                                        backgroundColor = "#37D7AD";
+                                                        break;
+                                                    case "ops ability":
+                                                        backgroundColor = "#FFB547";
+                                                        break;
+                                                    case "data factory":
+                                                        backgroundColor = "#5FB9FF";
+                                                        break;
+                                                    default:
+                                                        backgroundColor = "";
+                                                        break;
+                                                }
+                                            }
+                                            <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px;">
+                                                @project.LabelName
+                                            </div>
+                                            @project.Identity
+                                        </div>
+                                    </div>
+                                    <MSpacer />
+                                    <div style="display:flex;align-items:center;">
+                                        <MButton Icon StopPropagation Class="mr-1"><MIcon>mdi-pencil</MIcon></MButton>
+                                        <MDivider Vertical Style="height: 20px;margin: 7px 8px 0 8px;" />
+                                    </div>
+                                </span>
+                            </MExpansionPanelHeader>
+                            <MExpansionPanelContent>
+                                <MRow>
+                                    @foreach (var app in apps)
+                                    {
+                                        @if (app.ProjectId == project.Id)
+                                        {
+                                            <MCol Lg="4" Md="6" Sm="12">
+                                                <AppCard App="app" EnvironmentClusters="app.EnvironmentClusters"></AppCard>
+                                            </MCol>
+                                        }
+                                    }
+                                    <MCol Lg="4" Md="6" Sm="12">
+                                        <MRow NoGutters>
+                                            <MCol Class="pr-2">
+                                                <MCard Outlined Style="border-radius:10px !important; display:flex; align-items: center; justify-content: center; border-style: dashed;" MinHeight="162">
+                                                    <MButton Ripple=false Plain><MIcon Left>mdi-plus</MIcon>@T("Add App")</MButton>
+                                                </MCard>
+                                            </MCol>
+                                            <MCol>
+                                                <MCard Outlined Style="border-radius:10px !important; display:flex; align-items: center; justify-content: center; border-style: dashed;" MinHeight="162">
+                                                    <MButton Ripple=false Plain><MIcon Left>mdi-plus</MIcon>@T("Select an existing app")</MButton>
+                                                </MCard>
+                                            </MCol>
+                                        </MRow>
+                                    </MCol>
+                                </MRow>
+                                <div class="d-flex justify-space-between mt-3">
+                                    <div>
+                                        <img style="height:24px;width:24px" src="/img/avatar/9.svg">
+                                    </div>
+                                    <div class="text-caption">编辑于一小时前</div>
+                                </div>
+                            </MExpansionPanelContent>
+                        </MExpansionPanel>
+                    }
+                </MExpansionPanels>
+            </div>
+            <MCard Outlined Class="mb-4 mx-6" Style="padding:0 6px; border-radius:0 !important; display: flex; justify-content: center; align-items: center; border-style: dashed;" MinHeight=54>
+                <MButton Ripple=false Plain>
+                    <MIcon Left>mdi-plus</MIcon>@T("Add Project")
+                </MButton>
+            </MCard>
+        </div>
+    </div>
+</div>

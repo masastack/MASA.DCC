@@ -1,0 +1,11 @@
+﻿global using BlazorComponent;
+global using BlazorComponent.I18n;
+global using Masa.Blazor;
+global using Masa.Dcc.Web.Admin.Rcl.Global.Config;
+global using Masa.Dcc.Web.Admin.Rcl.Global.Nav.Model;
+global using Masa.Dcc.Web.Admin.Rcl.Shared;
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Http;
+global using System.Net.Http.Json;
+global using System.Reflection;
+global using System.Text.Json;

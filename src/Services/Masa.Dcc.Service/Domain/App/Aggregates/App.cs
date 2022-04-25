@@ -29,7 +29,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 
         public Guid Modifier { get; set; }
 
-        private readonly List<AppConfigObject> appConfigObjects = new();
-        public IReadOnlyCollection<AppConfigObject> AppConfigObjects => appConfigObjects;
+        private readonly List<AppConfigObject> _appConfigObjects = new();
+        public IReadOnlyCollection<AppConfigObject> AppConfigObjects => _appConfigObjects;
     }
 }

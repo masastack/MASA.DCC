@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ApiGateways\Masa.Dcc.Caller\Masa.Dcc.Caller.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Masa.BuildingBlocks.BasicAbility.Pm">
       <HintPath>..\..\..\..\..\..\MASA.Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\bin\Debug\net6.0\Masa.BuildingBlocks.BasicAbility.Pm.dll</HintPath>
     </Reference>

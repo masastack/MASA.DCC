@@ -19,7 +19,7 @@
         [Comment("Relation config object Id")]
         public int RelationConfigObjectId { get; private set; }
 
-        public ConfigObjectMain? ConfigObjectMain { get; set; }
+        public ConfigObjectMain? ConfigObjectMain { get; private set; }
 
         public ConfigObject(string name, int formatLabelId, int typeLabelId, int relationConfigObjectId = 0)
         {

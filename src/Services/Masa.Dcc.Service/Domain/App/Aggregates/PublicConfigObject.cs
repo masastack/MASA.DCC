@@ -22,9 +22,10 @@
         [NotMapped]
         public EnvironmentClusterModel? EnvironmentClusterModel { get; private set; }
 
-        public PublicConfigObject(int configObjectId, int environmentClusterId)
+        public PublicConfigObject(int configObjectId, int publicConfigId, int environmentClusterId)
         {
             ConfigObjectId = configObjectId;
+            PublicConfigId = publicConfigId;
             EnvironmentClusterId = environmentClusterId;
         }
     }

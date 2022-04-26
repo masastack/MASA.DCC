@@ -21,9 +21,9 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(new RemoveConfigObjectCommand(Id));
     }
 
-    public async Task<List<ConfigObjectDto>> GetListByEnvClusterIdAsync(IEventBus eventBus, int envClusterId)
+    public async Task<List<ConfigObjectDto>> GetListByEnvClusterIdAsync(IEventBus eventBus, int envClusterId, string configObjectName = "")
     {
-        var query = new ConfigObjectsQuery(envClusterId);
+        var query = new ConfigObjectsQuery(envClusterId, configObjectName);
         await eventBus.PublishAsync(query);
 
         return query.Result;

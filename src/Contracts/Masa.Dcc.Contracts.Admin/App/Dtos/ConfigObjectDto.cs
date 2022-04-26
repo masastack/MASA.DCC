@@ -16,6 +16,6 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         public int RelationConfigObjectId { get; set; }
 
-        public ConfigObjectMainDto ConfigObjectMain { get; set; } = new();
+        public ConfigObjectMainDto? ConfigObjectMain { get; set; }
     }
 }

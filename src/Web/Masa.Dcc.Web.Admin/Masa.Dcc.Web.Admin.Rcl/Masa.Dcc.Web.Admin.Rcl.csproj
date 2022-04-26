@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ApiGateways\Masa.Dcc.Caller\Masa.Dcc.Caller.csproj" />
+    <ProjectReference Include="..\..\..\ApiGateways\Masa.Dcc.ApiGateways.Caller\Masa.Dcc.ApiGateways.Caller.csproj" />
   </ItemGroup>
 
   <ItemGroup>

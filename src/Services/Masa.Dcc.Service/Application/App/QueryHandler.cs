@@ -37,6 +37,12 @@
         public async Task GetConfigObjectsAsync(ConfigObjectsQuery query)
         {
             var publicConfigObjects = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+            if (!string.IsNullOrWhiteSpace(query.ConfigObjectName))
+            {
+                publicConfigObjects = publicConfigObjects
+                    .Where(publicConfigObject => publicConfigObject.ConfigObject.Name.Contains(query.ConfigObjectName))
+                    .ToList();
+            }
             var labels = await _labelDomainService.GetListAsync();
             query.Result = publicConfigObjects.Select(publicConfigObject => new ConfigObjectDto
             {
@@ -45,7 +51,7 @@
                 TypeName = labels.FirstOrDefault(label => label.Id == publicConfigObject.ConfigObject.TypeLabelId)?.Name ?? "",
                 RelationConfigObjectId = publicConfigObject.ConfigObject.RelationConfigObjectId,
                 ConfigObjectMain = publicConfigObject.ConfigObject.ConfigObjectMain == null
-                ? new ConfigObjectMainDto()
+                ? null
                 : new ConfigObjectMainDto
                 {
                     Id = publicConfigObject.ConfigObject.ConfigObjectMain.Id,

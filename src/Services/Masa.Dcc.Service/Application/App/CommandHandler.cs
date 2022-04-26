@@ -54,21 +54,26 @@
         [EventHandler(1)]
         public async Task AddConfigObjectAsync(AddConfigObjectCommand command)
         {
-            var configObject = command.ConfigObject;
+            var configObject = command.ConfigObjectDto;
 
-            var configObjectEntity = await _configObjectRepository.AddAsync(
+            ConfigObject configObjectEntity = await _configObjectRepository.AddAsync(
                 new ConfigObject(configObject.Name, configObject.FormatLabelId, configObject.TypeLabelId));
+            await _configObjectRepository.UnitOfWork.SaveChangesAsync();
 
-            command.ConfigObjectId = configObjectEntity.Id;
+            command.ConfigObject = configObjectEntity;
         }
 
         [EventHandler(2)]
         public async Task AddPublicConfigObjectAsync(AddConfigObjectCommand command)
         {
+            var configObjectDto = command.ConfigObjectDto;
             var configObject = command.ConfigObject;
 
-            await _publicConfigObjectRepository.AddAsync(
-                new PublicConfigObject(command.ConfigObjectId, configObject.EnvironmentClusterId));
+            var publicConfigObject = new PublicConfigObject(configObject.Id, configObjectDto.PublicConfigId, configObjectDto.EnvironmentClusterId);
+            configObject.AddPublicConfigObject(publicConfigObject);
+            await _publicConfigObjectRepository.AddAsync(publicConfigObject);
+
+            await _publicConfigObjectRepository.UnitOfWork.SaveChangesAsync();
         }
 
         [EventHandler]

@@ -1,7 +1,7 @@
 ﻿namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
-    public record AddConfigObjectCommand(AddConfigObjectDto ConfigObject) : Command
+    public record AddConfigObjectCommand(AddConfigObjectDto ConfigObjectDto) : Command
     {
-        public int ConfigObjectId { get; set; }
+        public ConfigObject ConfigObject { get; set; } = null!;
     }
 }

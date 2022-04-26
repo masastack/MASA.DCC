@@ -21,12 +21,20 @@
 
         public ConfigObjectMain? ConfigObjectMain { get; private set; }
 
+        private readonly List<PublicConfigObject> _publicConfigObjects = new();
+        public IReadOnlyCollection<PublicConfigObject> PublicConfigObjects => _publicConfigObjects;
+
         public ConfigObject(string name, int formatLabelId, int typeLabelId, int relationConfigObjectId = 0)
         {
             Name = name;
             FormatLabelId = formatLabelId;
             TypeLabelId = typeLabelId;
             RelationConfigObjectId = relationConfigObjectId;
+        }
+
+        public void AddPublicConfigObject(PublicConfigObject publicConfigObject)
+        {
+            _publicConfigObjects.Add(publicConfigObject);
         }
     }
 }

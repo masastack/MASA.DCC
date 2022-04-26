@@ -27,8 +27,11 @@ public class PublicConfigService : ServiceBase
         await eventBus.PublishAsync(new RemovePublicConfigCommand(Id));
     }
 
-    public async Task GetListAsync(IEventBus eventBus)
+    public async Task<List<PublicConfigDto>> GetListAsync(IEventBus eventBus)
     {
-        await eventBus.PublishAsync(new PublicConfigsQuery());
+        var query = new PublicConfigsQuery();
+        await eventBus.PublishAsync(query);
+
+        return query.Result;
     }
 }

@@ -27,10 +27,5 @@
             Name = name;
             Description = description;
         }
-
-        public void AddConfigObject(int configObjectId, int envClusterId)
-        {
-            _publicConfigObjects.Add(new PublicConfigObject(configObjectId, envClusterId));
-        }
     }
 }

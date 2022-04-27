@@ -15,17 +15,18 @@
         [Range(1, int.MaxValue)]
         public int EnvironmentClusterId { get; private set; }
 
-        public ConfigObject? ConfigObject { get; set; }
+        public ConfigObject ConfigObject { get; private set; } = null!;
 
-        public PublicConfig? PublicConfig { get; set; }
+        public PublicConfig PublicConfig { get; private set; } = null!;
 
         [NotMapped]
-        public EnvironmentClusterModel? EnvironmentClusterModel { get; set; }
+        public EnvironmentClusterModel? EnvironmentClusterModel { get; private set; }
 
-        public PublicConfigObject(int publicConfigId, int configObjectId)
+        public PublicConfigObject(int configObjectId, int publicConfigId, int environmentClusterId)
         {
-            PublicConfigId = publicConfigId;
             ConfigObjectId = configObjectId;
+            PublicConfigId = publicConfigId;
+            EnvironmentClusterId = environmentClusterId;
         }
     }
 }

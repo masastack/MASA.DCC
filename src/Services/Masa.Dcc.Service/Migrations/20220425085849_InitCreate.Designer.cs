@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Dcc.Service.Admin.Migrations
 {
     [DbContext(typeof(DccDbContext))]
-    [Migration("20220424065842_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220425085849_InitCreate")]
+    partial class InitCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -109,6 +109,8 @@ namespace Masa.Dcc.Service.Admin.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ConfigObjectId");
+
                     b.ToTable("AppConfigObjects");
                 });
 
@@ -163,9 +165,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("AppConfigObjectId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("datetime2");
 
@@ -200,8 +199,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
                         .HasComment("Type");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppConfigObjectId");
 
                     b.ToTable("ConfigObjects");
                 });
@@ -384,11 +381,15 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.ToTable("Labels");
                 });
 
-            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", b =>
+            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.AppConfigObject", b =>
                 {
-                    b.HasOne("Masa.Dcc.Service.Admin.Domain.App.Aggregates.AppConfigObject", null)
-                        .WithMany("ConfigObjects")
-                        .HasForeignKey("AppConfigObjectId");
+                    b.HasOne("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", "ConfigObject")
+                        .WithMany()
+                        .HasForeignKey("ConfigObjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ConfigObject");
                 });
 
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObjectMain", b =>
@@ -419,11 +420,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.Navigation("ConfigObject");
 
                     b.Navigation("PublicConfig");
-                });
-
-            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.AppConfigObject", b =>
-                {
-                    b.Navigation("ConfigObjects");
                 });
 
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", b =>

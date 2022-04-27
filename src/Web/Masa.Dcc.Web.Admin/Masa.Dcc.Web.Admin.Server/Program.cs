@@ -21,7 +21,7 @@ builder.Services.AddMasaBlazor(builder =>
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGlobalForServer();
-builder.Services.AddCaller(Assembly.Load("Masa.Dcc.Caller"));
+builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
 
 var app = builder.Build();
 

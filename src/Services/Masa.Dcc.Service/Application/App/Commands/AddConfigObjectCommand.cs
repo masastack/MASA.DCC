@@ -2,6 +2,6 @@
 {
     public record AddConfigObjectCommand(AddConfigObjectDto ConfigObjectDto) : Command
     {
-        public ConfigObject ConfigObject { get; set; } = null!;
+        public ConfigObjectDto Result { get; set; } = null!;
     }
 }

@@ -20,7 +20,7 @@
 
         public ConfigObject? ConfigObject { get; set; }
 
-        public AppConfigObject(int environmentClusterId, int appId, int configObjectId)
+        public AppConfigObject(int configObjectId, int appId, int environmentClusterId)
         {
             EnvironmentClusterId = environmentClusterId;
             AppId = appId;

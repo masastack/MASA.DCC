@@ -57,39 +57,36 @@
         [EventHandler(1)]
         public async Task AddConfigObjectAsync(AddConfigObjectCommand command)
         {
-            var configObject = command.ConfigObjectDto;
+            var configObjectDto = command.ConfigObjectDto;
 
-            var formatLabel = await _labelRepository.FindAsync(label => label.Id == configObject.FormatLabelId);
+            var formatLabel = await _labelRepository.FindAsync(label => label.Id == configObjectDto.FormatLabelId);
             string initialContent = (formatLabel?.Name.ToLower()) switch
             {
                 "json" => "{}",
                 "properties" => "[]",
                 _ => "",
             };
-            ConfigObject configObjectEntity = await _configObjectRepository.AddAsync(
+            ConfigObject configObject = await _configObjectRepository.AddAsync(
                 new ConfigObject(
-                    configObject.Name,
-                    configObject.FormatLabelId,
-                    configObject.TypeLabelId,
+                    configObjectDto.Name,
+                    configObjectDto.FormatLabelId,
+                    configObjectDto.Type,
                     initialContent,
                     initialContent)
                 );
-            await _configObjectRepository.UnitOfWork.SaveChangesAsync();
 
-            command.ConfigObject = configObjectEntity;
-        }
+            if (configObjectDto.Type == ConfigObjectType.Public)
+            {
+                var publicConfigObject = new PublicConfigObject(configObject.Id, configObjectDto.PublicConfigId, configObjectDto.EnvironmentClusterId);
+                configObject.AddPublicConfigObject(publicConfigObject);
+            }
+            else if (configObjectDto.Type == ConfigObjectType.App)
+            {
+                var publicConfigObject = new AppConfigObject(configObject.Id, configObjectDto.AppId, configObjectDto.EnvironmentClusterId);
+                configObject.AddAppConfigObject(publicConfigObject);
+            }
 
-        [EventHandler(2)]
-        public async Task AddPublicConfigObjectAsync(AddConfigObjectCommand command)
-        {
-            var configObjectDto = command.ConfigObjectDto;
-            var configObject = command.ConfigObject;
-
-            var publicConfigObject = new PublicConfigObject(configObject.Id, configObjectDto.PublicConfigId, configObjectDto.EnvironmentClusterId);
-            configObject.AddPublicConfigObject(publicConfigObject);
-            await _publicConfigObjectRepository.AddAsync(publicConfigObject);
-
-            await _publicConfigObjectRepository.UnitOfWork.SaveChangesAsync();
+            command.Result = configObject.Adapt<ConfigObjectDto>();
         }
 
         [EventHandler]

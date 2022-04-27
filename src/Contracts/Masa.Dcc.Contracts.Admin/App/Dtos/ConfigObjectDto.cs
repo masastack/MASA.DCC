@@ -12,7 +12,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         public string FormatName { get; set; } = "";
 
-        public string TypeName { get; set; } = "";
+        public ConfigObjectType Type { get; set; }
 
         public int RelationConfigObjectId { get; set; }
 

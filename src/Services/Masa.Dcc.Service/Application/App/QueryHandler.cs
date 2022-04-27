@@ -48,7 +48,7 @@
             {
                 Name = publicConfigObject.ConfigObject.Name,
                 FormatName = labels.FirstOrDefault(label => label.Id == publicConfigObject.ConfigObject.FormatLabelId)?.Name ?? "",
-                TypeName = labels.FirstOrDefault(label => label.Id == publicConfigObject.ConfigObject.TypeLabelId)?.Name ?? "",
+                Type = publicConfigObject.ConfigObject.Type,
                 RelationConfigObjectId = publicConfigObject.ConfigObject.RelationConfigObjectId,
                 Content = publicConfigObject.ConfigObject.Content,
                 TempContent = publicConfigObject.ConfigObject.TempContent,

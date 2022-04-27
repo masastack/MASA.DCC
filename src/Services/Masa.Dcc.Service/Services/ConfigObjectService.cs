@@ -9,6 +9,7 @@ public class ConfigObjectService : ServiceBase
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject/{Id}", RemoveAsync);
         App.MapGet("api/v1/configObject/{envClusterId}", GetListByEnvClusterIdAsync);
+        App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
     }
 
     public async Task AddAsync(IEventBus eventBus, AddConfigObjectDto dto)
@@ -27,5 +28,13 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(query);
 
         return query.Result;
+    }
+
+    public async Task<ConfigObjectDto> UpdateConfigObjectContentAsync(IEventBus eventBus, UpdateConfigObjectContentDto dto)
+    {
+        var command = new UpdateConfigObjectContentCommand(dto);
+        await eventBus.PublishAsync(command);
+
+        return command.Result;
     }
 }

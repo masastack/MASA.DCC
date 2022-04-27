@@ -50,19 +50,12 @@
                 FormatName = labels.FirstOrDefault(label => label.Id == publicConfigObject.ConfigObject.FormatLabelId)?.Name ?? "",
                 TypeName = labels.FirstOrDefault(label => label.Id == publicConfigObject.ConfigObject.TypeLabelId)?.Name ?? "",
                 RelationConfigObjectId = publicConfigObject.ConfigObject.RelationConfigObjectId,
-                ConfigObjectMain = publicConfigObject.ConfigObject.ConfigObjectMain == null
-                ? null
-                : new ConfigObjectMainDto
-                {
-                    Id = publicConfigObject.ConfigObject.ConfigObjectMain.Id,
-                    ConfigObjectId = publicConfigObject.ConfigObject.ConfigObjectMain.ConfigObjectId,
-                    Content = publicConfigObject.ConfigObject.ConfigObjectMain.Content,
-                    TempContent = publicConfigObject.ConfigObject.ConfigObjectMain.TempContent,
-                    Creator = publicConfigObject.ConfigObject.ConfigObjectMain.Creator,
-                    ModificationTime = publicConfigObject.ConfigObject.ConfigObjectMain.ModificationTime,
-                    CreationTime = publicConfigObject.ConfigObject.ConfigObjectMain.CreationTime,
-                    Modifier = publicConfigObject.ConfigObject.ConfigObjectMain.Modifier
-                }
+                Content = publicConfigObject.ConfigObject.Content,
+                TempContent = publicConfigObject.ConfigObject.TempContent,
+                CreationTime = publicConfigObject.ConfigObject.CreationTime,
+                Creator = publicConfigObject.ConfigObject.Creator,
+                ModificationTime = publicConfigObject.ConfigObject.ModificationTime,
+                Modifier = publicConfigObject.ConfigObject.Modifier
             }).ToList();
         }
     }

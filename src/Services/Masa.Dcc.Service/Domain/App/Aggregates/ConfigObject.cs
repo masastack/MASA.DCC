@@ -16,20 +16,34 @@
         [Range(1, int.MaxValue, ErrorMessage = "Type is required")]
         public int TypeLabelId { get; private set; }
 
+        [Required]
+        [Column(TypeName = "ntext")]
+        public string Content { get; private set; }
+
+        [Required]
+        [Column(TypeName = "ntext")]
+        public string TempContent { get; private set; }
+
         [Comment("Relation config object Id")]
         public int RelationConfigObjectId { get; private set; }
-
-        public ConfigObjectMain? ConfigObjectMain { get; private set; }
 
         private readonly List<PublicConfigObject> _publicConfigObjects = new();
         public IReadOnlyCollection<PublicConfigObject> PublicConfigObjects => _publicConfigObjects;
 
-        public ConfigObject(string name, int formatLabelId, int typeLabelId, int relationConfigObjectId = 0)
+        public ConfigObject(string name, int formatLabelId, int typeLabelId, string content, string tempContent, int relationConfigObjectId = 0)
         {
             Name = name;
             FormatLabelId = formatLabelId;
             TypeLabelId = typeLabelId;
+            Content = content;
+            TempContent = tempContent;
             RelationConfigObjectId = relationConfigObjectId;
+        }
+
+        public void UpdateContent(string content, string tempContent)
+        {
+            Content = content;
+            TempContent = tempContent;
         }
 
         public void AddPublicConfigObject(PublicConfigObject publicConfigObject)

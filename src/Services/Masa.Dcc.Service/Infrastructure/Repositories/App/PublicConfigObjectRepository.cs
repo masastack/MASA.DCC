@@ -11,7 +11,6 @@
             var configData = await Context.Set<PublicConfigObject>()
                 .Where(publicConfigObject => publicConfigObject.EnvironmentClusterId == envClusterId)
                 .Include(publicConfigObject => publicConfigObject.ConfigObject)
-                .ThenInclude(configObject => configObject.ConfigObjectMain)
                 .ToListAsync();
 
             return configData;

@@ -1,5 +1,6 @@
 ﻿global using FluentValidation;
 global using FluentValidation.AspNetCore;
+global using Mapster;
 global using Masa.BuildingBlocks.BasicAbility.Pm;
 global using Masa.BuildingBlocks.BasicAbility.Pm.Model;
 global using Masa.BuildingBlocks.Data.UoW;
@@ -33,6 +34,6 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.EntityFrameworkCore;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
-global using System.Linq.Expressions;
+
 
 

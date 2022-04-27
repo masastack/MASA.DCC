@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
-    public class ConfigObjectDto
+    public class ConfigObjectDto : BaseDto
     {
         public string Name { get; set; } = "";
 
@@ -16,6 +16,8 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         public int RelationConfigObjectId { get; set; }
 
-        public ConfigObjectMainDto? ConfigObjectMain { get; set; }
+        public string Content { get; set; } = "";
+
+        public string TempContent { get; set; } = "";
     }
 }

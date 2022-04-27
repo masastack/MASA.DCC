@@ -4,6 +4,7 @@ using Masa.Dcc.Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Dcc.Service.Admin.Migrations
 {
     [DbContext(typeof(DccDbContext))]
-    partial class DccDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220427062448_UpdateConfigObject")]
+    partial class UpdateConfigObject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -207,69 +209,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ConfigObjects");
-                });
-
-            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObjectRelease", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)")
-                        .HasComment("Comment");
-
-                    b.Property<int>("ConfigObjectId")
-                        .HasColumnType("int")
-                        .HasComment("Config object Id");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasMaxLength(2147483647)
-                        .HasColumnType("ntext")
-                        .HasComment("Content");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Creator")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Modifier")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
-                        .HasComment("Name");
-
-                    b.Property<int>("RollbackReleaseId")
-                        .HasColumnType("int")
-                        .HasComment("Rollback Release Id");
-
-                    b.Property<byte>("Type")
-                        .HasColumnType("tinyint")
-                        .HasComment("Release type");
-
-                    b.Property<string>("Version")
-                        .IsRequired()
-                        .HasColumnType("varchar(20)")
-                        .HasComment("Version, foramt is YYYYMMDDHHmmss");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ConfigObjectReleases");
                 });
 
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.PublicConfig", b =>

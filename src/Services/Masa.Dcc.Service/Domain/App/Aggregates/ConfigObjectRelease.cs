@@ -16,10 +16,13 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         public int ConfigObjectId { get; set; }
 
         [Comment("Rollback From Release Id")]
-        public int RollbackFromReleaseId { get; set; }
+        public int FromReleaseId { get; set; }
 
         [Comment("Rollback To Release Id")]
-        public int RollbackToReleaseId { get; set; }
+        public int ToReleaseId { get; set; }
+
+        [Comment("If it is rolled back, it will be true")]
+        public bool IsInvalid { get; set; }
 
         [Comment("Version foramt is YYYYMMDDHHmmss")]
         [Required(ErrorMessage = "Version is required")]
@@ -44,14 +47,21 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Column(TypeName = "ntext")]
         public string Content { get; set; }
 
-        public ConfigObjectRelease(int configObjectId, string name, string comment, string content, ReleaseType type = ReleaseType.MainRelease)
+        public ConfigObjectRelease(int configObjectId, string name, string comment, string content, int fromReleaseId = 0, int toReleaseId = 0, ReleaseType type = ReleaseType.MainRelease)
         {
             ConfigObjectId = configObjectId;
             Name = name;
             Comment = comment;
             Content = content;
             Version = DateTime.Now.ToString("YYYYMMDDHHmmss");
+            FromReleaseId = fromReleaseId;
+            ToReleaseId = toReleaseId;
             Type = type;
+        }
+
+        public void Invalid()
+        {
+            IsInvalid = true;
         }
     }
 }

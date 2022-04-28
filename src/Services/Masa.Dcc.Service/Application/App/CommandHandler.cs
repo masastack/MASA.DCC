@@ -129,6 +129,12 @@
             await _configObjectReleaseDomainService.AddConfigObjectRelease(command.ConfigObjectRelease);
         }
 
+        [EventHandler]
+        public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseCommand command)
+        {
+            await _configObjectReleaseDomainService.RollbackConfigObjectReleaseAsync(command.RollbackConfigObjectRelease);
+        }
+
         #endregion
     }
 }

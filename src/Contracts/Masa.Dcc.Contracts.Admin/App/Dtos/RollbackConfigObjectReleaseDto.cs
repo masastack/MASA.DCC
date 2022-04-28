@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
-    public class RollbackDto
+    public class RollbackConfigObjectReleaseDto
     {
         [Required]
         [Range(1, int.MaxValue)]

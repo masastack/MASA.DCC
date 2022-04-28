@@ -4,16 +4,16 @@
     {
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
-        private readonly LabelDomainService _labelDomainService;
+        private readonly ILabelRepository _labelRepository;
 
         public QueryHandler(
             IPublicConfigRepository publicConfigRepository,
             IPublicConfigObjectRepository publicConfigObjectRepository,
-            LabelDomainService labelDomainService)
+            ILabelRepository labelRepository)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
-            _labelDomainService = labelDomainService;
+            _labelRepository = labelRepository;
         }
 
         [EventHandler]
@@ -43,7 +43,7 @@
                     .Where(publicConfigObject => publicConfigObject.ConfigObject.Name.Contains(query.ConfigObjectName))
                     .ToList();
             }
-            var labels = await _labelDomainService.GetListAsync();
+            var labels = await _labelRepository.GetListAsync();
             query.Result = publicConfigObjects.Select(publicConfigObject => new ConfigObjectDto
             {
                 Name = publicConfigObject.ConfigObject.Name,

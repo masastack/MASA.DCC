@@ -17,7 +17,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         [Required(ErrorMessage = "Name is required", AllowEmptyStrings = true)]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name length range is [2-100]")]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         [Required(ErrorMessage = "Comment is required", AllowEmptyStrings = true)]
         [StringLength(500, MinimumLength = 0, ErrorMessage = "Comment length range is [0-500]")]
@@ -25,6 +25,6 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         [Required(ErrorMessage = "content is required", AllowEmptyStrings = true)]
         [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "content length range is [1-2147483647]")]
-        public string Content { get; set; }
+        public string Content { get; set; } = "";
     }
 }

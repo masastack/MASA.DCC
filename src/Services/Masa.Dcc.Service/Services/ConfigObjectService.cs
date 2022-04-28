@@ -10,6 +10,8 @@ public class ConfigObjectService : ServiceBase
         App.MapDelete("api/v1/configObject/{Id}", RemoveAsync);
         App.MapGet("api/v1/configObject/{envClusterId}", GetListByEnvClusterIdAsync);
         App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
+        App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
+        App.MapPut("api/v1/configObject/rollback", RollbackAsync);
     }
 
     public async Task AddAsync(IEventBus eventBus, AddConfigObjectDto dto)
@@ -37,4 +39,18 @@ public class ConfigObjectService : ServiceBase
 
         return command.Result;
     }
+
+    #region ConfigObjectRelease
+
+    public async Task AddConfigObjectReleaseAsync(IEventBus eventBus, AddConfigObjectReleaseDto dto)
+    {
+        await eventBus.PublishAsync(new AddConfigObjectReleaseCommand(dto));
+    }
+
+    public async Task RollbackAsync(IEventBus eventBus)
+    {
+
+    }
+
+    #endregion
 }

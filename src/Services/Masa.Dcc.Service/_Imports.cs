@@ -24,7 +24,6 @@ global using Masa.Dcc.Service.Admin.Application.App.Commands;
 global using Masa.Dcc.Service.Admin.Application.App.Queries;
 global using Masa.Dcc.Service.Admin.Domain.App.Aggregates;
 global using Masa.Dcc.Service.Admin.Domain.App.Repositories;
-global using Masa.Dcc.Service.Admin.Domain.App.Services;
 global using Masa.Dcc.Service.Admin.Domain.Label.Repositories;
 global using Masa.Dcc.Service.Infrastructure;
 global using Masa.Dcc.Service.Infrastructure.Middleware;
@@ -34,6 +33,11 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.EntityFrameworkCore;
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
+global using Masa.Dcc.Service.Admin.Domain.App.Services;
+global using Masa.Utils.Caching.DistributedMemory;
+global using Masa.Utils.Caching.DistributedMemory.Interfaces;
+
+
 
 
 

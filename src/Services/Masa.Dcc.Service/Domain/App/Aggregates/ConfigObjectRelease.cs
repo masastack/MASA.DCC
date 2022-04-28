@@ -15,10 +15,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Range(minimum: 1, maximum: int.MaxValue, ErrorMessage = "Config object Id is required")]
         public int ConfigObjectId { get; set; }
 
-        [Comment("Rollback Release Id")]
-        [Required(ErrorMessage = "Rollback Release Id is required")]
-        [Range(minimum: 1, maximum: int.MaxValue, ErrorMessage = "Config object Id is required")]
-        public int RollbackReleaseId { get; set; }
+        [Comment("Rollback From Release Id")]
+        public int RollbackFromReleaseId { get; set; }
+
+        [Comment("Rollback To Release Id")]
+        public int RollbackToReleaseId { get; set; }
 
         [Comment("Version foramt is YYYYMMDDHHmmss")]
         [Required(ErrorMessage = "Version is required")]

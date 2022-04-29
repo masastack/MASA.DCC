@@ -33,6 +33,9 @@
         private readonly List<AppConfigObject> _appConfigObjects = new();
         public IReadOnlyCollection<AppConfigObject> AppConfigObjects => _appConfigObjects;
 
+        private readonly List<ConfigObjectRelease> _configObjectRelease = new();
+        public IReadOnlyCollection<ConfigObjectRelease> ConfigObjectRelease => _configObjectRelease;
+
         public ConfigObject(string name, int formatLabelId, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0)
         {
             Name = name;

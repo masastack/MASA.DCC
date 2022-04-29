@@ -4,15 +4,18 @@
     {
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
+        private readonly IConfigObjectRepository _configObjectRepository;
         private readonly ILabelRepository _labelRepository;
 
         public QueryHandler(
             IPublicConfigRepository publicConfigRepository,
             IPublicConfigObjectRepository publicConfigObjectRepository,
+            IConfigObjectRepository configObjectRepository,
             ILabelRepository labelRepository)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
+            _configObjectRepository = configObjectRepository;
             _labelRepository = labelRepository;
         }
 
@@ -57,6 +60,17 @@
                 ModificationTime = publicConfigObject.ConfigObject.ModificationTime,
                 Modifier = publicConfigObject.ConfigObject.Modifier
             }).ToList();
+        }
+
+        [EventHandler]
+        public async Task GetConfigObjectReleaseHistoryAsync(ConfigObjectReleaseQuery query)
+        {
+            var configObjectReleases = await _configObjectRepository.GetConfigObjectWhitReleaseHistoriesAsync(query.ConfigObejctId);
+
+            TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
+                .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease);
+
+            query.Result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
         }
     }
 }

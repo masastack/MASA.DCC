@@ -110,7 +110,7 @@
         {
             var configObjectContentDto = command.ConfigObjectContent;
             var configObject = await _configObjectRepository.FindAsync(configObject => configObject.Id == configObjectContentDto.ConfigObjectId)
-                ?? throw new UserFriendlyException("config object does not exist ");
+                ?? throw new UserFriendlyException("config object does not exist");
 
             configObject.UpdateContent(configObjectContentDto.Content, configObject.Content);
 

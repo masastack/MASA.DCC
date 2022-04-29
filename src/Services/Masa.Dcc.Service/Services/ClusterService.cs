@@ -11,7 +11,6 @@ public class ClusterService : ServiceBase
         App.MapGet("api/v1/cluster/{Id}", GetAsync);
         App.MapGet("api/v1/envClusters", GetEnvironmentClustersAsync);
         App.MapGet("api/v1/{envId}/cluster", GetListByEnvIdAsync);
-
     }
 
     public async Task<List<ClusterModel>> GetListAsync()

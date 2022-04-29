@@ -47,9 +47,9 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(new AddConfigObjectReleaseCommand(dto));
     }
 
-    public async Task RollbackAsync(IEventBus eventBus)
+    public async Task RollbackAsync(IEventBus eventBus, RollbackConfigObjectReleaseDto dto)
     {
-
+        await eventBus.PublishAsync(new RollbackConfigObjectReleaseCommand(dto));
     }
 
     #endregion

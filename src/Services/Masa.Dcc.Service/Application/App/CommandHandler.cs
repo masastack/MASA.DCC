@@ -103,7 +103,7 @@
 
         #endregion
 
-        #region ConfigObjectContent
+        #region AddConfigObjectContent
 
         [EventHandler]
         public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentCommand command)
@@ -112,7 +112,7 @@
             var configObject = await _configObjectRepository.FindAsync(configObject => configObject.Id == configObjectContentDto.ConfigObjectId)
                 ?? throw new UserFriendlyException("config object does not exist ");
 
-            configObject.UpdateContent(configObject.TempContent, configObjectContentDto.TempContent);
+            configObject.UpdateContent(configObjectContentDto.Content, configObject.Content);
 
             var newConfigObject = await _configObjectRepository.UpdateAsync(configObject);
 

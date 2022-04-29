@@ -29,7 +29,7 @@
             var configObject = (await _configObjectRepository.FindAsync(
                 configObject => configObject.Id == configObjectReleaseDto.ConfigObjectId)) ?? throw new Exception("config object does not exist");
 
-            configObject.UpdateContent(configObject.TempContent, configObject.TempContent);
+            configObject.UpdateContent(configObjectReleaseDto.Content, configObjectReleaseDto.Content);
             await _configObjectRepository.UpdateAsync(configObject);
         }
 
@@ -84,7 +84,7 @@
 
             //Invalid rollback entity
             canRollbackEntity.Invalid();
-            //await _configObjectReleaseRepository.UpdateAsync(canRollbackEntity);
+            await _configObjectReleaseRepository.UpdateAsync(canRollbackEntity);
         }
 
         private async Task RollbackToAsync(RollbackConfigObjectReleaseDto rollbackDto)
@@ -124,7 +124,7 @@
 
             //Invalid rollback entity
             canRollbackEntity.Invalid();
-            //await _configObjectReleaseRepository.UpdateAsync(canRollbackEntity);
+            await _configObjectReleaseRepository.UpdateAsync(canRollbackEntity);
         }
     }
 }

@@ -5,16 +5,19 @@
         private readonly DccDbContext _context;
         private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
+        private readonly IMemoryCacheClient _memoryCacheClient;
 
         public ConfigObjectReleaseDomainService(
             IDomainEventBus eventBus,
             DccDbContext context,
             IConfigObjectReleaseRepository configObjectReleaseRepository,
-            IConfigObjectRepository configObjectRepository) : base(eventBus)
+            IConfigObjectRepository configObjectRepository,
+            IMemoryCacheClient memoryCacheClient) : base(eventBus)
         {
             _context = context;
             _configObjectReleaseRepository = configObjectReleaseRepository;
             _configObjectRepository = configObjectRepository;
+            _memoryCacheClient = memoryCacheClient;
         }
 
         public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto configObjectReleaseDto)
@@ -31,6 +34,9 @@
 
             configObject.UpdateContent(configObjectReleaseDto.Content, configObjectReleaseDto.Content);
             await _configObjectRepository.UpdateAsync(configObject);
+
+            //TODO
+            //_memoryCacheClient.SetAsync<>
         }
 
         public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseDto rollbackDto)

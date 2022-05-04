@@ -61,5 +61,10 @@
         {
             _appConfigObjects.Add(appConfigObject);
         }
+
+        public void Revoke()
+        {
+            Content = TempContent;
+        }
     }
 }

@@ -27,7 +27,7 @@
                );
 
             var configObject = (await _configObjectRepository.FindAsync(
-                configObject => configObject.Id == configObjectReleaseDto.ConfigObjectId)) ?? throw new Exception("config object does not exist");
+                configObject => configObject.Id == configObjectReleaseDto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
 
             configObject.UpdateContent(configObjectReleaseDto.Content, configObjectReleaseDto.Content);
             await _configObjectRepository.UpdateAsync(configObject);

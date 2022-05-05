@@ -42,8 +42,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         public string Comment { get; set; }
 
         [Comment("Content")]
-        [Required(ErrorMessage = "content is required", AllowEmptyStrings = true)]
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "content length range is [1-2147483647]")]
+        [Required(ErrorMessage = "Content is required", AllowEmptyStrings = true)]
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Content length range is [1-2147483647]")]
         [Column(TypeName = "ntext")]
         public string Content { get; set; }
 
@@ -53,7 +53,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             Name = name;
             Comment = comment;
             Content = content;
-            Version = DateTime.Now.ToString("YYYYMMDDHHmmss");
+            Version = DateTime.Now.ToString("yyyyMMddHHmmss");
             FromReleaseId = fromReleaseId;
             ToReleaseId = toReleaseId;
             Type = type;

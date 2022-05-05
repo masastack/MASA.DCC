@@ -5,6 +5,7 @@
         private readonly DccDbContext _context;
         private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
+        private readonly ILabelRepository _labelRepository;
         private readonly IMemoryCacheClient _memoryCacheClient;
 
         public ConfigObjectReleaseDomainService(
@@ -12,31 +13,40 @@
             DccDbContext context,
             IConfigObjectReleaseRepository configObjectReleaseRepository,
             IConfigObjectRepository configObjectRepository,
+            ILabelRepository labelRepository,
             IMemoryCacheClient memoryCacheClient) : base(eventBus)
         {
             _context = context;
             _configObjectReleaseRepository = configObjectReleaseRepository;
             _configObjectRepository = configObjectRepository;
+            _labelRepository = labelRepository;
             _memoryCacheClient = memoryCacheClient;
         }
 
-        public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto configObjectReleaseDto)
+        public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto dto)
         {
             await _configObjectReleaseRepository.AddAsync(new ConfigObjectRelease(
-                   configObjectReleaseDto.ConfigObjectId,
-                   configObjectReleaseDto.Name,
-                   configObjectReleaseDto.Comment,
-                   configObjectReleaseDto.Content)
+                   dto.ConfigObjectId,
+                   dto.Name,
+                   dto.Comment,
+                   dto.Content)
                );
 
             var configObject = (await _configObjectRepository.FindAsync(
-                configObject => configObject.Id == configObjectReleaseDto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
+                configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
 
-            configObject.UpdateContent(configObjectReleaseDto.Content, configObjectReleaseDto.Content);
+            configObject.UpdateContent(dto.Content, dto.Content);
             await _configObjectRepository.UpdateAsync(configObject);
 
-            //TODO
-            //_memoryCacheClient.SetAsync<>
+            //add redis cache
+            //TODO: encryption value
+            var key = $"{dto.Environment}-{dto.Cluster}-{dto.AppIdentity}-{configObject.Name}-{configObject.Type}";
+            await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+            {
+                ConfigObjectType = configObject.Type,
+                Content = configObject.Content,
+                FormatLabelName = (await _labelRepository.FindAsync(label => label.Id == configObject.FormatLabelId))?.Name ?? ""
+            });
         }
 
         public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseDto rollbackDto)
@@ -55,7 +65,7 @@
         private async Task RollbackAsync(int configObjectId)
         {
             List<ConfigObjectRelease> configObjectReleases = (await _configObjectReleaseRepository.GetListAsync(
-                cor => cor.ConfigObjectId == configObjectId && cor.IsInvalid == false))//去除已回滚的版本
+                cor => cor.ConfigObjectId == configObjectId && cor.IsInvalid == false))//Remove the rolled back version
                     .OrderByDescending(cor => cor.Id)
                     .ToList();
 
@@ -66,7 +76,7 @@
 
             var latestConfigObjectRelease = configObjectReleases.First();
 
-            //排除相同的版本和最新的版本就是可以回滚的版本
+            //Excluding the same version and the latest version is the version that can be rolled back
             var canRollbackEntity = configObjectReleases
                 .Where(cor => cor.ToReleaseId != latestConfigObjectRelease.Id && cor.Id != latestConfigObjectRelease.Id)
                 .OrderByDescending(cor => cor.Id)

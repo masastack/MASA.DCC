@@ -26,5 +26,11 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         [Required(ErrorMessage = "Content is required", AllowEmptyStrings = true)]
         [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Content length range is [1-2147483647]")]
         public string Content { get; set; } = "";
+
+        public string Environment { get; set; } = "";
+
+        public string Cluster { get; set; } = "";
+
+        public string AppIdentity { get; set; } = "";
     }
 }

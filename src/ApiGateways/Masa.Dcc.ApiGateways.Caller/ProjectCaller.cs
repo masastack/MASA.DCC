@@ -1,4 +1,7 @@
-﻿namespace Masa.Dcc.Caller
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Dcc.Caller
 {
     public class ProjectCaller : HttpClientCallerBase
     {
@@ -37,6 +40,6 @@
             var result = await CallerProvider.GetAsync<List<ProjectTypeModel>>($"{_prefix}/projectType");
 
             return result ?? new();
-        } 
+        }
     }
 }

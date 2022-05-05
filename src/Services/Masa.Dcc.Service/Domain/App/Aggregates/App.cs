@@ -1,4 +1,7 @@
-﻿using Masa.BuildingBlocks.BasicAbility.Pm.Enum;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+using Masa.BuildingBlocks.BasicAbility.Pm.Enum;
 
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {

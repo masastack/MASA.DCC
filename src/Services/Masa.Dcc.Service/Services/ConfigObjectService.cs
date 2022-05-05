@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+using Microsoft.AspNetCore.Mvc;
 
 namespace Masa.Dcc.Service.Services;
 
@@ -39,11 +42,6 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(command);
 
         return command.Result;
-    }
-
-    public async Task RevokeConfigObjectAsync(IEventBus eventBus, int Id)
-    {
-        await eventBus.PublishAsync(new RevokeConfigObjectCommand(Id));
     }
 
     #region ConfigObjectRelease

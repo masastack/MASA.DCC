@@ -93,30 +93,41 @@
         }
 
         [EventHandler]
-        public async Task RemovePublicConfigObjectAsync(RemoveConfigObjectCommand command)
+        public async Task RemoveConfigObjectAsync(RemoveConfigObjectCommand command)
         {
             var configEntity = await _configObjectRepository.FindAsync(p => p.Id == command.ConfigObjectId)
-                ?? throw new UserFriendlyException("config object does not exist");
+                ?? throw new UserFriendlyException("Config object does not exist");
 
             await _configObjectRepository.RemoveAsync(configEntity);
         }
-
-        #endregion
-
-        #region AddConfigObjectContent
 
         [EventHandler]
         public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentCommand command)
         {
             var configObjectContentDto = command.ConfigObjectContent;
             var configObject = await _configObjectRepository.FindAsync(configObject => configObject.Id == configObjectContentDto.ConfigObjectId)
-                ?? throw new UserFriendlyException("config object does not exist");
+                ?? throw new UserFriendlyException("Config object does not exist");
 
             configObject.UpdateContent(configObjectContentDto.Content, configObject.Content);
 
             var newConfigObject = await _configObjectRepository.UpdateAsync(configObject);
 
             command.Result = newConfigObject.Adapt<ConfigObjectDto>();
+        }
+
+        [EventHandler]
+        public async Task RevokeConfigObjectAsync(RevokeConfigObjectCommand command)
+        {
+            var configObject = await _configObjectRepository.FindAsync(configObject => configObject.Id == command.ConfigObjectId);
+
+            if (configObject == null)
+            {
+                throw new UserFriendlyException("Config object does not exist");
+            }
+
+            configObject.Revoke();
+
+            await _configObjectRepository.UpdateAsync(configObject);
         }
 
         #endregion

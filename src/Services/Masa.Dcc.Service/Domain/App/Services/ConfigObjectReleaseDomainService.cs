@@ -5,32 +5,48 @@
         private readonly DccDbContext _context;
         private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
+        private readonly ILabelRepository _labelRepository;
+        private readonly IMemoryCacheClient _memoryCacheClient;
 
         public ConfigObjectReleaseDomainService(
             IDomainEventBus eventBus,
             DccDbContext context,
             IConfigObjectReleaseRepository configObjectReleaseRepository,
-            IConfigObjectRepository configObjectRepository) : base(eventBus)
+            IConfigObjectRepository configObjectRepository,
+            ILabelRepository labelRepository,
+            IMemoryCacheClient memoryCacheClient) : base(eventBus)
         {
             _context = context;
             _configObjectReleaseRepository = configObjectReleaseRepository;
             _configObjectRepository = configObjectRepository;
+            _labelRepository = labelRepository;
+            _memoryCacheClient = memoryCacheClient;
         }
 
-        public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto configObjectReleaseDto)
+        public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto dto)
         {
             await _configObjectReleaseRepository.AddAsync(new ConfigObjectRelease(
-                   configObjectReleaseDto.ConfigObjectId,
-                   configObjectReleaseDto.Name,
-                   configObjectReleaseDto.Comment,
-                   configObjectReleaseDto.Content)
+                   dto.ConfigObjectId,
+                   dto.Name,
+                   dto.Comment,
+                   dto.Content)
                );
 
             var configObject = (await _configObjectRepository.FindAsync(
-                configObject => configObject.Id == configObjectReleaseDto.ConfigObjectId)) ?? throw new Exception("config object does not exist");
+                configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
 
-            configObject.UpdateContent(configObjectReleaseDto.Content, configObjectReleaseDto.Content);
+            configObject.UpdateContent(dto.Content, dto.Content);
             await _configObjectRepository.UpdateAsync(configObject);
+
+            //add redis cache
+            //TODO: encryption value
+            var key = $"{dto.Environment}-{dto.Cluster}-{dto.AppIdentity}-{configObject.Name}-{configObject.Type}";
+            await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+            {
+                ConfigObjectType = configObject.Type,
+                Content = configObject.Content,
+                FormatLabelName = (await _labelRepository.FindAsync(label => label.Id == configObject.FormatLabelId))?.Name ?? ""
+            });
         }
 
         public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseDto rollbackDto)

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
-    public class ConfigObjectMainDto : BaseDto
+    public class RollbackConfigObjectReleaseDto
     {
-        public int Id { get; set; }
-
+        [Required]
+        [Range(1, int.MaxValue)]
         public int ConfigObjectId { get; set; }
 
-        public string Content { get; set; } = "";
-
-        public string TempContent { get; set; } = "";
+        [Required]
+        [Range(1, int.MaxValue)]
+        public int RollbackToReleaseId { get; set; }
     }
 }

@@ -2,5 +2,6 @@
 {
     public interface IConfigObjectRepository : IRepository<ConfigObject>
     {
+        Task<ConfigObject> GetConfigObjectWhitReleaseHistoriesAsync(int Id);
     }
 }

@@ -4,16 +4,19 @@
     {
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
-        private readonly LabelDomainService _labelDomainService;
+        private readonly IConfigObjectRepository _configObjectRepository;
+        private readonly ILabelRepository _labelRepository;
 
         public QueryHandler(
             IPublicConfigRepository publicConfigRepository,
             IPublicConfigObjectRepository publicConfigObjectRepository,
-            LabelDomainService labelDomainService)
+            IConfigObjectRepository configObjectRepository,
+            ILabelRepository labelRepository)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
-            _labelDomainService = labelDomainService;
+            _configObjectRepository = configObjectRepository;
+            _labelRepository = labelRepository;
         }
 
         [EventHandler]
@@ -43,27 +46,31 @@
                     .Where(publicConfigObject => publicConfigObject.ConfigObject.Name.Contains(query.ConfigObjectName))
                     .ToList();
             }
-            var labels = await _labelDomainService.GetListAsync();
+            var labels = await _labelRepository.GetListAsync();
             query.Result = publicConfigObjects.Select(publicConfigObject => new ConfigObjectDto
             {
                 Name = publicConfigObject.ConfigObject.Name,
                 FormatName = labels.FirstOrDefault(label => label.Id == publicConfigObject.ConfigObject.FormatLabelId)?.Name ?? "",
-                TypeName = labels.FirstOrDefault(label => label.Id == publicConfigObject.ConfigObject.TypeLabelId)?.Name ?? "",
+                Type = publicConfigObject.ConfigObject.Type,
                 RelationConfigObjectId = publicConfigObject.ConfigObject.RelationConfigObjectId,
-                ConfigObjectMain = publicConfigObject.ConfigObject.ConfigObjectMain == null
-                ? null
-                : new ConfigObjectMainDto
-                {
-                    Id = publicConfigObject.ConfigObject.ConfigObjectMain.Id,
-                    ConfigObjectId = publicConfigObject.ConfigObject.ConfigObjectMain.ConfigObjectId,
-                    Content = publicConfigObject.ConfigObject.ConfigObjectMain.Content,
-                    TempContent = publicConfigObject.ConfigObject.ConfigObjectMain.TempContent,
-                    Creator = publicConfigObject.ConfigObject.ConfigObjectMain.Creator,
-                    ModificationTime = publicConfigObject.ConfigObject.ConfigObjectMain.ModificationTime,
-                    CreationTime = publicConfigObject.ConfigObject.ConfigObjectMain.CreationTime,
-                    Modifier = publicConfigObject.ConfigObject.ConfigObjectMain.Modifier
-                }
+                Content = publicConfigObject.ConfigObject.Content,
+                TempContent = publicConfigObject.ConfigObject.TempContent,
+                CreationTime = publicConfigObject.ConfigObject.CreationTime,
+                Creator = publicConfigObject.ConfigObject.Creator,
+                ModificationTime = publicConfigObject.ConfigObject.ModificationTime,
+                Modifier = publicConfigObject.ConfigObject.Modifier
             }).ToList();
+        }
+
+        [EventHandler]
+        public async Task GetConfigObjectReleaseHistoryAsync(ConfigObjectReleaseQuery query)
+        {
+            var configObjectReleases = await _configObjectRepository.GetConfigObjectWhitReleaseHistoriesAsync(query.ConfigObejctId);
+
+            TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
+                .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease);
+
+            query.Result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
         }
     }
 }

@@ -4,6 +4,7 @@ using Masa.Dcc.Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Dcc.Service.Admin.Migrations
 {
     [DbContext(typeof(DccDbContext))]
-    partial class DccDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220427151055_UpdateConfigObjectType")]
+    partial class UpdateConfigObjectType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -239,16 +241,8 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.Property<Guid>("Creator")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("FromReleaseId")
-                        .HasColumnType("int")
-                        .HasComment("Rollback From Release Id");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<bool>("IsInvalid")
-                        .HasColumnType("bit")
-                        .HasComment("If it is rolled back, it will be true");
 
                     b.Property<DateTime>("ModificationTime")
                         .HasColumnType("datetime2");
@@ -262,9 +256,9 @@ namespace Masa.Dcc.Service.Admin.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasComment("Name");
 
-                    b.Property<int>("ToReleaseId")
+                    b.Property<int>("RollbackReleaseId")
                         .HasColumnType("int")
-                        .HasComment("Rollback To Release Id");
+                        .HasComment("Rollback Release Id");
 
                     b.Property<byte>("Type")
                         .HasColumnType("tinyint")
@@ -418,7 +412,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.AppConfigObject", b =>
                 {
                     b.HasOne("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", "ConfigObject")
-                        .WithMany("AppConfigObjects")
+                        .WithMany()
                         .HasForeignKey("ConfigObjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -447,8 +441,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
 
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", b =>
                 {
-                    b.Navigation("AppConfigObjects");
-
                     b.Navigation("PublicConfigObjects");
                 });
 

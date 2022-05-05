@@ -3,17 +3,23 @@
     public class CommandHandler
     {
         private readonly IPublicConfigRepository _publicConfigRepository;
-        private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
+        private readonly ILabelRepository _labelRepository;
+        private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
+        private readonly ConfigObjectReleaseDomainService _configObjectReleaseDomainService;
 
         public CommandHandler(
             IPublicConfigRepository publicConfigRepository,
-            IPublicConfigObjectRepository publicConfigObjectRepository,
-            IConfigObjectRepository configObjectRepository)
+            IConfigObjectRepository configObjectRepository,
+            ILabelRepository labelRepository,
+            IConfigObjectReleaseRepository configObjectReleaseRepository,
+            ConfigObjectReleaseDomainService configObjectReleaseDomainService)
         {
             _publicConfigRepository = publicConfigRepository;
-            _publicConfigObjectRepository = publicConfigObjectRepository;
             _configObjectRepository = configObjectRepository;
+            _labelRepository = labelRepository;
+            _configObjectReleaseRepository = configObjectReleaseRepository;
+            _configObjectReleaseDomainService = configObjectReleaseDomainService;
         }
 
         #region PublicConfig
@@ -32,7 +38,7 @@
         {
             var publicConfig = command.UpdatePublicConfigDto;
             var publicConfigEntity = await _publicConfigRepository.FindAsync(p => p.Id == publicConfig.Id)
-                ?? throw new UserFriendlyException("PublicConfig not exist");
+                ?? throw new UserFriendlyException("Public config does not exist");
 
             publicConfigEntity.Update(publicConfig.Name, publicConfig.Description);
             await _publicConfigRepository.UpdateAsync(publicConfigEntity);
@@ -42,7 +48,7 @@
         public async Task RemovePublicConfigAsync(RemovePublicConfigCommand command)
         {
             var publicConfigEntity = await _publicConfigRepository.FindAsync(p => p.Id == command.PublicConfigId)
-                ?? throw new UserFriendlyException("PublicConfig not exist");
+                ?? throw new UserFriendlyException("Public config does not exist");
 
             await _publicConfigRepository.RemoveAsync(publicConfigEntity);
         }
@@ -51,38 +57,82 @@
 
         #region ConfigObject
 
-        [EventHandler(1)]
+        [EventHandler]
         public async Task AddConfigObjectAsync(AddConfigObjectCommand command)
         {
-            var configObject = command.ConfigObjectDto;
-
-            ConfigObject configObjectEntity = await _configObjectRepository.AddAsync(
-                new ConfigObject(configObject.Name, configObject.FormatLabelId, configObject.TypeLabelId));
-            await _configObjectRepository.UnitOfWork.SaveChangesAsync();
-
-            command.ConfigObject = configObjectEntity;
-        }
-
-        [EventHandler(2)]
-        public async Task AddPublicConfigObjectAsync(AddConfigObjectCommand command)
-        {
             var configObjectDto = command.ConfigObjectDto;
-            var configObject = command.ConfigObject;
 
-            var publicConfigObject = new PublicConfigObject(configObject.Id, configObjectDto.PublicConfigId, configObjectDto.EnvironmentClusterId);
-            configObject.AddPublicConfigObject(publicConfigObject);
-            await _publicConfigObjectRepository.AddAsync(publicConfigObject);
+            var formatLabel = await _labelRepository.FindAsync(label => label.Id == configObjectDto.FormatLabelId);
+            string initialContent = (formatLabel?.Name.ToLower()) switch
+            {
+                "json" => "{}",
+                "properties" => "[]",
+                _ => "",
+            };
+            ConfigObject configObject = await _configObjectRepository.AddAsync(
+                new ConfigObject(
+                    configObjectDto.Name,
+                    configObjectDto.FormatLabelId,
+                    configObjectDto.Type,
+                    initialContent,
+                    initialContent)
+                );
 
-            await _publicConfigObjectRepository.UnitOfWork.SaveChangesAsync();
+            if (configObjectDto.Type == ConfigObjectType.Public)
+            {
+                var publicConfigObject = new PublicConfigObject(configObject.Id, configObjectDto.PublicConfigId, configObjectDto.EnvironmentClusterId);
+                configObject.AddPublicConfigObject(publicConfigObject);
+            }
+            else if (configObjectDto.Type == ConfigObjectType.App)
+            {
+                var publicConfigObject = new AppConfigObject(configObject.Id, configObjectDto.AppId, configObjectDto.EnvironmentClusterId);
+                configObject.AddAppConfigObject(publicConfigObject);
+            }
+
+            command.Result = configObject.Adapt<ConfigObjectDto>();
         }
 
         [EventHandler]
         public async Task RemovePublicConfigObjectAsync(RemoveConfigObjectCommand command)
         {
             var configEntity = await _configObjectRepository.FindAsync(p => p.Id == command.ConfigObjectId)
-                ?? throw new UserFriendlyException("config object not exist");
+                ?? throw new UserFriendlyException("config object does not exist");
 
             await _configObjectRepository.RemoveAsync(configEntity);
+        }
+
+        #endregion
+
+        #region AddConfigObjectContent
+
+        [EventHandler]
+        public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentCommand command)
+        {
+            var configObjectContentDto = command.ConfigObjectContent;
+            var configObject = await _configObjectRepository.FindAsync(configObject => configObject.Id == configObjectContentDto.ConfigObjectId)
+                ?? throw new UserFriendlyException("config object does not exist");
+
+            configObject.UpdateContent(configObjectContentDto.Content, configObject.Content);
+
+            var newConfigObject = await _configObjectRepository.UpdateAsync(configObject);
+
+            command.Result = newConfigObject.Adapt<ConfigObjectDto>();
+        }
+
+        #endregion
+
+        #region Release
+
+        [EventHandler]
+        public async Task AddConfigObjectRelease(AddConfigObjectReleaseCommand command)
+        {
+            await _configObjectReleaseDomainService.AddConfigObjectRelease(command.ConfigObjectRelease);
+        }
+
+        [EventHandler]
+        public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseCommand command)
+        {
+            await _configObjectReleaseDomainService.RollbackConfigObjectReleaseAsync(command.RollbackConfigObjectRelease);
         }
 
         #endregion

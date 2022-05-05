@@ -4,6 +4,7 @@ using Masa.Dcc.Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Dcc.Service.Admin.Migrations
 {
     [DbContext(typeof(DccDbContext))]
-    partial class DccDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220428145639_AddConfigObjectReleaseField")]
+    partial class AddConfigObjectReleaseField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -239,10 +241,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.Property<Guid>("Creator")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("FromReleaseId")
-                        .HasColumnType("int")
-                        .HasComment("Rollback From Release Id");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -262,7 +260,11 @@ namespace Masa.Dcc.Service.Admin.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasComment("Name");
 
-                    b.Property<int>("ToReleaseId")
+                    b.Property<int>("RollbackFromReleaseId")
+                        .HasColumnType("int")
+                        .HasComment("Rollback From Release Id");
+
+                    b.Property<int>("RollbackToReleaseId")
                         .HasColumnType("int")
                         .HasComment("Rollback To Release Id");
 

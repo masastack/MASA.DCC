@@ -14,27 +14,52 @@
 
         [Comment("Type")]
         [Range(1, int.MaxValue, ErrorMessage = "Type is required")]
-        public int TypeLabelId { get; private set; }
+        public ConfigObjectType Type { get; private set; }
+
+        [Required]
+        [Column(TypeName = "ntext")]
+        public string Content { get; private set; }
+
+        [Required]
+        [Column(TypeName = "ntext")]
+        public string TempContent { get; private set; }
 
         [Comment("Relation config object Id")]
         public int RelationConfigObjectId { get; private set; }
 
-        public ConfigObjectMain? ConfigObjectMain { get; private set; }
-
         private readonly List<PublicConfigObject> _publicConfigObjects = new();
         public IReadOnlyCollection<PublicConfigObject> PublicConfigObjects => _publicConfigObjects;
 
-        public ConfigObject(string name, int formatLabelId, int typeLabelId, int relationConfigObjectId = 0)
+        private readonly List<AppConfigObject> _appConfigObjects = new();
+        public IReadOnlyCollection<AppConfigObject> AppConfigObjects => _appConfigObjects;
+
+        private readonly List<ConfigObjectRelease> _configObjectRelease = new();
+        public IReadOnlyCollection<ConfigObjectRelease> ConfigObjectRelease => _configObjectRelease;
+
+        public ConfigObject(string name, int formatLabelId, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0)
         {
             Name = name;
             FormatLabelId = formatLabelId;
-            TypeLabelId = typeLabelId;
+            Type = type;
+            Content = content;
+            TempContent = tempContent;
             RelationConfigObjectId = relationConfigObjectId;
+        }
+
+        public void UpdateContent(string content, string tempContent)
+        {
+            Content = content;
+            TempContent = tempContent;
         }
 
         public void AddPublicConfigObject(PublicConfigObject publicConfigObject)
         {
             _publicConfigObjects.Add(publicConfigObject);
+        }
+
+        public void AddAppConfigObject(AppConfigObject appConfigObject)
+        {
+            _appConfigObjects.Add(appConfigObject);
         }
     }
 }

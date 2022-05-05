@@ -14,6 +14,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+		<PackageReference Include="Mapster" Version="7.3.0" />
 		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="0.4.0-preview.4" />
 		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="0.4.0-preview.4" />
 		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EF" Version="0.4.0-preview.4" />
@@ -25,6 +26,7 @@
 		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EF" Version="0.4.0-preview.4" />
 		<PackageReference Include="Masa.Contrib.ReadWriteSpliting.Cqrs" Version="0.4.0-preview.4" />
 		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="0.4.0-preview.4" />
+		<PackageReference Include="Masa.Utils.Caching.DistributedMemory" Version="0.4.0-preview.4" />
 		<PackageReference Include="Masa.Utils.Caller.HttpClient" Version="0.4.0-preview.4" />
 		<PackageReference Include="Masa.Utils.Data.EntityFrameworkCore.SqlServer" Version="0.4.0-preview.4" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />

@@ -21,27 +21,14 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         [Required]
         [Range(1, int.MaxValue)]
-        public int TypeLabelId { get; set; }
+        public ConfigObjectType Type { get; set; }
 
-        [Required]
-        [Range(1, int.MaxValue)]
         public int PublicConfigId { get; set; }
+       
+        public int AppId { get; set; }
 
         [Required]
         [Range(1, int.MaxValue)]
         public int EnvironmentClusterId { get; set; }
-
-        public AddConfigObjectDto()
-        {
-        }
-
-        public AddConfigObjectDto(string name, int formatLabelId, int typeLabelId, int publicConfigId, int environmentClusterId)
-        {
-            _name = name;
-            FormatLabelId = formatLabelId;
-            TypeLabelId = typeLabelId;
-            PublicConfigId = publicConfigId;
-            EnvironmentClusterId = environmentClusterId;
-        }
     }
 }

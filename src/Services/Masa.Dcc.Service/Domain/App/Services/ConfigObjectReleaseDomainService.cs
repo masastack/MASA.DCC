@@ -49,7 +49,7 @@
         private async Task RollbackAsync(int configObjectId)
         {
             List<ConfigObjectRelease> configObjectReleases = (await _configObjectReleaseRepository.GetListAsync(
-                cor => cor.ConfigObjectId == configObjectId && cor.IsInvalid == false))//去除已回滚的版本
+                cor => cor.ConfigObjectId == configObjectId && cor.IsInvalid == false))//Remove the rolled back version
                     .OrderByDescending(cor => cor.Id)
                     .ToList();
 
@@ -60,7 +60,7 @@
 
             var latestConfigObjectRelease = configObjectReleases.First();
 
-            //排除相同的版本和最新的版本就是可以回滚的版本
+            //Excluding the same version and the latest version is the version that can be rolled back
             var canRollbackEntity = configObjectReleases
                 .Where(cor => cor.ToReleaseId != latestConfigObjectRelease.Id && cor.Id != latestConfigObjectRelease.Id)
                 .OrderByDescending(cor => cor.Id)

@@ -1,4 +1,7 @@
-﻿using Masa.Dcc.Web.Admin.Rcl.Global.Nav;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+using Masa.Dcc.Web.Admin.Rcl.Global.Nav;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Masa.Dcc.Web.Admin.Rcl.Global

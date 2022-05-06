@@ -1,4 +1,7 @@
-﻿using Masa.BuildingBlocks.BasicAbility.Pm.Model;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+using Masa.BuildingBlocks.BasicAbility.Pm.Model;
 using Masa.Dcc.Caller;
 
 namespace Masa.Dcc.Web.Admin.Rcl.Pages

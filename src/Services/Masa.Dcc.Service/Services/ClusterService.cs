@@ -1,4 +1,7 @@
-﻿namespace Masa.Dcc.Service.Services;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
+namespace Masa.Dcc.Service.Services;
 
 public class ClusterService : ServiceBase
 {

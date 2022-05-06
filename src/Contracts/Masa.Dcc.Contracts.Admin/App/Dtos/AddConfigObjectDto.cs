@@ -27,5 +27,9 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         [Required]
         [Range(1, int.MaxValue)]
         public int EnvironmentClusterId { get; set; }
+
+        public string Content { get; set; } = default!;
+
+        public string TempContent { get; set; } = default!;
     }
 }

@@ -8,21 +8,18 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
         private readonly ILabelRepository _labelRepository;
-        private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
-        private readonly ConfigObjectReleaseDomainService _configObjectReleaseDomainService;
+        private readonly ConfigObjectDomainService _configObjectDomainService;
 
         public CommandHandler(
             IPublicConfigRepository publicConfigRepository,
             IConfigObjectRepository configObjectRepository,
             ILabelRepository labelRepository,
-            IConfigObjectReleaseRepository configObjectReleaseRepository,
-            ConfigObjectReleaseDomainService configObjectReleaseDomainService)
+            ConfigObjectDomainService configObjectDomainService)
         {
             _publicConfigRepository = publicConfigRepository;
             _configObjectRepository = configObjectRepository;
             _labelRepository = labelRepository;
-            _configObjectReleaseRepository = configObjectReleaseRepository;
-            _configObjectReleaseDomainService = configObjectReleaseDomainService;
+            _configObjectDomainService = configObjectDomainService;
         }
 
         #region PublicConfig
@@ -83,13 +80,11 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
             if (configObjectDto.Type == ConfigObjectType.Public)
             {
-                var publicConfigObject = new PublicConfigObject(configObject.Id, configObjectDto.PublicConfigId, configObjectDto.EnvironmentClusterId);
-                configObject.AddPublicConfigObject(publicConfigObject);
+                configObject.SetPublicConfigObject(configObjectDto.PublicConfigId, configObjectDto.EnvironmentClusterId);
             }
             else if (configObjectDto.Type == ConfigObjectType.App)
             {
-                var publicConfigObject = new AppConfigObject(configObject.Id, configObjectDto.AppId, configObjectDto.EnvironmentClusterId);
-                configObject.AddAppConfigObject(publicConfigObject);
+                configObject.SetAppConfigObject(configObjectDto.AppId, configObjectDto.EnvironmentClusterId);
             }
 
             command.Result = configObject.Adapt<ConfigObjectDto>();
@@ -133,6 +128,12 @@ namespace Masa.Dcc.Service.Admin.Application.App
             await _configObjectRepository.UpdateAsync(configObject);
         }
 
+        [EventHandler]
+        public async Task CloneConfigObjectAsync(CloneConfigObejctCommand command)
+        {
+
+        }
+
         #endregion
 
         #region Release
@@ -140,13 +141,13 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task AddConfigObjectRelease(AddConfigObjectReleaseCommand command)
         {
-            await _configObjectReleaseDomainService.AddConfigObjectRelease(command.ConfigObjectRelease);
+            await _configObjectDomainService.AddConfigObjectRelease(command.ConfigObjectRelease);
         }
 
         [EventHandler]
         public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseCommand command)
         {
-            await _configObjectReleaseDomainService.RollbackConfigObjectReleaseAsync(command.RollbackConfigObjectRelease);
+            await _configObjectDomainService.RollbackConfigObjectReleaseAsync(command.RollbackConfigObjectRelease);
         }
 
         #endregion

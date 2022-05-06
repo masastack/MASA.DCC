@@ -34,5 +34,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 
         private readonly List<AppConfigObject> _appConfigObjects = new();
         public IReadOnlyCollection<AppConfigObject> AppConfigObjects => _appConfigObjects;
+
+        private readonly List<AppSecret> _appSecrets = new();
+        public IReadOnlyCollection<AppSecret> AppSecrets => _appSecrets;
     }
 }

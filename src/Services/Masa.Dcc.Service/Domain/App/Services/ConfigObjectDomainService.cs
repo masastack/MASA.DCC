@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Domain.App.Services
 {
-    public class ConfigObjectReleaseDomainService : DomainService
+    public class ConfigObjectDomainService : DomainService
     {
         private readonly DccDbContext _context;
         private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
@@ -11,7 +11,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly ILabelRepository _labelRepository;
         private readonly IMemoryCacheClient _memoryCacheClient;
 
-        public ConfigObjectReleaseDomainService(
+        public ConfigObjectDomainService(
             IDomainEventBus eventBus,
             DccDbContext context,
             IConfigObjectReleaseRepository configObjectReleaseRepository,
@@ -24,6 +24,21 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _configObjectRepository = configObjectRepository;
             _labelRepository = labelRepository;
             _memoryCacheClient = memoryCacheClient;
+        }
+
+        public async Task CloneConfigObjectAsync(CloneConfigObjectDto dto)
+        {
+            //add ConfigObject
+            //TODO：Clone
+            var configObjects = dto.ConfigObjects.Select(confgiObjectDto => new ConfigObject(
+                  confgiObjectDto.Name,
+                  confgiObjectDto.FormatLabelId,
+                  confgiObjectDto.Type,
+                  confgiObjectDto.Content,
+                  confgiObjectDto.TempContent)
+              );
+
+            await _configObjectRepository.AddRangeAsync(configObjects);
         }
 
         public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto dto)

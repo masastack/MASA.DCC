@@ -44,6 +44,11 @@ public class ConfigObjectService : ServiceBase
         return command.Result;
     }
 
+    public async Task RevokeConfigObjectAsync(IEventBus eventBus, int Id)
+    {
+        await eventBus.PublishAsync(new RevokeConfigObjectCommand(Id));
+    }
+
     #region ConfigObjectRelease
 
     public async Task AddConfigObjectReleaseAsync(IEventBus eventBus, AddConfigObjectReleaseDto dto)

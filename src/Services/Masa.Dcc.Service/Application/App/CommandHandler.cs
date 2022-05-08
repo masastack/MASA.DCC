@@ -129,9 +129,9 @@ namespace Masa.Dcc.Service.Admin.Application.App
         }
 
         [EventHandler]
-        public async Task CloneConfigObjectAsync(CloneConfigObejctCommand command)
+        public async Task CloneConfigObjectAsync(CloneConfigObjectCommand command)
         {
-
+            await _configObjectDomainService.CloneConfigObjectAsync(command.CloneConfigObject);
         }
 
         #endregion

@@ -9,6 +9,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
         private readonly ILabelRepository _labelRepository;
+        private readonly IAppConfigObjectRepository _appConfigObjectRepository;
         private readonly IMemoryCacheClient _memoryCacheClient;
 
         public ConfigObjectDomainService(
@@ -17,28 +18,34 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IConfigObjectReleaseRepository configObjectReleaseRepository,
             IConfigObjectRepository configObjectRepository,
             ILabelRepository labelRepository,
+            IAppConfigObjectRepository appConfigObjectRepository,
             IMemoryCacheClient memoryCacheClient) : base(eventBus)
         {
             _context = context;
             _configObjectReleaseRepository = configObjectReleaseRepository;
             _configObjectRepository = configObjectRepository;
             _labelRepository = labelRepository;
+            _appConfigObjectRepository = appConfigObjectRepository;
             _memoryCacheClient = memoryCacheClient;
         }
 
         public async Task CloneConfigObjectAsync(CloneConfigObjectDto dto)
         {
-            //add ConfigObject
-            //TODO：Clone
-            var configObjects = dto.ConfigObjects.Select(confgiObjectDto => new ConfigObject(
-                  confgiObjectDto.Name,
-                  confgiObjectDto.FormatLabelId,
-                  confgiObjectDto.Type,
-                  confgiObjectDto.Content,
-                  confgiObjectDto.TempContent)
-              );
+            List<ConfigObject> cloneConfigObjects = new();
+            foreach (var configObjectDto in dto.ConfigObjects)
+            {
+                var configObject = new ConfigObject(
+                    configObjectDto.Name,
+                    configObjectDto.FormatLabelId,
+                    configObjectDto.Type,
+                    configObjectDto.Content,
+                    configObjectDto.TempContent);
+                cloneConfigObjects.Add(configObject);
 
-            await _configObjectRepository.AddRangeAsync(configObjects);
+                configObject.SetAppConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+            }
+
+            await _configObjectRepository.AddRangeAsync(cloneConfigObjects);
         }
 
         public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto dto)
@@ -77,7 +84,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             {
                 await RollbackToAsync(rollbackDto);
             }
-
         }
 
         private async Task RollbackAsync(int configObjectId)

@@ -7,8 +7,6 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
     {
         public int ToAppId { get; set; }
 
-        public List<int> EnvironmentClusterIds { get; set; } = new();
-
         public List<AddConfigObjectDto> ConfigObjects { get; set; } = new();
     }
 }

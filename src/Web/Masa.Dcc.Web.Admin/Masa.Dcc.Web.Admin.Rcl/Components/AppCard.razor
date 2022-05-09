@@ -2,8 +2,12 @@
     <MCard Class="hover-pointer" OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="border-radius:10px !important; border: 1px solid #E2E7F4;">
         <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
             <div class="text-h7 text-overflow">@App.Name</div>
-            <MSpacer />
+            <div class="mx-4" style="color:#E2E7F4">|</div>
             <div class="text-h7 text-overflow">@App.Type</div>
+            <MSpacer />
+            <MButton Icon>
+                <MIcon Size="20">mdi-pin</MIcon>
+            </MButton>
         </MCardTitle>
         <MCardSubtitle>
             <div class="text-caption text-overflow">@App.Identity</div>
@@ -11,11 +15,37 @@
         </MCardSubtitle>
         <MCardActions Style="position:absolute;bottom:0;left:0;right:0; padding-bottom:16px !important;">
             <div class="d-flex flex-column" style="overflow:hidden; width:100%;">
-                <div class="mx-2" Style="height:24px;white-space: nowrap;overflow: hidden;">
-                    @foreach (var item in EnvironmentClusters)
-                    {
-                        <EnvClusterChip Style="margin:0 2px 1px 0;" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
-                    }
+                <div class="mx-2 d-flex justify-space-between" Style="height:24px;white-space: nowrap;overflow: hidden;">
+                    <div class="mr-3" style="overflow:hidden">
+                        @foreach (var item in EnvironmentClusters)
+                        {
+                            <EnvClusterChip Style="margin:0 12px 1px 0;" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                        }
+                    </div>
+                    <MMenu Transition="slide-y-transition"
+                           Bottom>
+                        <ActivatorContent>
+                            <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
+                                <MIcon Color="black">mdi-dots-horizontal</MIcon>
+                            </MButton>
+                        </ActivatorContent>
+
+                        <ChildContent>
+                            <MList Dense>
+                                @foreach (var item in EnvironmentClusters)
+                                {
+                                    <MListItem>
+                                        <MListItemContent>
+                                            <MListItemTitle>
+                                                <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
+                                                <span>@item.ClusterName</span>
+                                            </MListItemTitle>
+                                        </MListItemContent>
+                                    </MListItem>
+                                }
+                            </MList>
+                        </ChildContent>
+                    </MMenu>
                 </div>
                 @if (ShowEditInfo)
                 {

@@ -8,17 +8,20 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
         private readonly ILabelRepository _labelRepository;
+        private readonly IAppPinRepository _appPinRepository;
         private readonly ConfigObjectDomainService _configObjectDomainService;
 
         public CommandHandler(
             IPublicConfigRepository publicConfigRepository,
             IConfigObjectRepository configObjectRepository,
             ILabelRepository labelRepository,
+            IAppPinRepository appPinRepository,
             ConfigObjectDomainService configObjectDomainService)
         {
             _publicConfigRepository = publicConfigRepository;
             _configObjectRepository = configObjectRepository;
             _labelRepository = labelRepository;
+            _appPinRepository = appPinRepository;
             _configObjectDomainService = configObjectDomainService;
         }
 
@@ -148,6 +151,23 @@ namespace Masa.Dcc.Service.Admin.Application.App
         public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseCommand command)
         {
             await _configObjectDomainService.RollbackConfigObjectReleaseAsync(command.RollbackConfigObjectRelease);
+        }
+
+        #endregion
+
+        #region App
+
+        public async Task AddAppPinAsync(AddAppPinCommand command)
+        {
+            await _appPinRepository.AddAsync(new AppPin(command.AppId));
+        }
+
+        public async Task RemoveAppPinAsync(RemoveAppPinCommand command)
+        {
+            var appPin = await _appPinRepository.FindAsync(appPin => appPin.Id == command.AppPinId);
+
+            if (appPin != null)
+                await _appPinRepository.RemoveAsync(appPin);
         }
 
         #endregion

@@ -13,6 +13,9 @@
                     {
                         <MListItem Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
                             <ItemContent>
+                                <MListItemIcon Class="d-flex align-center pt-1 mr-0">
+                                    <MIcon Color="@env.Color" Size="12">mdi-circle-slice-8</MIcon>
+                                </MListItemIcon>
                                 <MListItemContent>
                                     <MListItemTitle>@env.Name</MListItemTitle>
                                 </MListItemContent>
@@ -26,7 +29,6 @@
     <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
         <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:102px;background:#fff;padding:0 12px;">
             <MCard Style="padding-right: 150px;">
-
                 <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
                     @foreach (var cluster in _clusters)
                     {
@@ -82,11 +84,6 @@
                                             </div>
                                             @project.Identity
                                         </div>
-                                    </div>
-                                    <MSpacer />
-                                    <div style="display:flex;align-items:center;">
-                                        <MButton Icon StopPropagation Class="mr-1"><MIcon>mdi-pencil</MIcon></MButton>
-                                        <MDivider Vertical Style="height: 20px;margin: 7px 8px 0 8px;" />
                                     </div>
                                 </span>
                             </MExpansionPanelHeader>

@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.BasicAbility.Pm.Model;
-using Masa.Dcc.Caller;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Landscape
@@ -42,13 +39,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     _selectedEnvId = _environments[0].Id;
                     _clusters = await GetClustersByEnvIdAsync(_environments[0].Id);
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("init", true);
-                }
 
-                StateHasChanged();
+                    StateHasChanged();
+                }
             }
         }
 
@@ -74,7 +67,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 var projectIds = _projects.Select(project => project.Id);
                 _apps = await GetAppByProjectIdAsync(projectIds);
             }
-             
+
             return _projects;
         }
 
@@ -83,26 +76,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             var apps = await AppCaller.GetListByProjectIdAsync(projectIds.ToList());
 
             return apps;
-        }
-
-        private async Task<EnvironmentDetailModel> GetEnvAsync(int envId)
-        {
-            _envDetail = await EnvironmentCaller.GetAsync(envId);
-            return _envDetail;
-        }
-
-        private async Task<ProjectDetailModel> GetProjectAsync(int projectId)
-        {
-            _projectDetail = await ProjectCaller.GetAsync(projectId);
-
-            return _projectDetail;
-        }
-
-        private async Task<ClusterDetailModel> GetClusterAsync(int clusterId)
-        {
-            _clusterDetail = await ClusterCaller.GetAsync(clusterId);
-
-            return _clusterDetail;
         }
     }
 }

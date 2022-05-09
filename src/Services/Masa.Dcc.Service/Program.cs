@@ -26,7 +26,8 @@ var redisOptions = builder.Configuration.GetSection("redis").Get<RedisConfigurat
 builder.Services.AddMasaRedisCache(redisOptions)
                 .AddMasaMemoryCache();
 
-builder.Services.AddPmClient("https://pm-service-dev.masastack.com/");
+//builder.Services.AddPmClient("https://pm-service-dev.masastack.com/");
+builder.Services.AddPmClient("http://localhost:19401/");
 
 var app = builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -9,17 +9,20 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
         private readonly ILabelRepository _labelRepository;
+        private readonly IAppPinRepository _appPinRepository;
 
         public QueryHandler(
             IPublicConfigRepository publicConfigRepository,
             IPublicConfigObjectRepository publicConfigObjectRepository,
             IConfigObjectRepository configObjectRepository,
-            ILabelRepository labelRepository)
+            ILabelRepository labelRepository,
+            IAppPinRepository appPinRepository)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
             _configObjectRepository = configObjectRepository;
             _labelRepository = labelRepository;
+            _appPinRepository = appPinRepository;
         }
 
         [EventHandler]
@@ -74,6 +77,13 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease);
 
             query.Result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
+        }
+
+        public async Task GetAppPinAsync(AppPinQuery query)
+        {
+            var appPins = await _appPinRepository.GetListAsync();
+
+            query.Result = appPins.Adapt<List<AppPinDto>>();
         }
     }
 }

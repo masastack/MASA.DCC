@@ -30,11 +30,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Comment("Relation config object Id")]
         public int RelationConfigObjectId { get; private set; }
 
-        private readonly List<PublicConfigObject> _publicConfigObjects = new();
-        public IReadOnlyCollection<PublicConfigObject> PublicConfigObjects => _publicConfigObjects;
+        public PublicConfigObject PublicConfigObject { get; private set; } = null!;
 
-        private readonly List<AppConfigObject> _appConfigObjects = new();
-        public IReadOnlyCollection<AppConfigObject> AppConfigObjects => _appConfigObjects;
+        public AppConfigObject AppConfigObject { get; private set; } = null!;
 
         private readonly List<ConfigObjectRelease> _configObjectRelease = new();
         public IReadOnlyCollection<ConfigObjectRelease> ConfigObjectRelease => _configObjectRelease;
@@ -55,14 +53,14 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             TempContent = tempContent;
         }
 
-        public void AddPublicConfigObject(PublicConfigObject publicConfigObject)
+        public void SetPublicConfigObject(int publicConfigId, int environmentClusterId)
         {
-            _publicConfigObjects.Add(publicConfigObject);
+            PublicConfigObject = new PublicConfigObject(publicConfigId, environmentClusterId);
         }
 
-        public void AddAppConfigObject(AppConfigObject appConfigObject)
+        public void SetAppConfigObject(int appId, int environmentClusterId)
         {
-            _appConfigObjects.Add(appConfigObject);
+            AppConfigObject = new AppConfigObject(appId, environmentClusterId);
         }
 
         public void Revoke()

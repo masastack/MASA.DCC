@@ -2,6 +2,9 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 using Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
+using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
+using Masa.Utils.Caching.Redis.DependencyInjection;
+using Masa.Utils.Caching.Redis.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,10 @@ builder.Services.AddAuthentication(options =>
     options.RequireHttpsMetadata = false;
     options.Audience = "";
 });
+
+var redisOptions = builder.Configuration.GetSection("redis").Get<RedisConfigurationOptions>();
+builder.Services.AddMasaRedisCache(redisOptions)
+                .AddMasaMemoryCache();
 
 builder.Services.AddPmClient("https://pm-service-dev.masastack.com/");
 

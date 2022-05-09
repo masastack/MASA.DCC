@@ -16,23 +16,12 @@
                                 <MListItemContent>
                                     <MListItemTitle>@env.Name</MListItemTitle>
                                 </MListItemContent>
-                                @if (context.Active)
-                                {
-                                    <MListItemIcon Class="d-flex align-center pt-1">
-                                        <MButton StopPropagation Icon>
-                                            <MIcon>mdi-pencil</MIcon>
-                                        </MButton>
-                                    </MListItemIcon>
-                                }
                             </ItemContent>
                         </MListItem>
                     }
                 </MListItemGroup>
             </MList>
         </div>
-        <MButton Width="194" Tile Text Style="height: 54px; border: dashed 1px rgba(0, 0, 0, 0.12); position: fixed; left:24px; right:24px; bottom: 24px;">
-            <MIcon Left>mdi-plus</MIcon>@T("Add Environment")
-        </MButton>
     </MNavigationDrawer>
     <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
         <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:102px;background:#fff;padding:0 12px;">
@@ -51,19 +40,10 @@
                                     <span>@cluster.Name</span>
                                 </ChildContent>
                             </MTooltip>
-                            @if (cluster.EnvironmentClusterId == _selectEnvClusterId.AsT1)
-                            {
-                                <MButton StopPropagation Icon>
-                                    <MIcon>mdi-pencil</MIcon>
-                                </MButton>
-                            }
                         </MTab>
                     }
                 </MTabs>
             </MCard>
-            <MButton Tile Text Style="position:fixed; right:48px; height: 54px; border: dashed 1px rgba(0, 0, 0, 0.12);">
-                <MIcon Left>mdi-plus</MIcon>@T("Add Cluster")
-            </MButton>
         </MRow>
         <div class="rounded-5 mt-6 py-2" style="height:calc(100vh - 234px );background:#fff;display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
             <div>
@@ -121,20 +101,6 @@
                                             </MCol>
                                         }
                                     }
-                                    <MCol Lg="4" Md="6" Sm="12">
-                                        <MRow NoGutters>
-                                            <MCol Class="pr-2">
-                                                <MCard Outlined Style="border-radius:10px !important; display:flex; align-items: center; justify-content: center; border-style: dashed;" MinHeight="162">
-                                                    <MButton Ripple=false Plain><MIcon Left>mdi-plus</MIcon>@T("Add App")</MButton>
-                                                </MCard>
-                                            </MCol>
-                                            <MCol>
-                                                <MCard Outlined Style="border-radius:10px !important; display:flex; align-items: center; justify-content: center; border-style: dashed;" MinHeight="162">
-                                                    <MButton Ripple=false Plain><MIcon Left>mdi-plus</MIcon>@T("Select an existing app")</MButton>
-                                                </MCard>
-                                            </MCol>
-                                        </MRow>
-                                    </MCol>
                                 </MRow>
                                 <div class="d-flex justify-space-between mt-3">
                                     <div>
@@ -147,11 +113,6 @@
                     }
                 </MExpansionPanels>
             </div>
-            <MCard Outlined Class="mb-4 mx-6" Style="padding:0 6px; border-radius:0 !important; display: flex; justify-content: center; align-items: center; border-style: dashed;" MinHeight=54>
-                <MButton Ripple=false Plain>
-                    <MIcon Left>mdi-plus</MIcon>@T("Add Project")
-                </MButton>
-            </MCard>
         </div>
     </div>
 </div>

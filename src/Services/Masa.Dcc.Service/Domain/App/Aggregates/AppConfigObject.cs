@@ -23,11 +23,10 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 
         public ConfigObject? ConfigObject { get; set; }
 
-        public AppConfigObject(int configObjectId, int appId, int environmentClusterId)
+        public AppConfigObject(int appId, int environmentClusterId)
         {
             EnvironmentClusterId = environmentClusterId;
             AppId = appId;
-            ConfigObjectId = configObjectId;
         }
     }
 }

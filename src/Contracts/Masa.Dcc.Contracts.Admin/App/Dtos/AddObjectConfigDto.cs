@@ -3,28 +3,29 @@
 
 namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
-    public class UpdatePublicConfigDto
+    public class AddObjectConfigDto
     {
-        [Required]
-        [Range(1, int.MaxValue)]
-        public int Id { get; set; }
-
         [Required]
         [RegularExpression(@"^[\u4E00-\u9FA5A-Za-z0-9_-.]+$", ErrorMessage = "Please enter [Chinese, English、and - _ . symbols] ")]
         [StringLength(50, MinimumLength = 2)]
         public string Name { get; set; } = "";
 
+        [Required]
+        [RegularExpression(@"^[\u4E00-\u9FA5A-Za-z0-9_-.]+$", ErrorMessage = "Please enter [Chinese, English、and - _ . symbols] ")]
+        [StringLength(50, MinimumLength = 2)]
+        public string Identity { get; set; } = "";
+
         [StringLength(255)]
         public string Description { get; set; } = "";
 
-        public UpdatePublicConfigDto()
+        public AddObjectConfigDto()
         {
         }
 
-        public UpdatePublicConfigDto(int Id, string name, string description = "")
+        public AddObjectConfigDto(string name, string identity, string description = "")
         {
-            this.Id = Id;
             Name = name;
+            Identity = identity;
             Description = description;
         }
     }

@@ -3,7 +3,8 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
-    public record RemoveAppPinCommand(int AppId) : Command
+    public record UpdateBizConfigCommand(UpdateObjectConfigDto UpdateBizConfigDto) : Command
     {
+        public BizConfig Result { get; set; } = null!;
     }
 }

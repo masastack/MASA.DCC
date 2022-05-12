@@ -5,8 +5,8 @@
             <div class="mx-4" style="color:#E2E7F4">|</div>
             <div class="text-h7 text-overflow">@App.Type</div>
             <MSpacer />
-            <MButton Icon>
-                <MIcon Size="20">mdi-pin</MIcon>
+            <MButton Icon OnClick="OnPinClick">
+                <MIcon Color="@(IsPin ? "#FFB547" : "")" Size="20">mdi-pin</MIcon>
             </MButton>
         </MCardTitle>
         <MCardSubtitle>
@@ -22,30 +22,7 @@
                             <EnvClusterChip Style="margin:0 12px 1px 0;" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
                         }
                     </div>
-                    <MMenu Transition="slide-y-transition"
-                           Bottom>
-                        <ActivatorContent>
-                            <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
-                                <MIcon Color="black">mdi-dots-horizontal</MIcon>
-                            </MButton>
-                        </ActivatorContent>
-
-                        <ChildContent>
-                            <MList Dense>
-                                @foreach (var item in EnvironmentClusters)
-                                {
-                                    <MListItem>
-                                        <MListItemContent>
-                                            <MListItemTitle>
-                                                <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
-                                                <span>@item.ClusterName</span>
-                                            </MListItemTitle>
-                                        </MListItemContent>
-                                    </MListItem>
-                                }
-                            </MList>
-                        </ChildContent>
-                    </MMenu>
+                    @ChildContent
                 </div>
                 @if (ShowEditInfo)
                 {
@@ -66,7 +43,7 @@
     public List<EnvironmentClusterModel> EnvironmentClusters { get; set; } = new();
 
     [Parameter]
-    public AppDetailModel App { get; set; } = new();
+    public AppDto App { get; set; } = new();
 
     [Parameter]
     public bool ShowEditInfo { get; set; }
@@ -74,9 +51,18 @@
     [Parameter]
     public string EditInfo { get; set; } = "";
 
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnPinClick { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public bool IsPin { get; set; }
+
     public int Height => ShowEditInfo ? 224 : 162;
 
-    private async Task HandleOnClick()
+    private async Task HandleOnClickAsync()
     {
         if (OnClick.HasDelegate)
         {

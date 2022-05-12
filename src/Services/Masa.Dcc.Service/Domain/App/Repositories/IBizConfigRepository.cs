@@ -3,8 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
 {
-    public interface IAppConfigObjectRepository : IRepository<AppConfigObject>
+    public interface IBizConfigRepository : IRepository<BizConfig>
     {
-        Task<List<AppConfigObject>> GetListByEnvClusterIdAsync(int envClusterId);
     }
 }

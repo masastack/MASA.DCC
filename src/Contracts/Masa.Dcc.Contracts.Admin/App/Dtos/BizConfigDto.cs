@@ -3,12 +3,12 @@
 
 namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
-    public class AddPublicConfigObjectDto
+    public class BizConfigDto : BaseDto
     {
-        public int PublicConfigId { get; set; }
+        public int Id { get; set; }
 
-        public int ConfigObjectId { get; set; }
+        public string Name { get; set; } = "";
 
-        public int EnvironmentClusterId { get; set; }
+        public string Identity { get; set; } = "";
     }
 }

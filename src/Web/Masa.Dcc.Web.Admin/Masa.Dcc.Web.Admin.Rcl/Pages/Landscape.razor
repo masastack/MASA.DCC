@@ -94,7 +94,31 @@
                                         @if (app.ProjectId == project.Id)
                                         {
                                             <MCol Lg="4" Md="6" Sm="12">
-                                                <AppCard App="app" EnvironmentClusters="app.EnvironmentClusters"></AppCard>
+                                                <AppCard OnPinClick="()=>AppPin(app)" IsPin="app.IsPin" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                                    <MMenu Transition="slide-y-transition" Bottom>
+                                                        <ActivatorContent>
+                                                            <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
+                                                                <MIcon Color="black">mdi-dots-horizontal</MIcon>
+                                                            </MButton>
+                                                        </ActivatorContent>
+
+                                                        <ChildContent>
+                                                            <MList Dense>
+                                                                @foreach (var item in app.EnvironmentClusters)
+                                                                {
+                                                                    <MListItem OnClick="()=>NavigateToConfig(item.Id)">
+                                                                        <MListItemContent>
+                                                                            <MListItemTitle>
+                                                                                <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
+                                                                                <span>@item.ClusterName</span>
+                                                                            </MListItemTitle>
+                                                                        </MListItemContent>
+                                                                    </MListItem>
+                                                                }
+                                                            </MList>
+                                                        </ChildContent>
+                                                    </MMenu>
+                                                </AppCard>
                                             </MCol>
                                         }
                                     }

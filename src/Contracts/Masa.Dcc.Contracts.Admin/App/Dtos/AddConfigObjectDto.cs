@@ -24,6 +24,8 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         public int AppId { get; set; }
 
+        public int BizId { get; set; }
+
         [Required]
         [Range(1, int.MaxValue)]
         public int EnvironmentClusterId { get; set; }

@@ -79,10 +79,10 @@
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent>
                                         <MRow>
-                                            @foreach (var app in apps.Where(app => app.IsPined).Take(3))
+                                            @foreach (var app in apps.Where(app => app.IsPinned).Take(3))
                                             {
                                                 <MCol Lg="4" Md="6" Sm="12">
-                                                    <AppCard OnPinClick="()=>AppPinAsync(app)" IsPin="app.IsPined" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                                    <AppCard OnPinClick="()=>AppPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
                                                         <MMenu Transition="slide-y-transition" Bottom>
                                                             <ActivatorContent>
                                                                 <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
@@ -259,7 +259,7 @@
                                 foreach (var app in _projectApps)
                                 {
                                     <MCol Lg="4" Md="6" Sm="12">
-                                        <AppCard OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPined" ShowEditInfo EditInfo="@app.CreationTime.ToString(T("$DateTimeFormat"))" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                        <AppCard OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" ShowEditInfo EditInfo="@app.CreationTime.ToString(T("$DateTimeFormat"))" App="app" EnvironmentClusters="app.EnvironmentClusters">
                                             <MMenu Transition="slide-y-transition" Bottom>
                                                 <ActivatorContent>
                                                     <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
@@ -402,10 +402,10 @@
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent>
                                         <MRow>
-                                            @foreach (var app in apps.Where(app => app.IsPined).Take(3))
+                                            @foreach (var app in apps.Where(app => app.IsPinned).Take(3))
                                             {
                                                 <MCol Lg="4" Md="6" Sm="12">
-                                                    <AppCard OnPinClick="()=>AppPinAsync(app)" IsPin="app.IsPined" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                                    <AppCard OnPinClick="()=>AppPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
                                                         <MMenu Transition="slide-y-transition" Bottom>
                                                             <ActivatorContent>
                                                                 <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">

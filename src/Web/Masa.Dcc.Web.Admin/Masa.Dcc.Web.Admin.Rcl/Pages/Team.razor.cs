@@ -88,10 +88,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              Url = app.Url,
                              SwaggerUrl = app.SwaggerUrl,
                              EnvironmentClusters = app.EnvironmentClusters,
-                             IsPined = newApp != null
+                             IsPinned = newApp != null
                          };
 
-            return result.OrderByDescending(app => app.IsPined).ThenByDescending(app => app.ModificationTime).ToList();
+            return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).ToList();
         }
 
         private async Task SearchProject(KeyboardEventArgs args)
@@ -186,7 +186,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task AppPinAsync(AppDto app)
         {
-            if (app.IsPined)
+            if (app.IsPinned)
             {
                 await AppCaller.RemoveAppPinAsync(app.Id);
             }
@@ -199,7 +199,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task AppDetailPinAsync(AppDto app)
         {
-            if (app.IsPined)
+            if (app.IsPinned)
             {
                 await AppCaller.RemoveAppPinAsync(app.Id);
             }

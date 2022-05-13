@@ -9,17 +9,29 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
         private readonly ILabelRepository _labelRepository;
+        private readonly IAppPinRepository _appPinRepository;
+        private readonly IBizConfigRepository _bizConfigRepository;
+        private readonly IBizConfigObjectRepository _bizConfigObjectRepository;
+        private readonly IAppConfigObjectRepository _appConfigObjectRepository;
 
         public QueryHandler(
             IPublicConfigRepository publicConfigRepository,
             IPublicConfigObjectRepository publicConfigObjectRepository,
             IConfigObjectRepository configObjectRepository,
-            ILabelRepository labelRepository)
+            ILabelRepository labelRepository,
+            IAppPinRepository appPinRepository,
+            IBizConfigRepository bizConfigRepository,
+            IBizConfigObjectRepository bizConfigObjectRepository,
+            IAppConfigObjectRepository appConfigObjectRepository)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
             _configObjectRepository = configObjectRepository;
             _labelRepository = labelRepository;
+            _appPinRepository = appPinRepository;
+            _bizConfigRepository = bizConfigRepository;
+            _bizConfigObjectRepository = bizConfigObjectRepository;
+            _appConfigObjectRepository = appConfigObjectRepository;
         }
 
         [EventHandler]
@@ -40,28 +52,56 @@ namespace Masa.Dcc.Service.Admin.Application.App
         }
 
         [EventHandler]
+        public async Task GetBizConfigsAsync(BizConfigsQuery query)
+        {
+            var result = await _bizConfigRepository.FindAsync(biz => biz.Identity == query.Identity);
+
+            if (result != null)
+            {
+                query.Result = result.Adapt<BizConfigDto>();
+            }
+        }
+
+        [EventHandler]
         public async Task GetConfigObjectsAsync(ConfigObjectsQuery query)
         {
-            var publicConfigObjects = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+            List<ConfigObjectDto> objectConfigObjects = new List<ConfigObjectDto>();
+            if (query.Type == ConfigObjectType.Public)
+            {
+                var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
+            }
+            else if (query.Type == ConfigObjectType.Biz)
+            {
+                var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
+            }
+            else if (query.Type == ConfigObjectType.App)
+            {
+                var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
+            }
+
+
             if (!string.IsNullOrWhiteSpace(query.ConfigObjectName))
             {
-                publicConfigObjects = publicConfigObjects
-                    .Where(publicConfigObject => publicConfigObject.ConfigObject.Name.Contains(query.ConfigObjectName))
+                objectConfigObjects = objectConfigObjects
+                    .Where(publicConfigObject => publicConfigObject.Name.Contains(query.ConfigObjectName))
                     .ToList();
             }
             var labels = await _labelRepository.GetListAsync();
-            query.Result = publicConfigObjects.Select(publicConfigObject => new ConfigObjectDto
+            query.Result = objectConfigObjects.Select(configObject => new ConfigObjectDto
             {
-                Name = publicConfigObject.ConfigObject.Name,
-                FormatName = labels.FirstOrDefault(label => label.Id == publicConfigObject.ConfigObject.FormatLabelId)?.Name ?? "",
-                Type = publicConfigObject.ConfigObject.Type,
-                RelationConfigObjectId = publicConfigObject.ConfigObject.RelationConfigObjectId,
-                Content = publicConfigObject.ConfigObject.Content,
-                TempContent = publicConfigObject.ConfigObject.TempContent,
-                CreationTime = publicConfigObject.ConfigObject.CreationTime,
-                Creator = publicConfigObject.ConfigObject.Creator,
-                ModificationTime = publicConfigObject.ConfigObject.ModificationTime,
-                Modifier = publicConfigObject.ConfigObject.Modifier
+                Name = configObject.Name,
+                FormatName = labels.FirstOrDefault(label => label.Id == configObject.FormatLabelId)?.Name ?? "",
+                Type = configObject.Type,
+                RelationConfigObjectId = configObject.RelationConfigObjectId,
+                Content = configObject.Content,
+                TempContent = configObject.TempContent,
+                CreationTime = configObject.CreationTime,
+                Creator = configObject.Creator,
+                ModificationTime = configObject.ModificationTime,
+                Modifier = configObject.Modifier
             }).ToList();
         }
 
@@ -74,6 +114,14 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease);
 
             query.Result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
+        }
+
+        [EventHandler]
+        public async Task GetAppPinAsync(AppPinQuery query)
+        {
+            var appPins = await _appPinRepository.GetListAsync();
+
+            query.Result = appPins.Adapt<List<AppPinDto>>();
         }
     }
 }

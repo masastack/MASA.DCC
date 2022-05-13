@@ -3,7 +3,8 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
-    public record AddPublicConfigCommand(AddObjectConfigDto AddPublicConfigDto) : Command
+    public record UpdateBizConfigCommand(UpdateObjectConfigDto UpdateBizConfigDto) : Command
     {
+        public BizConfigDto BizConfigDto { get; set; } = new();
     }
 }

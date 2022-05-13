@@ -32,6 +32,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 
         public PublicConfigObject PublicConfigObject { get; private set; } = null!;
 
+        public BizConfigObject BizConfigObject { get; set; } = null!;
+
         public AppConfigObject AppConfigObject { get; private set; } = null!;
 
         private readonly List<ConfigObjectRelease> _configObjectRelease = new();
@@ -56,6 +58,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         public void SetPublicConfigObject(int publicConfigId, int environmentClusterId)
         {
             PublicConfigObject = new PublicConfigObject(publicConfigId, environmentClusterId);
+        }
+
+        public void SetBizConfigObject(int bizId, int environmentClusterId)
+        {
+            BizConfigObject = new BizConfigObject(bizId, environmentClusterId);
         }
 
         public void SetAppConfigObject(int appId, int environmentClusterId)

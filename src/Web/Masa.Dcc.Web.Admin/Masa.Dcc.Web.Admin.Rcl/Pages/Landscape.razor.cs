@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.BasicAbility.Pm.Model;
-using Masa.Dcc.Caller;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Landscape
@@ -28,10 +25,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<EnvironmentModel> _environments = new();
         private List<ClusterModel> _clusters = new();
         private List<ProjectModel> _projects = new();
-        private List<AppDetailModel> _apps = new();
-        private EnvironmentDetailModel _envDetail = new();
-        private ClusterDetailModel _clusterDetail = new();
-        private ProjectDetailModel _projectDetail = new();
+        private List<AppDto> _apps = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -42,13 +36,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     _selectedEnvId = _environments[0].Id;
                     _clusters = await GetClustersByEnvIdAsync(_environments[0].Id);
-                }
-                else
-                {
-                    NavigationManager.NavigateTo("init", true);
-                }
 
-                StateHasChanged();
+                    StateHasChanged();
+                }
             }
         }
 
@@ -74,35 +64,52 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 var projectIds = _projects.Select(project => project.Id);
                 _apps = await GetAppByProjectIdAsync(projectIds);
             }
-             
+
             return _projects;
         }
 
-        private async Task<List<AppDetailModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
+        private async Task<List<AppDto>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
             var apps = await AppCaller.GetListByProjectIdAsync(projectIds.ToList());
+            var appPins = await AppCaller.GetAppPinListAsync();
 
-            return apps;
+            var result = from app in apps
+                         join appPin in appPins on app.Id equals appPin.AppId into appGroup
+                         from newApp in appGroup.DefaultIfEmpty()
+                         select new AppDto
+                         {
+                             ProjectId = app.ProjectId,
+                             Id = app.Id,
+                             Name = app.Name,
+                             Identity = app.Identity,
+                             Description = app.Description,
+                             Type = app.Type,
+                             ServiceType = app.ServiceType,
+                             Url = app.Url,
+                             SwaggerUrl = app.SwaggerUrl,
+                             EnvironmentClusters = app.EnvironmentClusters,
+                             IsPinned = newApp != null
+                         };
+
+            return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).ToList();
         }
 
-        private async Task<EnvironmentDetailModel> GetEnvAsync(int envId)
+        private async Task AppPin(AppDto app)
         {
-            _envDetail = await EnvironmentCaller.GetAsync(envId);
-            return _envDetail;
+            if (app.IsPinned)
+            {
+                await AppCaller.RemoveAppPinAsync(app.Id);
+            }
+            else
+            {
+                await AppCaller.AddAppPinAsync(app.Id);
+            }
+            _apps = await GetAppByProjectIdAsync(new List<int>() { app.ProjectId });
         }
 
-        private async Task<ProjectDetailModel> GetProjectAsync(int projectId)
+        private void NavigateToConfig(int envClusterId)
         {
-            _projectDetail = await ProjectCaller.GetAsync(projectId);
-
-            return _projectDetail;
-        }
-
-        private async Task<ClusterDetailModel> GetClusterAsync(int clusterId)
-        {
-            _clusterDetail = await ClusterCaller.GetAsync(clusterId);
-
-            return _clusterDetail;
+            NavigationManager.NavigateTo($"{envClusterId}/config");
         }
     }
 }

@@ -8,5 +8,15 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
         public AppConfigObjectRepository(DccDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
         {
         }
+
+        public async Task<List<AppConfigObject>> GetListByEnvClusterIdAsync(int envClusterId)
+        {
+            var configData = await Context.Set<AppConfigObject>()
+                .Where(appConfigObject => appConfigObject.EnvironmentClusterId == envClusterId)
+                .Include(appConfigObject => appConfigObject.ConfigObject)
+                .ToListAsync();
+
+            return configData;
+        }
     }
 }

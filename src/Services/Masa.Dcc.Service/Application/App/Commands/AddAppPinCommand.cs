@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
-    public record AddPublicConfigCommand(AddObjectConfigDto AddPublicConfigDto) : Command
+    public record AddAppPinCommand(int AppId) : Command
     {
     }
 }

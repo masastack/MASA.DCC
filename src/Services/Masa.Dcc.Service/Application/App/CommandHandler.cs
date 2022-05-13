@@ -8,17 +8,23 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
         private readonly ILabelRepository _labelRepository;
+        private readonly IAppPinRepository _appPinRepository;
+        private readonly IBizConfigRepository _bizConfigRepository;
         private readonly ConfigObjectDomainService _configObjectDomainService;
 
         public CommandHandler(
             IPublicConfigRepository publicConfigRepository,
             IConfigObjectRepository configObjectRepository,
             ILabelRepository labelRepository,
+            IAppPinRepository appPinRepository,
+            IBizConfigRepository bizConfigRepository,
             ConfigObjectDomainService configObjectDomainService)
         {
             _publicConfigRepository = publicConfigRepository;
             _configObjectRepository = configObjectRepository;
             _labelRepository = labelRepository;
+            _appPinRepository = appPinRepository;
+            _bizConfigRepository = bizConfigRepository;
             _configObjectDomainService = configObjectDomainService;
         }
 
@@ -55,6 +61,35 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
         #endregion
 
+        #region BizConfig
+
+        [EventHandler]
+        public async Task AddBizConfigAsync(AddBizConfigCommand command)
+        {
+            var bizConfig = command.AddBizConfigDto;
+
+            var result = await _bizConfigRepository.AddAsync(new BizConfig(bizConfig.Name, bizConfig.Identity));
+
+            await _bizConfigRepository.UnitOfWork.SaveChangesAsync();
+
+            command.BizConfigDto = result.Adapt<BizConfigDto>();
+        }
+
+        [EventHandler]
+        public async Task UpdateBizConfigAsync(UpdateBizConfigCommand command)
+        {
+            var bizConfig = command.UpdateBizConfigDto;
+            var bizConfigEntity = await _bizConfigRepository.FindAsync(p => p.Id == bizConfig.Id)
+                ?? throw new UserFriendlyException("biz config does not exist");
+
+            bizConfigEntity.Update(bizConfig.Name);
+            var result = await _bizConfigRepository.UpdateAsync(bizConfigEntity);
+
+            command.BizConfigDto = result.Adapt<BizConfigDto>();
+        }
+
+        #endregion
+
         #region ConfigObject
 
         [EventHandler]
@@ -85,6 +120,10 @@ namespace Masa.Dcc.Service.Admin.Application.App
             else if (configObjectDto.Type == ConfigObjectType.App)
             {
                 configObject.SetAppConfigObject(configObjectDto.AppId, configObjectDto.EnvironmentClusterId);
+            }
+            else if (configObjectDto.Type == ConfigObjectType.Biz)
+            {
+                configObject.SetBizConfigObject(configObjectDto.BizId, configObjectDto.EnvironmentClusterId);
             }
 
             command.Result = configObject.Adapt<ConfigObjectDto>();
@@ -148,6 +187,25 @@ namespace Masa.Dcc.Service.Admin.Application.App
         public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseCommand command)
         {
             await _configObjectDomainService.RollbackConfigObjectReleaseAsync(command.RollbackConfigObjectRelease);
+        }
+
+        #endregion
+
+        #region App
+
+        [EventHandler]
+        public async Task AddAppPinAsync(AddAppPinCommand command)
+        {
+            await _appPinRepository.AddAsync(new AppPin(command.AppId));
+        }
+
+        [EventHandler]
+        public async Task RemoveAppPinAsync(RemoveAppPinCommand command)
+        {
+            var appPin = await _appPinRepository.FindAsync(appPin => appPin.AppId == command.AppId);
+
+            if (appPin != null)
+                await _appPinRepository.RemoveAsync(appPin);
         }
 
         #endregion

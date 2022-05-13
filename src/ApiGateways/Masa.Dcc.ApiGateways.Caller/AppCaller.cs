@@ -23,9 +23,26 @@ namespace Masa.Dcc.Caller
 
         public async Task<List<AppDetailModel>> GetListByProjectIdAsync(List<int> projectIds)
         {
-            var result = await CallerProvider.PostAsync<List<int>, List<AppDetailModel>>($"/api/v1/projects/app", projectIds);
+            var result = await CallerProvider.PostAsync<List<int>, List<AppDetailModel>>("/api/v1/projects/app", projectIds);
 
             return result ?? new();
+        }
+
+        public async Task<List<AppPinDto>> GetAppPinListAsync()
+        {
+            var result = await CallerProvider.GetAsync<List<AppPinDto>>($"{_prefix}/pin");
+
+            return result ?? new();
+        }
+
+        public async Task AddAppPinAsync(int appId)
+        {
+            await CallerProvider.PostAsync($"{_prefix}/pin/{appId}", null);
+        }
+
+        public async Task RemoveAppPinAsync(int appId)
+        {
+            await CallerProvider.DeleteAsync($"{_prefix}/pin/{appId}", null);
         }
     }
 }

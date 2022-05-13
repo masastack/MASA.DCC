@@ -1,9 +1,10 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Service.Admin.Application.App.Commands
+namespace Masa.Dcc.Web.Admin.Rcl.Model
 {
-    public record AddPublicConfigCommand(AddObjectConfigDto AddPublicConfigDto) : Command
+    public class AppDto : AppDetailModel
     {
+        public bool IsPinned { get; set; }
     }
 }

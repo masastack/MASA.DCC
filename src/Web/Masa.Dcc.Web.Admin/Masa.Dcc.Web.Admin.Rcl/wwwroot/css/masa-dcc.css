@@ -92,7 +92,7 @@
     /* identical to box height */
     letter-spacing: 0.01em !important;
     /* default color */
-    color: #1B2559;
+    color: #323D6F;
 }
 
 .h7, .text-h7, h7 {
@@ -1093,22 +1093,14 @@ tr:hover {
     margin: 16px 0 !important;
 }
 
-.m-list-item-group .env-list.m-list-item--active {
+.m-list-item-group .env-list.m-list-item--active:not(.m-icon) {
     background: #4318FF !important;
     color: #fff !important;
 }
 
-    .m-list-item-group .env-list.m-list-item--active .m-icon {
-        color: #fff !important;
-    }
-
     .m-list-item-group .env-list.m-list-item--active .m-list-item__title {
         color: #fff !important;
     }
-
-.env-list.m-list-item:not(.env-list.m-list-item--active):hover .m-icon {
-    color: #1B2559 !important;
-}
 
 .env-list.m-list-item:hover .m-list-item__title {
     color: inherit !important;

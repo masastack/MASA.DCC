@@ -4,6 +4,7 @@ using Masa.Dcc.Service.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Masa.Dcc.Service.Admin.Migrations
 {
     [DbContext(typeof(DccDbContext))]
-    partial class DccDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220509084824_AddAppPin")]
+    partial class AddAppPin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,84 +187,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AppSecrets");
-                });
-
-            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.BizConfig", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Creator")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Identity")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Modifier")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BizConfigs");
-                });
-
-            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.BizConfigObject", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("BizConfigId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ConfigObjectId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Creator")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("EnvironmentClusterId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ModificationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("Modifier")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BizConfigId");
-
-                    b.HasIndex("ConfigObjectId")
-                        .IsUnique();
-
-                    b.ToTable("BizConfigObjects");
                 });
 
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", b =>
@@ -539,25 +463,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.Navigation("ConfigObject");
                 });
 
-            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.BizConfigObject", b =>
-                {
-                    b.HasOne("Masa.Dcc.Service.Admin.Domain.App.Aggregates.BizConfig", "BizConfig")
-                        .WithMany("BizConfigObjects")
-                        .HasForeignKey("BizConfigId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", "ConfigObject")
-                        .WithOne("BizConfigObject")
-                        .HasForeignKey("Masa.Dcc.Service.Admin.Domain.App.Aggregates.BizConfigObject", "ConfigObjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BizConfig");
-
-                    b.Navigation("ConfigObject");
-                });
-
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObjectRelease", b =>
                 {
                     b.HasOne("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", null)
@@ -586,17 +491,9 @@ namespace Masa.Dcc.Service.Admin.Migrations
                     b.Navigation("PublicConfig");
                 });
 
-            modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.BizConfig", b =>
-                {
-                    b.Navigation("BizConfigObjects");
-                });
-
             modelBuilder.Entity("Masa.Dcc.Service.Admin.Domain.App.Aggregates.ConfigObject", b =>
                 {
                     b.Navigation("AppConfigObject")
-                        .IsRequired();
-
-                    b.Navigation("BizConfigObject")
                         .IsRequired();
 
                     b.Navigation("ConfigObjectRelease");

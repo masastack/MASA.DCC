@@ -17,7 +17,7 @@ namespace Masa.Dcc.Service.Admin.Services
             var command = new AddBizConfigCommand(dto);
             await eventBus.PublishAsync(command);
 
-            return command.Result;
+            return command.BizConfigDto;
         }
 
         public async Task<BizConfig> UpdateAsync(IEventBus eventBus, UpdateObjectConfigDto dto)

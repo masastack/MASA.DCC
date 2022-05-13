@@ -5,6 +5,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
 {
     public class AppDto : AppDetailModel
     {
-        public bool IsPin { get; set; }
+        public bool IsPined { get; set; }
     }
 }

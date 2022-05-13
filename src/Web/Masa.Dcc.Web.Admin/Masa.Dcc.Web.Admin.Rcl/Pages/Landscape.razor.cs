@@ -88,15 +88,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              Url = app.Url,
                              SwaggerUrl = app.SwaggerUrl,
                              EnvironmentClusters = app.EnvironmentClusters,
-                             IsPin = newApp != null
+                             IsPined = newApp != null
                          };
 
-            return result.OrderByDescending(app => app.IsPin).ThenByDescending(app => app.ModificationTime).ToList();
+            return result.OrderByDescending(app => app.IsPined).ThenByDescending(app => app.ModificationTime).ToList();
         }
 
         private async Task AppPin(AppDto app)
         {
-            if (app.IsPin)
+            if (app.IsPined)
             {
                 await AppCaller.RemoveAppPinAsync(app.Id);
             }

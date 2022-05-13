@@ -94,7 +94,7 @@
                                         @if (app.ProjectId == project.Id)
                                         {
                                             <MCol Lg="4" Md="6" Sm="12">
-                                                <AppCard OnPinClick="()=>AppPin(app)" IsPin="app.IsPin" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                                <AppCard OnPinClick="()=>AppPin(app)" IsPin="app.IsPined" App="app" EnvironmentClusters="app.EnvironmentClusters">
                                                     <MMenu Transition="slide-y-transition" Bottom>
                                                         <ActivatorContent>
                                                             <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">

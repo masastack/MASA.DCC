@@ -72,7 +72,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
             await _bizConfigRepository.UnitOfWork.SaveChangesAsync();
 
-            command.Result = result.Adapt<BizConfigDto>();
+            command.BizConfigDto = result.Adapt<BizConfigDto>();
         }
 
         [EventHandler]
@@ -85,7 +85,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             bizConfigEntity.Update(bizConfig.Name);
             var result = await _bizConfigRepository.UpdateAsync(bizConfigEntity);
 
-            command.Result = result;
+            command.BizConfigDto = result.Adapt<BizConfigDto>();
         }
 
         #endregion

@@ -32,8 +32,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<AppDto> _apps = new();
         private string _projectName = "";
         private ProjectDetailModel _projectDetail = new();
+        private AppDto _appDetail = new();
+        private List<EnvironmentClusterModel> _allAppEnvClusters = new();
         private List<EnvironmentClusterModel> _projectEnvClusters = new();
-        private List<EnvironmentClusterModel> allEnvClusters = new();
+        private List<EnvironmentClusterModel> _allEnvClusters = new();
         private int _selectProjectId;
         private int _appCount;
         private List<AppDto> _projectApps = new();
@@ -41,6 +43,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private bool _isEditBiz;
         private BizConfigDto _bizConfig = new();
         private string _bizConfigName = "";
+        private List<EnvironmentClusterModel> _appEnvs = new();
+        private List<EnvironmentClusterModel> _appEnvClusters = new();
+        private string _selectEnvName = "";
+        private EnvironmentClusterModel _selectCluster = new();
+        private int _selectEnvClusterId;
 
 
         public Guid TeamId { get; set; } = Guid.Empty;
@@ -81,10 +88,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              Url = app.Url,
                              SwaggerUrl = app.SwaggerUrl,
                              EnvironmentClusters = app.EnvironmentClusters,
-                             IsPin = newApp != null
+                             IsPined = newApp != null
                          };
 
-            return result.OrderByDescending(app => app.IsPin).ThenByDescending(app => app.ModificationTime).ToList();
+            return result.OrderByDescending(app => app.IsPined).ThenByDescending(app => app.ModificationTime).ToList();
         }
 
         private async Task SearchProject(KeyboardEventArgs args)
@@ -133,12 +140,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _curTab = value;
             int currentValue = value.ToInt32();
 
+            if (currentValue == 0)
+            {
+                await InitDataAsync();
+            }
+
             if (currentValue == 1)
             {
                 _projectApps = _apps.Where(app => app.ProjectId == _selectProjectId).ToList();
-                await GetProjectAsync(_selectProjectId);
-                allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
-                _projectEnvClusters = allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
+                _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
+                _projectDetail = await GetProjectAsync(_selectProjectId);
+                _projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
 
                 //初始化业务配置
                 var bizConfig = await ConfigObjecCaller.GetBizConfigAsync($"{_projectDetail.Identity}-$biz");
@@ -155,16 +167,26 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _bizConfigName = bizConfig.Name;
             }
 
-            if (currentValue != 2)
+            if (currentValue == 2)
             {
-                _apps = await GetAppByProjectIdAsync(new List<int>() { _selectProjectId });
-                _projectApps = _apps.Where(app => app.ProjectId == _selectProjectId).ToList();
+                _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
+                _allAppEnvClusters = _allEnvClusters.Where(
+                        envCluster => _appDetail.EnvironmentClusters.Select(ec => ec.Id).Contains(envCluster.Id)
+                    ).ToList();
+                _appEnvs = _allAppEnvClusters.DistinctBy(env => env.EnvironmentName).ToList();
+
+                var selectEnvCluster = _allAppEnvClusters.First(envCluster => envCluster.Id == _selectEnvClusterId);
+                _selectEnvName = selectEnvCluster.EnvironmentName;
+                _selectCluster = selectEnvCluster;
+
+                _appEnvClusters = _allAppEnvClusters.Where(envCluster => envCluster.EnvironmentName == _selectEnvName)
+                    .ToList();
             }
         }
 
         private async Task AppPinAsync(AppDto app)
         {
-            if (app.IsPin)
+            if (app.IsPined)
             {
                 await AppCaller.RemoveAppPinAsync(app.Id);
             }
@@ -177,7 +199,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task AppDetailPinAsync(AppDto app)
         {
-            if (app.IsPin)
+            if (app.IsPined)
             {
                 await AppCaller.RemoveAppPinAsync(app.Id);
             }
@@ -189,12 +211,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _projectApps = _apps.Where(app => app.ProjectId == app.ProjectId).ToList();
         }
 
-        private void NavigateToConfig(int envClusterId, AppDto appDto)
+        private async Task NavigateToConfigAsync(int envClusterId, AppDto appDto)
         {
+            _selectEnvClusterId = envClusterId;
             _curTab = 2;
             _teamDetailDisabled = false;
             _configDisabled = false;
             _selectProjectId = appDto.ProjectId;
+
+            _appDetail = appDto;
+
+            await TabValueChangedAsync(2);
         }
 
         private async void UpdateBizAsync()
@@ -210,6 +237,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
                 await PopupService.AlertAsync("修改成功", AlertTypes.Success);
             }
+        }
+
+        private void OnEnvChipClick(string envName)
+        {
+            _selectEnvName = envName;
+            _appEnvClusters = _allAppEnvClusters.Where(envCluster => envCluster.EnvironmentName == envName)
+                    .ToList();
+        }
+
+        private void OnClusterChipClick(EnvironmentClusterModel model)
+        {
+            _selectCluster = model;
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Components.Web;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Team
@@ -48,6 +46,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _selectEnvName = "";
         private EnvironmentClusterModel _selectCluster = new();
         private int _selectEnvClusterId;
+        private List<ConfigObjectDto> _configObjects = new();
 
 
         public Guid TeamId { get; set; } = Guid.Empty;
@@ -246,9 +245,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     .ToList();
         }
 
-        private void OnClusterChipClick(EnvironmentClusterModel model)
+        private async Task OnClusterChipClick(EnvironmentClusterModel model)
         {
             _selectCluster = model;
+
+            await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType.App);
+        }
+
+        private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
+        {
+            _configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, configObjectType, configObjectName);
         }
     }
 }

@@ -25,6 +25,19 @@
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/BlazorComponent/js/blazor-component.js"></script>
     <script src="https://cdn.masastack.com/npm/echarts/5.1.1/echarts.min.js"></script>
+    <script>
+        window.PreventTab = function (element) {
+            element.onkeydown = function (e) {
+                if (e.key == "Tab") {
+                    e.preventDefault();
+                    let start = element.selectionStart;
+                    element.value = element.value.substring(0, start) + "\t" + element.value.substring(start, element.value.length);
+                    element.selectionStart = start + 1;
+                    element.selectionEnd = start + 1;
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

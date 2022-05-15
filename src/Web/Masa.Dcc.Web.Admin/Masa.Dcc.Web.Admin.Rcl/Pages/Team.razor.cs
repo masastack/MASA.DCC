@@ -39,7 +39,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<AppDto> _projectApps = new();
         private string _appName = "";
         private bool _isEditBiz;
-        private BizConfigDto _bizConfig = new();
+        private BizDto _bizDetail = new();
         private string _bizConfigName = "";
         private List<EnvironmentClusterModel> _appEnvs = new();
         private List<EnvironmentClusterModel> _appEnvClusters = new();
@@ -47,6 +47,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private EnvironmentClusterModel _selectCluster = new();
         private int _selectEnvClusterId;
         private List<ConfigObjectDto> _configObjects = new();
+        private ConfigObjectType _configObjectType;
 
 
         public Guid TeamId { get; set; } = Guid.Empty;
@@ -162,7 +163,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     });
                 }
 
-                _bizConfig = bizConfig;
+                _bizDetail = bizConfig.Adapt<BizDto>();
+                _bizDetail.EnvironmentClusters = _projectEnvClusters;
                 _bizConfigName = bizConfig.Name;
             }
 
@@ -177,6 +179,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 var selectEnvCluster = _allAppEnvClusters.First(envCluster => envCluster.Id == _selectEnvClusterId);
                 _selectEnvName = selectEnvCluster.EnvironmentName;
                 _selectCluster = selectEnvCluster;
+                await OnClusterChipClick(selectEnvCluster);
 
                 _appEnvClusters = _allAppEnvClusters.Where(envCluster => envCluster.EnvironmentName == _selectEnvName)
                     .ToList();
@@ -210,15 +213,22 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _projectApps = _apps.Where(app => app.ProjectId == app.ProjectId).ToList();
         }
 
-        private async Task NavigateToConfigAsync(int envClusterId, AppDto appDto)
+        private async Task NavigateToConfigAsync(int envClusterId, AppDto? appDto, ConfigObjectType configObjectType)
         {
+            _configObjectType = configObjectType;
+            _appDetail = configObjectType switch
+            {
+                ConfigObjectType.Biz => _bizDetail.Adapt<AppDto>(),
+                ConfigObjectType.App => appDto!,
+                ConfigObjectType.Public => throw new NotImplementedException(),
+                _ => throw new NotImplementedException(),
+            };
+
             _selectEnvClusterId = envClusterId;
             _curTab = 2;
             _teamDetailDisabled = false;
             _configDisabled = false;
-            _selectProjectId = appDto.ProjectId;
-
-            _appDetail = appDto;
+            //_selectProjectId = appDto!.ProjectId;
 
             await TabValueChangedAsync(2);
         }
@@ -227,34 +237,38 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _isEditBiz = !_isEditBiz;
 
-            if (!_isEditBiz && _bizConfigName != _bizConfig.Name)
+            if (!_isEditBiz && _bizConfigName != _bizDetail.Name)
             {
-                _bizConfig = await ConfigObjecCaller.UpdateBizConfigAsync(new UpdateObjectConfigDto
+                var bizConfigDto = await ConfigObjecCaller.UpdateBizConfigAsync(new UpdateObjectConfigDto
                 {
-                    Id = _bizConfig.Id,
-                    Name = _bizConfig.Name
+                    Id = _bizDetail.Id,
+                    Name = _bizDetail.Name
                 });
+                _bizDetail = bizConfigDto.Adapt<BizDto>();
                 await PopupService.AlertAsync("修改成功", AlertTypes.Success);
             }
         }
 
-        private void OnEnvChipClick(string envName)
+        private async void OnEnvChipClick(string envName)
         {
             _selectEnvName = envName;
             _appEnvClusters = _allAppEnvClusters.Where(envCluster => envCluster.EnvironmentName == envName)
                     .ToList();
+
+            await OnClusterChipClick(_appEnvClusters.First());
         }
 
         private async Task OnClusterChipClick(EnvironmentClusterModel model)
         {
             _selectCluster = model;
 
-            await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType.App);
+            await GetConfigObjectsAsync(_selectCluster.Id, _configObjectType);
         }
 
         private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
         {
             _configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, configObjectType, configObjectName);
+            StateHasChanged();
         }
     }
 }

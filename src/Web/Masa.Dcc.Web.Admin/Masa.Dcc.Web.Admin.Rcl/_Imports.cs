@@ -19,3 +19,4 @@ global using Masa.Dcc.Web.Admin.Rcl.Shared;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Web;
 global using Microsoft.AspNetCore.Http;
+global using Mapster;

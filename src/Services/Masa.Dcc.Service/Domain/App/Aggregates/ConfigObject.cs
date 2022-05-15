@@ -12,8 +12,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         public string Name { get; private set; }
 
         [Comment("Format")]
-        [Range(1, int.MaxValue, ErrorMessage = "Format is required")]
-        public int FormatLabelId { get; private set; }
+        [Required(ErrorMessage = "Format Label Code is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Format Label Code length range is [2-100]")]
+        public string FormatLabelCode { get; private set; }
 
         [Comment("Type")]
         [Range(1, int.MaxValue, ErrorMessage = "Type is required")]
@@ -39,10 +40,10 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         private readonly List<ConfigObjectRelease> _configObjectRelease = new();
         public IReadOnlyCollection<ConfigObjectRelease> ConfigObjectRelease => _configObjectRelease;
 
-        public ConfigObject(string name, int formatLabelId, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0)
+        public ConfigObject(string name, string formatLabelCode, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0)
         {
             Name = name;
-            FormatLabelId = formatLabelId;
+            FormatLabelCode = formatLabelCode;
             Type = type;
             Content = content;
             TempContent = tempContent;

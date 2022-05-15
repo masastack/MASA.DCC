@@ -7,7 +7,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
     {
         public string Name { get; set; } = "";
 
-        public int FormatLabelId { get; set; }
+        public string FormatLabelCode { get; set; } = "";
 
         public string FormatName { get; set; } = "";
 

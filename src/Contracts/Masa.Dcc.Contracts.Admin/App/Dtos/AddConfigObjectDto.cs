@@ -13,8 +13,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public string Name { get => _name; set => _name = value.Trim(); }
 
         [Required]
-        [Range(1, int.MaxValue)]
-        public int FormatLabelId { get; set; }
+        public string FormatLabelCode { get; set; } = "";
 
         [Required]
         [Range(1, int.MaxValue)]

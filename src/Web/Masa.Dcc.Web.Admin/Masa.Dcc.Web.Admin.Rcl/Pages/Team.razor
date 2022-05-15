@@ -94,7 +94,7 @@
                                                                 <MList Dense>
                                                                     @foreach (var item in app.EnvironmentClusters)
                                                                     {
-                                                                        <MListItem OnClick="()=>NavigateToConfigAsync(item.Id,app)">
+                                                                        <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, app, ConfigObjectType.App)">
                                                                             <MListItemContent>
                                                                                 <MListItemTitle>
                                                                                     <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
@@ -189,7 +189,7 @@
                     <MCard Class="mt-6" Height="163">
                         <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
                             <div class="text-h7 text-overflow">
-                                <MTextField Disabled="!_isEditBiz" Dense HideDetails="true" Outlined @bind-Value="@_bizConfig.Name"></MTextField>
+                                <MTextField Disabled="!_isEditBiz" Dense HideDetails="true" Outlined @bind-Value="@_bizDetail.Name"></MTextField>
                             </div>
                             <div class="mx-4" style="color:#E2E7F4">|</div>
                             <div class="text-h7 text-overflow">Biz</div>
@@ -206,7 +206,7 @@
                             </MButton>
                         </MCardTitle>
                         <MCardSubtitle Class="pb-0 pt-2">
-                            <div class="text-caption text-overflow">@_bizConfig.Identity</div>
+                            <div class="text-caption text-overflow">@_bizDetail.Identity</div>
                         </MCardSubtitle>
                         <MCardActions Class="pb-2 d-flex align-end">
                             <div style="overflow:hidden; height:64px; margin:0 16px 0 0;">
@@ -229,7 +229,7 @@
                                     <MList Dense>
                                         @foreach (var item in _projectEnvClusters)
                                         {
-                                            <MListItem>
+                                            <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, null, ConfigObjectType.Biz)">
                                                 <MListItemContent>
                                                     <MListItemTitle>
                                                         <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
@@ -271,7 +271,7 @@
                                                     <MList Dense>
                                                         @foreach (var item in app.EnvironmentClusters)
                                                         {
-                                                            <MListItem OnClick="()=>NavigateToConfigAsync(item.Id,app)">
+                                                            <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, app, ConfigObjectType.App)">
                                                                 <MListItemContent>
                                                                     <MListItemTitle>
                                                                         <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
@@ -368,49 +368,19 @@
                             {
                                 <MExpansionPanel Style="margin-bottom: 12px;">
                                     <MExpansionPanelHeader>
-                                        <span style="display:flex;align-items:center;margin-right:10px;">
-                                            <div class="text-h6 d-flex align-center" @onclick:stopPropagation>
-                                                @configObject.Name
-                                                <span class="ml-3 text-caption">|</span>
-                                                <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
-                                                <MSpacer></MSpacer>
-                                                <MButton><MIcon>mdi-copy</MIcon></MButton>
-                                            </div>
-                                        </span>
+                                        <div class="text-h6 d-flex align-center">
+                                            @configObject.Name
+                                            <span class="ml-3 text-caption">|</span>
+                                            <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
+                                            <MSpacer></MSpacer>
+                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-pencil</MIcon></MButton>
+                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-pencil</MIcon></MButton>
+                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
+                                            <span class="mr-6 text-caption">|</span>
+                                        </div>
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent>
-                                        <MRow>
-                                            @*@foreach (var app in apps.Where(app => app.IsPinned).Take(3))
-                                            {
-                                                <MCol Lg="4" Md="6" Sm="12">
-                                                    <AppCard OnPinClick="()=>AppPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                                        <MMenu Transition="slide-y-transition" Bottom>
-                                                            <ActivatorContent>
-                                                                <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
-                                                                    <MIcon Color="black">mdi-dots-horizontal</MIcon>
-                                                                </MButton>
-                                                            </ActivatorContent>
-
-                                                            <ChildContent>
-                                                                <MList Dense>
-                                                                    @foreach (var item in app.EnvironmentClusters)
-                                                                    {
-                                                                        <MListItem OnClick="()=>NavigateToConfigAsync(item.Id,app)">
-                                                                            <MListItemContent>
-                                                                                <MListItemTitle>
-                                                                                    <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
-                                                                                    <span>@item.ClusterName</span>
-                                                                                </MListItemTitle>
-                                                                            </MListItemContent>
-                                                                        </MListItem>
-                                                                    }
-                                                                </MList>
-                                                            </ChildContent>
-                                                        </MMenu>
-                                                    </AppCard>
-                                                </MCol>
-                                            }*@
-                                        </MRow>
+                                        <JsonEditor @bind-Value="@configObject.Content"></JsonEditor>
                                     </MExpansionPanelContent>
                                 </MExpansionPanel>
                             }

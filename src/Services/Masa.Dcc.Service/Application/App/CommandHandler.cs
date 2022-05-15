@@ -97,8 +97,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
         {
             var configObjectDto = command.ConfigObjectDto;
 
-            var formatLabel = await _labelRepository.FindAsync(label => label.Id == configObjectDto.FormatLabelId);
-            string initialContent = (formatLabel?.Name.ToLower()) switch
+            var formatLabel = await _labelRepository.FindAsync(label => label.Code == configObjectDto.FormatLabelCode);
+            string initialContent = (formatLabel?.Code.ToLower()) switch
             {
                 "json" => "{}",
                 "properties" => "[]",
@@ -107,7 +107,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             ConfigObject configObject = await _configObjectRepository.AddAsync(
                 new ConfigObject(
                     configObjectDto.Name,
-                    configObjectDto.FormatLabelId,
+                    configObjectDto.FormatLabelCode,
                     configObjectDto.Type,
                     initialContent,
                     initialContent)

@@ -36,7 +36,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             {
                 var configObject = new ConfigObject(
                     configObjectDto.Name,
-                    configObjectDto.FormatLabelId,
+                    configObjectDto.FormatLabelCode,
                     configObjectDto.Type,
                     configObjectDto.Content,
                     configObjectDto.TempContent);
@@ -70,7 +70,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             {
                 ConfigObjectType = configObject.Type,
                 Content = configObject.Content,
-                FormatLabelName = (await _labelRepository.FindAsync(label => label.Id == configObject.FormatLabelId))?.Name ?? ""
+                FormatLabelName = (await _labelRepository.FindAsync(label => label.Code == configObject.FormatLabelCode))?.Name ?? ""
             });
         }
 

@@ -19,11 +19,11 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         [Range(1, int.MaxValue)]
         public ConfigObjectType Type { get; set; }
 
-        public int PublicConfigId { get; set; }
-
-        public int AppId { get; set; }
-
-        public int BizId { get; set; }
+        /// <summary>
+        /// appid or publicid or bizid
+        /// </summary>
+        [Required]
+        public int ObjectId { get; set; }
 
         [Required]
         [Range(1, int.MaxValue)]

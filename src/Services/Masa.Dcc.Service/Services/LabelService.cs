@@ -7,7 +7,7 @@ namespace Masa.Dcc.Service.Admin.Services
     {
         public LabelService(IServiceCollection services) : base(services)
         {
-            App.MapGet("api/v1/{typeCode}/label", GetLabelsByTypeCodeAsync);
+            App.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync);
         }
 
         public async Task<List<LabelDto>> GetLabelsByTypeCodeAsync(IEventBus eventBus, string typeCode)

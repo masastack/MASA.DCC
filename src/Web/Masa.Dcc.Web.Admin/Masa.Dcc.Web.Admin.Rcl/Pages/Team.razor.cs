@@ -23,6 +23,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public ConfigObjecCaller ConfigObjecCaller { get; set; } = default!;
 
+        [Inject]
+        public LabelCaller LabelCaller { get; set; } = default!;
+
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
@@ -46,8 +49,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _selectEnvName = "";
         private EnvironmentClusterModel _selectCluster = new();
         private int _selectEnvClusterId;
-        private List<ConfigObjectDto> _configObjects = new();
+        private List<ConfigObjectModel> _configObjects = new();
         private ConfigObjectType _configObjectType;
+        private List<LabelDto> _configObjectFormats = new();
+        private DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
+        private List<StringNumber> _selectEnvClusterIds = new();
 
 
         public Guid TeamId { get; set; } = Guid.Empty;
@@ -213,7 +219,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _projectApps = _apps.Where(app => app.ProjectId == app.ProjectId).ToList();
         }
 
-        private async Task NavigateToConfigAsync(int envClusterId, AppDto? appDto, ConfigObjectType configObjectType)
+        private async Task NavigateToConfigAsync(int envClusterId, ConfigObjectType configObjectType, int? projectId = null, AppDto? appDto = null)
         {
             _configObjectType = configObjectType;
             _appDetail = configObjectType switch
@@ -228,7 +234,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _curTab = 2;
             _teamDetailDisabled = false;
             _configDisabled = false;
-            //_selectProjectId = appDto!.ProjectId;
+
+            if (projectId != null)
+            {
+                _selectProjectId = projectId.Value;
+            }
 
             await TabValueChangedAsync(2);
         }
@@ -245,7 +255,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Name = _bizDetail.Name
                 });
                 _bizDetail = bizConfigDto.Adapt<BizDto>();
-                await PopupService.AlertAsync("修改成功", AlertTypes.Success);
+                await PopupService.ToastSuccessAsync("修改成功");
             }
         }
 
@@ -267,8 +277,100 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
         {
-            _configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, configObjectType, configObjectName);
+            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, configObjectType, configObjectName);
+            _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
             StateHasChanged();
+        }
+
+        private async Task ShowAddConfigObjectModal()
+        {
+            _addConfigObjectModal.Show();
+            _configObjectFormats = await LabelCaller.GetLabelsByTypeCodeAsync("ConfigObjectFormat");
+        }
+
+        private async Task SubmitConfigObject()
+        {
+            string initialContent = (_addConfigObjectModal.Data.FormatLabelCode.ToLower()) switch
+            {
+                "json" => "{}",
+                "properties" => "[]",
+                _ => "",
+            };
+
+            List<AddConfigObjectDto> configObjectDtos = new();
+            for (int i = 0; i < _selectEnvClusterIds.Count; i++)
+            {
+                configObjectDtos.Add(new AddConfigObjectDto
+                {
+                    Name = _addConfigObjectModal.Data.Name,
+                    FormatLabelCode = _addConfigObjectModal.Data.FormatLabelCode,
+                    Type = _configObjectType,
+                    ObjectId = _appDetail.Id,
+                    EnvironmentClusterId = _selectEnvClusterIds[i].AsT1,
+                    Content = initialContent,
+                    TempContent = initialContent
+                });
+            }
+
+            await ConfigObjecCaller.AddConfigObjectAsync(configObjectDtos);
+            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType, "");
+            _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
+
+            _addConfigObjectModal.Hide();
+            _selectEnvClusterIds.Clear();
+        }
+
+        private async Task UpdateJsonConfigAsync(ConfigObjectModel configObject)
+        {
+            configObject.IsEditing = !configObject.IsEditing;
+            if (!configObject.IsEditing)
+            {
+                if (string.IsNullOrWhiteSpace(configObject.Content))
+                {
+                    await PopupService.ToastErrorAsync("json内容不能为空");
+                    return;
+                }
+
+                string indexStr = configObject.Content.Substring(0, 1);
+                switch (indexStr)
+                {
+                    case "[":
+                        try
+                        {
+                            configObject.Content = JArray.Parse(configObject.Content).ToString();
+                        }
+                        catch
+                        {
+                            await PopupService.ToastErrorAsync("json格式有误!");
+                            return;
+                        }
+
+                        break;
+                    case "{":
+                        try
+                        {
+                            configObject.Content = JObject.Parse(configObject.Content).ToString();
+                        }
+                        catch
+                        {
+                            await PopupService.ToastErrorAsync("json格式有误!");
+                            return;
+                        }
+
+                        break;
+                    default:
+                        await PopupService.ToastErrorAsync("json格式有误!");
+                        return;
+                }
+
+                await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                {
+                    ConfigObjectId = configObject.Id,
+                    Content = configObject.Content
+                });
+
+                await PopupService.ToastSuccessAsync("修改成功");
+            }
         }
     }
 }

@@ -1098,9 +1098,9 @@ tr:hover {
     color: #fff !important;
 }
 
-    .m-list-item-group .env-list.m-list-item--active .m-list-item__title {
-        color: #fff !important;
-    }
+.m-list-item-group .env-list.m-list-item--active .m-list-item__title {
+    color: #fff !important;
+}
 
 .env-list.m-list-item:hover .m-list-item__title {
     color: inherit !important;
@@ -1161,4 +1161,8 @@ tr:hover {
 
 .m-menu__content {
     max-width: 636px !important;
+}
+
+.envClusterChip.m-chip:before {
+    background-color: inherit !important;
 }

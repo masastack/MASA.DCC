@@ -92,6 +92,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             var labels = await _labelRepository.GetListAsync();
             query.Result = objectConfigObjects.Select(configObject => new ConfigObjectDto
             {
+                Id = configObject.Id,
                 Name = configObject.Name,
                 FormatName = labels.FirstOrDefault(label => label.Code == configObject.FormatLabelCode)?.Name ?? "",
                 Type = configObject.Type,

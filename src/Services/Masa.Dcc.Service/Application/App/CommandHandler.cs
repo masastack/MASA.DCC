@@ -95,38 +95,35 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task AddConfigObjectAsync(AddConfigObjectCommand command)
         {
-            var configObjectDto = command.ConfigObjectDto;
+            var configObjectDtos = command.ConfigObjectDtos;
 
-            var formatLabel = await _labelRepository.FindAsync(label => label.Code == configObjectDto.FormatLabelCode);
-            string initialContent = (formatLabel?.Code.ToLower()) switch
+            List<ConfigObject> configObjects = new();
+            foreach (var configObjectDto in configObjectDtos)
             {
-                "json" => "{}",
-                "properties" => "[]",
-                _ => "",
-            };
-            ConfigObject configObject = await _configObjectRepository.AddAsync(
-                new ConfigObject(
+                var configObject = new ConfigObject(
                     configObjectDto.Name,
                     configObjectDto.FormatLabelCode,
                     configObjectDto.Type,
-                    initialContent,
-                    initialContent)
-                );
+                    configObjectDto.Content,
+                    configObjectDto.TempContent);
 
-            if (configObjectDto.Type == ConfigObjectType.Public)
-            {
-                configObject.SetPublicConfigObject(configObjectDto.PublicConfigId, configObjectDto.EnvironmentClusterId);
-            }
-            else if (configObjectDto.Type == ConfigObjectType.App)
-            {
-                configObject.SetAppConfigObject(configObjectDto.AppId, configObjectDto.EnvironmentClusterId);
-            }
-            else if (configObjectDto.Type == ConfigObjectType.Biz)
-            {
-                configObject.SetBizConfigObject(configObjectDto.BizId, configObjectDto.EnvironmentClusterId);
+                configObjects.Add(configObject);
+
+                if (configObjectDto.Type == ConfigObjectType.Public)
+                {
+                    configObject.SetPublicConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                }
+                else if (configObjectDto.Type == ConfigObjectType.App)
+                {
+                    configObject.SetAppConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                }
+                else if (configObjectDto.Type == ConfigObjectType.Biz)
+                {
+                    configObject.SetBizConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                }
             }
 
-            command.Result = configObject.Adapt<ConfigObjectDto>();
+            await _configObjectRepository.AddRangeAsync(configObjects);
         }
 
         [EventHandler]

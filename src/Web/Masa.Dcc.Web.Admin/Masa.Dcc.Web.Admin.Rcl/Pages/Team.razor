@@ -94,7 +94,7 @@
                                                                 <MList Dense>
                                                                     @foreach (var item in app.EnvironmentClusters)
                                                                     {
-                                                                        <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, app, ConfigObjectType.App)">
+                                                                        <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, ConfigObjectType.App, app.ProjectId, app)">
                                                                             <MListItemContent>
                                                                                 <MListItemTitle>
                                                                                     <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
@@ -229,7 +229,7 @@
                                     <MList Dense>
                                         @foreach (var item in _projectEnvClusters)
                                         {
-                                            <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, null, ConfigObjectType.Biz)">
+                                            <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, ConfigObjectType.Biz, null, null)">
                                                 <MListItemContent>
                                                     <MListItemTitle>
                                                         <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
@@ -271,7 +271,7 @@
                                                     <MList Dense>
                                                         @foreach (var item in app.EnvironmentClusters)
                                                         {
-                                                            <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, app, ConfigObjectType.App)">
+                                                            <MListItem OnClick="()=>NavigateToConfigAsync(item.Id, ConfigObjectType.App, app.ProjectId, app)">
                                                                 <MListItemContent>
                                                                     <MListItemTitle>
                                                                         <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
@@ -360,27 +360,50 @@
                                 <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                             </PrependInnerContent>
                         </MTextField>
-                        <MButton Class="rounded-pill ml-6" Color="primary"><MIcon Small>mdi-plus </MIcon>@T("Add Config")</MButton>
+                        <MButton Class="rounded-pill ml-6" Color="primary" OnClick="ShowAddConfigObjectModal">
+                            <MIcon Small>mdi-plus </MIcon>@T("Add Config")
+                        </MButton>
                     </div>
                     <div style="margin:0 -24px; height: calc(100vh - 292px); overflow:auto;">
                         <MExpansionPanels Flat Accordion>
                             @foreach (var configObject in _configObjects.Where(config => config.FormatName.ToLower() == "json"))
                             {
                                 <MExpansionPanel Style="margin-bottom: 12px;">
-                                    <MExpansionPanelHeader>
+                                    <MExpansionPanelHeader Context="_">
                                         <div class="text-h6 d-flex align-center">
+                                            <MTooltip Top>
+                                                <ActivatorContent>
+                                                    @if (!configObject.IsPublished)
+                                                    {
+                                                        <MIcon @attributes="@context.Attrs" Class="mr-3" Color="warning">mdi-clipboard-edit-outline</MIcon>
+                                                    }
+                                                </ActivatorContent>
+                                                <ChildContent>
+                                                    <span>有修改</span>
+                                                </ChildContent>
+                                            </MTooltip>
                                             @configObject.Name
                                             <span class="ml-3 text-caption">|</span>
                                             <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
                                             <MSpacer></MSpacer>
-                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-pencil</MIcon></MButton>
-                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-pencil</MIcon></MButton>
+                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateJsonConfigAsync(configObject)">
+                                                @if (!configObject.IsEditing)
+                                                {
+                                                    <MIcon Color="#323D6F">mdi-pencil</MIcon>
+                                                }
+                                                else
+                                                {
+                                                    <MIcon Color="success">mdi-check</MIcon>
+                                                }
+                                            </MButton>
+                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
+                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
                                             <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
                                             <span class="mr-6 text-caption">|</span>
                                         </div>
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent>
-                                        <JsonEditor @bind-Value="@configObject.Content"></JsonEditor>
+                                        <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
                                     </MExpansionPanelContent>
                                 </MExpansionPanel>
                             }
@@ -392,3 +415,35 @@
         </div>
     </MTabItem>
 </MTabsItems>
+
+
+<SheetDialog @bind-Value="_addConfigObjectModal.Visible" Title="@T("Create config object")" Icon="mdi-circle" IconColor="success">
+    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+        <div>
+            <div class="text-h6">Application  |  identity</div>
+            <MTextField Class="mt-12" Dense Label="名称" Outlined @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
+            <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
+                     Label="格式"
+                     MenuProps="props => props.OffsetY = true"
+                     Outlined
+                     Dense
+                     Items="_configObjectFormats"
+                     ItemText="l=>l.Name"
+                     ItemValue="l=>l.Code">
+            </MSelect>
+            <p class="neutral--text" style="font-size:14px; font-weight:700;">选择集群</p>
+            <MChipGroup Multiple Column @bind-Values="_selectEnvClusterIds">
+                @foreach (var item in _appDetail.EnvironmentClusters)
+                {
+                    <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
+                        <div class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</div>&nbsp;&nbsp;
+                        <div style="color:#05CD99">@item.ClusterName</div>
+                    </MChip>
+                }
+            </MChipGroup>
+        </div>
+        <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
+            <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="SubmitConfigObject">提交</MButton>
+        </div>
+    </div>
+</SheetDialog>

@@ -43,5 +43,17 @@ namespace Masa.Dcc.ApiGateways.Caller
 
             return result ?? new();
         }
+
+        public async Task AddConfigObjectAsync(List<AddConfigObjectDto> dtos)
+        {
+            await CallerProvider.PostAsync($"{_prefix}/configObject", dtos);
+        }
+
+        public async Task<ConfigObjectDto> UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)
+        {
+            var result = await CallerProvider.PutAsync<UpdateConfigObjectContentDto, ConfigObjectDto>($"{_prefix}/configObject", dto);
+
+            return result ?? new();
+        }
     }
 }

@@ -14,7 +14,6 @@ public class ClusterService : ServiceBase
         App.MapGet("api/v1/cluster/{Id}", GetAsync);
         App.MapGet("api/v1/envClusters", GetEnvironmentClustersAsync);
         App.MapGet("api/v1/{envId}/cluster", GetListByEnvIdAsync);
-        App.MapGet("api/v1/envClusters/{projectId}", GetEnvironmentClustersByProjectIdAsync);
     }
 
     public async Task<List<ClusterModel>> GetListAsync()
@@ -41,13 +40,6 @@ public class ClusterService : ServiceBase
     public async Task<List<ClusterModel>> GetListByEnvIdAsync(int envId)
     {
         var result = await _pmClient.ClusterService.GetListByEnvIdAsync(envId);
-
-        return result;
-    }
-
-    public async Task<List<EnvironmentClusterModel>> GetEnvironmentClustersByProjectIdAsync(int projectId)
-    {
-        var result = await _pmClient.ClusterService.GetEnvironmentClustersByProjectIdAsync(projectId);
 
         return result;
     }

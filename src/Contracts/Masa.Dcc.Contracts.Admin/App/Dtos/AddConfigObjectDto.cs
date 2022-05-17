@@ -13,18 +13,17 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public string Name { get => _name; set => _name = value.Trim(); }
 
         [Required]
-        [Range(1, int.MaxValue)]
-        public int FormatLabelId { get; set; }
+        public string FormatLabelCode { get; set; } = "";
 
         [Required]
         [Range(1, int.MaxValue)]
         public ConfigObjectType Type { get; set; }
 
-        public int PublicConfigId { get; set; }
-
-        public int AppId { get; set; }
-
-        public int BizId { get; set; }
+        /// <summary>
+        /// appid or publicid or bizid
+        /// </summary>
+        [Required]
+        public int ObjectId { get; set; }
 
         [Required]
         [Range(1, int.MaxValue)]

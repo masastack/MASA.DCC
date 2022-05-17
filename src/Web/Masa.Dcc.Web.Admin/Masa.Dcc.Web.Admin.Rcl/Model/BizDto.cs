@@ -1,9 +1,10 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
+namespace Masa.Dcc.Web.Admin.Rcl.Model
 {
-    public class BaseEntity<Tkey, TUserId> : FullAuditAggregateRoot<Tkey, TUserId>
+    public class BizDto : BizConfigDto
     {
+        public List<EnvironmentClusterModel> EnvironmentClusters { get; set; } = new();
     }
 }

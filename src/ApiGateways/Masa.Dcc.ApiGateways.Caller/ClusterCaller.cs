@@ -41,12 +41,5 @@ namespace Masa.Dcc.Caller
 
             return result ?? new();
         }
-
-        public async Task<List<EnvironmentClusterModel>> GetEnvironmentClustersByProjectIdAsync(int projectId)
-        {
-            var result = await CallerProvider.GetAsync<List<EnvironmentClusterModel>>($"/api/v1/envClusters/{projectId}");
-
-            return result ?? new();
-        }
     }
 }

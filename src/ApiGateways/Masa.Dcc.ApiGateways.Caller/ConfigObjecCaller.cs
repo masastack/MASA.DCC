@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Dcc.Contracts.Admin.App.Enums;
+
 namespace Masa.Dcc.ApiGateways.Caller
 {
     public class ConfigObjecCaller : HttpClientCallerBase
@@ -33,6 +35,25 @@ namespace Masa.Dcc.ApiGateways.Caller
             var bizConfig = await CallerProvider.PutAsync<UpdateObjectConfigDto, BizConfigDto>($"{_prefix}/bizConfig", dto);
 
             return bizConfig ?? new();
+        }
+
+        public async Task<List<ConfigObjectDto>> GetConfigObjectsAsync(int envClusterId, ConfigObjectType type, string configObjectName = "")
+        {
+            var result = await CallerProvider.GetAsync<List<ConfigObjectDto>>($"{_prefix}/configObjects?envClusterId={envClusterId}&type={type}&configObjectName={configObjectName}");
+
+            return result ?? new();
+        }
+
+        public async Task AddConfigObjectAsync(List<AddConfigObjectDto> dtos)
+        {
+            await CallerProvider.PostAsync($"{_prefix}/configObject", dtos);
+        }
+
+        public async Task<ConfigObjectDto> UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)
+        {
+            var result = await CallerProvider.PutAsync<UpdateConfigObjectContentDto, ConfigObjectDto>($"{_prefix}/configObject", dto);
+
+            return result ?? new();
         }
     }
 }

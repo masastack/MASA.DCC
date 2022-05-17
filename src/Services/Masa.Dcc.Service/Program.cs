@@ -1,11 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
-using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
-using Masa.Utils.Caching.Redis.DependencyInjection;
-using Masa.Utils.Caching.Redis.Models;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDaprClient();
@@ -43,7 +38,7 @@ var app = builder.Services
     {
         options.UseDaprEventBus<IntegrationEventLogService>(options => options.UseEventLog<DccDbContext>())
                .UseEventBus()
-               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseSoftDelete())
+               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
                .UseEventLog<DccDbContext>()
                .UseRepository<DccDbContext>();
     })

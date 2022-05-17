@@ -11,7 +11,7 @@ public class ConfigObjectService : ServiceBase
     {
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject/{Id}", RemoveAsync);
-        App.MapGet("api/v1/configObject/{envClusterId}", GetListByEnvClusterIdAsync);
+        App.MapGet("api/v1/configObjects", GetListAsync);
         App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
         App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
         App.MapPut("api/v1/configObject/rollback", RollbackAsync);
@@ -19,9 +19,9 @@ public class ConfigObjectService : ServiceBase
         App.MapGet("api/v1/configObject/release/history", GetConfigObjectReleaseHistoryAsync);
     }
 
-    public async Task AddAsync(IEventBus eventBus, AddConfigObjectDto dto)
+    public async Task AddAsync(IEventBus eventBus, List<AddConfigObjectDto> dtos)
     {
-        await eventBus.PublishAsync(new AddConfigObjectCommand(dto));
+        await eventBus.PublishAsync(new AddConfigObjectCommand(dtos));
     }
 
     public async Task RemoveAsync(IEventBus eventBus, [FromQuery] int Id)
@@ -29,7 +29,7 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(new RemoveConfigObjectCommand(Id));
     }
 
-    public async Task<List<ConfigObjectDto>> GetListByEnvClusterIdAsync(
+    public async Task<List<ConfigObjectDto>> GetListAsync(
         IEventBus eventBus, int envClusterId, ConfigObjectType type, string configObjectName = "")
     {
         var query = new ConfigObjectsQuery(envClusterId, type, configObjectName);

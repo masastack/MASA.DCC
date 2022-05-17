@@ -7,6 +7,11 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Aggregates
     [Index(nameof(TypeCode), nameof(IsDeleted), Name = "IX_TypeCode")]
     public class Label : BaseEntity<int, Guid>
     {
+        [Comment("Code")]
+        [Required(ErrorMessage = "Label code is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Label code length range is [2-100]")]
+        public string Code { get; set; }
+
         [Comment("Name")]
         [Required(ErrorMessage = "Label name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Label name length range is [2-100]")]
@@ -27,8 +32,9 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Aggregates
         [StringLength(255, MinimumLength = 0, ErrorMessage = "Description length range is [0-255]")]
         public string Description { get; private set; }
 
-        public Label(string name, string typeCode, string typeName, string description = "")
+        public Label(string code, string name, string typeCode, string typeName, string description = "")
         {
+            Code = code;
             Name = name;
             TypeCode = typeCode;
             TypeName = typeName;

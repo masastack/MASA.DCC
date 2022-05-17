@@ -5,4 +5,3 @@ global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
 global using Masa.Dcc.Contracts.Admin.Infrastructure.Dtos;
-

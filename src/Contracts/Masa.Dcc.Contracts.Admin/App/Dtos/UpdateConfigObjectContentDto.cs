@@ -8,5 +8,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public int ConfigObjectId { get; set; }
 
         public string Content { get; set; } = "";
+
+        public string FormatLabelCode { get; set; } = "";
     }
 }

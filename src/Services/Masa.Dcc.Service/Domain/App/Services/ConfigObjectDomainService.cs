@@ -29,6 +29,38 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _memoryCacheClient = memoryCacheClient;
         }
 
+        public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)
+        {
+            var configObject = await _configObjectRepository.FindAsync(configObject => configObject.Id == dto.ConfigObjectId)
+                ?? throw new UserFriendlyException("Config object does not exist");
+
+            if (dto.FormatLabelCode.Trim().ToLower() != "properties")
+            {
+                configObject.UpdateContent(dto.Content);
+            }
+            else
+            {
+                var propertyEntities = JsonSerializer.Deserialize<List<ConfigObjectPropertyContentDto>>(configObject.Content) ?? new();
+                var propertyContent = JsonSerializer.Deserialize<ConfigObjectPropertyContentDto>(dto.Content) ?? new();
+
+                var propertyEntity = propertyEntities.FirstOrDefault(prop => prop.Key.ToLower() == propertyContent.Key.ToLower());
+                if (propertyEntity == null)
+                {
+                    propertyEntities.Add(propertyContent);
+                }
+                else
+                {
+                    var index = propertyEntities.IndexOf(propertyEntity);
+                    propertyEntities.RemoveAt(index);
+                    propertyEntities.Insert(index, propertyContent);
+                }
+                var content = JsonSerializer.Serialize(propertyEntities);
+                configObject.UpdateContent(content);
+            }
+
+            await _configObjectRepository.UpdateAsync(configObject);
+        }
+
         public async Task CloneConfigObjectAsync(CloneConfigObjectDto dto)
         {
             List<ConfigObject> cloneConfigObjects = new();
@@ -60,7 +92,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             var configObject = (await _configObjectRepository.FindAsync(
                 configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
 
-            configObject.UpdateContent(dto.Content, dto.Content);
+            configObject.AddContent(dto.Content, dto.Content);
             await _configObjectRepository.UpdateAsync(configObject);
 
             //add redis cache

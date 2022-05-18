@@ -50,7 +50,12 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             RelationConfigObjectId = relationConfigObjectId;
         }
 
-        public void UpdateContent(string content, string tempContent)
+        public void UpdateContent(string content)
+        {
+            Content = content;
+        }
+
+        public void AddContent(string content, string tempContent)
         {
             Content = content;
             TempContent = tempContent;

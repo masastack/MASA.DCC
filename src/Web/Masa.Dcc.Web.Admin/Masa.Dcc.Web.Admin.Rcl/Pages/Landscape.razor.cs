@@ -25,7 +25,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<EnvironmentModel> _environments = new();
         private List<ClusterModel> _clusters = new();
         private List<ProjectModel> _projects = new();
-        private List<AppDto> _apps = new();
+        private List<Model.AppModel> _apps = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -68,15 +68,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             return _projects;
         }
 
-        private async Task<List<AppDto>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
+        private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
             var apps = await AppCaller.GetListByProjectIdAsync(projectIds.ToList());
             var appPins = await AppCaller.GetAppPinListAsync();
 
             var result = from app in apps
                          join appPin in appPins on app.Id equals appPin.AppId into appGroup
-                         from newApp in appGroup.DefaultIfEmpty()
-                         select new AppDto
+                         from newApp in appGroup.DefaultIfEmpty<AppPinDto>()
+                         select new Model.AppModel
                          {
                              ProjectId = app.ProjectId,
                              Id = app.Id,
@@ -94,7 +94,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).ToList();
         }
 
-        private async Task AppPin(AppDto app)
+        private async Task AppPin(Model.AppModel app)
         {
             if (app.IsPinned)
             {

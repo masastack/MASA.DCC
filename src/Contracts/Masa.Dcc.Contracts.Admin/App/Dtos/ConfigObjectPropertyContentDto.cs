@@ -8,7 +8,6 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         [Required]
         public string Key { get; set; } = "";
 
-        [Required]
         public string Value { get; set; } = "";
 
         public string Description { get; set; } = "";

@@ -41,19 +41,20 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             else
             {
                 var propertyEntities = JsonSerializer.Deserialize<List<ConfigObjectPropertyContentDto>>(configObject.Content) ?? new();
-                var propertyContent = JsonSerializer.Deserialize<ConfigObjectPropertyContentDto>(dto.Content) ?? new();
+                if (dto.AddConfigObjectPropertyContent.Any())
+                {
+                    propertyEntities.AddRange(dto.AddConfigObjectPropertyContent);
+                }
+                if (dto.DeleteConfigObjectPropertyContent.Any())
+                {
+                    propertyEntities.RemoveAll(prop => dto.DeleteConfigObjectPropertyContent.Select(prop => prop.Key).Contains(prop.Key));
+                }
+                if (dto.EditConfigObjectPropertyContent.Any())
+                {
+                    propertyEntities.RemoveAll(prop => dto.EditConfigObjectPropertyContent.Select(prop => prop.Key).Contains(prop.Key));
+                    propertyEntities.AddRange(dto.EditConfigObjectPropertyContent);
+                }
 
-                var propertyEntity = propertyEntities.FirstOrDefault(prop => prop.Key.ToLower() == propertyContent.Key.ToLower());
-                if (propertyEntity == null)
-                {
-                    propertyEntities.Add(propertyContent);
-                }
-                else
-                {
-                    var index = propertyEntities.IndexOf(propertyEntity);
-                    propertyEntities.RemoveAt(index);
-                    propertyEntities.Insert(index, propertyContent);
-                }
                 var content = JsonSerializer.Serialize(propertyEntities);
                 configObject.UpdateContent(content);
             }

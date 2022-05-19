@@ -10,5 +10,11 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public string Content { get; set; } = "";
 
         public string FormatLabelCode { get; set; } = "";
+
+        public List<ConfigObjectPropertyContentDto> AddConfigObjectPropertyContent { get; set; } = new();
+
+        public List<ConfigObjectPropertyContentDto> EditConfigObjectPropertyContent { get; set; } = new();
+
+        public List<ConfigObjectPropertyContentDto> DeleteConfigObjectPropertyContent { get; set; } = new();
     }
 }

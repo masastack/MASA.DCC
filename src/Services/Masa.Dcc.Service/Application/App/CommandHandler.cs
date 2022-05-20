@@ -138,15 +138,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentCommand command)
         {
-            var configObjectContentDto = command.ConfigObjectContent;
-            var configObject = await _configObjectRepository.FindAsync(configObject => configObject.Id == configObjectContentDto.ConfigObjectId)
-                ?? throw new UserFriendlyException("Config object does not exist");
-
-            configObject.UpdateContent(configObjectContentDto.Content, configObject.Content);
-
-            var newConfigObject = await _configObjectRepository.UpdateAsync(configObject);
-
-            command.Result = newConfigObject.Adapt<ConfigObjectDto>();
+            await _configObjectDomainService.UpdateConfigObjectContentAsync(command.ConfigObjectContent);
         }
 
         [EventHandler]

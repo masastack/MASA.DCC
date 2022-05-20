@@ -38,12 +38,10 @@ public class ConfigObjectService : ServiceBase
         return query.Result;
     }
 
-    public async Task<ConfigObjectDto> UpdateConfigObjectContentAsync(IEventBus eventBus, UpdateConfigObjectContentDto dto)
+    public async Task UpdateConfigObjectContentAsync(IEventBus eventBus, UpdateConfigObjectContentDto dto)
     {
         var command = new UpdateConfigObjectContentCommand(dto);
         await eventBus.PublishAsync(command);
-
-        return command.Result;
     }
 
     public async Task RevokeConfigObjectAsync(IEventBus eventBus, int Id)

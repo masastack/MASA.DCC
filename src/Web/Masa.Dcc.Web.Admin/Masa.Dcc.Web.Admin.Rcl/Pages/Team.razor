@@ -366,48 +366,144 @@
                     </div>
                     <div style="margin:0 -24px; height: calc(100vh - 292px); overflow:auto;">
                         <MExpansionPanels Flat Accordion>
-                            @foreach (var configObject in _configObjects.Where(config => config.FormatName.ToLower() == "json"))
+                            @foreach (var configObject in _configObjects)
                             {
-                                <MExpansionPanel Style="margin-bottom: 12px;">
-                                    <MExpansionPanelHeader Context="_">
-                                        <div class="text-h6 d-flex align-center">
-                                            <MTooltip Top>
-                                                <ActivatorContent>
-                                                    @if (!configObject.IsPublished)
+                                var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
+                                if (formatLabelCode == "json")
+                                {
+                                    <MExpansionPanel Style="margin-bottom: 12px;">
+                                        <MExpansionPanelHeader Context="_">
+                                            <div class="text-h6 d-flex align-center">
+                                                <MTooltip Top>
+                                                    <ActivatorContent>
+                                                        @if (!configObject.IsPublished)
+                                                        {
+                                                            <MIcon @attributes="@context.Attrs" Class="mr-3" Color="warning">mdi-clipboard-edit</MIcon>
+                                                        }
+                                                    </ActivatorContent>
+                                                    <ChildContent>
+                                                        <span>有修改</span>
+                                                    </ChildContent>
+                                                </MTooltip>
+                                                @configObject.Name
+                                                <span class="ml-3 text-caption">|</span>
+                                                <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
+                                                <MSpacer></MSpacer>
+                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateJsonConfigAsync(configObject)">
+                                                    @if (!configObject.IsEditing)
                                                     {
-                                                        <MIcon @attributes="@context.Attrs" Class="mr-3" Color="warning">mdi-clipboard-edit-outline</MIcon>
+                                                        <MIcon Color="#323D6F">mdi-pencil</MIcon>
                                                     }
-                                                </ActivatorContent>
-                                                <ChildContent>
-                                                    <span>有修改</span>
-                                                </ChildContent>
-                                            </MTooltip>
-                                            @configObject.Name
-                                            <span class="ml-3 text-caption">|</span>
-                                            <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
-                                            <MSpacer></MSpacer>
-                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateJsonConfigAsync(configObject)">
-                                                @if (!configObject.IsEditing)
-                                                {
-                                                    <MIcon Color="#323D6F">mdi-pencil</MIcon>
-                                                }
-                                                else
-                                                {
-                                                    <MIcon Color="success">mdi-check</MIcon>
-                                                }
-                                            </MButton>
-                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
-                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
-                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
-                                            <span class="mr-6 text-caption">|</span>
-                                        </div>
-                                    </MExpansionPanelHeader>
-                                    <MExpansionPanelContent>
-                                        <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
-                                    </MExpansionPanelContent>
-                                </MExpansionPanel>
+                                                    else
+                                                    {
+                                                        <MIcon Color="success">mdi-check</MIcon>
+                                                    }
+                                                </MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
+                                                <span class="mr-6 text-caption">|</span>
+                                            </div>
+                                        </MExpansionPanelHeader>
+                                        <MExpansionPanelContent>
+                                            <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
+                                        </MExpansionPanelContent>
+                                    </MExpansionPanel>
+                                }
+                                else if (formatLabelCode == "properties")
+                                {
+                                    <MExpansionPanel>
+                                        <MExpansionPanelHeader Context="_">
+                                            <div class="text-h6 d-flex align-center">
+                                                @configObject.Name
+                                                <span class="ml-3 text-caption">|</span>
+                                                <sapn class="ml-2 text-caption">@configObject.FormatLabelCode</sapn>
+                                                <MSpacer></MSpacer>
+                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject.Id,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
+                                                <span class="mr-6 text-caption">|</span>
+                                            </div>
+                                        </MExpansionPanelHeader>
+                                        <MExpansionPanelContent>
+                                            <ElevationTab TabIndex="_tabIndex" TabIndexChanged="index=>HandleTabIndexChangedAsync(index,configObject.ConfigObjectPropertyContents)" TabMinWidth="70" ItemsClass="rounded-5" Dense Tabs="@(new List<string>{"表格","文本"})">
+                                                <ElevationTabItem>
+                                                    <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
+                                                        <MDataTable Headers="_headers"
+                                                            SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
+                                                            TItem="ConfigObjectPropertyModel"
+                                                            Items="@configObject.ConfigObjectPropertyContents"
+                                                            Class="table-border-none"
+                                                            HideDefaultFooter>
+                                                            <HeaderColContent Context="header">
+                                                                <span class="text-caption">@header.Text</span>
+                                                            </HeaderColContent>
+                                                            <ItemColContent>
+                                                                @switch (@context.Header.Text)
+                                                                {
+                                                                    case "状态":
+                                                                        if (context.Item.IsPublished)
+                                                                        {
+                                                                            <MIcon Style="margin-bottom:2px;" Size="20" Color="#05CD99">mdi-send</MIcon>
+                                                                            <span style="color:#05CD99;">已发布</span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (context.Item.IsAdded)
+                                                                            {
+                                                                                <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus</MIcon>
+                                                                            }
+                                                                            else if (context.Item.IsEdited)
+                                                                            {
+                                                                                <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-pencil</MIcon>
+                                                                            }
+                                                                            else if (context.Item.IsDeleted)
+                                                                            {
+                                                                                <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-delete</MIcon>
+                                                                            }
+                                                                            <span>未发布</span>
+                                                                        }
+                                                                        break;
+                                                                    case "操作":
+                                                                        <MIcon Class="mr-3 hover-pointer" Size="20" OnClick="()=>ShowPropertyModal(configObject.Id, null, context.Item)">mdi-pencil</MIcon>
+                                                                        <MIcon Class="hover-pointer" Size="20" Color="error" OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">mdi-delete</MIcon>
+                                                                        break;
+                                                                    case "修改时间":
+                                                                        <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
+                                                                        break;
+                                                                    default:
+                                                                        @context.Value
+                                                                        break;
+                                                                }
+                                                            </ItemColContent>
+                                                        </MDataTable>
+                                                    </MCard>
+                                                </ElevationTabItem>
+                                                <ElevationTabItem>
+                                                    <div class="d-flex justify-end">
+                                                        <MButton StopPropagation Icon Class="mr-4">
+                                                            @if (!_selectEditorContent.Disabled)
+                                                            {
+                                                                <MIcon Class="hover-pointer" OnClick="()=>{ _selectEditorContent.Disabled = !_selectEditorContent.Disabled; }" Color="#323D6F">mdi-pencil</MIcon>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MIcon OnClick="()=>TextConvertPropertyAsync(configObject.Id)" Color="success">mdi-check</MIcon>
+                                                            }
+                                                        </MButton>
+                                                    </div>
+                                                    <Editor Disabled="!_selectEditorContent.Disabled" @bind-Value="@_selectEditorContent.Content"></Editor>
+                                                </ElevationTabItem>
+                                            </ElevationTab>
+                                        </MExpansionPanelContent>
+                                    </MExpansionPanel>
+                                }
+                                else
+                                {
+                                    
+                                }
                             }
-
                         </MExpansionPanels>
                     </div>
                 </div>
@@ -443,7 +539,21 @@
             </MChipGroup>
         </div>
         <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-            <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="SubmitConfigObject">提交</MButton>
+            <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="AddConfigObject">提交</MButton>
+        </div>
+    </div>
+</SheetDialog>
+
+<SheetDialog @bind-Value="_propertyConfigModal.Visible" Title="@T("Create config object item")" Icon="mdi-circle" IconColor="success">
+    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+        <div>
+            <div class="text-h6">配置对象  |  Properties</div>
+            <MTextField Class="mt-12" Disabled="_propertyConfigModal.HasValue" Dense Label="Key" Outlined @bind-Value="_propertyConfigModal.Data.Key"></MTextField>
+            <MTextField Dense Label="Value" Outlined @bind-Value="_propertyConfigModal.Data.Value"></MTextField>
+            <MTextarea Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
+        </div>
+        <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
+            <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="SubmitPropertyConfigAsync">提交</MButton>
         </div>
     </div>
 </SheetDialog>

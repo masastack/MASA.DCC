@@ -3,8 +3,8 @@
 
 namespace Masa.Dcc.Web.Admin.Rcl.Model
 {
-    public class BizDto : BizConfigDto
+    public class AppModel : AppDetailModel
     {
-        public List<EnvironmentClusterModel> EnvironmentClusters { get; set; } = new();
+        public bool IsPinned { get; set; }
     }
 }

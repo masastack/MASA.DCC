@@ -4,6 +4,7 @@
 global using System.Net.Http.Json;
 global using System.Reflection;
 global using System.Text.Json;
+global using System.Text.RegularExpressions;
 global using BlazorComponent;
 global using BlazorComponent.I18n;
 global using Mapster;
@@ -21,4 +22,5 @@ global using Masa.Dcc.Web.Admin.Rcl.Shared;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Web;
 global using Microsoft.AspNetCore.Http;
+global using Microsoft.JSInterop;
 global using Newtonsoft.Json.Linq;

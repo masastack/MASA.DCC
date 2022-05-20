@@ -994,10 +994,6 @@ input::-webkit-input-placeholder {
     background-color: #EBF6FF;
 }
 
-tr:hover {
-    background-color: #F6F8FD !important;
-}
-
 .theme--light.m-icon {
     color: #7681AB;
 }

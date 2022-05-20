@@ -3,11 +3,9 @@
 
 namespace Masa.Dcc.Web.Admin.Rcl.Components
 {
-    public partial class JsonEditor
+    public partial class Editor
     {
         private int _lineCount = 1;
-        private int _errorLine;
-        private string _error = "";
 
         public ElementReference Ref { get; set; }
 
@@ -52,26 +50,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Components
 
             var value = args.Value?.ToString() ?? "";
             _lineCount = Regex.Matches(value, "\n").Count + 1;
-
-            try
-            {
-                var obj = JObject.Parse(value);
-                _errorLine = 0;
-            }
-            catch (Exception ex)
-            {
-                _error = ex.Message;
-
-                var match = Regex.Match(ex.Message, "line (?<line>[0-9]*),");
-                if (match.Success)
-                {
-                    _errorLine = int.Parse(match.Groups["line"].Value) - 1;
-                    if (_errorLine == 0)
-                    {
-                        _errorLine = 1;
-                    }
-                }
-            }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)

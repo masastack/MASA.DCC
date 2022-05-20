@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using System.Text;
+
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Team
@@ -30,19 +32,19 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
         private List<ProjectModel> _projects = new();
-        private List<AppDto> _apps = new();
+        private List<Model.AppModel> _apps = new();
         private string _projectName = "";
         private ProjectDetailModel _projectDetail = new();
-        private AppDto _appDetail = new();
+        private Model.AppModel _appDetail = new();
         private List<EnvironmentClusterModel> _allAppEnvClusters = new();
         private List<EnvironmentClusterModel> _projectEnvClusters = new();
         private List<EnvironmentClusterModel> _allEnvClusters = new();
         private int _selectProjectId;
         private int _appCount;
-        private List<AppDto> _projectApps = new();
+        private List<Model.AppModel> _projectApps = new();
         private string _appName = "";
         private bool _isEditBiz;
-        private BizDto _bizDetail = new();
+        private BizModel _bizDetail = new();
         private string _bizConfigName = "";
         private List<EnvironmentClusterModel> _appEnvs = new();
         private List<EnvironmentClusterModel> _appEnvClusters = new();
@@ -52,9 +54,22 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<ConfigObjectModel> _configObjects = new();
         private ConfigObjectType _configObjectType;
         private List<LabelDto> _configObjectFormats = new();
-        private DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
+        private readonly DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
         private List<StringNumber> _selectEnvClusterIds = new();
-
+        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _headers = new()
+        {
+            new (){ Text= "状态", Value= nameof(ConfigObjectPropertyModel.IsPublished)},
+            new (){ Text= "Key", Value= nameof(ConfigObjectPropertyModel.Key)},
+            new (){ Text= "Value", Value= nameof(ConfigObjectPropertyModel.Value)},
+            new (){ Text= "描述", Value= nameof(ConfigObjectPropertyModel.Description)},
+            new (){ Text= "修改人", Value= nameof(ConfigObjectPropertyModel.Modifier) },
+            new (){ Text= "修改时间", Value= nameof(ConfigObjectPropertyModel.ModificationTime) },
+            new (){ Text= "操作"}
+        };
+        private readonly DataModal<ConfigObjectPropertyContentDto, int> _propertyConfigModal = new();
+        private List<ConfigObjectPropertyModel> _selectConfigObjectAllProperties = new();
+        private readonly EditorContentModel _selectEditorContent = new();
+        private StringNumber _tabIndex = 0;
 
         public Guid TeamId { get; set; } = Guid.Empty;
 
@@ -74,15 +89,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _apps = await GetAppByProjectIdAsync(projectIds);
         }
 
-        private async Task<List<AppDto>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
+        private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
             var apps = await AppCaller.GetListByProjectIdAsync(projectIds.ToList());
             var appPins = await AppCaller.GetAppPinListAsync();
 
             var result = from app in apps
                          join appPin in appPins on app.Id equals appPin.AppId into appGroup
-                         from newApp in appGroup.DefaultIfEmpty()
-                         select new AppDto
+                         from newApp in appGroup.DefaultIfEmpty<AppPinDto>()
+                         select new Model.AppModel
                          {
                              ProjectId = app.ProjectId,
                              Id = app.Id,
@@ -169,7 +184,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     });
                 }
 
-                _bizDetail = bizConfig.Adapt<BizDto>();
+                _bizDetail = bizConfig.Adapt<BizModel>();
                 _bizDetail.EnvironmentClusters = _projectEnvClusters;
                 _bizConfigName = bizConfig.Name;
             }
@@ -192,7 +207,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task AppPinAsync(AppDto app)
+        private async Task AppPinAsync(Model.AppModel app)
         {
             if (app.IsPinned)
             {
@@ -205,7 +220,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _apps = await GetAppByProjectIdAsync(new List<int>() { app.ProjectId });
         }
 
-        private async Task AppDetailPinAsync(AppDto app)
+        private async Task AppDetailPinAsync(Model.AppModel app)
         {
             if (app.IsPinned)
             {
@@ -219,12 +234,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _projectApps = _apps.Where(app => app.ProjectId == app.ProjectId).ToList();
         }
 
-        private async Task NavigateToConfigAsync(int envClusterId, ConfigObjectType configObjectType, int? projectId = null, AppDto? appDto = null)
+        private async Task NavigateToConfigAsync(int envClusterId, ConfigObjectType configObjectType, int? projectId = null, Model.AppModel? appDto = null)
         {
             _configObjectType = configObjectType;
             _appDetail = configObjectType switch
             {
-                ConfigObjectType.Biz => _bizDetail.Adapt<AppDto>(),
+                ConfigObjectType.Biz => _bizDetail.Adapt<Model.AppModel>(),
                 ConfigObjectType.App => appDto!,
                 ConfigObjectType.Public => throw new NotImplementedException(),
                 _ => throw new NotImplementedException(),
@@ -254,7 +269,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Id = _bizDetail.Id,
                     Name = _bizDetail.Name
                 });
-                _bizDetail = bizConfigDto.Adapt<BizDto>();
+                _bizDetail = bizConfigDto.Adapt<BizModel>();
                 await PopupService.ToastSuccessAsync("修改成功");
             }
         }
@@ -279,6 +294,67 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, configObjectType, configObjectName);
             _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
+
+            _configObjects.ForEach(config =>
+            {
+                if (config.FormatLabelCode.Trim().ToLower() == "properties")
+                {
+                    var contents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.Content) ?? new();
+                    var tempContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.TempContent) ?? new();
+
+                    var deleted = tempContents.ExceptBy(contents.Select(content => content.Key), content => content.Key)
+                        .Select(deletedContent => new ConfigObjectPropertyModel
+                        {
+                            Key = deletedContent.Key,
+                            Value = deletedContent.Value,
+                            Description = deletedContent.Description,
+                            Modifier = deletedContent.Modifier,
+                            ModificationTime = deletedContent.ModificationTime,
+                            IsDeleted = true
+                        })
+                        .ToList();
+
+                    var added = contents.ExceptBy(tempContents.Select(content => content.Key), content => content.Key)
+                        .Select(addedContent => new ConfigObjectPropertyModel
+                        {
+                            Key = addedContent.Key,
+                            Value = addedContent.Value,
+                            Description = addedContent.Description,
+                            Modifier = addedContent.Description,
+                            ModificationTime = addedContent.ModificationTime,
+                            IsAdded = true
+                        }).ToList();
+
+                    var published = contents
+                        .IntersectBy(tempContents.Select(content => new { content.Key, content.Value }),
+                            content => new { content.Key, content.Value })
+                        .Select(publishedContent => new ConfigObjectPropertyModel
+                        {
+                            Key = publishedContent.Key,
+                            Value = publishedContent.Value,
+                            Description = publishedContent.Description,
+                            Modifier = publishedContent.Modifier,
+                            ModificationTime = publishedContent.ModificationTime,
+                            IsPublished = true
+                        }).ToList();
+
+                    var publishedWithEdited = contents
+                        .IntersectBy(tempContents.Select(content => content.Key), content => content.Key).ToList();
+                    publishedWithEdited.RemoveAll(c => published.Select(d => d.Key).Contains(c.Key));
+                    var edited = publishedWithEdited.Select(editedContent => new ConfigObjectPropertyModel
+                    {
+                        Key = editedContent.Key,
+                        Value = editedContent.Value,
+                        Description = editedContent.Description,
+                        ModificationTime = editedContent.ModificationTime,
+                        Modifier = editedContent.Modifier,
+                        IsEdited = true
+                    }).ToList();
+
+                    config.ConfigObjectPropertyContents = published.Union(deleted).Union(added).Union(edited).ToList();
+                }
+            });
+
             StateHasChanged();
         }
 
@@ -288,7 +364,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _configObjectFormats = await LabelCaller.GetLabelsByTypeCodeAsync("ConfigObjectFormat");
         }
 
-        private async Task SubmitConfigObject()
+        private async Task AddConfigObject()
         {
             string initialContent = (_addConfigObjectModal.Data.FormatLabelCode.ToLower()) switch
             {
@@ -331,7 +407,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     return;
                 }
 
-                string indexStr = configObject.Content.Substring(0, 1);
+                string indexStr = configObject.Content[..1];
                 switch (indexStr)
                 {
                     case "[":
@@ -366,10 +442,190 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObject.Id,
-                    Content = configObject.Content
+                    Content = configObject.Content,
+                    FormatLabelCode = "Json"
                 });
 
                 await PopupService.ToastSuccessAsync("修改成功");
+            }
+        }
+
+        private void ShowPropertyModal(int configObjectId, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
+        {
+            if (models != null)
+            {
+                //add
+                _selectConfigObjectAllProperties = models;
+                _propertyConfigModal.Show(configObjectId);
+            }
+            else if (model != null)
+            {
+                //edit
+                var dto = new ConfigObjectPropertyContentDto
+                {
+                    Key = model.Key,
+                    Value = model.Value,
+                    Description = model.Description,
+                    Modifier = model.Modifier,
+                    ModificationTime = model.ModificationTime
+                };
+                _propertyConfigModal.Show(dto, configObjectId);
+            }
+        }
+
+        private async Task UpdateConfigObjectPropertyContentAsync(ConfigObjectPropertyContentDto dto)
+        {
+            var content = JsonSerializer.Serialize(dto);
+            await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+            {
+                ConfigObjectId = _propertyConfigModal.Depend,
+                Content = content,
+                FormatLabelCode = "Properties"
+            });
+        }
+
+        private async Task SubmitPropertyConfigAsync()
+        {
+            if (_propertyConfigModal.HasValue)
+            {
+                //edit
+                //await UpdateConfigObjectPropertyContentAsync(_propertyConfigModal.Data);
+
+                await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                {
+                    ConfigObjectId = _propertyConfigModal.Depend,
+                    FormatLabelCode = "Properties",
+                    EditConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto> { _propertyConfigModal.Data }
+                });
+            }
+            else
+            {
+                //add
+                if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
+                {
+                    await PopupService.ToastErrorAsync($"key：{_propertyConfigModal.Data.Key} 已存在");
+                }
+                else
+                {
+                    //await UpdateConfigObjectPropertyContentAsync(_propertyConfigModal.Data);
+
+                    await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                    {
+                        ConfigObjectId = _propertyConfigModal.Depend,
+                        FormatLabelCode = "Properties",
+                        AddConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto> { _propertyConfigModal.Data }
+                    });
+                }
+            }
+
+            await GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType);
+            _propertyConfigModal.Hide();
+            await PopupService.ToastSuccessAsync("操作成功");
+        }
+
+        private async Task DeleteConfigObjectPropertyContentAsync(ConfigObjectPropertyModel model, int configObjectId)
+        {
+            await PopupService.ConfirmAsync("删除配置项", $"您确定要删除Key：{model.Key}，Value：{model.Value}的配置项吗？", async args =>
+            {
+                var content = JsonSerializer.Serialize(model);
+                await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                {
+                    ConfigObjectId = configObjectId,
+                    Content = content,
+                    FormatLabelCode = "Properties",
+                    DeleteConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto>() { model }
+                });
+
+                await GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType);
+                await PopupService.ToastSuccessAsync("操作成功");
+            });
+        }
+
+        private void HandleTabIndexChangedAsync(StringNumber index, List<ConfigObjectPropertyModel> configObjectProperties)
+        {
+            _tabIndex = index;
+            if (index == 1)
+            {
+                _selectConfigObjectAllProperties = configObjectProperties;
+                StringBuilder stringBuilder = new();
+                foreach (var property in configObjectProperties)
+                {
+                    stringBuilder.AppendLine($"{property.Key} = {property.Value}");
+                }
+                _selectEditorContent.Content = stringBuilder.ToString();
+                _selectEditorContent.FormatLabelCode = "Properties";
+            }
+        }
+
+        private async Task TextConvertPropertyAsync(int configObjectId)
+        {
+            if (!string.IsNullOrWhiteSpace(_selectEditorContent.Content))
+            {
+                string[] lineDatas = _selectEditorContent.Content.Trim().Split("\n");
+                var errorData = lineDatas.FirstOrDefault(l => !l.Contains('='));
+                if (errorData != null)
+                {
+                    var errorLine = lineDatas.ToList().IndexOf(errorData) + 1;
+                    await PopupService.ToastErrorAsync($"Line：{errorLine} key value must separate by '='");
+                    return;
+                }
+                else
+                {
+                    Dictionary<string, ConfigObjectPropertyContentDto> propertyContents = new();
+                    foreach (var lineData in lineDatas)
+                    {
+                        string[] keyValues = lineData.Trim().Split('=');
+                        propertyContents.Add(keyValues[0], new ConfigObjectPropertyContentDto
+                        {
+                            Key = keyValues[0],
+                            Value = keyValues[1]
+                        });
+                    }
+                    List<ConfigObjectPropertyContentDto> editorPropertyContents = propertyContents.Values.ToList();
+
+
+                    var added = editorPropertyContents.ExceptBy(
+                            _selectConfigObjectAllProperties.Select(content => content.Key),
+                            content => content.Key)
+                        .ToList();
+
+                    var deleted = _selectConfigObjectAllProperties.ExceptBy(
+                            editorPropertyContents.Select(content => content.Key),
+                            content => content.Key)
+                        .ToList()
+                        .Adapt<List<ConfigObjectPropertyContentDto>>();
+
+                    var normalOrEdited = editorPropertyContents.ExceptBy(
+                            added.Select(content => content.Key),
+                            content => content.Key)
+                        .ExceptBy(
+                            deleted.Select(content => content.Key),
+                            content => content.Key
+                        ).ToList()
+                        .Adapt<List<ConfigObjectPropertyContentDto>>();
+
+                    var allPropertiesIntersect = _selectConfigObjectAllProperties.IntersectBy(
+                        normalOrEdited.Select(content => content.Key), content => content.Key);
+
+                    var edit = normalOrEdited.ExceptBy(
+                            allPropertiesIntersect.Select(content => content.Value),
+                            content => content.Value)
+                        .ToList()
+                        .Adapt<List<ConfigObjectPropertyContentDto>>();
+
+                    await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                    {
+                        ConfigObjectId = configObjectId,
+                        FormatLabelCode = "Properties",
+                        DeleteConfigObjectPropertyContent = deleted,
+                        AddConfigObjectPropertyContent = added,
+                        EditConfigObjectPropertyContent = edit
+                    });
+
+                    await GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType);
+                    await PopupService.ToastSuccessAsync("操作成功");
+                    _tabIndex = 0;
+                }
             }
         }
     }

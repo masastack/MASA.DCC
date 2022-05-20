@@ -68,8 +68,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         };
         private readonly DataModal<ConfigObjectPropertyContentDto, int> _propertyConfigModal = new();
         private List<ConfigObjectPropertyModel> _selectConfigObjectAllProperties = new();
-        private EditorContentModel _selectEditorContent = new();
-        private StringNumber _tabIndex;
+        private readonly EditorContentModel _selectEditorContent = new();
+        private StringNumber _tabIndex = 0;
 
         public Guid TeamId { get; set; } = Guid.Empty;
 

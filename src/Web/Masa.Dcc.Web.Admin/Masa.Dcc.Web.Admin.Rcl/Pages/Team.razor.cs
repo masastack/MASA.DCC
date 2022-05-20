@@ -446,7 +446,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     FormatLabelCode = "Json"
                 });
 
-                await PopupService.ToastSuccessAsync("修改成功");
+                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
             }
         }
 
@@ -473,24 +473,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task UpdateConfigObjectPropertyContentAsync(ConfigObjectPropertyContentDto dto)
-        {
-            var content = JsonSerializer.Serialize(dto);
-            await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
-            {
-                ConfigObjectId = _propertyConfigModal.Depend,
-                Content = content,
-                FormatLabelCode = "Properties"
-            });
-        }
-
         private async Task SubmitPropertyConfigAsync()
         {
             if (_propertyConfigModal.HasValue)
             {
-                //edit
-                //await UpdateConfigObjectPropertyContentAsync(_propertyConfigModal.Data);
-
                 await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = _propertyConfigModal.Depend,
@@ -500,15 +486,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else
             {
-                //add
                 if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
                 {
                     await PopupService.ToastErrorAsync($"key：{_propertyConfigModal.Data.Key} 已存在");
                 }
                 else
                 {
-                    //await UpdateConfigObjectPropertyContentAsync(_propertyConfigModal.Data);
-
                     await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                     {
                         ConfigObjectId = _propertyConfigModal.Depend,
@@ -537,7 +520,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
 
                 await GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType);
-                await PopupService.ToastSuccessAsync("操作成功");
+                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
             });
         }
 
@@ -623,8 +606,31 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     });
 
                     await GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType);
-                    await PopupService.ToastSuccessAsync("操作成功");
+                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
                     _tabIndex = 0;
+                }
+            }
+        }
+
+        private async Task UpdateOtherConfigObjectContentAsync(ConfigObjectModel configObject)
+        {
+            configObject.IsEditing = !configObject.IsEditing;
+            if (!configObject.IsEditing)
+            {
+                if (string.IsNullOrWhiteSpace(configObject.Content))
+                {
+                    await PopupService.ToastErrorAsync("内容不能为空");
+                    return;
+                }
+                else
+                {
+                    await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                    {
+                        ConfigObjectId = configObject.Id,
+                        Content = configObject.Content
+                    });
+
+                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
                 }
             }
         }

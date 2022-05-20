@@ -501,7 +501,44 @@
                                 }
                                 else
                                 {
-                                    
+                                    <MExpansionPanel Style="margin-bottom: 12px;">
+                                        <MExpansionPanelHeader Context="_">
+                                            <div class="text-h6 d-flex align-center">
+                                                <MTooltip Top>
+                                                    <ActivatorContent>
+                                                        @if (!configObject.IsPublished)
+                                                        {
+                                                            <MIcon @attributes="@context.Attrs" Class="mr-3" Color="warning">mdi-clipboard-edit</MIcon>
+                                                        }
+                                                    </ActivatorContent>
+                                                    <ChildContent>
+                                                        <span>有修改</span>
+                                                    </ChildContent>
+                                                </MTooltip>
+                                                @configObject.Name
+                                                <span class="ml-3 text-caption">|</span>
+                                                <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
+                                                <MSpacer></MSpacer>
+                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateOtherConfigObjectContentAsync(configObject)">
+                                                    @if (!configObject.IsEditing)
+                                                    {
+                                                        <MIcon Color="#323D6F">mdi-pencil</MIcon>
+                                                    }
+                                                    else
+                                                    {
+                                                        <MIcon Color="success">mdi-check</MIcon>
+                                                    }
+                                                </MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                                <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
+                                                <span class="mr-6 text-caption">|</span>
+                                            </div>
+                                        </MExpansionPanelHeader>
+                                        <MExpansionPanelContent>
+                                            <Editor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></Editor>
+                                        </MExpansionPanelContent>
+                                    </MExpansionPanel>
                                 }
                             }
                         </MExpansionPanels>

@@ -1,0 +1,148 @@
+﻿@page "/{ProjectId:int}/App"
+@inherits MasaCompontentBase;
+
+<div class="d-flex">
+    <MNavigationDrawer Right Permanent Class="rounded-4" Width="300" Style="height: calc(100vh - 180px);">
+        <div style="min-width:300px; padding:16px 24px; display:flex; flex-direction:column; align-items:center; overflow: auto; height: calc(100vh - 218px);">
+            <div style="width:100%;" class="text-body2">
+                <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
+                    <div class="text-h6">@_projectDetail.Name</div>
+                </MRow>
+                <MRow NoGutters Class="mt-6">
+                    @T("AppCount")：@AppCount
+                </MRow>
+                <MRow NoGutters Class="text-caption">
+                    @_projectDetail.Identity
+                </MRow>
+                <MRow NoGutters Class="mt-4">
+                    @_projectDetail.Description
+                </MRow>
+                <MRow NoGutters Class="text-caption mt-6">@T("Creator")</MRow>
+                <MRow NoGutters Class="mt-4">@_projectDetail.Creator</MRow>
+                <MRow NoGutters Class="text-caption mt-6">@T("Participate team")</MRow>
+                <MRow NoGutters Class="mt-4">@_projectDetail.TeamId</MRow>
+                <MRow NoGutters Class="text-caption mt-6">@T("Environment/Cluster")</MRow>
+                <div style="display:flex; flex-direction:column;align-items:start">
+                    @{
+                        var envCluster = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id));
+                        foreach (var item in envCluster)
+                        {
+                            <EnvClusterChip Class="mt-4" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                        }
+                    }
+                </div>
+            </div>
+            <MSpacer></MSpacer>
+            <div style="width:100%" class="text-caption d-flex justify-end mt-6">@_projectDetail.CreationTime.ToString(T("$DateTimeFormat"))</div>
+        </div>
+    </MNavigationDrawer>
+    <div class="pl-6" style="width: calc(100% - 300px);">
+        <div class="bizCard">
+            <h6>业务配置</h6>
+            <MCard Class="mt-6" Height="163">
+                <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
+                    <div class="text-h7 text-overflow">
+                        <MTextField Disabled="!_isEditBiz" Dense HideDetails="true" Outlined @bind-Value="@_bizDetail.Name"></MTextField>
+                    </div>
+                    <div class="mx-4" style="color:#E2E7F4">|</div>
+                    <div class="text-h7 text-overflow">Biz</div>
+                    <MSpacer />
+                    <MButton Icon OnClick="UpdateBizAsync">
+                        @if (!_isEditBiz)
+                        {
+                            <MIcon>mdi-pencil</MIcon>
+                        }
+                        else
+                        {
+                            <MIcon Color="success">mdi-check</MIcon>
+                        }
+                    </MButton>
+                </MCardTitle>
+                <MCardSubtitle Class="pb-0 pt-2">
+                    <div class="text-caption text-overflow">@_bizDetail.Identity</div>
+                </MCardSubtitle>
+                <MCardActions Class="pb-2 d-flex align-end">
+                    <div style="overflow:hidden; height:64px; margin:0 16px 0 0;">
+                        @{
+                            foreach (var item in _projectEnvClusters)
+                            {
+                                <EnvClusterChip Class="mb-3" Style="margin:0 6px;" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                            }
+                        }
+                    </div>
+                    <MSpacer></MSpacer>
+                    <MMenu Transition="slide-y-transition" Bottom>
+                        <ActivatorContent>
+                            <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4; margin:8px 12px;" Icon Width="24" Height="24">
+                                <MIcon Color="black">mdi-dots-horizontal</MIcon>
+                            </MButton>
+                        </ActivatorContent>
+
+                        <ChildContent>
+                            <MList Dense>
+                                @foreach (var item in _projectEnvClusters)
+                                {
+                                    <MListItem OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(_bizDetail.Id, ProjectId,item.Id, ConfigObjectType.Biz))">
+                                        <MListItemContent>
+                                            <MListItemTitle>
+                                                <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
+                                                <span>@item.ClusterName</span>
+                                            </MListItemTitle>
+                                        </MListItemContent>
+                                    </MListItem>
+                                }
+                            </MList>
+                        </ChildContent>
+                    </MMenu>
+                </MCardActions>
+            </MCard>
+        </div>
+        <div class="appCard mt-6">
+            <div class="d-flex justify-space-between">
+                <h6>应用</h6>
+                <MTextField @bind-Value="_appName" OnKeyDown="SearchAppAsync" Style="max-width:300px;" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
+                    <PrependInnerContent>
+                        <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
+                    </PrependInnerContent>
+                </MTextField>
+            </div>
+            <div class="mt-6" style="width:100%; height: calc(100vh - 485px);overflow-y:auto; overflow-x:hidden;">
+                <MRow>
+                    @{
+                        foreach (var app in _apps)
+                        {
+                            <MCol Lg="4" Md="6" Sm="12">
+                                <AppCard OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" ShowEditInfo EditInfo="@app.CreationTime.ToString(T("$DateTimeFormat"))" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                    <MMenu Transition="slide-y-transition" Bottom>
+                                        <ActivatorContent>
+                                            <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
+                                                <MIcon Color="black">mdi-dots-horizontal</MIcon>
+                                            </MButton>
+                                        </ActivatorContent>
+
+                                        <ChildContent>
+                                            <MList Dense>
+                                                @foreach (var item in app.EnvironmentClusters)
+                                                {
+                                                    <MListItem OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, ProjectId, item.Id, ConfigObjectType.App))">
+                                                        <MListItemContent>
+                                                            <MListItemTitle>
+                                                                <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
+                                                                <span>@item.ClusterName</span>
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                }
+                                            </MList>
+                                        </ChildContent>
+                                    </MMenu>
+                                </AppCard>
+                            </MCol>
+                        }
+                    }
+                </MRow>
+            </div>
+        </div>
+    </div>
+</div>
+

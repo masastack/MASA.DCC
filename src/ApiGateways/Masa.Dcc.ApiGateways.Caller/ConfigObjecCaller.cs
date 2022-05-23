@@ -37,9 +37,9 @@ namespace Masa.Dcc.ApiGateways.Caller
             return bizConfig ?? new();
         }
 
-        public async Task<List<ConfigObjectDto>> GetConfigObjectsAsync(int envClusterId, ConfigObjectType type, string configObjectName = "")
+        public async Task<List<ConfigObjectDto>> GetConfigObjectsAsync(int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "")
         {
-            var result = await CallerProvider.GetAsync<List<ConfigObjectDto>>($"{_prefix}/configObjects?envClusterId={envClusterId}&type={type}&configObjectName={configObjectName}");
+            var result = await CallerProvider.GetAsync<List<ConfigObjectDto>>($"{_prefix}/configObjects?envClusterId={envClusterId}&objectId={objectId}&type={type}&configObjectName={configObjectName}");
 
             return result ?? new();
         }

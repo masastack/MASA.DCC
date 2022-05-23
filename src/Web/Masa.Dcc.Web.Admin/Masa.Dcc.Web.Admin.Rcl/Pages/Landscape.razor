@@ -1,139 +1,183 @@
 ﻿@page "/Landscape"
 @inherits MasaCompontentBase
 
-<div class="d-flex">
-    <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 110px );">
-        <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 206px );">
-            <MList Width="194">
-                <MListItemGroup Class="rounded-2"
-                                @bind-Value="_selectedEnvId"
-                                Mandatory
-                                Color="#A3AED0">
-                    @foreach (var env in _environments)
-                    {
-                        <MListItem Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
-                            <ItemContent>
-                                <MListItemIcon Class="d-flex align-center pt-1 mr-0">
-                                    <MIcon Color="@env.Color" Size="12">mdi-circle-slice-8</MIcon>
-                                </MListItemIcon>
-                                <MListItemContent>
-                                    <MListItemTitle>@env.Name</MListItemTitle>
-                                </MListItemContent>
-                            </ItemContent>
-                        </MListItem>
-                    }
-                </MListItemGroup>
-            </MList>
-        </div>
-    </MNavigationDrawer>
-    <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
-        <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:102px;background:#fff;padding:0 12px;">
-            <MCard Style="padding-right: 150px;">
-                <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
-                    @foreach (var cluster in _clusters)
-                    {
-                        StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
-                        <MTab Style="max-width:150px;" Value="envClusterId" OnClick="()=>GetProjectByEnvClusterIdAsync(cluster.EnvironmentClusterId)">
-                            <MTooltip Top>
-                                <ActivatorContent>
-                                    <div class="text-overflow" @attributes="@context.Attrs">@cluster.Name</div>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    <span>@cluster.Name</span>
-                                </ChildContent>
-                            </MTooltip>
-                        </MTab>
-                    }
-                </MTabs>
-            </MCard>
-        </MRow>
-        <div class="rounded-5 mt-6 py-2" style="height:calc(100vh - 234px );background:#fff;display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
-            <div>
-                <MExpansionPanels Flat Accordion>
-                    @foreach (var project in _projects)
-                    {
-                        var apps = _apps.Where(app => app.ProjectId == project.Id && app.EnvironmentClusters.Select(envCluster => envCluster.Id).Contains(_selectEnvClusterId.AsT1)).ToList();
-                        <MExpansionPanel Style="margin-bottom: 12px; border-radius: 20px;">
-                            <MExpansionPanelHeader>
-                                <span style="display:flex;align-items:center;margin-right:10px;">
-                                    <div class="text-h6">
-                                        @project.Name
-                                        <span class="ml-2 text-caption">|</span>
-                                        <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>
-                                        <div class="text-caption d-flex" style="padding:0">
-                                            @{
-                                                string backgroundColor;
-                                                switch (project.LabelName.ToLower())
-                                                {
-                                                    case "basic ability":
-                                                        backgroundColor = "#37D7AD";
-                                                        break;
-                                                    case "ops ability":
-                                                        backgroundColor = "#FFB547";
-                                                        break;
-                                                    case "data factory":
-                                                        backgroundColor = "#5FB9FF";
-                                                        break;
-                                                    default:
-                                                        backgroundColor = "";
-                                                        break;
-                                                }
-                                            }
-                                            <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px;">
-                                                @project.LabelName
-                                            </div>
-                                            @project.Identity
-                                        </div>
-                                    </div>
-                                </span>
-                            </MExpansionPanelHeader>
-                            <MExpansionPanelContent>
-                                <MRow>
-                                    @foreach (var app in apps)
-                                    {
-                                        @if (app.ProjectId == project.Id)
-                                        {
-                                            <MCol Lg="4" Md="6" Sm="12">
-                                                <AppCard OnPinClick="()=>AppPin(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                                    <MMenu Transition="slide-y-transition" Bottom>
-                                                        <ActivatorContent>
-                                                            <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
-                                                                <MIcon Color="black">mdi-dots-horizontal</MIcon>
-                                                            </MButton>
-                                                        </ActivatorContent>
+<CascadingValue Value="this">
+    <MTabs ValueChanged="TabValueChangedAsync" Value="_curTab" SliderColor="transparent" class="pro-nav remover-ripple">
+        <MTab class="text-capitalize pa-0">
+            <ChildContent>
+                <span class="mtab-tab-line mtab-tab-linear-primary"></span>
+                <span class="rounded-circle mtab-tab-indicator mtab-tab-indicator-primary"></span>
+                <span class="mtab-tab-title">@T("Landscape")</span>
+            </ChildContent>
+        </MTab>
+        <MTab class="text-capitalize pa-0" Disabled="_teamDetailDisabled">
+            <ChildContent>
+                <span class="mtab-tab-line @(_curTab.ToInt32()>0?"mtab-tab-linear-primary":"mtab-tab-linear-neutral")"></span>
+                <span class="rounded-circle mtab-tab-indicator @(_curTab.ToInt32()>0?"mtab-tab-indicator-primary":"mtab-tab-indicator-neutral")"></span>
+                <span class="mtab-tab-title">@T("App")</span>
+            </ChildContent>
+        </MTab>
+        <MTab class="text-capitalize pa-0" Disabled="_configDisabled">
+            <ChildContent>
+                <span class="mtab-tab-line @(_curTab.ToInt32()>1?"mtab-tab-linear-primary":"mtab-tab-linear-neutral")"></span>
+                <span class="rounded-circle mtab-tab-indicator @(_curTab.ToInt32()>1?"mtab-tab-indicator-primary":"mtab-tab-indicator-neutral")"></span>
+                <span class="mtab-tab-title">@T("Config")</span>
+            </ChildContent>
+        </MTab>
+    </MTabs>
 
-                                                        <ChildContent>
-                                                            <MList Dense>
-                                                                @foreach (var item in app.EnvironmentClusters)
-                                                                {
-                                                                    <MListItem OnClick="()=>NavigateToConfig(item.Id)">
-                                                                        <MListItemContent>
-                                                                            <MListItemTitle>
-                                                                                <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
-                                                                                <span>@item.ClusterName</span>
-                                                                            </MListItemTitle>
-                                                                        </MListItemContent>
-                                                                    </MListItem>
-                                                                }
-                                                            </MList>
-                                                        </ChildContent>
-                                                    </MMenu>
-                                                </AppCard>
-                                            </MCol>
-                                        }
-                                    }
-                                </MRow>
-                                <div class="d-flex justify-space-between mt-3">
-                                    <div>
-                                        <img style="height:24px;width:24px" src="/img/avatar/9.svg">
-                                    </div>
-                                    <div class="text-caption">编辑于一小时前</div>
-                                </div>
-                            </MExpansionPanelContent>
-                        </MExpansionPanel>
-                    }
-                </MExpansionPanels>
+    <MTabsItems Value="_curTab" class="pt-6">
+        <MTabItem>
+            <div class="d-flex">
+                <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 182px );">
+                    <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 206px );">
+                        <MList Width="194">
+                            <MListItemGroup Class="rounded-2"
+                                            @bind-Value="_selectedEnvId"
+                                            Mandatory
+                                            Color="#A3AED0">
+                                @foreach (var env in _environments)
+                                {
+                                    <MListItem Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
+                                        <ItemContent>
+                                            <MListItemIcon Class="d-flex align-center pt-1 mr-0">
+                                                <MIcon Color="@env.Color" Size="12">mdi-circle-slice-8</MIcon>
+                                            </MListItemIcon>
+                                            <MListItemContent>
+                                                <MListItemTitle>@env.Name</MListItemTitle>
+                                            </MListItemContent>
+                                        </ItemContent>
+                                    </MListItem>
+                                }
+                            </MListItemGroup>
+                        </MList>
+                    </div>
+                </MNavigationDrawer>
+                <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
+                    <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:102px;background:#fff;padding:0 12px;">
+                        <MCard Style="padding-right: 150px;">
+                            <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
+                                @foreach (var cluster in _clusters)
+                                {
+                                    StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
+                                    <MTab Style="max-width:150px;" Value="envClusterId" OnClick="()=>GetProjectByEnvClusterIdAsync(cluster.EnvironmentClusterId)">
+                                        <MTooltip Top>
+                                            <ActivatorContent>
+                                                <div class="text-overflow" @attributes="@context.Attrs">@cluster.Name</div>
+                                            </ActivatorContent>
+                                            <ChildContent>
+                                                <span>@cluster.Name</span>
+                                            </ChildContent>
+                                        </MTooltip>
+                                    </MTab>
+                                }
+                            </MTabs>
+                        </MCard>
+                    </MRow>
+                    <div class="rounded-5 mt-6 py-2" style="height:calc(100vh - 306px );background:#fff;display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
+                        <div>
+                            <MExpansionPanels Flat Accordion>
+                                @foreach (var project in _projects)
+                                {
+                                    var apps = _apps.Where(app => app.ProjectId == project.Id && app.EnvironmentClusters.Select(envCluster => envCluster.Id).Contains(_selectEnvClusterId.AsT1)).ToList();
+                                    <MExpansionPanel Style="margin-bottom: 12px; border-radius: 20px;">
+                                        <MExpansionPanelHeader>
+                                            <span style="display:flex;align-items:center;margin-right:10px;">
+                                                <div class="text-h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id,apps.Count)">
+                                                    @project.Name
+                                                    <span class="ml-2 text-caption">|</span>
+                                                    <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>
+                                                    <div class="text-caption d-flex" style="padding:0">
+                                                        @{
+                                                            string backgroundColor;
+                                                            switch (project.LabelName.ToLower())
+                                                            {
+                                                                case "basic ability":
+                                                                    backgroundColor = "#37D7AD";
+                                                                    break;
+                                                                case "ops ability":
+                                                                    backgroundColor = "#FFB547";
+                                                                    break;
+                                                                case "data factory":
+                                                                    backgroundColor = "#5FB9FF";
+                                                                    break;
+                                                                default:
+                                                                    backgroundColor = "";
+                                                                    break;
+                                                            }
+                                                        }
+                                                        <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px;">
+                                                            @project.LabelName
+                                                        </div>
+                                                        @project.Identity
+                                                    </div>
+                                                </div>
+                                            </span>
+                                        </MExpansionPanelHeader>
+                                        <MExpansionPanelContent>
+                                            <MRow>
+                                                @foreach (var app in apps)
+                                                {
+                                                    @if (app.ProjectId == project.Id)
+                                                    {
+                                                        <MCol Lg="4" Md="6" Sm="12">
+                                                            <AppCard OnPinClick="()=>AppPin(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                                                <MMenu Transition="slide-y-transition" Bottom>
+                                                                    <ActivatorContent>
+                                                                        <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
+                                                                            <MIcon Color="black">mdi-dots-horizontal</MIcon>
+                                                                        </MButton>
+                                                                    </ActivatorContent>
+
+                                                                    <ChildContent>
+                                                                        <MList Dense>
+                                                                            @foreach (var item in app.EnvironmentClusters)
+                                                                            {
+                                                                                <MListItem OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, item.Id, ConfigObjectType.App))">
+                                                                                    <MListItemContent>
+                                                                                        <MListItemTitle>
+                                                                                            <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
+                                                                                            <span>@item.ClusterName</span>
+                                                                                        </MListItemTitle>
+                                                                                    </MListItemContent>
+                                                                                </MListItem>
+                                                                            }
+                                                                        </MList>
+                                                                    </ChildContent>
+                                                                </MMenu>
+                                                            </AppCard>
+                                                        </MCol>
+                                                    }
+                                                }
+                                            </MRow>
+                                            <div class="d-flex justify-space-between mt-3">
+                                                <div>
+                                                    <img style="height:24px;width:24px" src="/img/avatar/9.svg">
+                                                </div>
+                                                <div class="text-caption">编辑于一小时前</div>
+                                            </div>
+                                        </MExpansionPanelContent>
+                                    </MExpansionPanel>
+                                }
+                            </MExpansionPanels>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
+        </MTabItem>
+        <MTabItem>
+            <Masa.Dcc.Web.Admin.Rcl.Pages.App ProjectId="_appModel.ProjectId"
+                                              AppCount="_appModel.AppCount">
+            </Masa.Dcc.Web.Admin.Rcl.Pages.App>
+        </MTabItem>
+        <MTabItem>
+            <CascadingValue Value="_configModel">
+                <Config AppId="@_configModel.AppId"
+                        ConfigObjectType="@_configModel.ConfigObjectType"
+                        EnvironmentClusterId="@_configModel.EnvironmentClusterId"
+                        ProjectIdentity="@_configModel.ProjectIdentity">
+                </Config>
+            </CascadingValue>
+        </MTabItem>
+    </MTabsItems>
+</CascadingValue>

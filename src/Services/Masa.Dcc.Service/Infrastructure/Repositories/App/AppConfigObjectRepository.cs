@@ -9,10 +9,10 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
         {
         }
 
-        public async Task<List<AppConfigObject>> GetListByEnvClusterIdAsync(int envClusterId)
+        public async Task<List<AppConfigObject>> GetListByEnvClusterIdAsync(int envClusterId, int appId)
         {
             var configData = await Context.Set<AppConfigObject>()
-                .Where(appConfigObject => appConfigObject.EnvironmentClusterId == envClusterId)
+                .Where(appConfigObject => appConfigObject.EnvironmentClusterId == envClusterId && appConfigObject.AppId == appId)
                 .Include(appConfigObject => appConfigObject.ConfigObject)
                 .ToListAsync();
 

@@ -20,12 +20,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public AppCaller AppCaller { get; set; } = default!;
 
+        private StringNumber _curTab = 0;
+        private bool _teamDetailDisabled = true;
+        private bool _configDisabled = true;
         private StringNumber _selectedEnvId = 0;
         private StringNumber _selectEnvClusterId = 0;
         private List<EnvironmentModel> _environments = new();
         private List<ClusterModel> _clusters = new();
         private List<ProjectModel> _projects = new();
         private List<Model.AppModel> _apps = new();
+        private ConfigComponentModel _configModel = new();
+        private AppComponentModel _appModel = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -40,6 +45,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     StateHasChanged();
                 }
             }
+        }
+
+        private async Task TabValueChangedAsync(StringNumber value)
+        {
+            _curTab = value;
+
+            StateHasChanged();
         }
 
         private async Task<List<ClusterModel>> GetClustersByEnvIdAsync(int envId, bool isFetchProjects = true)
@@ -70,7 +82,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
-            var apps = await AppCaller.GetListByProjectIdAsync(projectIds.ToList());
+            var apps = await AppCaller.GetListByProjectIdsAsync(projectIds.ToList());
             var appPins = await AppCaller.GetAppPinListAsync();
 
             var result = from app in apps
@@ -107,9 +119,22 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _apps = await GetAppByProjectIdAsync(new List<int>() { app.ProjectId });
         }
 
-        private void NavigateToConfig(int envClusterId)
+        private async Task NavigateToAppAsync(int projectId, int appCount)
         {
-            NavigationManager.NavigateTo($"{envClusterId}/config");
+            _teamDetailDisabled = false;
+            _appModel = new(projectId, appCount);
+
+            await TabValueChangedAsync(1);
+        }
+
+        public async Task NavigateToConfigAsync(NavigateToConfigModel model)
+        {
+            _teamDetailDisabled = false;
+            _configDisabled = false;
+            var project = _projects.First(project => project.Id == model.ProjectId);
+            _configModel = new(model.AppId, model.EnvClusterId, model.ConfigObjectType, project.Identity);
+
+            await TabValueChangedAsync(2);
         }
     }
 }

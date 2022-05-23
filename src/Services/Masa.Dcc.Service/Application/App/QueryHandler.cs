@@ -68,17 +68,17 @@ namespace Masa.Dcc.Service.Admin.Application.App
             List<ConfigObjectDto> objectConfigObjects = new List<ConfigObjectDto>();
             if (query.Type == ConfigObjectType.Public)
             {
-                var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
             }
             else if (query.Type == ConfigObjectType.Biz)
             {
-                var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
             }
             else if (query.Type == ConfigObjectType.App)
             {
-                var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
             }
 

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using System.Text;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Team
@@ -91,7 +89,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
-            var apps = await AppCaller.GetListByProjectIdAsync(projectIds.ToList());
+            var apps = await AppCaller.GetListByProjectIdsAsync(projectIds.ToList());
             var appPins = await AppCaller.GetAppPinListAsync();
 
             var result = from app in apps
@@ -200,10 +198,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 var selectEnvCluster = _allAppEnvClusters.First(envCluster => envCluster.Id == _selectEnvClusterId);
                 _selectEnvName = selectEnvCluster.EnvironmentName;
                 _selectCluster = selectEnvCluster;
-                await OnClusterChipClick(selectEnvCluster);
 
                 _appEnvClusters = _allAppEnvClusters.Where(envCluster => envCluster.EnvironmentName == _selectEnvName)
                     .ToList();
+
+                await OnClusterChipClick(selectEnvCluster);
             }
         }
 
@@ -258,7 +257,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             await TabValueChangedAsync(2);
         }
 
-        private async void UpdateBizAsync()
+        private async Task UpdateBizAsync()
         {
             _isEditBiz = !_isEditBiz;
 
@@ -292,7 +291,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
         {
-            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, configObjectType, configObjectName);
+            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id, configObjectType, configObjectName);
             _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
 
             _configObjects.ForEach(config =>
@@ -389,7 +388,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
 
             await ConfigObjecCaller.AddConfigObjectAsync(configObjectDtos);
-            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType, "");
+            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(_selectEnvClusterId, _appDetail.Id, _configObjectType, "");
             _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
 
             _addConfigObjectModal.Hide();

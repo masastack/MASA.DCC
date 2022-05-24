@@ -15,9 +15,12 @@ public class PublicConfigService : ServiceBase
         App.MapGet("api/v1/publicConfig", GetListAsync);
     }
 
-    public async Task AddAsync(IEventBus eventBus, AddObjectConfigDto dto)
+    public async Task<PublicConfigDto> AddAsync(IEventBus eventBus, AddObjectConfigDto dto)
     {
-        await eventBus.PublishAsync(new AddPublicConfigCommand(dto));
+        var command = new AddPublicConfigCommand(dto);
+        await eventBus.PublishAsync(command);
+
+        return command.PublicConfigDto;
     }
 
     public async Task UpdateAsync(IEventBus eventBus, UpdateObjectConfigDto dto)

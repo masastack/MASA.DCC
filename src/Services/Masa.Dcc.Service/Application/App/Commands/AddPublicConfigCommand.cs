@@ -5,5 +5,6 @@ namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
     public record AddPublicConfigCommand(AddObjectConfigDto AddPublicConfigDto) : Command
     {
+        public PublicConfigDto PublicConfigDto { get; set; } = new();
     }
 }

@@ -17,6 +17,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Parameter]
         public string ProjectIdentity { get; set; } = default!;
 
+        [Parameter]
+        public int ProjectId { get; set; }
+
         [Inject]
         public ConfigObjecCaller ConfigObjecCaller { get; set; } = default!;
 
@@ -28,6 +31,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         [Inject]
         public AppCaller AppCaller { get; set; } = default!;
+
+        [Inject]
+        public ProjectCaller ProjectCaller { get; set; } = default!;
+
+        [Inject]
+        public ClusterCaller ClusterCaller { get; set; } = default!;
 
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();
@@ -53,28 +62,53 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private readonly DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
         private List<LabelDto> _configObjectFormats = new();
         private List<StringNumber> _selectEnvClusterIds = new();
+        private ProjectDetailModel _projectDetail = new();
+        private List<EnvironmentClusterModel> _allEnvClusters = new();
 
-        protected override async Task OnParametersSetAsync()
+        public async Task InitDataAsync()
         {
-            await InitDataAsync();
-        }
-
-        private async Task InitDataAsync()
-        {
-            _appDetail = ConfigObjectType switch
+            switch (ConfigObjectType)
             {
-                ConfigObjectType.Biz => (await ConfigObjecCaller.GetBizConfigAsync($"{ProjectIdentity}-$biz")).Adapt<AppDetailModel>(),
-                ConfigObjectType.App => await AppCaller.GetWithEnvironmentClusterAsync(AppId),
-                ConfigObjectType.Public => throw new NotImplementedException(),
-                _ => throw new NotImplementedException(),
-            };
+                case ConfigObjectType.Public:
+                    _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
+                    //初始化公共配置
+                    var publicConfigs = await ConfigObjecCaller.GetPublicConfigAsync();
+                    var publicConfig = publicConfigs.FirstOrDefault();
+                    if (publicConfig == null)
+                    {
+                        publicConfig = await ConfigObjecCaller.AddPublicConfigAsync(new AddObjectConfigDto
+                        {
+                            Name = "Public",
+                            Identity = $"public-$Config",
+                            Description = "Public config"
+                        });
+                    }
+                    _appDetail = publicConfig.Adapt<AppDetailModel>();
+                    _appDetail.EnvironmentClusters = _allEnvClusters;
+                    EnvironmentClusterId = _allEnvClusters.First().Id;
+                    break;
+                case ConfigObjectType.Biz:
+                    _appDetail = (await ConfigObjecCaller.GetBizConfigAsync($"{ProjectIdentity}-$biz")).Adapt<AppDetailModel>();
+                    _projectDetail =await ProjectCaller.GetAsync(ProjectId); ;
+                    _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
+                    var projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
+                    _appDetail.EnvironmentClusters = projectEnvClusters;
+                    break;
+                case ConfigObjectType.App:
+                    _appDetail = await AppCaller.GetWithEnvironmentClusterAsync(AppId);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
 
             _appEnvs = _appDetail.EnvironmentClusters.DistinctBy(env => env.EnvironmentName).ToList();
-            var selectEnvCluster = _appEnvs.First(envCluster => envCluster.Id == EnvironmentClusterId);
+            var selectEnvCluster = _appDetail.EnvironmentClusters.First(envCluster => envCluster.Id == EnvironmentClusterId);
             _selectEnvName = selectEnvCluster.EnvironmentName;
             _selectCluster = selectEnvCluster;
             _appClusters = _appDetail.EnvironmentClusters.Where(envCluster => envCluster.EnvironmentName == _selectEnvName).ToList();
             await OnClusterChipClick(selectEnvCluster);
+
+            StateHasChanged();
         }
 
         private async void OnEnvChipClick(string envName)

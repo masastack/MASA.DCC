@@ -35,8 +35,10 @@ namespace Masa.Dcc.Service.Admin.Application.App
         {
             var publicConfig = command.AddPublicConfigDto;
 
-            await _publicConfigRepository.AddAsync(
+            var result = await _publicConfigRepository.AddAsync(
                 new PublicConfig(publicConfig.Name, publicConfig.Identity, publicConfig.Description));
+
+            command.PublicConfigDto = result.Adapt<PublicConfigDto>();
         }
 
         [EventHandler]

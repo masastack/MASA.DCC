@@ -40,13 +40,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _bizConfigName = "";
         private string _appName = "";
         private List<Model.AppModel> _apps = new();
+        private PublicModel _publicDetail = new();
 
-        protected override async Task OnParametersSetAsync()
-        {
-            await InitDataAsync();
-        }
-
-        private async Task InitDataAsync()
+        public async Task InitDataAsync()
         {
             _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
             _projectDetail = await ProjectCaller.GetAsync(ProjectId);
@@ -63,10 +59,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Identity = $"{_projectDetail.Identity}-$biz"
                 });
             }
-
             _bizDetail = bizConfig.Adapt<BizModel>();
             _bizDetail.EnvironmentClusters = _projectEnvClusters;
             _bizConfigName = bizConfig.Name;
+
+            StateHasChanged();
         }
 
         private async Task UpdateBizAsync()
@@ -87,7 +84,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task NavigateToConfigAsync(NavigateToConfigModel model)
         {
-            await Landscape.NavigateToConfigAsync(model);
+            await Landscape.AppNavigateToConfigAsync(model);
         }
 
         private async Task SearchAppAsync()

@@ -83,7 +83,7 @@
                                     <MExpansionPanel Style="margin-bottom: 12px; border-radius: 20px;">
                                         <MExpansionPanelHeader>
                                             <span style="display:flex;align-items:center;margin-right:10px;">
-                                                <div class="text-h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id,apps.Count)">
+                                                <div class="text-h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
                                                     @project.Name
                                                     <span class="ml-2 text-caption">|</span>
                                                     <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>
@@ -167,7 +167,8 @@
         </MTabItem>
         <MTabItem>
             <Masa.Dcc.Web.Admin.Rcl.Pages.App ProjectId="_appModel.ProjectId"
-                                              AppCount="_appModel.AppCount">
+                                              AppCount="_appModel.AppCount"
+                                              @ref="_app">
             </Masa.Dcc.Web.Admin.Rcl.Pages.App>
         </MTabItem>
         <MTabItem>
@@ -175,7 +176,9 @@
                 <Config AppId="@_configModel.AppId"
                         ConfigObjectType="@_configModel.ConfigObjectType"
                         EnvironmentClusterId="@_configModel.EnvironmentClusterId"
-                        ProjectIdentity="@_configModel.ProjectIdentity">
+                        ProjectId = "@_configModel.ProjectId"
+                        ProjectIdentity="@_configModel.ProjectIdentity"
+                        @ref="_config">
                 </Config>
             </CascadingValue>
         </MTabItem>

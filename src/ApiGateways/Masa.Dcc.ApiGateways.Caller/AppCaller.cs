@@ -16,7 +16,7 @@ namespace Masa.Dcc.Caller
 
         public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int Id)
         {
-            var result = await CallerProvider.GetAsync<AppDetailModel>($"api/v1/appWhitEnvCluster/{Id}");
+            var result = await CallerProvider.GetAsync<AppDetailModel>($"api/v1/appWithEnvCluster/{Id}");
 
             return result ?? new();
         }

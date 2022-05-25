@@ -110,7 +110,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task GetConfigObjectReleaseHistoryAsync(ConfigObjectReleaseQuery query)
         {
-            var configObjectReleases = await _configObjectRepository.GetConfigObjectWhitReleaseHistoriesAsync(query.ConfigObejctId);
+            var configObjectReleases = await _configObjectRepository.GetConfigObjectWithReleaseHistoriesAsync(query.ConfigObejctId);
 
             TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease);

@@ -83,22 +83,22 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
         public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto dto)
         {
+            var configObject = (await _configObjectRepository.FindAsync(
+                configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
+
+            configObject.AddContent(configObject.Content, configObject.Content);
+            await _configObjectRepository.UpdateAsync(configObject);
+
             await _configObjectReleaseRepository.AddAsync(new ConfigObjectRelease(
                    dto.ConfigObjectId,
                    dto.Name,
                    dto.Comment,
-                   dto.Content)
+                   configObject.Content)
                );
-
-            var configObject = (await _configObjectRepository.FindAsync(
-                configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
-
-            configObject.AddContent(dto.Content, dto.Content);
-            await _configObjectRepository.UpdateAsync(configObject);
 
             //add redis cache
             //TODO: encryption value
-            var key = $"{dto.Environment}-{dto.Cluster}-{dto.AppIdentity}-{configObject.Name}-{configObject.Type}";
+            var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
             await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
             {
                 ConfigObjectType = configObject.Type,

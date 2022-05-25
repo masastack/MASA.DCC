@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Components.Forms;
+
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Config
@@ -19,6 +21,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         [Parameter]
         public int ProjectId { get; set; }
+
+        [Parameter]
+        public string Style { get; set; } = "height: calc(100vh - 180px);";
+
+        [Parameter]
+        public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 292px);";
 
         [Inject]
         public ConfigObjecCaller ConfigObjecCaller { get; set; } = default!;
@@ -64,6 +72,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<StringNumber> _selectEnvClusterIds = new();
         private ProjectDetailModel _projectDetail = new();
         private List<EnvironmentClusterModel> _allEnvClusters = new();
+        private readonly DataModal<AddConfigObjectReleaseDto> _configObjectReleaseModal = new();
+        private ConfigObjectModel _selectConfigObject = new();
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await InitDataAsync();
+            }
+        }
 
         public async Task InitDataAsync()
         {
@@ -89,7 +107,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     break;
                 case ConfigObjectType.Biz:
                     _appDetail = (await ConfigObjecCaller.GetBizConfigAsync($"{ProjectIdentity}-$biz")).Adapt<AppDetailModel>();
-                    _projectDetail =await ProjectCaller.GetAsync(ProjectId); ;
+                    _projectDetail = await ProjectCaller.GetAsync(ProjectId); ;
                     _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
                     var projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
                     _appDetail.EnvironmentClusters = projectEnvClusters;
@@ -411,69 +429,117 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _configObjectFormats = await LabelCaller.GetLabelsByTypeCodeAsync("ConfigObjectFormat");
         }
 
-        private async Task AddConfigObject()
+        private async Task AddConfigObject(EditContext context)
         {
-            string initialContent = (_addConfigObjectModal.Data.FormatLabelCode.ToLower()) switch
+            if (context.Validate())
             {
-                "json" => "{}",
-                "properties" => "[]",
-                _ => "",
-            };
-
-            List<AddConfigObjectDto> configObjectDtos = new();
-            for (int i = 0; i < _selectEnvClusterIds.Count; i++)
-            {
-                configObjectDtos.Add(new AddConfigObjectDto
+                string initialContent = (_addConfigObjectModal.Data.FormatLabelCode.ToLower()) switch
                 {
-                    Name = _addConfigObjectModal.Data.Name,
-                    FormatLabelCode = _addConfigObjectModal.Data.FormatLabelCode,
-                    Type = ConfigObjectType,
-                    ObjectId = _appDetail.Id,
-                    EnvironmentClusterId = _selectEnvClusterIds[i].AsT1,
-                    Content = initialContent,
-                    TempContent = initialContent
-                });
+                    "json" => "{}",
+                    "properties" => "[]",
+                    _ => "",
+                };
+
+                List<AddConfigObjectDto> configObjectDtos = new();
+                for (int i = 0; i < _selectEnvClusterIds.Count; i++)
+                {
+                    configObjectDtos.Add(new AddConfigObjectDto
+                    {
+                        Name = _addConfigObjectModal.Data.Name,
+                        FormatLabelCode = _addConfigObjectModal.Data.FormatLabelCode,
+                        Type = ConfigObjectType,
+                        ObjectId = _appDetail.Id,
+                        EnvironmentClusterId = _selectEnvClusterIds[i].AsT1,
+                        Content = initialContent,
+                        TempContent = initialContent
+                    });
+                }
+
+                await ConfigObjecCaller.AddConfigObjectAsync(configObjectDtos);
+                var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, ConfigObjectType, ""); ;
+                _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
+
+                _addConfigObjectModal.Hide();
+                _selectEnvClusterIds.Clear();
             }
-
-            await ConfigObjecCaller.AddConfigObjectAsync(configObjectDtos);
-            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, ConfigObjectType, ""); ;
-            _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
-
-            _addConfigObjectModal.Hide();
-            _selectEnvClusterIds.Clear();
         }
 
-        private async Task SubmitPropertyConfigAsync()
+        private async Task SubmitPropertyConfigAsync(EditContext context)
         {
-            if (_propertyConfigModal.HasValue)
+            if (context.Validate())
             {
-                await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
-                {
-                    ConfigObjectId = _propertyConfigModal.Depend,
-                    FormatLabelCode = "Properties",
-                    EditConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto> { _propertyConfigModal.Data }
-                });
-            }
-            else
-            {
-                if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
-                {
-                    await PopupService.ToastErrorAsync($"key：{_propertyConfigModal.Data.Key} 已存在");
-                }
-                else
+                if (_propertyConfigModal.HasValue)
                 {
                     await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                     {
                         ConfigObjectId = _propertyConfigModal.Depend,
                         FormatLabelCode = "Properties",
-                        AddConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto> { _propertyConfigModal.Data }
+                        EditConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto> { _propertyConfigModal.Data }
                     });
                 }
-            }
+                else
+                {
+                    if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
+                    {
+                        await PopupService.ToastErrorAsync($"key：{_propertyConfigModal.Data.Key} 已存在");
+                    }
+                    else
+                    {
+                        await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                        {
+                            ConfigObjectId = _propertyConfigModal.Depend,
+                            FormatLabelCode = "Properties",
+                            AddConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto> { _propertyConfigModal.Data }
+                        });
+                    }
+                }
 
-            await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-            _propertyConfigModal.Hide();
-            await PopupService.ToastSuccessAsync("操作成功");
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+                _propertyConfigModal.Hide();
+                await PopupService.ToastSuccessAsync("操作成功");
+            }
+        }
+
+        private async Task RemoveAsync(ConfigObjectModel configObject)
+        {
+            await PopupService.ConfirmAsync("删除配置对象", $"删除配置对象“{configObject.Name}”将导致实例获取不到此配置对象的配置，确定要删除吗？", async args =>
+            {
+                await ConfigObjecCaller.RemoveAsync(configObject.Id);
+                _configObjects.Remove(configObject);
+            });
+        }
+
+        private void ShowReleaseModalAsync(ConfigObjectModel model)
+        {
+            _selectConfigObject = model;
+            if (model.ConfigObjectPropertyContents.Any())
+            {
+                _selectConfigObjectAllProperties = model.ConfigObjectPropertyContents.Where(prop => prop.IsPublished == false).ToList();
+            }
+            _configObjectReleaseModal.Show();
+        }
+
+        private async Task ReleaseAsync(EditContext context)
+        {
+            _configObjectReleaseModal.Data.ConfigObjectId = _selectConfigObject.Id;
+            _configObjectReleaseModal.Data.Type = ReleaseType.MainRelease;
+            _configObjectReleaseModal.Data.EnvironmentName = _selectCluster.EnvironmentName;
+            _configObjectReleaseModal.Data.ClusterName = _selectCluster.ClusterName;
+            _configObjectReleaseModal.Data.Identity = _appDetail.Identity;
+
+            if (context.Validate())
+            {
+                await ConfigObjecCaller.ReleaseAsync(_configObjectReleaseModal.Data);
+
+                await InitDataAsync();
+                await PopupService.ToastSuccessAsync("发布成功");
+                _configObjectReleaseModal.Hide();
+            }
+        }
+
+        private async Task RevokeAsync(ConfigObjectModel configObject)
+        {
+
         }
     }
 }

@@ -2,7 +2,7 @@
 @inherits MasaCompontentBase;
 
 <div class="d-flex">
-    <MNavigationDrawer Right Permanent Class="rounded-4" Width="300" Style="height: calc(100vh - 180px);">
+    <MNavigationDrawer Right Permanent Class="rounded-4" Width="300" Style="@Style">
         <div style="min-width:300px; padding:16px 24px; display:flex; flex-direction:column; align-items:center; overflow: auto; height: calc(100vh - 218px);">
             <div style="width:100%;" class="text-body2">
                 <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
@@ -49,10 +49,9 @@
                     </MChipGroup>
                 </MRow>
             </div>
-            <MSpacer></MSpacer>
-            <div style="width:100%; color:#323D6F; font-size:14px;" class="d-flex justify-end align-center">
-                <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>关联公共配置
-            </div>
+        </div>
+        <div style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end">
+            <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>关联公共配置
         </div>
     </MNavigationDrawer>
 
@@ -68,7 +67,7 @@
                     <MIcon Small>mdi-plus </MIcon>@T("Add Config")
                 </MButton>
             </div>
-            <div style="margin:0 -24px; height: calc(100vh - 292px); overflow:auto;">
+            <div style="margin:0 -24px; overflow:auto; @ConfigPanelStyle">
                 <MExpansionPanels Flat Accordion>
                     @foreach (var configObject in _configObjects)
                     {
@@ -104,8 +103,50 @@
                                             }
                                         </MButton>
                                         <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
-                                        <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
-                                        <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
+                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+
+                                        <MMenu OffsetY>
+                                            <ActivatorContent>
+                                                <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                    <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
+                                                </MButton>
+                                            </ActivatorContent>
+                                            <ChildContent>
+                                                <MList>
+                                                    <MListItem>
+                                                        <MIcon Class="mr-4">mdi-history</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>发布历史</MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MListItem>
+                                                        <MIcon Class="mr-4">mdi-repeat</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>
+                                                                回滚
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MListItem>
+                                                        <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>
+                                                                撤销
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MDivider></MDivider>
+                                                    <MListItem OnClick="()=>RemoveAsync(configObject)">
+                                                        <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle Class="error--text">
+                                                                删除
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                </MList>
+                                            </ChildContent>
+                                        </MMenu>
                                         <span class="mr-6 text-caption">|</span>
                                     </div>
                                 </MExpansionPanelHeader>
@@ -114,7 +155,7 @@
                                 </MExpansionPanelContent>
                             </MExpansionPanel>
                         }
-                        else if (formatLabelCode == "properties1")
+                        else if (formatLabelCode == "properties")
                         {
                             <MExpansionPanel>
                                 <MExpansionPanelHeader Context="_">
@@ -125,13 +166,14 @@
                                         <MSpacer></MSpacer>
                                         <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject.Id,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
                                         <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
-                                        <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
                                         <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
                                         <span class="mr-6 text-caption">|</span>
                                     </div>
                                 </MExpansionPanelHeader>
                                 <MExpansionPanelContent>
-                                    <ElevationTab TabIndex="_tabIndex" TabIndexChanged="index=>HandleTabIndexChangedAsync(index,configObject.ConfigObjectPropertyContents)" TabMinWidth="70" ItemsClass="rounded-5" Dense Tabs="@(new List<string>{"表格","文本"})">
+                                    <ElevationTab TabIndex="_tabIndex" TabIndexChanged="index=>HandleTabIndexChangedAsync(index,configObject.ConfigObjectPropertyContents)" TabMinWidth="70" ItemsClass="rounded-5" Dense>
+                                        @*Tabs="@(new List<string>{"表格","文本"})"*@
                                         <ElevationTabItem>
                                             <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
                                                 <MDataTable Headers="_headers"
@@ -234,7 +276,7 @@
                                             }
                                         </MButton>
                                         <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
-                                        <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
                                         <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
                                         <span class="mr-6 text-caption">|</span>
                                     </div>
@@ -252,47 +294,115 @@
 </div>
 
 <SheetDialog @bind-Value="_addConfigObjectModal.Visible" Title="@T("Create config object")" Icon="mdi-circle" IconColor="success">
-    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
-        <div>
-            <div class="text-h6">Application  |  identity</div>
-            <MTextField Class="mt-12" Dense Label="名称" Outlined @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
-            <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
-                     Label="格式"
-                     MenuProps="props => props.OffsetY = true"
-                     Outlined
-                     Dense
-                     Items="_configObjectFormats"
-                     ItemText="l=>l.Name"
-                     ItemValue="l=>l.Code">
-            </MSelect>
-            <p class="neutral--text" style="font-size:14px; font-weight:700;">选择集群</p>
-            <MChipGroup Multiple Column @bind-Values="_selectEnvClusterIds">
-                @foreach (var item in _appDetail.EnvironmentClusters)
-                {
-                    <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
-                        <div class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</div>&nbsp;&nbsp;
-                        <div style="color:#05CD99">@item.ClusterName</div>
-                    </MChip>
-                }
-            </MChipGroup>
+    <MForm Class="full-height" Style="height:100%;" Context="formContext" EnableValidation Model="_addConfigObjectModal.Data">
+        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+            <div>
+                <div class="text-h6">Application  |  identity</div>
+                <MTextField Class="mt-12" Dense Label="名称" Outlined @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
+                <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
+                         Label="格式"
+                         MenuProps="props => props.OffsetY = true"
+                         Outlined
+                         Dense
+                         Items="_configObjectFormats"
+                         ItemText="l=>l.Name"
+                         ItemValue="l=>l.Code">
+                </MSelect>
+                <p class="neutral--text" style="font-size:14px; font-weight:700;">选择集群</p>
+                <MChipGroup Multiple Column @bind-Values="_selectEnvClusterIds">
+                    @foreach (var item in _appDetail.EnvironmentClusters)
+                    {
+                        <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
+                            <div class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</div>&nbsp;&nbsp;
+                            <div style="color:#05CD99">@item.ClusterName</div>
+                        </MChip>
+                    }
+                </MChipGroup>
+            </div>
+            <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
+                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>AddConfigObject(formContext)">提交</MButton>
+            </div>
         </div>
-        <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-            <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="AddConfigObject">提交</MButton>
-        </div>
-    </div>
+    </MForm>
 </SheetDialog>
 
 <SheetDialog @bind-Value="_propertyConfigModal.Visible" Title="@T("Create config object item")" Icon="mdi-circle" IconColor="success">
-    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
-        <div>
-            <div class="text-h6">配置对象  |  Properties</div>
-            <MTextField Class="mt-12" Disabled="_propertyConfigModal.HasValue" Dense Label="Key" Outlined @bind-Value="_propertyConfigModal.Data.Key"></MTextField>
-            <MTextField Dense Label="Value" Outlined @bind-Value="_propertyConfigModal.Data.Value"></MTextField>
-            <MTextarea Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
+    <MForm Class="full-height" Style="height:100%;" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
+        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+            <div>
+                <div class="text-h6">配置对象  |  Properties</div>
+                <MTextField Class="mt-12" Disabled="_propertyConfigModal.HasValue" Dense Label="Key" Outlined @bind-Value="_propertyConfigModal.Data.Key"></MTextField>
+                <MTextField Dense Label="Value" Outlined @bind-Value="_propertyConfigModal.Data.Value"></MTextField>
+                <MTextarea Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
+            </div>
+            <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
+                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">提交</MButton>
+            </div>
         </div>
-        <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-            <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="SubmitPropertyConfigAsync">提交</MButton>
+    </MForm>
+</SheetDialog>
+
+<SheetDialog @bind-Value="_configObjectReleaseModal.Visible" Title="@T("Release")" Icon="mdi-circle" IconColor="success">
+    <MForm Class="full-height" Context="formContext" EnableValidation Model="_configObjectReleaseModal.Data">
+        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+            <div>
+                <div class="text-h6">配置对象  |  Properties</div>
+                <MTextField Class="mt-12" Dense Label="发布名称" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
+                <MTextarea Dense Label="描述" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
+                <p class="neutral--text" style="font-size:14px; font-weight:700;">变更的配置</p>
+                @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
+                {
+                    <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
+                        <MDataTable Headers="_headers"
+                                TItem="ConfigObjectPropertyModel"
+                                Items="@_selectConfigObjectAllProperties"
+                                Class="table-border-none"
+                                HideDefaultFooter>
+                            <HeaderColContent Context="header">
+                                @if (!string.IsNullOrWhiteSpace(header.Value))
+                                {
+                                    <span class="text-caption">@header.Text</span>
+                                }
+                            </HeaderColContent>
+                            <ItemColContent>
+                                @switch (@context.Header.Text)
+                                {
+                                    case "状态":
+                                        if (context.Item.IsAdded)
+                                        {
+                                            <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus-circle</MIcon>
+                                        }
+                                        else if (context.Item.IsEdited)
+                                        {
+                                            <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-pencil</MIcon>
+                                        }
+                                        else if (context.Item.IsDeleted)
+                                        {
+                                            <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-delete</MIcon>
+                                        }
+                                        break;
+                                    case "修改时间":
+                                        <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
+                                        break;
+                                    case "操作":
+                                        break;
+                                    default:
+                                        @context.Value
+                                        break;
+                                }
+                            </ItemColContent>
+                        </MDataTable>
+                    </div>
+                }
+                else
+                {
+                    <MTextarea BackgroundColor="#F6F8FD" Outlined Readonly Value="@_selectConfigObject.Content"></MTextarea>
+                }
+            </div>
+            <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
+                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>ReleaseAsync(formContext)">提交</MButton>
+            </div>
         </div>
-    </div>
+    </MForm>
 </SheetDialog>
 

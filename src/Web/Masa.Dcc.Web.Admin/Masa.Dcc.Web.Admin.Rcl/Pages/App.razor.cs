@@ -42,6 +42,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<Model.AppModel> _apps = new();
         private PublicModel _publicDetail = new();
 
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await InitDataAsync();
+            }
+        }
+
         public async Task InitDataAsync()
         {
             _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();

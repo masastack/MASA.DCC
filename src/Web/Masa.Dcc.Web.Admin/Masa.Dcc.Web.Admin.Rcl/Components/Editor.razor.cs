@@ -22,6 +22,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Components
         public bool Disabled { get; set; }
 
         [Parameter]
+        public string Color { get; set; } = "#F0F3FA";
+
+        [Parameter]
         public EventCallback<ChangeEventArgs> HandleOnInput { get; set; }
 
         protected override void OnParametersSet()

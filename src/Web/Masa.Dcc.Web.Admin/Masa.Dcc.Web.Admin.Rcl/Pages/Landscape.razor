@@ -172,15 +172,13 @@
             </Masa.Dcc.Web.Admin.Rcl.Pages.App>
         </MTabItem>
         <MTabItem>
-            <CascadingValue Value="_configModel">
-                <Config AppId="@_configModel.AppId"
-                        ConfigObjectType="@_configModel.ConfigObjectType"
-                        EnvironmentClusterId="@_configModel.EnvironmentClusterId"
-                        ProjectId = "@_configModel.ProjectId"
-                        ProjectIdentity="@_configModel.ProjectIdentity"
-                        @ref="_config">
-                </Config>
-            </CascadingValue>
+            <Config AppId="@_configModel.AppId"
+                    ConfigObjectType="@_configModel.ConfigObjectType"
+                    EnvironmentClusterId="@_configModel.EnvironmentClusterId"
+                    ProjectId="@_configModel.ProjectId"
+                    ProjectIdentity="@_configModel.ProjectIdentity"
+                    @ref="_config">
+            </Config>
         </MTabItem>
     </MTabsItems>
 </CascadingValue>

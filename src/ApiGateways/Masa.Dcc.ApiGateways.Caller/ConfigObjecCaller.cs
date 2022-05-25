@@ -37,9 +37,9 @@ namespace Masa.Dcc.ApiGateways.Caller
             return bizConfig ?? new();
         }
 
-        public async Task<List<ConfigObjectDto>> GetConfigObjectsAsync(int envClusterId, ConfigObjectType type, string configObjectName = "")
+        public async Task<List<ConfigObjectDto>> GetConfigObjectsAsync(int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "")
         {
-            var result = await CallerProvider.GetAsync<List<ConfigObjectDto>>($"{_prefix}/configObjects?envClusterId={envClusterId}&type={type}&configObjectName={configObjectName}");
+            var result = await CallerProvider.GetAsync<List<ConfigObjectDto>>($"{_prefix}/configObjects?envClusterId={envClusterId}&objectId={objectId}&type={type}&configObjectName={configObjectName}");
 
             return result ?? new();
         }
@@ -52,6 +52,20 @@ namespace Masa.Dcc.ApiGateways.Caller
         public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)
         {
             await CallerProvider.PutAsync($"{_prefix}/configObject", dto);
+        }
+
+        public async Task<List<PublicConfigDto>> GetPublicConfigAsync()
+        {
+            var result = await CallerProvider.GetAsync<List<PublicConfigDto>>($"{_prefix}/publicConfig");
+
+            return result ?? new();
+        }
+
+        public async Task<PublicConfigDto> AddPublicConfigAsync(AddObjectConfigDto dto)
+        {
+            var result = await CallerProvider.PostAsync<AddObjectConfigDto, PublicConfigDto>($"{_prefix}/publicConfig", dto);
+
+            return result ?? new();
         }
     }
 }

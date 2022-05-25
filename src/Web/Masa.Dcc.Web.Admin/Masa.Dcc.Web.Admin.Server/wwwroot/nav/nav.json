@@ -24,5 +24,11 @@
         "Href": "dashboard/analytics"
       }
     ]
+  },
+  {
+    "Id": 2,
+    "Title": "Public",
+    "Icon": "mdi-flag",
+    "Href": "Public"
   }
 ]

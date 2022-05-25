@@ -14,6 +14,13 @@ namespace Masa.Dcc.Caller
 
         protected override string BaseAddress { get; set; } = "";
 
+        public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int Id)
+        {
+            var result = await CallerProvider.GetAsync<AppDetailModel>($"api/v1/appWithEnvCluster/{Id}");
+
+            return result ?? new();
+        }
+
         public async Task<List<AppDetailModel>> GetListAsync()
         {
             var result = await CallerProvider.GetAsync<List<AppDetailModel>>(_prefix);
@@ -21,7 +28,7 @@ namespace Masa.Dcc.Caller
             return result ?? new();
         }
 
-        public async Task<List<AppDetailModel>> GetListByProjectIdAsync(List<int> projectIds)
+        public async Task<List<AppDetailModel>> GetListByProjectIdsAsync(List<int> projectIds)
         {
             var result = await CallerProvider.PostAsync<List<int>, List<AppDetailModel>>("/api/v1/projects/app", projectIds);
 

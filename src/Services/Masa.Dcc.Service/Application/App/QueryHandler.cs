@@ -68,17 +68,17 @@ namespace Masa.Dcc.Service.Admin.Application.App
             List<ConfigObjectDto> objectConfigObjects = new List<ConfigObjectDto>();
             if (query.Type == ConfigObjectType.Public)
             {
-                var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
             }
             else if (query.Type == ConfigObjectType.Biz)
             {
-                var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
             }
             else if (query.Type == ConfigObjectType.App)
             {
-                var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId);
+                var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
             }
 
@@ -110,7 +110,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task GetConfigObjectReleaseHistoryAsync(ConfigObjectReleaseQuery query)
         {
-            var configObjectReleases = await _configObjectRepository.GetConfigObjectWhitReleaseHistoriesAsync(query.ConfigObejctId);
+            var configObjectReleases = await _configObjectRepository.GetConfigObjectWithReleaseHistoriesAsync(query.ConfigObejctId);
 
             TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease);

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using System.Text;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Team
@@ -91,7 +89,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
-            var apps = await AppCaller.GetListByProjectIdAsync(projectIds.ToList());
+            var apps = await AppCaller.GetListByProjectIdsAsync(projectIds.ToList());
             var appPins = await AppCaller.GetAppPinListAsync();
 
             var result = from app in apps
@@ -200,10 +198,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 var selectEnvCluster = _allAppEnvClusters.First(envCluster => envCluster.Id == _selectEnvClusterId);
                 _selectEnvName = selectEnvCluster.EnvironmentName;
                 _selectCluster = selectEnvCluster;
-                await OnClusterChipClick(selectEnvCluster);
 
                 _appEnvClusters = _allAppEnvClusters.Where(envCluster => envCluster.EnvironmentName == _selectEnvName)
                     .ToList();
+
+                await OnClusterChipClick(selectEnvCluster);
             }
         }
 
@@ -258,7 +257,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             await TabValueChangedAsync(2);
         }
 
-        private async void UpdateBizAsync()
+        private async Task UpdateBizAsync()
         {
             _isEditBiz = !_isEditBiz;
 
@@ -292,7 +291,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
         {
-            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, configObjectType, configObjectName);
+            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id, configObjectType, configObjectName);
             _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
 
             _configObjects.ForEach(config =>
@@ -389,7 +388,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
 
             await ConfigObjecCaller.AddConfigObjectAsync(configObjectDtos);
-            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType, "");
+            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(_selectEnvClusterId, _appDetail.Id, _configObjectType, "");
             _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
 
             _addConfigObjectModal.Hide();
@@ -446,7 +445,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     FormatLabelCode = "Json"
                 });
 
-                await PopupService.ToastSuccessAsync("修改成功");
+                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
             }
         }
 
@@ -473,24 +472,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task UpdateConfigObjectPropertyContentAsync(ConfigObjectPropertyContentDto dto)
-        {
-            var content = JsonSerializer.Serialize(dto);
-            await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
-            {
-                ConfigObjectId = _propertyConfigModal.Depend,
-                Content = content,
-                FormatLabelCode = "Properties"
-            });
-        }
-
         private async Task SubmitPropertyConfigAsync()
         {
             if (_propertyConfigModal.HasValue)
             {
-                //edit
-                //await UpdateConfigObjectPropertyContentAsync(_propertyConfigModal.Data);
-
                 await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = _propertyConfigModal.Depend,
@@ -500,15 +485,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else
             {
-                //add
                 if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
                 {
                     await PopupService.ToastErrorAsync($"key：{_propertyConfigModal.Data.Key} 已存在");
                 }
                 else
                 {
-                    //await UpdateConfigObjectPropertyContentAsync(_propertyConfigModal.Data);
-
                     await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                     {
                         ConfigObjectId = _propertyConfigModal.Depend,
@@ -537,7 +519,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
 
                 await GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType);
-                await PopupService.ToastSuccessAsync("操作成功");
+                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
             });
         }
 
@@ -623,8 +605,31 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     });
 
                     await GetConfigObjectsAsync(_selectEnvClusterId, _configObjectType);
-                    await PopupService.ToastSuccessAsync("操作成功");
+                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
                     _tabIndex = 0;
+                }
+            }
+        }
+
+        private async Task UpdateOtherConfigObjectContentAsync(ConfigObjectModel configObject)
+        {
+            configObject.IsEditing = !configObject.IsEditing;
+            if (!configObject.IsEditing)
+            {
+                if (string.IsNullOrWhiteSpace(configObject.Content))
+                {
+                    await PopupService.ToastErrorAsync("内容不能为空");
+                    return;
+                }
+                else
+                {
+                    await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                    {
+                        ConfigObjectId = configObject.Id,
+                        Content = configObject.Content
+                    });
+
+                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
                 }
             }
         }

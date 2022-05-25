@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Queries
 {
-    public record ConfigObjectsQuery(int EnvClusterId, ConfigObjectType Type, string ConfigObjectName) : Query<List<ConfigObjectDto>>
+    public record ConfigObjectsQuery(int EnvClusterId, int ObjectId, ConfigObjectType Type, string ConfigObjectName) : Query<List<ConfigObjectDto>>
     {
         public override List<ConfigObjectDto> Result { get; set; } = new();
     }

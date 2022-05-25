@@ -9,7 +9,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
         {
         }
 
-        public async Task<ConfigObject> GetConfigObjectWhitReleaseHistoriesAsync(int Id)
+        public async Task<ConfigObject> GetConfigObjectWithReleaseHistoriesAsync(int Id)
         {
             var configObject = await Context.Set<ConfigObject>()
                 .Where(configObject => configObject.Id == Id)

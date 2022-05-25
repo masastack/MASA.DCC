@@ -30,9 +30,9 @@ public class ConfigObjectService : ServiceBase
     }
 
     public async Task<List<ConfigObjectDto>> GetListAsync(
-        IEventBus eventBus, int envClusterId, ConfigObjectType type, string configObjectName = "")
+        IEventBus eventBus, int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "")
     {
-        var query = new ConfigObjectsQuery(envClusterId, type, configObjectName);
+        var query = new ConfigObjectsQuery(envClusterId, objectId, type, configObjectName);
         await eventBus.PublishAsync(query);
 
         return query.Result;

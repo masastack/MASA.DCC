@@ -65,7 +65,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new (){ Text= "描述", Value= nameof(ConfigObjectPropertyModel.Description)},
             new (){ Text= "修改人", Value= nameof(ConfigObjectPropertyModel.Modifier) },
             new (){ Text= "修改时间", Value= nameof(ConfigObjectPropertyModel.ModificationTime) },
-            new (){ Text= "操作"}
+            new (){ Text= "操作", Sortable= false,}
         };
         private readonly DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
         private List<LabelDto> _configObjectFormats = new();
@@ -74,6 +74,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<EnvironmentClusterModel> _allEnvClusters = new();
         private readonly DataModal<AddConfigObjectReleaseDto> _configObjectReleaseModal = new();
         private ConfigObjectModel _selectConfigObject = new();
+        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _releaseHeaders = new()
+        {
+            new (){ Text= "状态", Value= nameof(ConfigObjectPropertyModel.IsPublished)},
+            new (){ Text= "Key", Value= nameof(ConfigObjectPropertyModel.Key)},
+            new (){ Text= "发布的值", Value= nameof(ConfigObjectPropertyModel.TempValue)},
+            new (){ Text= "未发布的值", Value= nameof(ConfigObjectPropertyModel.Value)},
+            new (){ Text= "修改人", Value= nameof(ConfigObjectPropertyModel.Modifier) },
+            new (){ Text= "修改时间", Value= nameof(ConfigObjectPropertyModel.ModificationTime) }
+        };
+        private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
+        private bool _showRollbackModal;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -202,7 +213,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         Description = editedContent.Description,
                         ModificationTime = editedContent.ModificationTime,
                         Modifier = editedContent.Modifier,
-                        IsEdited = true
+                        IsEdited = true,
+                        TempValue = tempContents.First(content => content.Key == editedContent.Key).Value
                     }).ToList();
 
                     config.ConfigObjectPropertyContents = published.Union(deleted).Union(added).Union(edited).ToList();
@@ -539,7 +551,32 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RevokeAsync(ConfigObjectModel configObject)
         {
+            await PopupService.ConfirmAsync("撤销配置", $"配置对象“{configObject.Name}”下已修改但尚未发布的配置将呗撤销，您确定要撤销吗？", async args =>
+            {
+                await ConfigObjecCaller.RevokeAsync(configObject.Id);
 
+                await InitDataAsync();
+                await PopupService.ToastSuccessAsync("撤销成功");
+            });
+        }
+
+        private async void ShowRollbackModalAsync(ConfigObjectModel configObject)
+        {
+            _releaseHistory = await ConfigObjecCaller.GetReleaseHistoryAsync(configObject.Id);
+            _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
+                .Where(release => release.IsInvalid == false)
+                .OrderByDescending(release => release.Id)
+                .Take(2)
+                .ToList();
+
+            if (_releaseHistory.ConfigObjectReleases.Count <= 1)
+            {
+                await PopupService.ToastErrorAsync("没有可以回滚的发布历史");
+            }
+            else
+            {
+                _showRollbackModal = true;
+            }
         }
     }
 }

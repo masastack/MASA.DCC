@@ -451,21 +451,21 @@
                                                                         {
                                                                             if (context.Item.IsAdded)
                                                                             {
-                                                                                <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus</MIcon>
+                                                                                <MIcon Color="#7681AB" Style="margin-bottom:2px;" Size="20">mdi-plus</MIcon>
                                                                             }
                                                                             else if (context.Item.IsEdited)
                                                                             {
-                                                                                <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-pencil</MIcon>
+                                                                                <MIcon Color="#7681AB" Style="margin-bottom:2px;" Size="20">mdi-pencil</MIcon>
                                                                             }
                                                                             else if (context.Item.IsDeleted)
                                                                             {
-                                                                                <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-delete</MIcon>
+                                                                                <MIcon Color="#7681AB" Style="margin-bottom:2px;" Size="20">mdi-delete</MIcon>
                                                                             }
                                                                             <span>未发布</span>
                                                                         }
                                                                         break;
                                                                     case "操作":
-                                                                        <MIcon Class="mr-3 hover-pointer" Size="20" OnClick="()=>ShowPropertyModal(configObject.Id, null, context.Item)">mdi-pencil</MIcon>
+                                                                        <MIcon Class="mr-3 hover-pointer" Size="20" Color="#485585" OnClick="()=>ShowPropertyModal(configObject.Id, null, context.Item)">mdi-pencil</MIcon>
                                                                         <MIcon Class="hover-pointer" Size="20" Color="error" OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">mdi-delete</MIcon>
                                                                         break;
                                                                     case "修改时间":

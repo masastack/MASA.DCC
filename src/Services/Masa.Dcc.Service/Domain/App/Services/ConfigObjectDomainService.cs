@@ -158,6 +158,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             //Invalid rollback entity
             canRollbackEntity.Invalid();
             await _configObjectReleaseRepository.UpdateAsync(canRollbackEntity);
+
+            //Update ConfigObject entity
+            var configObject = (await _configObjectRepository.FindAsync(config => config.Id == configObjectId))!;
+            configObject.UpdateContent(canRollbackEntity.Content);
+            await _configObjectRepository.UpdateAsync(configObject);
         }
 
         private async Task RollbackToAsync(RollbackConfigObjectReleaseDto rollbackDto)
@@ -198,6 +203,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             //Invalid rollback entity
             canRollbackEntity.Invalid();
             await _configObjectReleaseRepository.UpdateAsync(canRollbackEntity);
+
+            //Update ConfigObject entity
+            var configObject = (await _configObjectRepository.FindAsync(config => config.Id == rollbackDto.ConfigObjectId))!;
+            configObject.UpdateContent(canRollbackEntity.Content);
+            await _configObjectRepository.UpdateAsync(configObject);
         }
     }
 }

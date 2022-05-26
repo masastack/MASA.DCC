@@ -77,5 +77,17 @@ namespace Masa.Dcc.ApiGateways.Caller
         {
             await CallerProvider.PostAsync($"{_prefix}/configObject/release", dto);
         }
+
+        public async Task RevokeAsync(int configObjectId)
+        {
+            await CallerProvider.PutAsync($"{_prefix}/configObject/revoke/{configObjectId}", null);
+        }
+
+        public async Task<ConfigObjectWithReleaseHistoryDto> GetReleaseHistoryAsync(int configObjectId)
+        {
+            var result = await CallerProvider.GetAsync<ConfigObjectWithReleaseHistoryDto>($"{_prefix}/configObject/release/history/{configObjectId}");
+
+            return result ?? new();
+        }
     }
 }

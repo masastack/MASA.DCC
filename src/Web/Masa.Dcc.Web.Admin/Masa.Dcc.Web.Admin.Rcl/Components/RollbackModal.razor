@@ -1,0 +1,54 @@
+﻿<PModal Width="684" Title="回滚" @bind-Value="Show" OnSave="OnClick">
+    <ChildContent>
+        <MAlert Dense
+                Type="AlertTypes.Warning">
+            此操作将会回滚到上一个发布版本，且当前版本作废，但不影响正在修改的配置。
+        </MAlert>
+        <MTimeline>
+            <MTimelineItem Color="primary" Small>
+                <OppositeContent>
+                    <div>
+                        <p style="font-size:14px; font-weight: 500; color: #1B2559;">4.28</p>
+                        <p style="font-size:10px; font-weight: 400; color: #A3AED0;">当前</p>
+                    </div>
+                </OppositeContent>
+                <ChildContent>
+                    <div class="">
+                        <p style="font-size:14px; font-weight: 500; color: #1B2559;">@CurrentConfigObjectRelease.Name</p>
+                        <p style="font-size:10px; font-weight: 400; color: #A3AED0;">@CurrentConfigObjectRelease.Version</p>
+                    </div>
+                </ChildContent>
+            </MTimelineItem>
+            <MTimelineItem Color="primary" Small>
+                <OppositeContent>
+                    <p style="font-size:14px; font-weight: 500; color: #1B2559;">回滚至</p>
+                </OppositeContent>
+                <ChildContent>
+                    <div class="">
+                        <p style="font-size:14px; font-weight: 500; color: #1B2559;">@RollbackConfigObjectRelease.Name</p>
+                        <p style="font-size:10px; font-weight: 400; color: #A3AED0;">@RollbackConfigObjectRelease.Version</p>
+                    </div>
+                </ChildContent>
+            </MTimelineItem>
+        </MTimeline>
+        @if (FormatLabelCode.ToLower() == "properties")
+        {
+            <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
+                <MDataTable Headers="_headers"
+                        TItem="ConfigObjectPropertyModel"
+                        Items="@_properties"
+                        Class="table-border-none"
+                        HideDefaultFooter>
+                </MDataTable>
+            </div>
+        }
+        else
+        {
+            <MTextarea BackgroundColor="#F6F8FD" Outlined Readonly Value="@RollbackConfigObjectRelease.Content"></MTextarea>
+        }
+    </ChildContent>
+    <SaveContent>
+        <MButton OnClick="context.Click" Width="100" Class="rounded-pill" Color="primary" Style="float:right;">回滚</MButton>
+    </SaveContent>
+</PModal>
+

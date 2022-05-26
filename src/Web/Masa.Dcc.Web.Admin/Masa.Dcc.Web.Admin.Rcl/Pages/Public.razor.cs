@@ -5,18 +5,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Public
     {
-        [Inject]
-        public ConfigObjecCaller ConfigObjecCaller { get; set; } = default!;
-
-        private Config _config = null!;
-        private ConfigComponentModel _configModel = new() { ConfigObjectType = ConfigObjectType.Public };
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-                await _config.InitDataAsync();
-            }
-        }
+        private readonly ConfigComponentModel _configModel = new() { ConfigObjectType = ConfigObjectType.Public };
     }
 }

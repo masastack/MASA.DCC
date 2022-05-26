@@ -24,7 +24,7 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(new AddConfigObjectCommand(dtos));
     }
 
-    public async Task RemoveAsync(IEventBus eventBus, [FromQuery] int Id)
+    public async Task RemoveAsync(IEventBus eventBus, [FromRoute] int Id)
     {
         await eventBus.PublishAsync(new RemoveConfigObjectCommand(Id));
     }

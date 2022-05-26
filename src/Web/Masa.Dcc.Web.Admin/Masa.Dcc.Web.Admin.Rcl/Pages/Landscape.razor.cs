@@ -31,8 +31,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<Model.AppModel> _apps = new();
         private ConfigComponentModel _configModel = new();
         private AppComponentModel _appModel = new();
-        private App _app;
-        private Config _config;
+        private App? _app;
+        private Config? _config;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -118,15 +118,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _curTab = value;
 
-            await Task.Delay(16);
-
+            //await Task.Delay(16);
             StateHasChanged();
 
-            if (_curTab == 1)
+            if (_curTab == 1 && _app != null)
             {
                 await _app.InitDataAsync();
             }
-            else if (_curTab == 2)
+            else if (_curTab == 2 && _config != null)
             {
                 await _config.InitDataAsync();
             }

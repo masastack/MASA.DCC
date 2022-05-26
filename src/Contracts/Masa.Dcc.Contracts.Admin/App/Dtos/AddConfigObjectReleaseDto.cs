@@ -20,14 +20,13 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         [StringLength(500, MinimumLength = 0, ErrorMessage = "Comment length range is [0-500]")]
         public string Comment { get; set; } = "";
 
-        [Required(ErrorMessage = "Content is required", AllowEmptyStrings = true)]
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Content length range is [1-2147483647]")]
-        public string Content { get; set; } = "";
+        [Required]
+        public string EnvironmentName { get; set; } = "";
 
-        public string Environment { get; set; } = "";
+        [Required]
+        public string ClusterName { get; set; } = "";
 
-        public string Cluster { get; set; } = "";
-
-        public string AppIdentity { get; set; } = "";
+        [Required]
+        public string Identity { get; set; } = "";
     }
 }

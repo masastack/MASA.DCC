@@ -7,21 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Masa.Contrib.BasicAbility.Pm" Version="0.4.0-rc1" />
     <PackageReference Include="Masa.Utils.Caller.HttpClient" Version="0.4.0-rc1" />
     <PackageReference Include="Masa.Utils.Configuration.Json" Version="0.4.0-rc1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Contracts\Masa.Dcc.Contracts.Admin\Masa.Dcc.Contracts.Admin.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Masa.BuildingBlocks.BasicAbility.Pm">
-      <HintPath>..\..\..\..\..\MASA.Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\bin\Debug\net6.0\Masa.BuildingBlocks.BasicAbility.Pm.dll</HintPath>
-    </Reference>
-    <Reference Include="Masa.Contrib.BasicAbility.Pm">
-      <HintPath>..\..\..\..\..\MASA.Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\bin\Debug\net6.0\Masa.Contrib.BasicAbility.Pm.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

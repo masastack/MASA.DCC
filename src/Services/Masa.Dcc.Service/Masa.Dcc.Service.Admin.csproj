@@ -16,6 +16,7 @@
 	<ItemGroup>
 		<PackageReference Include="Mapster" Version="7.3.0" />
 		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="0.4.0-rc1" />
+		<PackageReference Include="Masa.Contrib.BasicAbility.Pm" Version="0.4.0-rc1" />
 		<PackageReference Include="Masa.Contrib.Data.Contracts.EF" Version="0.4.0-rc1" />
 		<PackageReference Include="Masa.Contrib.Data.EntityFrameworkCore.SqlServer" Version="0.4.0-rc1" />
 		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="0.4.0-rc1" />
@@ -41,15 +42,6 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-	</ItemGroup>
-	
-	<ItemGroup>
-	  <Reference Include="Masa.BuildingBlocks.BasicAbility.Pm">
-	    <HintPath>..\..\..\..\..\MASA.Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\bin\Debug\net6.0\Masa.BuildingBlocks.BasicAbility.Pm.dll</HintPath>
-	  </Reference>
-	  <Reference Include="Masa.Contrib.BasicAbility.Pm">
-	    <HintPath>..\..\..\..\..\MASA.Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\bin\Debug\net6.0\Masa.Contrib.BasicAbility.Pm.dll</HintPath>
-	  </Reference>
 	</ItemGroup>
 	
 	<ItemGroup>

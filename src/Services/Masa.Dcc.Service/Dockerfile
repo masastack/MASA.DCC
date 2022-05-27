@@ -9,4 +9,4 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENV ASPNETCORE_URLS=http://0.0.0.0:80
 EXPOSE 80
-ENTRYPOINT ["dotnet","MASA.Dcc.Service.Admin.dll"]
+ENTRYPOINT ["dotnet","Masa.Dcc.Service.Admin"]

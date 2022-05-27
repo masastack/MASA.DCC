@@ -1,10 +1,17 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Utils.Caller.Core;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
+using Masa.Utils.Caller.Core;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.UseKestrel(option =>
+{
+    option.ConfigureHttpsDefaults(options =>
+    options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN"));
+});
 
 // Add services to the container.
 builder.Services.AddRazorPages();

@@ -29,7 +29,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 292px);";
 
         [Inject]
-        public ConfigObjecCaller ConfigObjecCaller { get; set; } = default!;
+        public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
 
         [Inject]
         public IPopupService PopupService { get; set; } = default!;
@@ -65,7 +65,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new (){ Text= "描述", Value= nameof(ConfigObjectPropertyModel.Description)},
             new (){ Text= "修改人", Value= nameof(ConfigObjectPropertyModel.Modifier) },
             new (){ Text= "修改时间", Value= nameof(ConfigObjectPropertyModel.ModificationTime) },
-            new (){ Text= "操作"}
+            new (){ Text= "操作", Sortable= false,}
         };
         private readonly DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
         private List<LabelDto> _configObjectFormats = new();
@@ -74,6 +74,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<EnvironmentClusterModel> _allEnvClusters = new();
         private readonly DataModal<AddConfigObjectReleaseDto> _configObjectReleaseModal = new();
         private ConfigObjectModel _selectConfigObject = new();
+        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _releaseHeaders = new()
+        {
+            new (){ Text= "状态", Value= nameof(ConfigObjectPropertyModel.IsPublished)},
+            new (){ Text= "Key", Value= nameof(ConfigObjectPropertyModel.Key)},
+            new (){ Text= "发布的值", Value= nameof(ConfigObjectPropertyModel.TempValue)},
+            new (){ Text= "未发布的值", Value= nameof(ConfigObjectPropertyModel.Value)},
+            new (){ Text= "修改人", Value= nameof(ConfigObjectPropertyModel.Modifier) },
+            new (){ Text= "修改时间", Value= nameof(ConfigObjectPropertyModel.ModificationTime) }
+        };
+        private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
+        private bool _showRollbackModal;
+        private string _propertyConfigObjectName = "";
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -90,11 +102,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 case ConfigObjectType.Public:
                     _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
                     //初始化公共配置
-                    var publicConfigs = await ConfigObjecCaller.GetPublicConfigAsync();
+                    var publicConfigs = await ConfigObjectCaller.GetPublicConfigAsync();
                     var publicConfig = publicConfigs.FirstOrDefault();
                     if (publicConfig == null)
                     {
-                        publicConfig = await ConfigObjecCaller.AddPublicConfigAsync(new AddObjectConfigDto
+                        publicConfig = await ConfigObjectCaller.AddPublicConfigAsync(new AddObjectConfigDto
                         {
                             Name = "Public",
                             Identity = $"public-$Config",
@@ -106,7 +118,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     EnvironmentClusterId = _allEnvClusters.First().Id;
                     break;
                 case ConfigObjectType.Biz:
-                    _appDetail = (await ConfigObjecCaller.GetBizConfigAsync($"{ProjectIdentity}-$biz")).Adapt<AppDetailModel>();
+                    _appDetail = (await ConfigObjectCaller.GetBizConfigAsync($"{ProjectIdentity}-$biz")).Adapt<AppDetailModel>();
                     _projectDetail = await ProjectCaller.GetAsync(ProjectId); ;
                     _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
                     var projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
@@ -146,7 +158,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
         {
-            var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id, configObjectType, configObjectName);
+            var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id, configObjectType, configObjectName);
             _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
 
             _configObjects.ForEach(config =>
@@ -202,7 +214,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         Description = editedContent.Description,
                         ModificationTime = editedContent.ModificationTime,
                         Modifier = editedContent.Modifier,
-                        IsEdited = true
+                        IsEdited = true,
+                        TempValue = tempContents.First(content => content.Key == editedContent.Key).Value
                     }).ToList();
 
                     config.ConfigObjectPropertyContents = published.Union(deleted).Union(added).Union(edited).ToList();
@@ -273,7 +286,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         .ToList()
                         .Adapt<List<ConfigObjectPropertyContentDto>>();
 
-                    await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                    await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                     {
                         ConfigObjectId = configObjectId,
                         FormatLabelCode = "Properties",
@@ -348,7 +361,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         return;
                 }
 
-                await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObject.Id,
                     Content = configObject.Content,
@@ -371,7 +384,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
                 else
                 {
-                    await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                    await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                     {
                         ConfigObjectId = configObject.Id,
                         Content = configObject.Content
@@ -387,7 +400,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             await PopupService.ConfirmAsync("删除配置项", $"您确定要删除Key：{model.Key}，Value：{model.Value}的配置项吗？", async args =>
             {
                 var content = JsonSerializer.Serialize(model);
-                await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObjectId,
                     Content = content,
@@ -400,13 +413,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             });
         }
 
-        private void ShowPropertyModal(int configObjectId, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
+        private void ShowPropertyModal(ConfigObjectModel configObject, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
         {
+            _selectConfigObject = configObject;
             if (models != null)
             {
                 //add
                 _selectConfigObjectAllProperties = models;
-                _propertyConfigModal.Show(configObjectId);
+                _propertyConfigModal.Show(configObject.Id);
             }
             else if (model != null)
             {
@@ -419,7 +433,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Modifier = model.Modifier,
                     ModificationTime = model.ModificationTime
                 };
-                _propertyConfigModal.Show(dto, configObjectId);
+                _propertyConfigModal.Show(dto, configObject.Id);
             }
         }
 
@@ -431,6 +445,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task AddConfigObject(EditContext context)
         {
+            _addConfigObjectModal.Data.Type = ConfigObjectType;
+            _addConfigObjectModal.Data.ObjectId = _appDetail.Id;
             if (context.Validate())
             {
                 string initialContent = (_addConfigObjectModal.Data.FormatLabelCode.ToLower()) switch
@@ -447,16 +463,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     {
                         Name = _addConfigObjectModal.Data.Name,
                         FormatLabelCode = _addConfigObjectModal.Data.FormatLabelCode,
-                        Type = ConfigObjectType,
-                        ObjectId = _appDetail.Id,
+                        Type = _addConfigObjectModal.Data.Type,
+                        ObjectId = _addConfigObjectModal.Data.ObjectId,
                         EnvironmentClusterId = _selectEnvClusterIds[i].AsT1,
                         Content = initialContent,
                         TempContent = initialContent
                     });
                 }
 
-                await ConfigObjecCaller.AddConfigObjectAsync(configObjectDtos);
-                var configObjects = await ConfigObjecCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, ConfigObjectType, ""); ;
+                await ConfigObjectCaller.AddConfigObjectAsync(configObjectDtos);
+                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, _addConfigObjectModal.Data.Type, ""); ;
                 _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
 
                 _addConfigObjectModal.Hide();
@@ -470,7 +486,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 if (_propertyConfigModal.HasValue)
                 {
-                    await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                    await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                     {
                         ConfigObjectId = _propertyConfigModal.Depend,
                         FormatLabelCode = "Properties",
@@ -485,7 +501,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     else
                     {
-                        await ConfigObjecCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                        await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                         {
                             ConfigObjectId = _propertyConfigModal.Depend,
                             FormatLabelCode = "Properties",
@@ -504,7 +520,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             await PopupService.ConfirmAsync("删除配置对象", $"删除配置对象“{configObject.Name}”将导致实例获取不到此配置对象的配置，确定要删除吗？", async args =>
             {
-                await ConfigObjecCaller.RemoveAsync(configObject.Id);
+                await ConfigObjectCaller.RemoveAsync(configObject.Id);
                 _configObjects.Remove(configObject);
             });
         }
@@ -529,7 +545,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             if (context.Validate())
             {
-                await ConfigObjecCaller.ReleaseAsync(_configObjectReleaseModal.Data);
+                await ConfigObjectCaller.ReleaseAsync(_configObjectReleaseModal.Data);
 
                 await InitDataAsync();
                 await PopupService.ToastSuccessAsync("发布成功");
@@ -539,7 +555,58 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RevokeAsync(ConfigObjectModel configObject)
         {
+            await PopupService.ConfirmAsync("撤销配置", $"配置对象“{configObject.Name}”下已修改但尚未发布的配置将呗撤销，您确定要撤销吗？", async args =>
+            {
+                await ConfigObjectCaller.RevokeAsync(configObject.Id);
 
+                await InitDataAsync();
+                await PopupService.ToastSuccessAsync("撤销成功");
+            });
+        }
+
+        private async Task ShowRollbackModalAsync(ConfigObjectModel configObject)
+        {
+            _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
+            if (configObject.FormatLabelCode.ToLower() == "properties")
+            {
+                var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).First();
+                if (latestConfigObjectRelease.FromReleaseId == 0)
+                {
+                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
+                       .OrderByDescending(release => release.Id)
+                       .Take(2)
+                       .ToList();
+                }
+                else
+                {
+                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
+                        .OrderByDescending(release => release.Id)
+                        .Where(release => release.Id <= latestConfigObjectRelease.ToReleaseId)
+                        .Take(2)
+                        .ToList();
+                }
+
+                if (_releaseHistory.ConfigObjectReleases.Count <= 1)
+                {
+                    await PopupService.ToastErrorAsync("没有可以回滚的发布历史");
+                    return;
+                }
+            }
+
+            _showRollbackModal = true;
+        }
+
+        private async Task RollbackAsync()
+        {
+            await ConfigObjectCaller.RollbackAsync(new RollbackConfigObjectReleaseDto
+            {
+                ConfigObjectId = _releaseHistory.Id,
+                RollbackToReleaseId = _releaseHistory.ConfigObjectReleases.Last().Id
+            });
+
+            await InitDataAsync();
+            _showRollbackModal = false;
+            await PopupService.ToastSuccessAsync("回滚成功");
         }
     }
 }

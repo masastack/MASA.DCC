@@ -1,0 +1,83 @@
+﻿<DefaultModal Width="684" Title="回滚" Value="Value" ValueChanged="ValueChanged" HideCancelAction OnSave="OnClick">
+    <ChildContent>
+        <MAlert Dense
+                Type="AlertTypes.Warning">
+            此操作将会回滚到上个发布版本，且当前版本作废，但不影响正在修改的配置。
+        </MAlert>
+        <MTimeline Style="position:relative; left:-228px;">
+            <MTimelineItem Color="primary" Small>
+                <OppositeContent>
+                    <div>
+                        <div style="font-size:14px; font-weight: 500; color: #1B2559;">@CurrentConfigObjectRelease.CreationTime.ToString("MM.dd").TrimStart('0')</div>
+                        <div style="font-size:10px; font-weight: 400; color: #A3AED0;">当前</div>
+                    </div>
+                </OppositeContent>
+                <ChildContent>
+                    <div>
+                        <div style="font-size:14px; font-weight: 500; color: #1B2559;">@CurrentConfigObjectRelease.Name</div>
+                        <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@CurrentConfigObjectRelease.Version</div>
+                    </div>
+                </ChildContent>
+            </MTimelineItem>
+            <MTimelineItem Class="text-right d-flex align-center" Color="primary" Small>
+                <OppositeContent>
+                    <div>
+                        <div style="font-size:14px; font-weight: 500; color: #1B2559;">@RollbackConfigObjectRelease.Name</div>
+                        <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@RollbackConfigObjectRelease.Version</div>
+                    </div>
+                </OppositeContent>
+                <ChildContent>
+                    <div style="font-size:14px; font-weight: 500; color: #1B2559;">回滚至</div>
+                </ChildContent>
+            </MTimelineItem>
+        </MTimeline>
+        @if (FormatLabelCode.ToLower() == "properties")
+        {
+            <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
+                <MDataTable Headers="_headers"
+                        TItem="ConfigObjectPropertyModel"
+                        Items="@_properties"
+                        Class="table-border-none"
+                        DisableSort
+                        HideDefaultFooter>
+                    <HeaderColContent Context="header">
+                        <span class="text-caption">@header.Text</span>
+                    </HeaderColContent>
+                    <ItemColContent>
+                        @switch (@context.Header.Text)
+                        {
+                            case "状态":
+                                if (context.Item.IsAdded)
+                                {
+                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>
+                                }
+                                else if (context.Item.IsEdited)
+                                {
+                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-pencil</MIcon>
+                                }
+                                else if (context.Item.IsDeleted)
+                                {
+                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-delete</MIcon>
+                                }
+                                break;
+                            default:
+                                @context.Value
+                                break;
+                        }
+                    </ItemColContent>
+                </MDataTable>
+            </div>
+        }
+        else
+        {
+            <div class="py-3">
+                <MTextarea HideDetails="true" BackgroundColor="#F6F8FD" Outlined Readonly Value="@RollbackConfigObjectRelease.Content"></MTextarea>
+            </div>
+        }
+    </ChildContent>
+    <SaveContent Context="save">
+        <MButton OnClick="save.Click" Width="100" Class="rounded-pill" Color="primary" Style="float:right;">回滚</MButton>
+    </SaveContent>
+</DefaultModal>
+
+

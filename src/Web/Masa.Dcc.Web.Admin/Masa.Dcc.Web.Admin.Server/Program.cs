@@ -1,8 +1,5 @@
-// Copyright (c) MASA Stack All rights reserved.
+﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
-
-using Masa.Utils.Caller.Core;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +18,7 @@ builder.Services.AddMasaBlazor(builder =>
         option.Info = "#37A7FF";
     });
 });
+builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n");
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddGlobalForServer();
 builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));

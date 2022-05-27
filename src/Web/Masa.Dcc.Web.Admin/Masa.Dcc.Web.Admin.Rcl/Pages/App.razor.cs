@@ -18,7 +18,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public Landscape Landscape { get; set; }
 
         [Inject]
-        public ConfigObjecCaller ConfigObjecCaller { get; set; } = default!;
+        public ConfigObjectCaller ConfigObjecCaller { get; set; } = default!;
 
         [Inject]
         public IPopupService PopupService { get; set; } = default!;

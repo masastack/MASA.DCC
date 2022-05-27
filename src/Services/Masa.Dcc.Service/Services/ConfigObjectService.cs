@@ -14,9 +14,10 @@ public class ConfigObjectService : ServiceBase
         App.MapGet("api/v1/configObjects", GetListAsync);
         App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
         App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
+        App.MapPut("api/v1/configObject/revoke/{Id}", RevokeConfigObjectAsync);
         App.MapPut("api/v1/configObject/rollback", RollbackAsync);
         App.MapPost("api/v1/configObject/clone", CloneConfigObjectAsync);
-        App.MapGet("api/v1/configObject/release/history", GetConfigObjectReleaseHistoryAsync);
+        App.MapGet("api/v1/configObject/release/history/{configObejctId}", GetConfigObjectReleaseHistoryAsync);
     }
 
     public async Task AddAsync(IEventBus eventBus, List<AddConfigObjectDto> dtos)
@@ -44,7 +45,7 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(command);
     }
 
-    public async Task RevokeConfigObjectAsync(IEventBus eventBus, int Id)
+    public async Task RevokeConfigObjectAsync(IEventBus eventBus, [FromRoute] int Id)
     {
         await eventBus.PublishAsync(new RevokeConfigObjectCommand(Id));
     }

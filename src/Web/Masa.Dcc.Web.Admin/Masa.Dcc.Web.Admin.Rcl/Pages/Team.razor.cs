@@ -21,7 +21,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public AppCaller AppCaller { get; set; } = default!;
 
         [Inject]
-        public ConfigObjecCaller ConfigObjecCaller { get; set; } = default!;
+        public ConfigObjectCaller ConfigObjecCaller { get; set; } = default!;
 
         [Inject]
         public LabelCaller LabelCaller { get; set; } = default!;

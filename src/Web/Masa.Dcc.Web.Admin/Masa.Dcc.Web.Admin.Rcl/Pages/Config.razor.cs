@@ -59,13 +59,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private readonly DataModal<ConfigObjectPropertyContentDto, int> _propertyConfigModal = new();
         private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _headers = new()
         {
-            new (){ Text= "状态", Value= nameof(ConfigObjectPropertyModel.IsPublished)},
-            new (){ Text= "Key", Value= nameof(ConfigObjectPropertyModel.Key)},
-            new (){ Text= "Value", Value= nameof(ConfigObjectPropertyModel.Value)},
-            new (){ Text= "描述", Value= nameof(ConfigObjectPropertyModel.Description)},
-            new (){ Text= "修改人", Value= nameof(ConfigObjectPropertyModel.Modifier) },
-            new (){ Text= "修改时间", Value= nameof(ConfigObjectPropertyModel.ModificationTime) },
-            new (){ Text= "操作", Sortable= false,}
+            new() { Text = "状态", Value = nameof(ConfigObjectPropertyModel.IsPublished) },
+            new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
+            new() { Text = "Value", Value = nameof(ConfigObjectPropertyModel.Value) },
+            new() { Text = "描述", Value = nameof(ConfigObjectPropertyModel.Description) },
+            new() { Text = "修改人", Value = nameof(ConfigObjectPropertyModel.Modifier) },
+            new() { Text = "修改时间", Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
+            new() { Text = "操作", Sortable = false, }
         };
         private readonly DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
         private List<LabelDto> _configObjectFormats = new();
@@ -76,12 +76,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private ConfigObjectModel _selectConfigObject = new();
         private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _releaseHeaders = new()
         {
-            new (){ Text= "状态", Value= nameof(ConfigObjectPropertyModel.IsPublished)},
-            new (){ Text= "Key", Value= nameof(ConfigObjectPropertyModel.Key)},
-            new (){ Text= "发布的值", Value= nameof(ConfigObjectPropertyModel.TempValue)},
-            new (){ Text= "未发布的值", Value= nameof(ConfigObjectPropertyModel.Value)},
-            new (){ Text= "修改人", Value= nameof(ConfigObjectPropertyModel.Modifier) },
-            new (){ Text= "修改时间", Value= nameof(ConfigObjectPropertyModel.ModificationTime) }
+            new() { Text = "状态", Value = nameof(ConfigObjectPropertyModel.IsPublished) },
+            new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
+            new() { Text = "发布的值", Value = nameof(ConfigObjectPropertyModel.TempValue) },
+            new() { Text = "未发布的值", Value = nameof(ConfigObjectPropertyModel.Value) },
+            new() { Text = "修改人", Value = nameof(ConfigObjectPropertyModel.Modifier) },
+            new() { Text = "修改时间", Value = nameof(ConfigObjectPropertyModel.ModificationTime) }
         };
         private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
         private bool _showRollbackModal;
@@ -585,12 +585,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         .Take(2)
                         .ToList();
                 }
-
-                if (_releaseHistory.ConfigObjectReleases.Count <= 1)
-                {
-                    await PopupService.ToastErrorAsync("没有可以回滚的发布历史");
-                    return;
-                }
+            }
+            if (_releaseHistory.ConfigObjectReleases.Count <= 1)
+            {
+                await PopupService.ToastErrorAsync("没有可以回滚的发布历史");
+                return;
             }
 
             _showRollbackModal = true;

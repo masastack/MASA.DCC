@@ -523,7 +523,7 @@
 
 <RollbackModal @bind-Value="_showRollbackModal"
                FormatLabelCode="@_releaseHistory.FormatLabelCode"
-               CurrentConfigObjectRelease="_releaseHistory.ConfigObjectReleases.FirstOrDefault()"
-               RollbackConfigObjectRelease="_releaseHistory.ConfigObjectReleases.LastOrDefault()"
+               CurrentConfigObjectRelease="@(_releaseHistory.ConfigObjectReleases.FirstOrDefault() ?? new())"
+               RollbackConfigObjectRelease="@(_releaseHistory.ConfigObjectReleases.LastOrDefault() ?? new())"
                OnClick="RollbackAsync">
 </RollbackModal>

@@ -382,7 +382,7 @@
 </div>
 
 <SheetDialog @bind-Value="_addConfigObjectModal.Visible" Title="@T("Create config object")" Icon="mdi-circle" IconColor="success">
-    <MForm Class="full-height" Style="height:100%;" Context="formContext" EnableValidation Model="_addConfigObjectModal.Data">
+    <MForm Class="full-height" Context="formContext" EnableValidation Model="_addConfigObjectModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>
                 <div class="text-h6 d-flex align-center">
@@ -419,7 +419,7 @@
 </SheetDialog>
 
 <SheetDialog @bind-Value="_propertyConfigModal.Visible" Title="@T("Create config object item")" Icon="mdi-circle" IconColor="success">
-    <MForm Class="full-height" Style="height:100%;" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
+    <MForm Class="full-height" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>
                 <div class="text-h6 d-flex align-center">

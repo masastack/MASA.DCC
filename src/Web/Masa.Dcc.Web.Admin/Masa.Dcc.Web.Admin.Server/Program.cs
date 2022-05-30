@@ -3,6 +3,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
+StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 builder.WebHost.UseKestrel(option =>
 {
     option.ConfigureHttpsDefaults(options =>

@@ -55,4 +55,10 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Contracts\Masa.Dcc.Contracts.Admin\Masa.Dcc.Contracts.Admin.csproj" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <None Update="Certificates\7348307__lonsid.cn.pfx">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
 </Project>

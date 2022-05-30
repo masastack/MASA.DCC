@@ -11,15 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Masa.BuildingBlocks.BasicAbility.Pm">
-      <HintPath>..\..\..\..\..\..\MASA.Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\bin\Debug\net6.0\Masa.BuildingBlocks.BasicAbility.Pm.dll</HintPath>
-    </Reference>
-    <Reference Include="Masa.Contrib.BasicAbility.Pm">
-      <HintPath>..\..\..\..\..\..\MASA.Contrib\src\BasicAbility\Masa.Contrib.BasicAbility.Pm\bin\Debug\net6.0\Masa.Contrib.BasicAbility.Pm.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
 		<Content Update="wwwroot\nav\nav.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>

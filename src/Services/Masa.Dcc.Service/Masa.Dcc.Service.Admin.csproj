@@ -4,6 +4,9 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<UserSecretsId>a8be382e-6dcb-4a0a-82ca-83e1685b9c73</UserSecretsId>
+		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+		<DockerfileContext>..\..\..</DockerfileContext>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -41,6 +44,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
 	
@@ -50,5 +54,11 @@
 	
 	<ItemGroup>
 	  <ProjectReference Include="..\..\Contracts\Masa.Dcc.Contracts.Admin\Masa.Dcc.Contracts.Admin.csproj" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <None Update="Certificates\7348307__lonsid.cn.pfx">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 </Project>

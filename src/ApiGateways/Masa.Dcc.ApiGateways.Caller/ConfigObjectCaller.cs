@@ -5,13 +5,13 @@ using Masa.Dcc.Contracts.Admin.App.Enums;
 
 namespace Masa.Dcc.ApiGateways.Caller
 {
-    public class ConfigObjecCaller : HttpClientCallerBase
+    public class ConfigObjectCaller : HttpClientCallerBase
     {
         private readonly string _prefix = "/api/v1";
 
-        public ConfigObjecCaller(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ConfigObjectCaller(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Name = nameof(ConfigObjecCaller);
+            Name = nameof(ConfigObjectCaller);
         }
 
         protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
@@ -76,6 +76,23 @@ namespace Masa.Dcc.ApiGateways.Caller
         public async Task ReleaseAsync(AddConfigObjectReleaseDto dto)
         {
             await CallerProvider.PostAsync($"{_prefix}/configObject/release", dto);
+        }
+
+        public async Task RevokeAsync(int configObjectId)
+        {
+            await CallerProvider.PutAsync($"{_prefix}/configObject/revoke/{configObjectId}", null);
+        }
+
+        public async Task<ConfigObjectWithReleaseHistoryDto> GetReleaseHistoryAsync(int configObjectId)
+        {
+            var result = await CallerProvider.GetAsync<ConfigObjectWithReleaseHistoryDto>($"{_prefix}/configObject/release/history/{configObjectId}");
+
+            return result ?? new();
+        }
+
+        public async Task RollbackAsync(RollbackConfigObjectReleaseDto dto)
+        {
+            await CallerProvider.PutAsync($"{_prefix}/configObject/rollback", dto);
         }
     }
 }

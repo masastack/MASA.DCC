@@ -15,10 +15,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public EventCallback<NavigateToConfigModel> OnNavigateToConfig { get; set; }
 
         [CascadingParameter]
-        public Landscape Landscape { get; set; }
+        public Landscape? Landscape { get; set; }
+
+        [CascadingParameter]
+        public Team? Team { get; set; }
 
         [Inject]
-        public ConfigObjecCaller ConfigObjecCaller { get; set; } = default!;
+        public ConfigObjectCaller ConfigObjecCaller { get; set; } = default!;
 
         [Inject]
         public IPopupService PopupService { get; set; } = default!;
@@ -92,7 +95,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task NavigateToConfigAsync(NavigateToConfigModel model)
         {
-            await Landscape.AppNavigateToConfigAsync(model);
+            if (Landscape != null)
+            {
+                await Landscape.AppNavigateToConfigAsync(model);
+            }
+            else if (Team != null)
+            {
+                await Team.AppNavigateToConfigAsync(model);
+            }
         }
 
         private async Task SearchAppAsync()

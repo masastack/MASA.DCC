@@ -119,7 +119,7 @@
                                                             <MListItemTitle>发布历史</MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
-                                                    <MListItem>
+                                                    <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-repeat</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>
@@ -127,7 +127,7 @@
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
-                                                    <MListItem>
+                                                    <MListItem OnClick="()=>RevokeAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>
@@ -164,19 +164,66 @@
                                         <span class="ml-3 text-caption">|</span>
                                         <sapn class="ml-2 text-caption">@configObject.FormatLabelCode</sapn>
                                         <MSpacer></MSpacer>
-                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject.Id,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
+                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
                                         <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
                                         <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
-                                        <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
+                                        <MMenu OffsetY>
+                                            <ActivatorContent>
+                                                <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                    <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
+                                                </MButton>
+                                            </ActivatorContent>
+                                            <ChildContent>
+                                                <MList>
+                                                    <MListItem>
+                                                        <MIcon Class="mr-4">mdi-history</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>发布历史</MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
+                                                        <MIcon Class="mr-4">mdi-repeat</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>
+                                                                回滚
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MListItem OnClick="()=>RevokeAsync(configObject)">
+                                                        <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>
+                                                                撤销
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MDivider></MDivider>
+                                                    <MListItem OnClick="()=>RemoveAsync(configObject)">
+                                                        <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle Class="error--text">
+                                                                删除
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                </MList>
+                                            </ChildContent>
+                                        </MMenu>
                                         <span class="mr-6 text-caption">|</span>
                                     </div>
                                 </MExpansionPanelHeader>
                                 <MExpansionPanelContent>
-                                    <ElevationTab TabIndex="_tabIndex" TabIndexChanged="index=>HandleTabIndexChangedAsync(index,configObject.ConfigObjectPropertyContents)" TabMinWidth="70" ItemsClass="rounded-5" Dense>
-                                        @*Tabs="@(new List<string>{"表格","文本"})"*@
+                                    <ElevationTab TabIndex="_tabIndex"
+                                          Left
+                                          TabIndexChanged="index=>HandleTabIndexChangedAsync(index,configObject.ConfigObjectPropertyContents)"
+                                          TabMinWidth="70"
+                                          ItemsClass="rounded-5"
+                                          Dense
+                                          Tabs="@(new List<string>{"表格","文本"})">
                                         <ElevationTabItem>
                                             <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
                                                 <MDataTable Headers="_headers"
+                                                    SortDesc="true"
                                                     SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                                     TItem="ConfigObjectPropertyModel"
                                                     Items="@configObject.ConfigObjectPropertyContents"
@@ -198,21 +245,21 @@
                                                                 {
                                                                     if (context.Item.IsAdded)
                                                                     {
-                                                                        <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus</MIcon>
+                                                                        <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>
                                                                     }
                                                                     else if (context.Item.IsEdited)
                                                                     {
-                                                                        <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-pencil</MIcon>
+                                                                        <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-pencil</MIcon>
                                                                     }
                                                                     else if (context.Item.IsDeleted)
                                                                     {
-                                                                        <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-delete</MIcon>
+                                                                        <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-delete</MIcon>
                                                                     }
                                                                     <span>未发布</span>
                                                                 }
                                                                 break;
                                                             case "操作":
-                                                                <MIcon Class="mr-3 hover-pointer" Size="20" OnClick="()=>ShowPropertyModal(configObject.Id, null, context.Item)">mdi-pencil</MIcon>
+                                                                <MIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-pencil</MIcon>
                                                                 <MIcon Class="hover-pointer" Size="20" Color="error" OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">mdi-delete</MIcon>
                                                                 break;
                                                             case "修改时间":
@@ -277,7 +324,48 @@
                                         </MButton>
                                         <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
                                         <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
-                                        <MButton StopPropagation Icon Class="mr-4"><MIcon Color="#323D6F">mdi-dots-vertical</MIcon></MButton>
+                                        <MMenu OffsetY>
+                                            <ActivatorContent>
+                                                <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                    <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
+                                                </MButton>
+                                            </ActivatorContent>
+                                            <ChildContent>
+                                                <MList>
+                                                    <MListItem>
+                                                        <MIcon Class="mr-4">mdi-history</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>发布历史</MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
+                                                        <MIcon Class="mr-4">mdi-repeat</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>
+                                                                回滚
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MListItem OnClick="()=>RevokeAsync(configObject)">
+                                                        <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle>
+                                                                撤销
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                    <MDivider></MDivider>
+                                                    <MListItem OnClick="()=>RemoveAsync(configObject)">
+                                                        <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
+                                                        <MListItemContent>
+                                                            <MListItemTitle Class="error--text">
+                                                                删除
+                                                            </MListItemTitle>
+                                                        </MListItemContent>
+                                                    </MListItem>
+                                                </MList>
+                                            </ChildContent>
+                                        </MMenu>
                                         <span class="mr-6 text-caption">|</span>
                                     </div>
                                 </MExpansionPanelHeader>
@@ -294,10 +382,14 @@
 </div>
 
 <SheetDialog @bind-Value="_addConfigObjectModal.Visible" Title="@T("Create config object")" Icon="mdi-circle" IconColor="success">
-    <MForm Class="full-height" Style="height:100%;" Context="formContext" EnableValidation Model="_addConfigObjectModal.Data">
+    <MForm Class="full-height" Context="formContext" EnableValidation Model="_addConfigObjectModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>
-                <div class="text-h6">Application  |  identity</div>
+                <div class="text-h6 d-flex align-center">
+                    @_appDetail.Name
+                    <span class="ml-3 text-caption">|</span>
+                    <sapn class="ml-2 text-caption">@_appDetail.Identity</sapn>
+                </div>
                 <MTextField Class="mt-12" Dense Label="名称" Outlined @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
                 <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
                          Label="格式"
@@ -327,10 +419,14 @@
 </SheetDialog>
 
 <SheetDialog @bind-Value="_propertyConfigModal.Visible" Title="@T("Create config object item")" Icon="mdi-circle" IconColor="success">
-    <MForm Class="full-height" Style="height:100%;" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
+    <MForm Class="full-height" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>
-                <div class="text-h6">配置对象  |  Properties</div>
+                <div class="text-h6 d-flex align-center">
+                    @_selectConfigObject.Name
+                    <span class="ml-3 text-caption">|</span>
+                    <sapn class="ml-2 text-caption">Properties</sapn>
+                </div>
                 <MTextField Class="mt-12" Disabled="_propertyConfigModal.HasValue" Dense Label="Key" Outlined @bind-Value="_propertyConfigModal.Data.Key"></MTextField>
                 <MTextField Dense Label="Value" Outlined @bind-Value="_propertyConfigModal.Data.Value"></MTextField>
                 <MTextarea Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
@@ -346,14 +442,19 @@
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_configObjectReleaseModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>
-                <div class="text-h6">配置对象  |  Properties</div>
+                <div class="text-h6 d-flex align-center">
+                    @_selectConfigObject.Name
+                    <span class="ml-3 text-caption">|</span>
+                    <sapn class="ml-2 text-caption">Properties</sapn>
+                </div>
                 <MTextField Class="mt-12" Dense Label="发布名称" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
                 <MTextarea Dense Label="描述" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
                 <p class="neutral--text" style="font-size:14px; font-weight:700;">变更的配置</p>
                 @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
                     <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
-                        <MDataTable Headers="_headers"
+                        <MDataTable Headers="_releaseHeaders"
+                                DisableSort
                                 TItem="ConfigObjectPropertyModel"
                                 Items="@_selectConfigObjectAllProperties"
                                 Class="table-border-none"
@@ -381,10 +482,24 @@
                                             <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-delete</MIcon>
                                         }
                                         break;
+                                    case "发布的值":
+                                        if (context.Item.IsDeleted)
+                                        {
+                                            <span>@context.Item.Value</span>
+                                        }
+                                        else if (context.Item.IsEdited)
+                                        {
+                                            <span>@context.Item.TempValue</span>
+                                        }
+                                        break;
+                                    case "未发布的值":
+                                        if (!context.Item.IsDeleted)
+                                        {
+                                            <span>@context.Item.Value</span>
+                                        }
+                                        break;
                                     case "修改时间":
                                         <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
-                                        break;
-                                    case "操作":
                                         break;
                                     default:
                                         @context.Value
@@ -406,3 +521,9 @@
     </MForm>
 </SheetDialog>
 
+<RollbackModal @bind-Value="_showRollbackModal"
+               FormatLabelCode="@_releaseHistory.FormatLabelCode"
+               CurrentConfigObjectRelease="@(_releaseHistory.ConfigObjectReleases.FirstOrDefault() ?? new())"
+               RollbackConfigObjectRelease="@(_releaseHistory.ConfigObjectReleases.LastOrDefault() ?? new())"
+               OnClick="RollbackAsync">
+</RollbackModal>

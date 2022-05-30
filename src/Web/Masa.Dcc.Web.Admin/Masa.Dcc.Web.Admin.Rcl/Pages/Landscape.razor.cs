@@ -118,7 +118,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _curTab = value;
 
-            //await Task.Delay(16);
             StateHasChanged();
 
             if (_curTab == 1 && _app != null)

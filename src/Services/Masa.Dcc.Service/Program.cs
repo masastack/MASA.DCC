@@ -3,6 +3,12 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseKestrel(option =>
+{
+    option.ConfigureHttpsDefaults(options =>
+    options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN"));
+});
+
 builder.Services.AddDaprClient();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
@@ -45,11 +51,10 @@ var app = builder.Services
     .AddServices(builder);
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseRouting();
 
 app.UseAuthentication();

@@ -50,6 +50,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Components
         public EventCallback OnClick { get; set; }
 
         [Parameter]
+        public EventCallback OnClickAfter { get; set; }
+
+        [Parameter]
         public string FormatLabelCode { get; set; } = null!;
 
         [Parameter]
@@ -66,5 +69,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Components
             new (){ Text= "回滚前的值", Value= nameof(ConfigObjectPropertyModel.Value)},
             new (){ Text= "回滚后的值", Value= nameof(ConfigObjectPropertyModel.TempValue)}
         };
+
+        private async Task HandOnClickAsync()
+        {
+            if (OnClick.HasDelegate)
+            {
+                await OnClick.InvokeAsync();
+            }
+            if (OnClickAfter.HasDelegate)
+            {
+                await OnClickAfter.InvokeAsync();
+            }
+        }
     }
 }

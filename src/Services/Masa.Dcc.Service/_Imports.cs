@@ -45,8 +45,8 @@ global using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;
 global using Masa.Utils.Caching.Redis.DependencyInjection;
 global using Masa.Utils.Caching.Redis.Models;
+global using Masa.Utils.Configuration.Json;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.EntityFrameworkCore;
-
 
 

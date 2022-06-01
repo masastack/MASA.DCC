@@ -84,8 +84,26 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "修改时间", Value = nameof(ConfigObjectPropertyModel.ModificationTime) }
         };
         private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
+        private List<ConfigObjectReleaseModel> _configObjectReleases = new();
         private bool _showRollbackModal;
-        private string _propertyConfigObjectName = "";
+        private bool _showReleaseHistory;
+        private ConfigObjectReleaseModel _selectReleaseHistory = new();
+        private ConfigObjectReleaseModel _prevReleaseHistory = new();
+        private List<ConfigObjectPropertyModel> _changedProperties = new();
+        private int _releaseTabIndex;
+        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _allConfigheaders = new()
+        {
+            new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
+            new() { Text = "Value", Value = nameof(ConfigObjectPropertyModel.Value) }
+        };
+        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _changedConfigheaders = new()
+        {
+            new() { Text = "状态", Value = nameof(ConfigObjectPropertyModel.IsPublished) },
+            new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
+            new() { Text = "新的值", Value = nameof(ConfigObjectPropertyModel.Value) },
+            new() { Text = "变更的值", Value = nameof(ConfigObjectPropertyModel.TempValue) }
+        };
+        private Action? _handleRollbackOnClickAfter = null;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -437,6 +455,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
+        private void PropertyConfigModalValueChanged(bool value)
+        {
+            if (value == false)
+            {
+                _propertyConfigModal.Hide();
+            }
+        }
+
         private async Task ShowAddConfigObjectModal()
         {
             _addConfigObjectModal.Show();
@@ -606,6 +632,134 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             await InitDataAsync();
             _showRollbackModal = false;
             await PopupService.ToastSuccessAsync("回滚成功");
+        }
+
+        private async Task ShowReleaseHistoryAsync(ConfigObjectModel configObject)
+        {
+            _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
+            _configObjectReleases = _releaseHistory.ConfigObjectReleases
+                .OrderByDescending(release => release.Id)
+                .Adapt<List<ConfigObjectReleaseModel>>();
+
+            if (configObject.FormatLabelCode.Trim().ToLower() == "properties")
+            {
+                _configObjectReleases.ForEach(release =>
+                {
+                    release.ConfigObjectProperties = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(release.Content) ?? new();
+                });
+            }
+
+            if (_configObjectReleases.Count < 1)
+            {
+                await PopupService.ToastErrorAsync("暂无发布历史");
+            }
+            else
+            {
+                OnTimelineItemClick(_configObjectReleases.First(), false);
+                _showReleaseHistory = true;
+            }
+        }
+
+        private void OnTimelineItemClick(ConfigObjectReleaseModel configObjectRelease, bool enableTabIndexChanged = true)
+        {
+            _selectReleaseHistory = configObjectRelease;
+            int index = _configObjectReleases.IndexOf(configObjectRelease);
+            _prevReleaseHistory = _configObjectReleases.Skip(index + 1).FirstOrDefault() ?? new();
+            configObjectRelease.IsActive = true;
+            _configObjectReleases.ForEach(release =>
+            {
+                if (release.Id != configObjectRelease.Id)
+                {
+                    release.IsActive = false;
+                }
+            });
+
+            if (enableTabIndexChanged)
+            {
+                ReleaseHistoryTabIndexChanged(_releaseTabIndex);
+            }
+        }
+
+        private void ReleaseHistoryTabIndexChanged(StringNumber index)
+        {
+            _releaseTabIndex = index.AsT1;
+            if (_releaseTabIndex == 1)
+            {
+                if (_prevReleaseHistory.ConfigObjectProperties.Count == 0)
+                {
+                    _changedProperties = _selectReleaseHistory.ConfigObjectProperties.Select(release => new ConfigObjectPropertyModel
+                    {
+                        Key = release.Key,
+                        Value = "",
+                        TempValue = release.Value,
+                        IsAdded = true
+                    }).ToList();
+                }
+                else
+                {
+                    var current = _selectReleaseHistory.ConfigObjectProperties;
+                    var prev = _prevReleaseHistory.ConfigObjectProperties;
+
+                    var added = current.ExceptBy(prev.Select(content => content.Key), content => content.Key)
+                        .Select(content => new ConfigObjectPropertyModel
+                        { IsAdded = true, Key = content.Key, TempValue = content.Value })
+                        .ToList();
+                    var deleted = prev.ExceptBy(current.Select(content => content.Key), content => content.Key)
+                        .Select(content => new ConfigObjectPropertyModel
+                        { IsDeleted = true, Key = content.Key, Value = content.Value })
+                        .ToList();
+                    var intersectAndEdited = current.IntersectBy(prev.Select(content => content.Key), content => content.Key)
+                        .ToList();
+                    var intersect = current.IntersectBy(
+                        prev.Select(content => new { content.Key, content.Value }), content => new { content.Key, content.Value });
+                    intersectAndEdited.RemoveAll(content => intersect.Select(content => content.Key).Contains(content.Key));
+                    var edited = intersectAndEdited
+                        .Select(content => new ConfigObjectPropertyModel
+                        {
+                            IsEdited = true,
+                            Key = content.Key,
+                            Value = current.FirstOrDefault(current => current.Key == content.Key)?.Value ?? "",
+                            TempValue = prev.FirstOrDefault(rollback => rollback.Key == content.Key)?.Value ?? ""
+                        }).ToList();
+
+                    _changedProperties = added
+                        .UnionBy(deleted, prop => prop.Key)
+                        .UnionBy(edited, prop => prop.Key).ToList();
+                }
+            }
+        }
+
+        private async Task RollbackToAsync()
+        {
+            var current = _configObjectReleases.First();
+            if (_selectReleaseHistory.IsInvalid)
+            {
+                await PopupService.ToastErrorAsync("此版本已作废，无法回滚");
+                return;
+            }
+            if (current.ToReleaseId == _selectReleaseHistory.Id || _selectReleaseHistory.Id == current.Id || current.Version == _selectReleaseHistory.Version)
+            {
+                await PopupService.ToastErrorAsync("该版本与当前版本配置相同，无法回滚");
+                return;
+            }
+
+            _releaseHistory.ConfigObjectReleases.Clear();
+            _releaseHistory.ConfigObjectReleases.Add(current);
+            _releaseHistory.ConfigObjectReleases.Add(_selectReleaseHistory);
+            _showRollbackModal = true;
+            _handleRollbackOnClickAfter = async () =>
+            {
+                _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(current.ConfigObjectId);
+                _configObjectReleases = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).Adapt<List<ConfigObjectReleaseModel>>();
+                if (_releaseHistory.FormatLabelCode.Trim().ToLower() == "properties")
+                {
+                    _configObjectReleases.ForEach(release =>
+                    {
+                        release.ConfigObjectProperties = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(release.Content) ?? new();
+                    });
+                }
+                StateHasChanged();
+            };
         }
     }
 }

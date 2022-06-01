@@ -93,7 +93,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                    dto.ConfigObjectId,
                    dto.Name,
                    dto.Comment,
-                   configObject.Content)
+                   configObject.Content,
+                   null)
                );
 
             //add redis cache
@@ -108,64 +109,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         }
 
         public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseDto rollbackDto)
-        {
-            if (rollbackDto.RollbackToReleaseId == 0)
-            {
-                await RollbackAsync(rollbackDto.ConfigObjectId);
-            }
-            else
-            {
-                await RollbackToAsync(rollbackDto);
-            }
-        }
-
-        private async Task RollbackAsync(int configObjectId)
-        {
-            List<ConfigObjectRelease> configObjectReleases = (await _configObjectReleaseRepository.GetListAsync(
-                cor => cor.ConfigObjectId == configObjectId && cor.IsInvalid == false))//Remove the rolled back version
-                    .OrderByDescending(cor => cor.Id)
-                    .ToList();
-
-            if (configObjectReleases.Count < 2)
-            {
-                throw new UserFriendlyException("没有可回滚的版本");
-            }
-
-            var latestConfigObjectRelease = configObjectReleases.First();
-
-            //Excluding the same version and the latest version is the version that can be rolled back
-            var canRollbackEntity = configObjectReleases
-                .Where(cor => cor.ToReleaseId != latestConfigObjectRelease.Id && cor.Id != latestConfigObjectRelease.Id)
-                .OrderByDescending(cor => cor.Id)
-                .FirstOrDefault();
-
-            if (canRollbackEntity == null)
-            {
-                throw new UserFriendlyException("没有可回滚的版本");
-            }
-
-            //rollback
-            //add
-            await _configObjectReleaseRepository.AddAsync(new ConfigObjectRelease(
-                     canRollbackEntity.ConfigObjectId,
-                     canRollbackEntity.Name,
-                     $"由 {latestConfigObjectRelease.Name} 回滚至 {canRollbackEntity.Name}",
-                     canRollbackEntity.Content,
-                     latestConfigObjectRelease.Id,
-                     canRollbackEntity.Id
-                 ));
-
-            //Invalid rollback entity
-            canRollbackEntity.Invalid();
-            await _configObjectReleaseRepository.UpdateAsync(canRollbackEntity);
-
-            //Update ConfigObject entity
-            var configObject = (await _configObjectRepository.FindAsync(config => config.Id == configObjectId))!;
-            configObject.AddContent(configObject.Content, canRollbackEntity.Content);
-            await _configObjectRepository.UpdateAsync(configObject);
-        }
-
-        private async Task RollbackToAsync(RollbackConfigObjectReleaseDto rollbackDto)
         {
             var latestConfigObjectRelease = await _context.Set<ConfigObjectRelease>()
                 .Where(cor => cor.ConfigObjectId == rollbackDto.ConfigObjectId)
@@ -196,13 +139,13 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                      canRollbackEntity.Name,
                      $"由 {latestConfigObjectRelease.Name} 回滚至 {canRollbackEntity.Name}",
                      canRollbackEntity.Content,
-                     latestConfigObjectRelease.Id,
-                     canRollbackEntity.Id
+                     canRollbackEntity.Version,
+                     latestConfigObjectRelease.Id
                  ));
 
             //Invalid rollback entity
-            canRollbackEntity.Invalid();
-            await _configObjectReleaseRepository.UpdateAsync(canRollbackEntity);
+            latestConfigObjectRelease.Invalid();
+            await _configObjectReleaseRepository.UpdateAsync(latestConfigObjectRelease);
 
             //Update ConfigObject entity
             var configObject = (await _configObjectRepository.FindAsync(config => config.Id == rollbackDto.ConfigObjectId))!;

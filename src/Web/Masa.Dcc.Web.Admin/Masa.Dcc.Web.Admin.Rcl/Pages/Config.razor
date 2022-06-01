@@ -113,7 +113,7 @@
                                             </ActivatorContent>
                                             <ChildContent>
                                                 <MList>
-                                                    <MListItem>
+                                                    <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-history</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>发布历史</MListItemTitle>
@@ -175,7 +175,7 @@
                                             </ActivatorContent>
                                             <ChildContent>
                                                 <MList>
-                                                    <MListItem>
+                                                    <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-history</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>发布历史</MListItemTitle>
@@ -333,7 +333,7 @@
                                             <ChildContent>
                                                 <MList>
                                                     <MListItem>
-                                                        <MIcon Class="mr-4">mdi-history</MIcon>
+                                                        <MIcon Class="mr-4" OnClick="()=>ShowReleaseHistoryAsync(configObject)">mdi-history</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>发布历史</MListItemTitle>
                                                         </MListItemContent>
@@ -418,7 +418,7 @@
     </MForm>
 </SheetDialog>
 
-<SheetDialog @bind-Value="_propertyConfigModal.Visible" Title="@T("Create config object item")" Icon="mdi-circle" IconColor="success">
+<SheetDialog Value="_propertyConfigModal.Visible" ValueChanged="PropertyConfigModalValueChanged" Title="@T("Create config object item")" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>
@@ -525,5 +525,147 @@
                FormatLabelCode="@_releaseHistory.FormatLabelCode"
                CurrentConfigObjectRelease="@(_releaseHistory.ConfigObjectReleases.FirstOrDefault() ?? new())"
                RollbackConfigObjectRelease="@(_releaseHistory.ConfigObjectReleases.LastOrDefault() ?? new())"
-               OnClick="RollbackAsync">
+               OnClick="RollbackAsync"
+               OnClickAfter="_handleRollbackOnClickAfter">
 </RollbackModal>
+
+<SheetDialog @bind-Value="_showReleaseHistory" Title="@T("Release history")" Icon="mdi-circle" IconColor="success">
+    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+        <div>
+            <div class="text-h6 d-flex align-center">
+                配置对象名称
+                <span class="ml-3 text-caption">|</span>
+                <sapn class="ml-2 text-caption">Properties</sapn>
+            </div>
+        </div>
+        <div class="d-flex full-height full-width mt-12" style="overflow: hidden;">
+            <div class="full-height" style="min-width: 248px; border-right: 1px solid #E2E7F4; overflow-x: hidden; overflow-y: auto;">
+                <MTimeline>
+                    @{
+                        int _index = 0;
+                        foreach (var release in _configObjectReleases)
+                        {
+                            int index = _index;
+                            _index++;
+                            <MTimelineItem HideDot="!release.IsActive" Color="primary" Small Right @onclick="()=>OnTimelineItemClick(release)">
+                                <OppositeContent>
+                                    <div>
+                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                            @release.CreationTime.ToString("MM-dd").TrimStart('0')
+                                        </div>
+                                        @if (index == 1)
+                                        {
+                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">当前</div>
+                                        }
+                                    </div>
+                                </OppositeContent>
+                                <ChildContent>
+                                    <div>
+                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                            @release.Name
+                                        </div>
+                                        <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@release.Version</div>
+                                    </div>
+                                </ChildContent>
+                            </MTimelineItem>
+                        }
+                    }
+                </MTimeline>
+            </div>
+            <div class="ml-12 content full-height full-width">
+                <div class="full-width d-flex align-center pl-2 pr-3" style="height: 40px; background: #F0F3FA; border-radius: 8px;">
+                    @if (_selectReleaseHistory.IsInvalid)
+                    {
+                        <MChip Class="mr-4" Small Label Color="#323D6F" TextColor="white">已回滚</MChip>
+                    }
+                    <span style="color: #485585; font-weight: 700; font-size: 16px;">@_selectReleaseHistory.Name</span>
+                    <MSpacer></MSpacer>
+                    <span style="color: #A3AED0; font-size:12px;">发布时间：@_selectReleaseHistory.CreationTime.ToString(T("$DateTimeFormat"))</span>
+                    <span class="mx-2">|</span>
+                    <span style="color: #323D6F; font-size:12px;">@_selectReleaseHistory.Creator</span>
+                </div>
+                <div class="mt-12" style="color: #1B2559;font-weight: 700; font-size: 14px;">
+                    @_selectReleaseHistory.Version
+                </div>
+                <div style="color: #A3AED0; font-weight: 500; font-size: 12px;">
+                    来自 “@_selectReleaseHistory.Name” 的应用版本
+                </div>
+                <div class="mt-6">
+                    <span style="color: #323D6F; font-size: 14px;">描述说明：</span>
+                    <span style="color: #7681AB; font-size: 14px;">@_selectReleaseHistory.Comment</span>
+                </div>
+                @if (_releaseHistory.FormatLabelCode.Trim().ToLower() == "properties")
+                {
+                    <ElevationTab Class="mt-12"
+                              Left
+                              TabIndex="_releaseTabIndex"
+                              TabIndexChanged="index=>ReleaseHistoryTabIndexChanged(index)"
+                              ItemsClass="rounded-2"
+                              Dense
+                              Tabs="@(new List<string>{"全部配置","变更配置"})">
+                        <ElevationTabItem>
+                            <div style="border:1px solid #E2E7F4;" class="py-1 mt-4 rounded-2">
+                                <MDataTable Headers="_allConfigheaders"
+                                        DisableSort
+                                        TItem="ConfigObjectPropertyModel"
+                                        Items="@_selectReleaseHistory.ConfigObjectProperties"
+                                        Class="table-border-none"
+                                        HideDefaultFooter>
+                                    <HeaderColContent Context="header">
+                                        <span class="text-caption">@header.Text</span>
+                                    </HeaderColContent>
+                                </MDataTable>
+                            </div>
+                        </ElevationTabItem>
+                        <ElevationTabItem>
+                            <div style="border:1px solid #E2E7F4;" class="py-1 mt-4 rounded-2">
+                                <MDataTable Headers="_changedConfigheaders"
+                                        DisableSort
+                                        TItem="ConfigObjectPropertyModel"
+                                        Items="@_changedProperties"
+                                        Class="table-border-none"
+                                        HideDefaultFooter>
+                                    <HeaderColContent Context="header">
+                                        <span class="text-caption">@header.Text</span>
+                                    </HeaderColContent>
+                                    <ItemColContent>
+                                        @switch (@context.Header.Text)
+                                        {
+                                            case "状态":
+                                                if (context.Item.IsAdded)
+                                                {
+                                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>
+                                                }
+                                                else if (context.Item.IsEdited)
+                                                {
+                                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-pencil</MIcon>
+                                                }
+                                                else if (context.Item.IsDeleted)
+                                                {
+                                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-delete</MIcon>
+                                                }
+                                                break;
+                                            default:
+                                                @context.Value
+                                                break;
+                                        }
+                                    </ItemColContent>
+                                </MDataTable>
+                            </div>
+                        </ElevationTabItem>
+                    </ElevationTab>
+                }
+                else
+                {
+                    <div class="mt-12" style="color: #1B2559; font-weight: 700; font-size: 14px;">全部配置</div>
+                    <div class="py-3">
+                        <MTextarea HideDetails="true" Outlined Readonly Value="@_selectReleaseHistory.Content"></MTextarea>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="d-flex justify-end align-end" style="width:100%;">
+            <MButton Class="rounded-pill" Color="primary" OnClick="RollbackToAsync">回滚至此版本</MButton>
+        </div>
+    </div>
+</SheetDialog>

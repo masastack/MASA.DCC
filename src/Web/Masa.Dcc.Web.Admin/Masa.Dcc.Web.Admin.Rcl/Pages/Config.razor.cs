@@ -104,6 +104,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "变更的值", Value = nameof(ConfigObjectPropertyModel.TempValue) }
         };
         private Action? _handleRollbackOnClickAfter = null;
+        private int _step = 1;
+        private bool _cloneAppSelect;
+        private bool _cloneEnvSelect;
+        private string _cloneAppCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+        private string _cloneEnvCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -760,6 +765,23 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
                 StateHasChanged();
             };
+        }
+
+
+        private void SelectOtherApp()
+        {
+            _cloneAppSelect = !_cloneAppSelect;
+            _cloneEnvSelect = false;
+            _cloneAppCardStyle = _cloneAppSelect ? "position: absolute; top: 12px; transition: 0.31s;" : "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+            _cloneEnvCardStyle = _cloneEnvSelect ? "position: absolute; top: 12px; transition: 0.31s;" : "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+        }
+
+        private void SelectOtherEnv()
+        {
+            _cloneEnvSelect = !_cloneEnvSelect;
+            _cloneAppSelect = false;
+            _cloneEnvCardStyle = _cloneEnvSelect ? "position: absolute; top: 12px; transition: 0.31s;" : "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+            _cloneAppCardStyle = _cloneAppSelect ? "position: absolute; top: 12px; transition: 0.31s;" : "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
         }
     }
 }

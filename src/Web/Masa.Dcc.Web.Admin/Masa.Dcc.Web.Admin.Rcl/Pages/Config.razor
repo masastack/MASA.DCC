@@ -671,7 +671,7 @@
 </SheetDialog>
 
 <SheetDialog Value="true" Title="@T("Clone config object")" Icon="mdi-circle" IconColor="success">
-    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px;">
         <MStepper Value="_step" Elevation=0 Class="full-height">
             <MStepperHeader Style="box-shadow:none !important">
                 <MStepperStep Step="1" Complete="_step>1">
@@ -682,20 +682,22 @@
                     选择配置对象
                 </MStepperStep>
             </MStepperHeader>
-            <MStepperItems>
-                <MStepperContent Style="padding:0 !important;" Step="1">
-                    <div class="d-flex flex-column justify-center align-center" style="margin-top: 48px;">
+            <MStepperItems Style="height: calc(100% - 72px);">
+                <MStepperContent Class="full-height" Style="padding:0 !important;" Step="1">
+                    <div class="full-height d-flex flex-column justify-center align-center pt-12">
                         <div>克隆 “项目”-“App”-“环境”-“集群”的所有配置至</div>
-                        <div class="d-flex justify-center mt-12 full-width">
+                        <div class="d-flex justify-end mt-12 full-width">
                             <MRow NoGutters>
                                 <MCol>
-                                    <MCard Ripple="false" Style="@(_cloneAppSelect ? "border:2px solid #3613CC !important" : "")" Class="d-flex flex-column justify-center align-center mr-6" Height="414" Elevation="0" Color="@(_cloneAppSelect ? "white" : "#F0F3FA")" OnClick="SelectOtherApp">
+                                    <MCard Ripple="false" Style="@(_cloneAppSelect ? "border:2px solid #3613CC !important" : "")" Class="d-flex flex-column justify-end align-center mr-6" Height="414" Elevation="0" Color="@(_cloneAppSelect ? "white" : "#F0F3FA")" OnClick="SelectOtherApp">
                                         <div class="d-flex flex-column align-center" style="@_cloneAppCardStyle">
-                                            <MButton Width="100" Height="100" Icon><MIcon Size="100">mdi-close</MIcon></MButton>
-                                            <span style="font-weight: 700; font-size: 20px; color: #323D6F;">其他应用</span>
+                                            <div class="hover-pointer d-flex align-center justify-center" style="@($"border-radius: 16px; width: 100px; height: 100px; background:{(_cloneAppSelect ? "#4318FF" : "#fff" )}")">
+                                                <MIcon Size="56" Color="@(_cloneAppSelect ? "#fff" : "#323D6F")">mdi-view-carousel</MIcon>
+                                            </div>
+                                            <span class="mt-6" style="font-weight: 700; font-size: 20px; color: #323D6F;">其他应用</span>
                                         </div>
                                         <FadeTransition>
-                                            <ShowTransitionElement Value="_cloneAppSelect" Class="full-width px-6 mt-12">
+                                            <ShowTransitionElement Value="_cloneAppSelect" Class="full-width px-6 mb-15">
                                                 <div class="mt-6" @onclick:stopPropagation>
                                                     <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
                                                              Label="格式"
@@ -711,6 +713,7 @@
                                                              MenuProps="props => props.OffsetY = true"
                                                              Outlined
                                                              Dense
+                                                             HideDetails="true"
                                                              Items="_configObjectFormats"
                                                              ItemText="l=>l.Name"
                                                              ItemValue="l=>l.Code">
@@ -723,37 +726,94 @@
                                 <MCol>
                                     <MCard Ripple="false" Style="@(_cloneEnvSelect ? "border:2px solid #3613CC !important" : "")" Class="d-flex flex-column justify-center align-center" Height="414" Elevation="0" Color="@(_cloneEnvSelect ? "white" : "#F0F3FA")" OnClick="SelectOtherEnv">
                                         <div class="d-flex flex-column align-center" style="@_cloneEnvCardStyle">
-                                            <MButton Width="100" Height="100" Icon><MIcon Size="100">mdi-close</MIcon></MButton>
-                                            <span style="font-weight: 700; font-size: 20px; color: #323D6F;">其他应用</span>
+                                            <div class="hover-pointer d-flex align-center justify-center" style="@($"border-radius: 16px; width: 100px; height: 100px; background:{(_cloneEnvSelect ? "#4318FF" : "#fff" )}")">
+                                                <MIcon Size="56" Color="@(_cloneEnvSelect ? "#fff" : "#323D6F")">mdi-cloud</MIcon>
+                                            </div>
+                                            <span class="mt-6" style="font-weight: 700; font-size: 20px; color: #323D6F;">当前应用的其他环境/集群</span>
                                         </div>
-                                        <FadeTransition>
-                                            <ShowTransitionElement Value="_cloneEnvSelect" Class="text-center">
-                                                <div class="mt-6" @onclick:stopPropagation>
-                                                    <MSelect @bind-Value="@value4"
-                                                             Label="Solo style"
-                                                             Solo
-                                                             Items="@items"
-                                                             ItemText="u => u.Label"
-                                                             ItemValue="u => u.Value">
-                                                    </MSelect>
-                                                    <MTextField Solo Value="@("")"></MTextField>
-                                                </div>
-                                            </ShowTransitionElement>
-                                        </FadeTransition>
                                     </MCard>
                                 </MCol>
                             </MRow>
                         </div>
+                        <div class="d-flex justify-end align-end full-height" style="width:100%;">
+                            <MButton Width="100" Class="rounded-pill" Color="primary" OnClick="CloneNextClick">下一步</MButton>
+                        </div>
                     </div>
                 </MStepperContent>
-                <MStepperContent Style="padding-top:12px !important;" Step="2">
-                    你好
+                <MStepperContent Class="full-height" Step="2">
+                    <div style="overflow-y: auto; height: calc(100% - 48px);">
+                        <p style="font-size:14px; font-weight:700; color:#1B2559">需要克隆的集群</p>
+                        <MChipGroup Multiple Column @bind-Values="_selectEnvClusterIds">
+                            @foreach (var item in _appDetail.EnvironmentClusters)
+                            {
+                                <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
+                                    <div class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</div>&nbsp;&nbsp;
+                                    <div style="color:#05CD99">@item.ClusterName</div>
+                                </MChip>
+                            }
+                        </MChipGroup>
+                        <p style="font-size:14px; font-weight:700; color:#1B2559">配置对象</p>
+                        <MCheckbox Value="_cloneConfigObjectAllChecked"
+                                   ValueChanged="CloneConfigObjectAllChecked"
+                                   HideDetails="true"
+                                   Label="@(_cloneConfigObjectAllChecked ? "取消全选" : "全选")"
+                                   Color="primary"></MCheckbox>
+                        <MExpansionPanels Flat Accordion>
+                            @foreach (var configObject in _configObjects)
+                            {
+                                var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
+                                if (formatLabelCode == "properties")
+                                {
+                                    <MExpansionPanel Style="margin-bottom: 12px;">
+                                        <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
+                                            <div class="d-flex align-center">
+                                                <div class="d-flex align-center" @onclick:stopPropagation>
+                                                    <MCheckbox @bind-Value="configObject.IsChecked"
+                                                       HideDetails="true"
+                                                       Style="margin: 0 !important; padding: 0 !important;"
+                                                       Color="primary"></MCheckbox>
+                                                    <MTextField HideDetails="true" Dense Style="max-width: 270px;" Label="名称" Outlined @bind-Value="configObject.Name"></MTextField>
+                                                </div>
+                                                <span class="ml-3 text-caption">|</span>
+                                                <sapn class="ml-2 text-caption">properties</sapn>
+                                            </div>
+                                        </MExpansionPanelHeader>
+                                        <MExpansionPanelContent Style="padding-left: 8px;">
+                                            <MTextarea Outlined @bind-Value="@configObject.Content"></MTextarea>
+                                        </MExpansionPanelContent>
+                                    </MExpansionPanel>
+                                }
+                                else
+                                {
+                                    <MExpansionPanel Style="margin-bottom: 12px;">
+                                        <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
+                                            <div class="d-flex align-center">
+                                                <div class="d-flex align-center" @onclick:stopPropagation>
+                                                    <MCheckbox @bind-Value="configObject.IsChecked"
+                                                       HideDetails="true"
+                                                       Style="margin: 0 !important; padding: 0 !important;"
+                                                       Color="primary"></MCheckbox>
+                                                    <MTextField HideDetails="true" Dense Style="max-width: 270px;" Label="名称" Outlined @bind-Value="configObject.Name"></MTextField>
+                                                </div>
+                                                <span class="ml-3 text-caption">|</span>
+                                                <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
+                                            </div>
+                                        </MExpansionPanelHeader>
+                                        <MExpansionPanelContent Style="padding-left: 8px;">
+                                            <MTextarea Outlined @bind-Value="configObject.Content"></MTextarea>
+                                        </MExpansionPanelContent>
+                                    </MExpansionPanel>
+                                }
+                            }
+                        </MExpansionPanels>
+                        <div style="position: absolute; bottom: 0; right: 0;">
+                            <MButton Outlined Width="100" Class="rounded-pill mr-6" Color="primary" OnClick="ClonePrevClick">上一步</MButton>
+                            <MButton Width="100" Class="rounded-pill" Color="primary" OnClick="CloneNextClick">克隆</MButton>
+                        </div>
+                    </div>
                 </MStepperContent>
             </MStepperItems>
         </MStepper>
-        <div class="d-flex justify-end align-end" style="width:100%;">
-            <MButton Class="rounded-pill" Color="primary">下一步</MButton>
-        </div>
     </div>
 </SheetDialog>
 

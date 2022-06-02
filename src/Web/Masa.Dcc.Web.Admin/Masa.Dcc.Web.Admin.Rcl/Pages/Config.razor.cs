@@ -109,6 +109,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private bool _cloneEnvSelect;
         private string _cloneAppCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
         private string _cloneEnvCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+        private bool _cloneConfigObjectAllChecked;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -772,16 +773,34 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _cloneAppSelect = !_cloneAppSelect;
             _cloneEnvSelect = false;
-            _cloneAppCardStyle = _cloneAppSelect ? "position: absolute; top: 12px; transition: 0.31s;" : "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
-            _cloneEnvCardStyle = _cloneEnvSelect ? "position: absolute; top: 12px; transition: 0.31s;" : "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+            _cloneAppCardStyle = _cloneAppSelect ? "position: absolute; top: 64px; transition: 0.3s;" : "position: absolute; top:50%; margin-top:-77px; transition: 0.3s;";
         }
 
         private void SelectOtherEnv()
         {
             _cloneEnvSelect = !_cloneEnvSelect;
             _cloneAppSelect = false;
-            _cloneEnvCardStyle = _cloneEnvSelect ? "position: absolute; top: 12px; transition: 0.31s;" : "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
-            _cloneAppCardStyle = _cloneAppSelect ? "position: absolute; top: 12px; transition: 0.31s;" : "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+            _cloneAppCardStyle = _cloneAppSelect ? "position: absolute; top: 64px; transition: 0.3s;" : "position: absolute; top:50%; margin-top:-77px; transition: 0.3s;";
+        }
+
+        private void CloneNextClick()
+        {
+            _step = 2;
+        }
+
+        private void ClonePrevClick()
+        {
+            _step = 1;
+        }
+
+        private void CloneConfigObjectAllChecked(bool value)
+        {
+            _cloneConfigObjectAllChecked = value;
+
+            _configObjects.ForEach(configObject =>
+            {
+                configObject.IsChecked = value;
+            });
         }
     }
 }

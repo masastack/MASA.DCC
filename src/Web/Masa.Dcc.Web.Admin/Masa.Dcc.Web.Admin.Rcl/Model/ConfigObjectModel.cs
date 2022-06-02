@@ -9,6 +9,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
 
         public bool IsPublished => Content.Equals(TempContent);
 
+        public bool IsChecked { get; set; }
+
         /// <summary>
         /// handle this Content by yourself
         /// </summary>

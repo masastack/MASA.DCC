@@ -104,12 +104,21 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "变更的值", Value = nameof(ConfigObjectPropertyModel.TempValue) }
         };
         private Action? _handleRollbackOnClickAfter = null;
+        private bool _showCloneModal;
         private int _step = 1;
         private bool _cloneAppSelect;
         private bool _cloneEnvSelect;
         private string _cloneAppCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
         private string _cloneEnvCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
         private bool _cloneConfigObjectAllChecked;
+        private bool _isNeedRebase;
+        private List<ProjectModel> _allProjects = new();
+        private int _cloneSelectProjectId = new();
+        private List<AppDetailModel> _cloneApps = new();
+        private int _cloneSelectAppId = new();
+        private List<ConfigObjectDto> _afterAllCloneConfigObjects = new();
+        private List<ConfigObjectDto> _afterSelectCloneConfigObjects = new();
+        private List<ConfigObjectModel> _cloneSelectConfigObjects = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -768,6 +777,26 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             };
         }
 
+        private async Task<List<ProjectModel>> GetProjectList()
+        {
+            return await ProjectCaller.GetProjectsAsync();
+        }
+
+        private async Task ProjectValueChangedAsync(int projectId)
+        {
+            if (projectId != _cloneSelectProjectId)
+            {
+                _cloneSelectAppId = 0;
+            }
+            _cloneSelectProjectId = projectId;
+            _cloneApps = await AppCaller.GetListByProjectIdsAsync(new List<int> { projectId });
+        }
+
+        private async Task ShowCloneModalAsync()
+        {
+            _allProjects = await GetProjectList();
+            _showCloneModal = true;
+        }
 
         private void SelectOtherApp()
         {
@@ -783,14 +812,70 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _cloneAppCardStyle = _cloneAppSelect ? "position: absolute; top: 64px; transition: 0.3s;" : "position: absolute; top:50%; margin-top:-77px; transition: 0.3s;";
         }
 
-        private void CloneNextClick()
+        private async Task CloneNextClick()
         {
             _step = 2;
+            _afterAllCloneConfigObjects.Clear();
+            foreach (var item in _appDetail.EnvironmentClusters)
+            {
+                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _appDetail.Id, ConfigObjectType);
+                _afterAllCloneConfigObjects.AddRange(configObjects);
+            }
         }
 
         private void ClonePrevClick()
         {
             _step = 1;
+        }
+
+        private void CloneEnvClusterValueChanged(List<StringNumber> envClusterIds)
+        {
+            _selectEnvClusterIds = envClusterIds;
+
+            //this will be chang
+            _afterSelectCloneConfigObjects.Clear();
+            _selectEnvClusterIds.ForEach(envClusterId =>
+            {
+                var configObjects = _afterAllCloneConfigObjects.Where(c => c.EnvironmentClusterId == EnvironmentClusterId);
+                _afterSelectCloneConfigObjects.AddRange(configObjects);
+            });
+
+            if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())
+            {
+                _cloneSelectConfigObjects.ForEach(cloneConfigObject =>
+                {
+                    _afterSelectCloneConfigObjects.ForEach(afterCloneConfigObject =>
+                    {
+                        if (cloneConfigObject.Name == afterCloneConfigObject.Name)
+                        {
+                            cloneConfigObject.IsNeedRebase = cloneConfigObject.Name == afterCloneConfigObject.Name;
+                        }
+                    });
+                });
+            }
+        }
+
+        private void CloneConfigObjectCheckBoxClick()
+        {
+            if (cofigObject.IsChecked)
+            {
+                _cloneSelectConfigObjects.Add(cofigObject);
+            }
+            else
+            {
+                _cloneSelectConfigObjects.Remove(cofigObject);
+            }
+
+            if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())
+            {
+                _cloneSelectConfigObjects.ForEach(cloneConfigObject =>
+                {
+                    _afterSelectCloneConfigObjects.ForEach(afterCloneConfigObject =>
+                    {
+                        cloneConfigObject.IsNeedRebase = cloneConfigObject.Name == afterCloneConfigObject.Name;
+                    });
+                });
+            }
         }
 
         private void CloneConfigObjectAllChecked(bool value)
@@ -801,6 +886,23 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 configObject.IsChecked = value;
             });
+
+            _cloneSelectConfigObjects = new();
+            if (value)
+            {
+                _cloneSelectConfigObjects = _configObjects;
+            }
+
+            if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())
+            {
+                _cloneSelectConfigObjects.ForEach(cloneConfigObject =>
+                {
+                    _afterSelectCloneConfigObjects.ForEach(afterCloneConfigObject =>
+                    {
+                        cloneConfigObject.IsNeedRebase = cloneConfigObject.Name == afterCloneConfigObject.Name;
+                    });
+                });
+            }
         }
     }
 }

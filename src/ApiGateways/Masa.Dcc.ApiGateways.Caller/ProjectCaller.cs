@@ -41,5 +41,12 @@ namespace Masa.Dcc.Caller
 
             return result ?? new();
         }
+
+        public async Task<List<ProjectModel>> GetProjectsAsync()
+        {
+            var result = await CallerProvider.GetAsync<List<ProjectModel>>("http://localhost:19401/api/v1/projects");
+
+            return result ?? new();
+        }
     }
 }

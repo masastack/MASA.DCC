@@ -83,13 +83,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task SearchProject(KeyboardEventArgs args)
         {
-            if (!string.IsNullOrWhiteSpace(_projectName))
+            if (args.Key == "Enter")
             {
-                _projects = _projects.Where(project => project.Name.ToLower().Contains(_projectName.ToLower())).ToList();
-            }
-            else
-            {
-                await InitDataAsync();
+                if (!string.IsNullOrWhiteSpace(_projectName))
+                {
+                    _projects = _projects.Where(project => project.Name.ToLower().Contains(_projectName.ToLower())).ToList();
+                }
+                else
+                {
+                    await InitDataAsync();
+                }
             }
         }
 

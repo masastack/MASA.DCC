@@ -44,7 +44,7 @@ namespace Masa.Dcc.Caller
 
         public async Task<List<ProjectModel>> GetProjectsAsync()
         {
-            var result = await CallerProvider.GetAsync<List<ProjectModel>>("http://localhost:19401/api/v1/projects");
+            var result = await CallerProvider.GetAsync<List<ProjectModel>>($"{AppSettings.Get("PmClientAddress").TrimEnd('/')}/api/v1/projects");
 
             return result ?? new();
         }

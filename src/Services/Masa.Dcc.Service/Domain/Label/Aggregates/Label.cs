@@ -40,5 +40,16 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Aggregates
             TypeName = typeName;
             Description = description;
         }
+
+        public Label(string code, string name, string typeCode, string typeName, Guid creator, DateTime creationTime, string description = "")
+        {
+            Code = code;
+            Name = name;
+            TypeCode = typeCode;
+            TypeName = typeName;
+            Creator = creator;
+            CreationTime = creationTime;
+            Description = description;
+        }
     }
 }

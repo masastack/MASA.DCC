@@ -790,13 +790,13 @@
                                     <MExpansionPanel Style="margin-bottom: 12px;">
                                         <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
                                             <div class="d-flex align-center">
-                                                <div class="d-flex align-center">
+                                                <div class="d-flex align-center" @onclick:stopPropagation>
                                                     @if (configObject.IsNeedRebase)
                                                     {
                                                         <MIcon Class="mr-4" Color="warning">mdi-alert-outline</MIcon>
                                                     }
-                                                    <MCheckbox @bind-Value="configObject.IsChecked"
-                                                       OnPrependClick="()=>CloneConfigObjectCheckBoxClick(configObject)"
+                                                    <MCheckbox Value="configObject.IsChecked"
+                                                       ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
                                                        HideDetails="true"
                                                        Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
                                                        Color="primary"></MCheckbox>
@@ -816,13 +816,13 @@
                                     <MExpansionPanel Style="margin-bottom: 12px;">
                                         <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
                                             <div class="d-flex align-center">
-                                                <div class="d-flex align-center">
+                                                <div class="d-flex align-center" @onclick:stopPropagation>
                                                     @if (configObject.IsNeedRebase)
                                                     {
                                                         <MIcon Class="mr-4" Color="warning">mdi-alert-outline</MIcon>
                                                     }
-                                                    <MCheckbox @bind-Value="configObject.IsChecked"
-                                                       OnClick="()=>CloneConfigObjectCheckBoxClick(configObject)"
+                                                    <MCheckbox Value="configObject.IsChecked"
+                                                       ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
                                                        HideDetails="true"
                                                        Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
                                                        Color="primary"></MCheckbox>

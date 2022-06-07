@@ -34,6 +34,7 @@ global using Masa.Dcc.Contracts.Admin.App.Enums;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;
 global using Masa.Dcc.Service.Admin.Application.App.Commands;
 global using Masa.Dcc.Service.Admin.Application.App.Queries;
+global using Masa.Dcc.Service.Admin.Application.Label.Commands;
 global using Masa.Dcc.Service.Admin.Application.Label.Queries;
 global using Masa.Dcc.Service.Admin.Domain.App.Aggregates;
 global using Masa.Dcc.Service.Admin.Domain.App.Repositories;

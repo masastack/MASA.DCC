@@ -258,9 +258,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             StateHasChanged();
         }
 
-        private async Task SearchConfigObjectAsync()
+        private async Task SearchConfigObjectAsync(KeyboardEventArgs args)
         {
-            await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType, _configObjectName);
+            if (args.Key == "Enter")
+            {
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType, _configObjectName);
+            }
         }
 
         private async Task TextConvertPropertyAsync(int configObjectId)
@@ -855,15 +858,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private void CloneConfigObjectCheckBoxClick()
+        private void CloneConfigObjectCheckValueChanged(ConfigObjectModel configObject, bool value)
         {
-            if (cofigObject.IsChecked)
+            configObject.IsChecked = value;
+            if (configObject.IsChecked)
             {
-                _cloneSelectConfigObjects.Add(cofigObject);
+                _cloneSelectConfigObjects.Add(configObject);
             }
             else
             {
-                _cloneSelectConfigObjects.Remove(cofigObject);
+                _cloneSelectConfigObjects.Remove(configObject);
             }
 
             if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())

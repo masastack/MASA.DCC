@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Components.Forms;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Config
@@ -818,10 +816,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task CloneNextClick()
         {
             _step = 2;
+            _appDetail = await AppCaller.GetWithEnvironmentClusterAsync(_cloneSelectAppId);
             _afterAllCloneConfigObjects.Clear();
             foreach (var item in _appDetail.EnvironmentClusters)
             {
-                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _appDetail.Id, ConfigObjectType);
+                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectAppId, ConfigObjectType);
                 _afterAllCloneConfigObjects.AddRange(configObjects);
             }
         }
@@ -839,7 +838,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _afterSelectCloneConfigObjects.Clear();
             _selectEnvClusterIds.ForEach(envClusterId =>
             {
-                var configObjects = _afterAllCloneConfigObjects.Where(c => c.EnvironmentClusterId == EnvironmentClusterId);
+                var configObjects = _afterAllCloneConfigObjects.Where(c => c.EnvironmentClusterId == envClusterId);
                 _afterSelectCloneConfigObjects.AddRange(configObjects);
             });
 
@@ -872,11 +871,21 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())
             {
+                //has bug
                 _cloneSelectConfigObjects.ForEach(cloneConfigObject =>
                 {
                     _afterSelectCloneConfigObjects.ForEach(afterCloneConfigObject =>
                     {
-                        cloneConfigObject.IsNeedRebase = cloneConfigObject.Name == afterCloneConfigObject.Name;
+                        if (cloneConfigObject.Name == afterCloneConfigObject.Name)
+                        {
+                            var configObject = _configObjects.First(c => c.Id == cloneConfigObject.Id);
+                            //configObject.IsNeedRebase = true;
+                            cloneConfigObject.IsNeedRebase = true;
+                        }
+                        else
+                        {
+                            cloneConfigObject.IsNeedRebase = false;
+                        }
                     });
                 });
             }
@@ -894,7 +903,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _cloneSelectConfigObjects = new();
             if (value)
             {
-                _cloneSelectConfigObjects = _configObjects;
+                _cloneSelectConfigObjects.AddRange(_configObjects);
             }
 
             if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())

@@ -65,13 +65,14 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task GetConfigObjectsAsync(ConfigObjectsQuery query)
         {
-            List <ConfigObjectDto> objectConfigObjects = new List<ConfigObjectDto>();
+            List<ConfigObjectDto> objectConfigObjects = new List<ConfigObjectDto>();
             var labels = await _labelRepository.GetListAsync();
             if (query.Type == ConfigObjectType.Public)
             {
                 var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 TypeAdapterConfig<PublicConfigObject, ConfigObjectDto>.NewConfig()
                     .Map(dest => dest, src => src.ConfigObject)
+                    .Map(dest => dest.Id, src => src.ConfigObjectId)
                     .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
                 objectConfigObjects = TypeAdapter.Adapt<List<PublicConfigObject>, List<ConfigObjectDto>>(data);
             }
@@ -80,6 +81,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 TypeAdapterConfig<BizConfigObject, ConfigObjectDto>.NewConfig()
                     .Map(dest => dest, src => src.ConfigObject)
+                    .Map(dest => dest.Id, src => src.ConfigObjectId)
                     .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
                 objectConfigObjects = TypeAdapter.Adapt<List<BizConfigObject>, List<ConfigObjectDto>>(data);
             }
@@ -88,6 +90,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
                 TypeAdapterConfig<AppConfigObject, ConfigObjectDto>.NewConfig()
                     .Map(dest => dest, src => src.ConfigObject)
+                    .Map(dest => dest.Id, src => src.ConfigObjectId)
                     .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
                 objectConfigObjects = TypeAdapter.Adapt<List<AppConfigObject>, List<ConfigObjectDto>>(data);
             }

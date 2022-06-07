@@ -17,7 +17,7 @@
                         <ChildContent>
                             <MList>
                                 <MListItem OnClick="ShowCloneModalAsync">
-                                    <MIcon Size="20" Class="mr-4">fas fa-clone</MIcon>
+                                    <MIcon Color="#323D6F" Size="20" Class="mr-4">mdi-content-copy</MIcon>
                                     <MListItemContent>
                                         <MListItemTitle>克隆配置</MListItemTitle>
                                     </MListItemContent>
@@ -779,11 +779,7 @@
                                    Color="primary"></MCheckbox>
                         <MExpansionPanels Flat Accordion>
                             @foreach (var configObject in _configObjects)
-                            {
-                                if (configObject.IsNeedRebase)
-                                {
-                                    _isNeedRebase = configObject.IsNeedRebase;
-                                }
+                            {                                
                                 var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                                 if (formatLabelCode == "properties")
                                 {
@@ -813,7 +809,7 @@
                                 }
                                 else
                                 {
-                                    <MExpansionPanel Style="margin-bottom: 12px;">
+                                    <MExpansionPanel Style="margin-bottom: 12px;" @key="configObject">
                                         <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
                                             <div class="d-flex align-center">
                                                 <div class="d-flex align-center" @onclick:stopPropagation>
@@ -861,26 +857,3 @@
         </MStepper>
     </div>
 </SheetDialog>
-
-@code {
-    private string value4;
-    public class Item
-    {
-        public string Label { get; set; }
-        public string Value { get; set; }
-
-        public Item(string label, string value)
-        {
-            Label = label;
-            Value = value;
-        }
-    }
-
-    List<Item> items = new()
-        {
-            new Item("Foo", "1"),
-            new Item("Bar", "2"),
-            new Item("Fizz", "3"),
-            new Item("Buzz", "4"),
-        };
-}

@@ -108,15 +108,33 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private bool _cloneEnvSelect;
         private string _cloneAppCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
         private string _cloneEnvCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
-        private bool _cloneConfigObjectAllChecked;
-        private bool _isNeedRebase;
         private List<ProjectModel> _allProjects = new();
         private int _cloneSelectProjectId = new();
         private List<AppDetailModel> _cloneApps = new();
         private int _cloneSelectAppId = new();
+        private AppDetailModel _cloneSelectApp = new();
         private List<ConfigObjectDto> _afterAllCloneConfigObjects = new();
         private List<ConfigObjectDto> _afterSelectCloneConfigObjects = new();
-        private List<ConfigObjectModel> _cloneSelectConfigObjects = new();
+        private bool _isCloneAll = true;
+
+        private bool _cloneConfigObjectAllChecked;
+        public bool CloneConfigObjectAllChecked
+        {
+            get
+            {
+                var checkedConfigObejctCount = _configObjects.Where(c => c.IsChecked).Count();
+                return checkedConfigObejctCount == _configObjects.Count;
+            }
+            set
+            {
+                _cloneConfigObjectAllChecked = value;
+            }
+        }
+
+        public bool IsNeedRebase
+        {
+            get => _configObjects.Where(c => c.IsNeedRebase).Any();
+        }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -128,6 +146,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         public async Task InitDataAsync()
         {
+            _projectDetail = await ProjectCaller.GetAsync(ProjectId);
             switch (ConfigObjectType)
             {
                 case ConfigObjectType.Public:
@@ -150,7 +169,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     break;
                 case ConfigObjectType.Biz:
                     _appDetail = (await ConfigObjectCaller.GetBizConfigAsync($"{ProjectIdentity}-$biz")).Adapt<AppDetailModel>();
-                    _projectDetail = await ProjectCaller.GetAsync(ProjectId); ;
                     _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
                     var projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
                     _appDetail.EnvironmentClusters = projectEnvClusters;
@@ -793,8 +811,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _cloneApps = await AppCaller.GetListByProjectIdsAsync(new List<int> { projectId });
         }
 
-        private async Task ShowCloneModalAsync()
+        private async Task ShowCloneModalAsync(ConfigObjectModel? configObject = null)
         {
+            if (configObject != null)
+            {
+                _isCloneAll = false;
+                _selectConfigObject = configObject;
+            }
+            else
+            {
+                _isCloneAll = true;
+            }
+
             _allProjects = await GetProjectList();
             _showCloneModal = true;
         }
@@ -816,12 +844,30 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task CloneNextClick()
         {
             _step = 2;
-            _appDetail = await AppCaller.GetWithEnvironmentClusterAsync(_cloneSelectAppId);
-            _afterAllCloneConfigObjects.Clear();
-            foreach (var item in _appDetail.EnvironmentClusters)
+
+            if (_cloneAppSelect)
             {
-                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectAppId, ConfigObjectType);
-                _afterAllCloneConfigObjects.AddRange(configObjects);
+                _cloneSelectApp = await AppCaller.GetWithEnvironmentClusterAsync(_cloneSelectAppId);
+            }
+            else if (_cloneEnvSelect)
+            {
+                _cloneSelectApp = _appDetail.Adapt<AppDetailModel>();
+                _cloneSelectApp.EnvironmentClusters.RemoveAll(e => e.Id == _selectCluster.Id);
+            }
+
+            if (_isCloneAll)
+            {
+                _afterAllCloneConfigObjects.Clear();
+                foreach (var item in _cloneSelectApp.EnvironmentClusters)
+                {
+                    var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
+                    _afterAllCloneConfigObjects.AddRange(configObjects);
+                }
+            }
+            else
+            {
+                _configObjects.Clear();
+                _configObjects.Add(_selectConfigObject);
             }
         }
 
@@ -842,18 +888,21 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _afterSelectCloneConfigObjects.AddRange(configObjects);
             });
 
-            if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())
+            if (!_afterSelectCloneConfigObjects.Any())
             {
-                _cloneSelectConfigObjects.ForEach(cloneConfigObject =>
+                _configObjects.ForEach(configObject =>
                 {
-                    _afterSelectCloneConfigObjects.ForEach(afterCloneConfigObject =>
-                    {
-                        if (cloneConfigObject.Name == afterCloneConfigObject.Name)
-                        {
-                            cloneConfigObject.IsNeedRebase = cloneConfigObject.Name == afterCloneConfigObject.Name;
-                        }
-                    });
+                    configObject.IsNeedRebase = false;
                 });
+            }
+            else
+            {
+                var checkedConfigObject = _configObjects.Where(c => c.IsChecked);
+                var needRebaseConfigObjects = checkedConfigObject
+                    .IntersectBy(_afterSelectCloneConfigObjects.Select(c => c.Name), c => c.Name)
+                    .ToList();
+
+                IntersectByConfigObjectName(checkedConfigObject, _afterSelectCloneConfigObjects);
             }
         }
 
@@ -862,59 +911,142 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             configObject.IsChecked = value;
             if (configObject.IsChecked)
             {
-                _cloneSelectConfigObjects.Add(configObject);
+                foreach (var afterCloneConfigObject in _afterSelectCloneConfigObjects)
+                {
+                    if (configObject.Name.Equals(afterCloneConfigObject.Name))
+                    {
+                        configObject.IsNeedRebase = true;
+                        break;
+                    }
+                }
             }
             else
             {
-                _cloneSelectConfigObjects.Remove(configObject);
+                configObject.IsNeedRebase = false;
             }
+        }
 
-            if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())
+        private void CloneConfigObjectAllCheckedChanged(bool value)
+        {
+            _cloneConfigObjectAllChecked = value;
+
+            if (value)
             {
-                //has bug
-                _cloneSelectConfigObjects.ForEach(cloneConfigObject =>
+                _configObjects.ForEach(configObject =>
                 {
-                    _afterSelectCloneConfigObjects.ForEach(afterCloneConfigObject =>
-                    {
-                        if (cloneConfigObject.Name == afterCloneConfigObject.Name)
-                        {
-                            var configObject = _configObjects.First(c => c.Id == cloneConfigObject.Id);
-                            //configObject.IsNeedRebase = true;
-                            cloneConfigObject.IsNeedRebase = true;
-                        }
-                        else
-                        {
-                            cloneConfigObject.IsNeedRebase = false;
-                        }
-                    });
+                    configObject.IsChecked = value;
+                });
+
+                IntersectByConfigObjectName(_configObjects, _afterSelectCloneConfigObjects);
+            }
+            else
+            {
+                _configObjects.ForEach(configObject =>
+                {
+                    configObject.IsChecked = value;
+                    configObject.IsNeedRebase = value;
                 });
             }
         }
 
-        private void CloneConfigObjectAllChecked(bool value)
+        private void IntersectByConfigObjectName(IEnumerable<ConfigObjectModel> needCloneSelectConfigObjects, IEnumerable<ConfigObjectDto> afterSelectCloneConfigObjects)
         {
-            _cloneConfigObjectAllChecked = value;
-
-            _configObjects.ForEach(configObject =>
+            var needRebaseConfigObjects = needCloneSelectConfigObjects
+                    .IntersectBy(afterSelectCloneConfigObjects.Select(c => c.Name), c => c.Name).ToList();
+            if (needRebaseConfigObjects.Any())
             {
-                configObject.IsChecked = value;
-            });
-
-            _cloneSelectConfigObjects = new();
-            if (value)
+                needRebaseConfigObjects.ForEach(configObject =>
+                {
+                    configObject.IsNeedRebase = true;
+                });
+            }
+            else
             {
-                _cloneSelectConfigObjects.AddRange(_configObjects);
+                _configObjects.ForEach(configObject =>
+                {
+                    configObject.IsNeedRebase = false;
+                });
+            }
+        }
+
+        private void CloneConfigObjectNameChanged(ConfigObjectModel configObject, string configObjectName)
+        {
+            configObject.Name = configObjectName;
+            foreach (var afterConfigObject in _afterSelectCloneConfigObjects)
+            {
+                if (configObject.Name.Equals(afterConfigObject.Name))
+                {
+                    configObject.IsNeedRebase = true;
+                    break;
+                }
+                else
+                {
+                    configObject.IsNeedRebase = false;
+                }
+            }
+        }
+
+        private async Task CloneAsync()
+        {
+            if (!_afterSelectCloneConfigObjects.Any())
+            {
+                await PopupService.ToastErrorAsync("请选择环境/集群");
+                return;
             }
 
-            if (_cloneSelectConfigObjects.Any() && _afterAllCloneConfigObjects.Any())
+            var configObjects = _configObjects.Where(c => c.IsChecked);
+            if (!configObjects.Any())
             {
-                _cloneSelectConfigObjects.ForEach(cloneConfigObject =>
+                await PopupService.ToastErrorAsync("请选要克隆的配置");
+                return;
+            }
+
+            var dto = new CloneConfigObjectDto
+            {
+                ToAppId = _cloneSelectApp.Id
+            };
+            foreach (var envClusterId in _selectEnvClusterIds)
+            {
+                foreach (var configObject in configObjects)
                 {
-                    _afterSelectCloneConfigObjects.ForEach(afterCloneConfigObject =>
+                    string initialContent = (configObject.FormatLabelCode.ToLower()) switch
                     {
-                        cloneConfigObject.IsNeedRebase = cloneConfigObject.Name == afterCloneConfigObject.Name;
+                        "json" => "{}",
+                        "properties" => "[]",
+                        _ => "",
+                    };
+                    dto.ConfigObjects.Add(new AddConfigObjectDto
+                    {
+                        Name = configObject.Name,
+                        FormatLabelCode = configObject.FormatLabelCode,
+                        Type = configObject.Type,
+                        ObjectId = configObject.Id,
+                        EnvironmentClusterId = envClusterId.AsT1,
+                        Content = configObject.Content,
+                        TempContent = initialContent,
                     });
-                });
+                }
+            }
+            await ConfigObjectCaller.CloneAsync(dto);
+
+            await CloneDialogValueChangedAsync(false);
+        }
+
+        private async Task CloneDialogValueChangedAsync(bool value)
+        {
+            _showCloneModal = value;
+            if (!value)
+            {
+                _step = 1;
+                _cloneAppSelect = false;
+                _cloneEnvSelect = false;
+                _cloneSelectProjectId = 0;
+                _cloneSelectAppId = 0;
+                _selectEnvClusterIds.Clear();
+                _afterSelectCloneConfigObjects.Clear();
+                _configObjects.Clear();
+                _selectConfigObject = new();
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
             }
         }
     }

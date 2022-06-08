@@ -77,15 +77,15 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                 if (configObjectDto.Type == ConfigObjectType.Public)
                 {
-                    configObject.SetPublicConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetPublicConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
                 }
                 else if (configObjectDto.Type == ConfigObjectType.App)
                 {
-                    configObject.SetAppConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetAppConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
                 }
                 else if (configObjectDto.Type == ConfigObjectType.Biz)
                 {
-                    configObject.SetBizConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetBizConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
                 }
             }
 

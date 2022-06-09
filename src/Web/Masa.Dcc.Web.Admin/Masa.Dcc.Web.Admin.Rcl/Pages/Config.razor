@@ -15,14 +15,33 @@
                             </MButton>
                         </ActivatorContent>
                         <ChildContent>
-                            <MList>
-                                <MListItem OnClick="()=>ShowCloneModalAsync()">
-                                    <MIcon Color="#323D6F" Size="20" Class="mr-4">mdi-content-copy</MIcon>
+                            <MList Disabled Dense>
+                                <MListItem Dense>
+                                    <MIcon Color="#323D6F" Class="mr-4">mdi-key-outline</MIcon>
                                     <MListItemContent>
-                                        <MListItemTitle>克隆配置</MListItemTitle>
+                                        <MListItemTitle>管理密钥</MListItemTitle>
                                     </MListItemContent>
                                 </MListItem>
                             </MList>
+                            <MList Disabled Dense>
+                                <MListItem Dense>
+                                    <MIcon Color="#323D6F" Class="mr-4">mdi-refresh</MIcon>
+                                    <MListItemContent>
+                                        <MListItemTitle>强制刷新密钥</MListItemTitle>
+                                    </MListItemContent>
+                                </MListItem>
+                            </MList>
+                            @if (ConfigObjectType == ConfigObjectType.App)
+                            {
+                                <MList Dense>
+                                    <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
+                                        <MIcon Color="#323D6F" Size="20" Class="mr-4">far fa-copy</MIcon>
+                                        <MListItemContent>
+                                            <MListItemTitle>克隆配置</MListItemTitle>
+                                        </MListItemContent>
+                                    </MListItem>
+                                </MList>
+                            }
                         </ChildContent>
                     </MMenu>
                 </MRow>
@@ -117,7 +136,10 @@
                                                 <MIcon Color="success">mdi-check</MIcon>
                                             }
                                         </MButton>
-                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
+                                        @if (ConfigObjectType == ConfigObjectType.App)
+                                        {
+                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                        }
                                         <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
 
                                         <MMenu OffsetY>
@@ -180,7 +202,10 @@
                                         <sapn class="ml-2 text-caption">@configObject.FormatLabelCode</sapn>
                                         <MSpacer></MSpacer>
                                         <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
-                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
+                                        @if (ConfigObjectType == ConfigObjectType.App)
+                                        {
+                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                        }
                                         <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
                                         <MMenu OffsetY>
                                             <ActivatorContent>
@@ -337,7 +362,10 @@
                                                 <MIcon Color="success">mdi-check</MIcon>
                                             }
                                         </MButton>
-                                        <MButton StopPropagation Icon Class="mr-4"><MIcon Size="18" Color="#323D6F">fas fa-clone</MIcon></MButton>
+                                        @if (ConfigObjectType == ConfigObjectType.App)
+                                        {
+                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                        }
                                         <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
                                         <MMenu OffsetY>
                                             <ActivatorContent>

@@ -102,6 +102,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "变更的值", Value = nameof(ConfigObjectPropertyModel.TempValue) }
         };
         private Action? _handleRollbackOnClickAfter = null;
+
+        #region clone
         private bool _showCloneModal;
         private int _step = 1;
         private bool _cloneAppSelect;
@@ -113,8 +115,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<AppDetailModel> _cloneApps = new();
         private int _cloneSelectAppId = new();
         private AppDetailModel _cloneSelectApp = new();
-        private List<ConfigObjectDto> _afterAllCloneConfigObjects = new();
-        private List<ConfigObjectDto> _afterSelectCloneConfigObjects = new();
+        private readonly List<ConfigObjectDto> _afterAllCloneConfigObjects = new();
+        private readonly List<ConfigObjectDto> _afterSelectCloneConfigObjects = new();
         private bool _isCloneAll = true;
 
         private bool _cloneConfigObjectAllChecked;
@@ -135,6 +137,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             get => _configObjects.Where(c => c.IsNeedRebase).Any();
         }
+        #endregion
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -811,6 +814,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _cloneApps = await AppCaller.GetListByProjectIdsAsync(new List<int> { projectId });
         }
 
+        #region clone
         private async Task ShowCloneModalAsync(ConfigObjectModel? configObject = null)
         {
             if (configObject != null)
@@ -1049,5 +1053,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
             }
         }
+        #endregion
+
     }
 }

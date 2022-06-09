@@ -10,12 +10,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
         public bool IsPublished => Content.Equals(TempContent);
 
         /// <summary>
-        /// clone page, select config obkect
+        /// clone page, select config object
         /// </summary>
         public bool IsChecked { get; set; }
 
         /// <summary>
-        /// clone page, select config obkect need rebase
+        /// clone page, select config object need rebase
         /// </summary>
         public bool IsNeedRebase { get; set; }
 

@@ -10,6 +10,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private bool _showRelationModal;
         private List<StringNumber> _selectEnvClusterIds;
-        //private ConfigObjectModel
+        private ConfigObjectModel _configObject = new();
     }
 }

@@ -111,6 +111,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 FormatName = labels.FirstOrDefault(label => label.Code == configObject.FormatLabelCode)?.Name ?? "",
                 Type = configObject.Type,
                 RelationConfigObjectId = configObject.RelationConfigObjectId,
+                FromRelation = configObject.FromRelation,
                 Content = configObject.Content,
                 TempContent = configObject.TempContent,
                 CreationTime = configObject.CreationTime,

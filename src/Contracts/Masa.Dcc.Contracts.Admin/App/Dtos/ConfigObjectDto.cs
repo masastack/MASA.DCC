@@ -19,6 +19,8 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         public int RelationConfigObjectId { get; set; }
 
+        public bool FromRelation { get; set; }
+
         public string Content { get; set; } = "";
 
         public string TempContent { get; set; } = "";

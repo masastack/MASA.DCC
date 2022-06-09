@@ -149,7 +149,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         public async Task InitDataAsync()
         {
-            _projectDetail = await ProjectCaller.GetAsync(ProjectId);
+            if (ProjectId != 0)
+                _projectDetail = await ProjectCaller.GetAsync(ProjectId);
+
             switch (ConfigObjectType)
             {
                 case ConfigObjectType.Public:
@@ -1054,6 +1056,5 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
         #endregion
-
     }
 }

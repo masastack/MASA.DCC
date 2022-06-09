@@ -31,6 +31,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Comment("Relation config object Id")]
         public int RelationConfigObjectId { get; private set; }
 
+        public bool FromRelation { get; set; }
+
         public PublicConfigObject PublicConfigObject { get; private set; } = null!;
 
         public BizConfigObject BizConfigObject { get; set; } = null!;

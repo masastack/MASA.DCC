@@ -13,11 +13,16 @@ namespace Masa.Dcc.Service.Admin.Application.Label
         }
 
         [EventHandler]
-        public async Task GetLabelsByTypeCodeAsync(LabelsQuery labelsQuery)
+        public async Task GetLabelsAsync(LabelsQuery labelsQuery)
         {
-            var result = await _labelRepository.GetListAsync(label => label.TypeCode == labelsQuery.TypeCode);
+            IEnumerable<Domain.Label.Aggregates.Label> labels = new List<Domain.Label.Aggregates.Label>();
 
-            labelsQuery.Result = result.Adapt<List<LabelDto>>();
+            if (string.IsNullOrEmpty(labelsQuery.TypeCode))
+                labels = await _labelRepository.GetListAsync();
+            else
+                labels = await _labelRepository.GetListAsync(label => label.TypeCode == labelsQuery.TypeCode);
+
+            labelsQuery.Result = labels.Adapt<List<LabelDto>>();
         }
     }
 }

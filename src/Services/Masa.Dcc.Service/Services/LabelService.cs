@@ -7,7 +7,10 @@ namespace Masa.Dcc.Service.Admin.Services
     {
         public LabelService(IServiceCollection services) : base(services)
         {
+            App.MapGet("api/v1/labels", GetListAsync);
             App.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync);
+            App.MapPost("api/v1/labels", AddAsync);
+            App.MapPut("api/v1/labels", UpdateAsync);
         }
 
         public async Task<List<LabelDto>> GetLabelsByTypeCodeAsync(IEventBus eventBus, string typeCode)
@@ -16,6 +19,24 @@ namespace Masa.Dcc.Service.Admin.Services
             await eventBus.PublishAsync(query);
 
             return query.Result;
+        }
+
+        public async Task<List<LabelDto>> GetListAsync(IEventBus eventBus)
+        {
+            var query = new LabelsQuery();
+            await eventBus.PublishAsync(query);
+
+            return query.Result;
+        }
+
+        public async Task AddAsync(IEventBus eventBus, UpdateLabelDto dto)
+        {
+            await eventBus.PublishAsync(new AddLabelCommand(dto));
+        }
+
+        public async Task UpdateAsync(IEventBus eventBus, UpdateLabelDto dto)
+        {
+            await eventBus.PublishAsync(new UpdateLabelCommand(dto));
         }
     }
 }

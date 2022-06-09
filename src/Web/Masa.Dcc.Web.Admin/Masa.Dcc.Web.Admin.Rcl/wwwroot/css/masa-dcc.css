@@ -1162,3 +1162,11 @@ input::-webkit-input-placeholder {
 .envClusterChip.m-chip:before {
     background-color: inherit !important;
 }
+
+.m-stepper__content.full-height .m-stepper__wrapper {
+    height: 100% !important;
+}
+
+.m-expansion-panel-header:before{
+    content:none !important;
+}

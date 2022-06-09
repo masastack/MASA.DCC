@@ -75,7 +75,18 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     configObjectDto.TempContent);
                 cloneConfigObjects.Add(configObject);
 
-                configObject.SetAppConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                if (configObjectDto.Type == ConfigObjectType.Public)
+                {
+                    configObject.SetPublicConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                }
+                else if (configObjectDto.Type == ConfigObjectType.App)
+                {
+                    configObject.SetAppConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                }
+                else if (configObjectDto.Type == ConfigObjectType.Biz)
+                {
+                    configObject.SetBizConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                }
             }
 
             await _configObjectRepository.AddRangeAsync(cloneConfigObjects);

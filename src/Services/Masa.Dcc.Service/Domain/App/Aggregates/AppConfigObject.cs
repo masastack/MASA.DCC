@@ -21,7 +21,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Range(1, int.MaxValue)]
         public int ConfigObjectId { get; private set; }
 
-        public ConfigObject? ConfigObject { get; set; }
+        public ConfigObject ConfigObject { get; set; }
 
         public AppConfigObject(int appId, int environmentClusterId)
         {

@@ -16,7 +16,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
                 .Include(configObject => configObject.ConfigObjectRelease)
                 .FirstOrDefaultAsync();
 
-            return configObject ?? throw new UserFriendlyException("config object does not exist");
+            return configObject ?? throw new Exception("Config object does not exist");
         }
     }
 }

@@ -15,13 +15,6 @@
         "Title": "team1",
         "Icon": "mdi-circle",
         "Href": "team"
-      },
-      {
-        "Id": 3,
-        "Hide": true,
-        "Title": "Analytics",
-        "Icon": "mdi-circle",
-        "Href": "dashboard/analytics"
       }
     ]
   },
@@ -30,5 +23,11 @@
     "Title": "Public",
     "Icon": "mdi-flag",
     "Href": "Public"
+  },
+  {
+    "Id": 3,
+    "Title": "Label Management",
+    "Icon": "mdi-flag",
+    "Href": "Label"
   }
 ]

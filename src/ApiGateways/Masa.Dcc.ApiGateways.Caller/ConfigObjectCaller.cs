@@ -94,5 +94,10 @@ namespace Masa.Dcc.ApiGateways.Caller
         {
             await CallerProvider.PutAsync($"{_prefix}/configObject/rollback", dto);
         }
+
+        public async Task CloneAsync(CloneConfigObjectDto dto)
+        {
+            await CallerProvider.PostAsync($"{_prefix}/configObject/clone", dto);
+        }
     }
 }

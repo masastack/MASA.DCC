@@ -14,11 +14,28 @@ namespace Masa.Dcc.ApiGateways.Caller
 
         protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
 
+        public async Task<List<LabelDto>> GetListAsync()
+        {
+            var result = await CallerProvider.GetAsync<List<LabelDto>>($"/api/v1/labels");
+
+            return result ?? new();
+        }
+
         public async Task<List<LabelDto>> GetLabelsByTypeCodeAsync(string typeCode)
         {
             var result = await CallerProvider.GetAsync<List<LabelDto>>($"/api/v1/{typeCode}/labels");
 
             return result ?? new();
+        }
+
+        public async Task AddAsync(UpdateLabelDto dto)
+        {
+            await CallerProvider.PostAsync($"/api/v1/labels", dto);
+        }
+
+        public async Task UpdateAsync(UpdateLabelDto dto)
+        {
+            await CallerProvider.PutAsync($"/api/v1/labels", dto);
         }
     }
 }

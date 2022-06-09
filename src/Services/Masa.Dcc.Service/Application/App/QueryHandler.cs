@@ -66,22 +66,34 @@ namespace Masa.Dcc.Service.Admin.Application.App
         public async Task GetConfigObjectsAsync(ConfigObjectsQuery query)
         {
             List<ConfigObjectDto> objectConfigObjects = new List<ConfigObjectDto>();
+            var labels = await _labelRepository.GetListAsync();
             if (query.Type == ConfigObjectType.Public)
             {
                 var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
-                objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
+                TypeAdapterConfig<PublicConfigObject, ConfigObjectDto>.NewConfig()
+                    .Map(dest => dest, src => src.ConfigObject)
+                    .Map(dest => dest.Id, src => src.ConfigObjectId)
+                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
+                objectConfigObjects = TypeAdapter.Adapt<List<PublicConfigObject>, List<ConfigObjectDto>>(data);
             }
             else if (query.Type == ConfigObjectType.Biz)
             {
                 var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
-                objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
+                TypeAdapterConfig<BizConfigObject, ConfigObjectDto>.NewConfig()
+                    .Map(dest => dest, src => src.ConfigObject)
+                    .Map(dest => dest.Id, src => src.ConfigObjectId)
+                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
+                objectConfigObjects = TypeAdapter.Adapt<List<BizConfigObject>, List<ConfigObjectDto>>(data);
             }
             else if (query.Type == ConfigObjectType.App)
             {
                 var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
-                objectConfigObjects = data.Select(config => config.ConfigObject).Adapt<List<ConfigObjectDto>>();
+                TypeAdapterConfig<AppConfigObject, ConfigObjectDto>.NewConfig()
+                    .Map(dest => dest, src => src.ConfigObject)
+                    .Map(dest => dest.Id, src => src.ConfigObjectId)
+                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
+                objectConfigObjects = TypeAdapter.Adapt<List<AppConfigObject>, List<ConfigObjectDto>>(data);
             }
-
 
             if (!string.IsNullOrWhiteSpace(query.ConfigObjectName))
             {
@@ -89,11 +101,12 @@ namespace Masa.Dcc.Service.Admin.Application.App
                     .Where(publicConfigObject => publicConfigObject.Name.Contains(query.ConfigObjectName))
                     .ToList();
             }
-            var labels = await _labelRepository.GetListAsync();
+
             query.Result = objectConfigObjects.Select(configObject => new ConfigObjectDto
             {
                 Id = configObject.Id,
                 Name = configObject.Name,
+                EnvironmentClusterId = configObject.EnvironmentClusterId,
                 FormatLabelCode = configObject.FormatLabelCode,
                 FormatName = labels.FirstOrDefault(label => label.Code == configObject.FormatLabelCode)?.Name ?? "",
                 Type = configObject.Type,

@@ -49,5 +49,6 @@ global using Masa.Utils.Caching.Redis.Models;
 global using Masa.Utils.Configuration.Json;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.EntityFrameworkCore;
+global using System.Linq.Expressions;
 
 

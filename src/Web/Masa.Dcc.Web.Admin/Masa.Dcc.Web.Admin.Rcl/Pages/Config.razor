@@ -84,7 +84,7 @@
                 </MRow>
             </div>
         </div>
-        <div style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
+        <div @onclick="()=>{ _showRelationModal=true; }" style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
             <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>关联公共配置
         </div>
     </MNavigationDrawer>
@@ -905,3 +905,6 @@
         </MStepper>
     </div>
 </SheetDialog>
+
+<Relation AppDetail="_appDetail" @bind-Value="_showRelationModal">
+</Relation>

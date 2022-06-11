@@ -31,7 +31,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Comment("Relation config object Id")]
         public int RelationConfigObjectId { get; private set; }
 
-        public bool FromRelation { get; set; }
+        public bool FromRelation { get; private set; }
 
         public PublicConfigObject PublicConfigObject { get; private set; } = null!;
 
@@ -42,7 +42,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         private readonly List<ConfigObjectRelease> _configObjectRelease = new();
         public IReadOnlyCollection<ConfigObjectRelease> ConfigObjectRelease => _configObjectRelease;
 
-        public ConfigObject(string name, string formatLabelCode, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0)
+        public ConfigObject(string name, string formatLabelCode, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0, bool fromRelation = false)
         {
             Name = name;
             FormatLabelCode = formatLabelCode;
@@ -50,6 +50,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             Content = content;
             TempContent = tempContent;
             RelationConfigObjectId = relationConfigObjectId;
+            FromRelation = fromRelation;
         }
 
         public void UpdateContent(string content)
@@ -81,6 +82,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         public void Revoke()
         {
             Content = TempContent;
+        }
+
+        public void UnRelation()
+        {
+            RelationConfigObjectId = 0;
         }
     }
 }

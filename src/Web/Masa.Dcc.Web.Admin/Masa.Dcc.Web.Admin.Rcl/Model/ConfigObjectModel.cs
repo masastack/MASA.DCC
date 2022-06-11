@@ -35,7 +35,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
 
         public bool IsAdded { get; set; }
 
-        public bool IsRelationed { get; set; }
+        public bool IsRelationed { get; set; } = true;
 
         public string TempValue { get; set; } = "";
     }

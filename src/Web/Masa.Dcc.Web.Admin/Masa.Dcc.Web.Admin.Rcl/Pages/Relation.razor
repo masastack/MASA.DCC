@@ -1,6 +1,7 @@
 ﻿@inherits MasaCompontentBase
+@page "/relation"
 
-<SheetDialog @bind-Value="_showRelationModal" Title="@T("Relation public config")" Icon="mdi-circle" IconColor="success">
+<SheetDialog @bind-Value="Value" Title="@T("Relation public config")" Icon="mdi-circle" IconColor="success">
     <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
         <div>
             <div class="text-h6 d-flex align-center">
@@ -19,40 +20,61 @@
                 }
             </MChipGroup>
             <p class="neutral--text mt-12" style="font-size:14px; font-weight:700;">选择公共配置对象</p>
-            <div style="border-radius: 8px; border: 1px solid #E2E7F4; padding:12px 24px;">
-                <MRow Style="color: #A3AED0; font-size: 14px;" NoGutters>
-                    <span class="d-flex justify-center" style="width: 5%">状态</span>
-                    <span style="width: 47.5%">Key</span>
-                    <span style="width: 47.5%">Value</span>
-                </MRow>
-                <MDivider Class="mt-3 mx-n6"></MDivider>
-                @if (_configObject.FormatLabelCode.Trim().ToLower() == "properties")
-                {
-                    @foreach (var item in _configObject.ConfigObjectPropertyContents)
+            <MSelect Value="_selectPublicConfigObjectId"
+                     ValueChanged="SelectConfigObjectValueChanged"
+                     TValue="int"
+                     TItemValue="int"
+                     TItem="ConfigObjectDto"
+                     Label="项目"
+                     MenuProps="props => props.OffsetY = true"
+                     Outlined
+                     Dense
+                     Items="_publicConfigObjects"
+                     ItemText="l=>l.Name"
+                     ItemValue="l=>l.Id">
+            </MSelect>
+            @if (_selectConfigObject.FormatLabelCode.Trim().ToLower() == "properties")
+            {
+                <div style="border-radius: 8px; border: 1px solid #E2E7F4; padding:12px 24px;">
+                    <MRow Style="color: #A3AED0; font-size: 14px;" NoGutters>
+                        <span class="d-flex justify-center" style="width: 5%">状态</span>
+                        <span style="width: 47.5%">Key</span>
+                        <span style="width: 47.5%">Value</span>
+                    </MRow>
+                    <MDivider Class="mt-3 mx-n6"></MDivider>
+                    @foreach (var item in _selectConfigObject.ConfigObjectPropertyContents)
                     {
                         <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
-                            @if(_configObject.ConfigObjectPropertyContents.)
+                            @if (item.IsRelationed)
                             {
-
+                                <MIcon Color="#7681AB">mdi-link-variant</MIcon>
                             }
                             else
                             {
-                            
+                                <MIcon Color="#7681AB">mdi-unlink-variant</MIcon>
                             }
                             <MIcon Class="hover-pointer">mdi-link-variant</MIcon>
                             <div>@item.Key</div>
-                            <MTextField Dense HideDetails="true" Outlined @bind-Value="item.Value" Label="Value"></MTextField>
+                            <MTextField Dense HideDetails="true" Outlined TValue="string" Value="item.Value" ValueChanged="value=>PropertyValueChanged(value,item)" Label="Value"></MTextField>
                         </MRow>
                     }
+                </div>
+            }
+            else
+            {
+                if (_isRelation)
+                {
+                    <MIcon Color="#7681AB">mdi-link-variant</MIcon>
                 }
                 else
                 {
-                    <MTextarea Dense Outlined @bind-Value="_configObject.Content"></MTextarea>
+                    <MIcon Color="#7681AB">mdi-unlink-variant</MIcon>
                 }
-            </div>
+                <MTextarea Dense Outlined Value="@_selectConfigObject.Content" ValueChanged="value=>ContentValueChanged(value,_selectConfigObject)"></MTextarea>
+            }
         </div>
         <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-            <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>{}">提交</MButton>
+            <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="HandleOnSubmitAsync">提交</MButton>
         </div>
     </div>
 </SheetDialog>

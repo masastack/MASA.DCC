@@ -139,6 +139,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         }
         #endregion
 
+        private bool _showRelationModal;
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)

@@ -1061,7 +1061,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _showCloneModal = value;
             if (!value)
             {
-                _step = 1;
+                _cloneAppCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+                _cloneEnvCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
                 _cloneAppSelect = false;
                 _cloneEnvSelect = false;
                 _cloneSelectProjectId = 0;
@@ -1071,6 +1072,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _configObjects.Clear();
                 _selectConfigObject = new();
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+                _step = 1;
             }
         }
         #endregion

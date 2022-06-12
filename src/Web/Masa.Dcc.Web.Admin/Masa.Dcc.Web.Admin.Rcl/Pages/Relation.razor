@@ -47,15 +47,14 @@
                         <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
                             @if (item.IsRelationed)
                             {
-                                <MIcon Color="#7681AB">mdi-link-variant</MIcon>
+                                <MIcon Style="width: 5%" Color="#7681AB">mdi-link-variant</MIcon>
                             }
                             else
                             {
-                                <MIcon Color="#7681AB">mdi-unlink-variant</MIcon>
+                                <MIcon Style="width: 5%" Color="#7681AB">mdi-unlink-variant</MIcon>
                             }
-                            <MIcon Class="hover-pointer">mdi-link-variant</MIcon>
-                            <div>@item.Key</div>
-                            <MTextField Dense HideDetails="true" Outlined TValue="string" Value="item.Value" ValueChanged="value=>PropertyValueChanged(value,item)" Label="Value"></MTextField>
+                            <div style="width: 47.5%">@item.Key</div>
+                            <MTextField style="width: 47.5%" Dense HideDetails="true" Outlined TValue="string" Value="item.Value" ValueChanged="value=>PropertyValueChanged(value,item)" Label="Value"></MTextField>
                         </MRow>
                     }
                 </div>

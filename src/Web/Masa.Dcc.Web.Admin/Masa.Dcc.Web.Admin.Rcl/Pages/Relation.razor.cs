@@ -25,17 +25,21 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private int _selectPublicConfigObjectId;
         private ConfigObjectModel _selectConfigObject = new();
         private bool _isRelation = true;
+        private List<ConfigObjectPropertyModel> _originalProperties = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (Value)
+            if (firstRender)
             {
-                await InitDataAsync();
-            }
-            else
-            {
-                _selectPublicConfigObjectId = 0;
-                _selectConfigObject = new();
+                //if (Value)
+                {
+                    await InitDataAsync();
+                }
+                //else
+                //{
+                //    _selectPublicConfigObjectId = 0;
+                //    _selectConfigObject = new();
+                //}
             }
         }
 
@@ -44,20 +48,28 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             var publicConfig = await ConfigObjectCaller.GetPublicConfigAsync();
             _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(0, publicConfig.First().Id, ConfigObjectType.Public);
             _selectPublicConfigObjectId = _publicConfigObjects.FirstOrDefault()?.Id ?? 0;
-            _selectConfigObject = _publicConfigObjects.First(p => p.Id == _selectPublicConfigObjectId).Adapt<ConfigObjectModel>();
-
-            //handle property
+            SelectConfigObjectValueChanged(_selectPublicConfigObjectId);
         }
 
         private void SelectConfigObjectValueChanged(int configObjectId)
         {
             _selectPublicConfigObjectId = configObjectId;
             _selectConfigObject = _publicConfigObjects.First(p => p.Id == _selectPublicConfigObjectId).Adapt<ConfigObjectModel>();
+
+            if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
+            {
+                //handle property
+                _selectConfigObject.ConfigObjectPropertyContents = JsonSerializer
+                    .Deserialize<List<ConfigObjectPropertyModel>>(_selectConfigObject.Content) ?? new();
+
+                _originalProperties = _selectConfigObject.ConfigObjectPropertyContents.Adapt<List<ConfigObjectPropertyModel>>();
+            }
         }
 
         private void PropertyValueChanged(string value, ConfigObjectPropertyModel model)
         {
-            model.IsRelationed = Value.Equals(model.Value);
+            var originalValue = _originalProperties.First(p => p.Key == model.Key).Value;
+            model.IsRelationed = value.Equals(originalValue);
             model.Value = value;
         }
 
@@ -83,7 +95,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else
             {
-                string initialContent = (_selectConfigObject.FormatLabelCode.ToLower()) switch
+                var formatLabelCode = _selectConfigObject.FormatLabelCode.ToLower();
+                string initialContent = formatLabelCode switch
                 {
                     "json" => "{}",
                     "properties" => "[]",
@@ -91,24 +104,72 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 };
 
                 List<AddConfigObjectDto> configObjectDtos = new();
-                foreach (var envClusterId in _selectEnvClusterIds)
-                {
-                    configObjectDtos.Add(new AddConfigObjectDto
-                    {
-                        Name = _selectConfigObject.Name,
-                        FormatLabelCode = _selectConfigObject.FormatLabelCode,
-                        Content = initialContent,
-                        TempContent = initialContent,
-                        RelationConfigObjectId = _selectConfigObject.Id,
-                        FromRelation = true,
-                        EnvironmentClusterId = envClusterId.AsT1,
-                        Type = _selectConfigObject.Type,
-                        ObjectId = AppDetail.Id
-                    });
-                }
-                await ConfigObjectCaller.AddConfigObjectAsync(configObjectDtos);
 
+                if (formatLabelCode == "properties")
+                {
+                    var unRelationProperties = _selectConfigObject.ConfigObjectPropertyContents
+                        .Where(p => p.IsRelationed == false)
+                        .Adapt<List<ConfigObjectPropertyContentDto>>();
+                    string unRelationContent;
+                    if (unRelationProperties.Any())
+                    {
+                        unRelationContent = JsonSerializer.Serialize(unRelationProperties);
+                    }
+                    else
+                    {
+                        unRelationContent = initialContent;
+                    }
+
+                    foreach (var envClusterId in _selectEnvClusterIds)
+                    {
+                        configObjectDtos.Add(new AddConfigObjectDto
+                        {
+                            Name = _selectConfigObject.Name,
+                            FormatLabelCode = _selectConfigObject.FormatLabelCode,
+                            Content = unRelationContent,
+                            TempContent = initialContent,
+                            RelationConfigObjectId = _selectConfigObject.Id,
+                            FromRelation = true,
+                            EnvironmentClusterId = envClusterId.AsT1,
+                            Type = ConfigObjectType.App,
+                            ObjectId = AppDetail.Id
+                        });
+                    }
+                }
+                else
+                {
+                    int relationConfigObjectId;
+                    string content;
+                    if (_isRelation)
+                    {
+                        relationConfigObjectId = _selectConfigObject.Id;
+                        content = initialContent;
+                    }
+                    else
+                    {
+                        relationConfigObjectId = 0;
+                        content = _selectConfigObject.Content;
+                    }
+                    foreach (var envClusterId in _selectEnvClusterIds)
+                    {
+                        configObjectDtos.Add(new AddConfigObjectDto
+                        {
+                            Name = _selectConfigObject.Name,
+                            FormatLabelCode = _selectConfigObject.FormatLabelCode,
+                            Content = content,
+                            TempContent = initialContent,
+                            RelationConfigObjectId = relationConfigObjectId,
+                            FromRelation = true,
+                            EnvironmentClusterId = envClusterId.AsT1,
+                            Type = ConfigObjectType.App,
+                            ObjectId = AppDetail.Id
+                        });
+                    }
+                }
+
+                await ConfigObjectCaller.AddConfigObjectAsync(configObjectDtos);
                 await PopupService.ToastSuccessAsync("操作成功");
+                Value = false;
             }
         }
     }

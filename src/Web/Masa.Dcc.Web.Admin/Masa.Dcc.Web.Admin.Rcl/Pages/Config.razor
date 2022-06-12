@@ -844,7 +844,24 @@
                                             </div>
                                         </MExpansionPanelHeader>
                                         <MExpansionPanelContent Style="padding-left: 8px;">
-                                            <MTextarea Outlined @bind-Value="@configObject.Content"></MTextarea>
+                                            <div style="border-radius: 8px; border: 1px solid #E2E7F4; padding:12px 24px;">
+                                                <MRow Style="color: #A3AED0; font-size: 14px;" NoGutters>
+                                                    <span style="width: 47.5%">Name</span>
+                                                    <span style="width: 47.5%">Code</span>
+                                                    <span class="d-flex justify-center" style="width: 5%">操作</span>
+                                                </MRow>
+                                                <MDivider Class="mt-3 mx-n6"></MDivider>
+                                                @foreach (var item in configObject.ConfigObjectPropertyContents)
+                                                {
+                                                    <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
+                                                        <MTextField Class="pr-6" Filled Dense HideDetails="true" Outlined @bind-Value="item.Key"></MTextField>
+                                                        <MTextField Filled Dense HideDetails="true" Outlined @bind-Value="item.Value"></MTextField>
+                                                        <div class="d-flex justify-end align-center ml-6">
+                                                            <MIcon Color="error" OnClick="()=>RemoveProperty(item.Key,configObject)" Class="hover-pointer mr-3">mdi-delete-outline</MIcon>
+                                                        </div>
+                                                    </MRow>
+                                                }
+                                            </div>
                                         </MExpansionPanelContent>
                                     </MExpansionPanel>
                                 }

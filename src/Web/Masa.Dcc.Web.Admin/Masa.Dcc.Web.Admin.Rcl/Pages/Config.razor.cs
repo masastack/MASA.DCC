@@ -117,7 +117,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private AppDetailModel _cloneSelectApp = new();
         private readonly List<ConfigObjectDto> _afterAllCloneConfigObjects = new();
         private readonly List<ConfigObjectDto> _afterSelectCloneConfigObjects = new();
-        private bool _isCloneAll = true;
+        private bool _isCloneAll = true;//clone single config object or clone all config object
 
         private bool _cloneConfigObjectAllChecked;
         public bool CloneConfigObjectAllChecked
@@ -851,6 +851,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task CloneNextClick()
         {
+            if (!_isCloneAll)
+            {
+                _configObjects.Clear();
+                _configObjects.Add(_selectConfigObject);
+            }
+
             _step = 2;
 
             if (_cloneAppSelect)
@@ -863,19 +869,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _cloneSelectApp.EnvironmentClusters.RemoveAll(e => e.Id == _selectCluster.Id);
             }
 
-            if (_isCloneAll)
+            _afterAllCloneConfigObjects.Clear();
+            foreach (var item in _cloneSelectApp.EnvironmentClusters)
             {
-                _afterAllCloneConfigObjects.Clear();
-                foreach (var item in _cloneSelectApp.EnvironmentClusters)
-                {
-                    var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
-                    _afterAllCloneConfigObjects.AddRange(configObjects);
-                }
-            }
-            else
-            {
-                _configObjects.Clear();
-                _configObjects.Add(_selectConfigObject);
+                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
+                _afterAllCloneConfigObjects.AddRange(configObjects);
             }
         }
 
@@ -994,9 +992,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
+        private void RemoveProperty(string key, ConfigObjectModel model)
+        {
+            model.ConfigObjectPropertyContents.RemoveAll(prop => prop.Key == key);
+        }
+
         private async Task CloneAsync()
         {
-            if (!_afterSelectCloneConfigObjects.Any())
+            if (!_selectEnvClusterIds.Any())
             {
                 await PopupService.ToastErrorAsync("请选择环境/集群");
                 return;
@@ -1017,12 +1020,25 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 foreach (var configObject in configObjects)
                 {
-                    string initialContent = (configObject.FormatLabelCode.ToLower()) switch
+                    var format = configObject.FormatLabelCode.ToLower();
+                    string initialContent;
+                    string content;
+                    if (format == "properties")
                     {
-                        "json" => "{}",
-                        "properties" => "[]",
-                        _ => "",
-                    };
+                        initialContent = "[]";
+                        content = JsonSerializer.Serialize(configObject.ConfigObjectPropertyContents);
+                    }
+                    else if (format == "json")
+                    {
+                        initialContent = "{}";
+                        content = configObject.Content;
+                    }
+                    else
+                    {
+                        initialContent = "";
+                        content = configObject.Content;
+                    }
+
                     dto.ConfigObjects.Add(new AddConfigObjectDto
                     {
                         Name = configObject.Name,
@@ -1030,7 +1046,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         Type = configObject.Type,
                         ObjectId = configObject.Id,
                         EnvironmentClusterId = envClusterId.AsT1,
-                        Content = configObject.Content,
+                        Content = content,
                         TempContent = initialContent,
                     });
                 }

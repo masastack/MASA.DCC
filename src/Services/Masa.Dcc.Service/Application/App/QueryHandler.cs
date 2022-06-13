@@ -122,6 +122,14 @@ namespace Masa.Dcc.Service.Admin.Application.App
         }
 
         [EventHandler]
+        public async Task GetConfigObjectsByIdsAsync(ConfigObjectListQuery query)
+        {
+            var result = await _configObjectRepository.GetListAsync(c => query.Ids.Contains(c.Id));
+
+            query.Result = result.Adapt<List<ConfigObjectDto>>();
+        }
+
+        [EventHandler]
         public async Task GetConfigObjectReleaseHistoryAsync(ConfigObjectReleaseQuery query)
         {
             var configObjectReleases = await _configObjectRepository.GetConfigObjectWithReleaseHistoriesAsync(query.ConfigObejctId);

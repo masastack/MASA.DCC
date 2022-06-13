@@ -14,6 +14,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Parameter]
         public EventCallback<bool> ValueChanged { get; set; }
 
+        [CascadingParameter]
+        public bool _showRelationModal { get; set; }
+
         [Inject]
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = null!;
 
@@ -26,24 +29,20 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private ConfigObjectModel _selectConfigObject = new();
         private bool _isRelation = true;
         private List<ConfigObjectPropertyModel> _originalProperties = new();
+        private ConfigObjectModel _originalConfigObject = new();
 
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        public void SheetDialogValueChanged(bool value)
         {
-            if (firstRender)
+            Value = value;
+            if (!value)
             {
-                //if (Value)
-                {
-                    await InitDataAsync();
-                }
-                //else
-                //{
-                //    _selectPublicConfigObjectId = 0;
-                //    _selectConfigObject = new();
-                //}
+                _selectEnvClusterIds = new();
+                _selectPublicConfigObjectId = 0;
+                _selectConfigObject = new();
             }
         }
 
-        private async Task InitDataAsync()
+        public async Task InitDataAsync()
         {
             var publicConfig = await ConfigObjectCaller.GetPublicConfigAsync();
             _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(0, publicConfig.First().Id, ConfigObjectType.Public);
@@ -61,14 +60,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 //handle property
                 _selectConfigObject.ConfigObjectPropertyContents = JsonSerializer
                     .Deserialize<List<ConfigObjectPropertyModel>>(_selectConfigObject.Content) ?? new();
-
-                _originalProperties = _selectConfigObject.ConfigObjectPropertyContents.Adapt<List<ConfigObjectPropertyModel>>();
             }
+
+            _originalConfigObject = _selectConfigObject.Adapt<ConfigObjectModel>();
         }
 
         private void PropertyValueChanged(string value, ConfigObjectPropertyModel model)
         {
-            var originalValue = _originalProperties.First(p => p.Key == model.Key).Value;
+            var originalValue = _originalConfigObject.ConfigObjectPropertyContents.First(p => p.Key == model.Key).Value;
             model.IsRelationed = value.Equals(originalValue);
             model.Value = value;
         }
@@ -76,7 +75,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private void ContentValueChanged(string content, ConfigObjectModel model)
         {
             var newContent = content.Replace("\n", "").Replace("\r", "").Replace("\t", "");
-            var oldContent = model.Content.Replace("\n", "").Replace("\r", "").Replace("\t", "");
+            var oldContent = _originalConfigObject.Content.Replace("\n", "").Replace("\r", "").Replace("\t", "");
 
             _isRelation = newContent.Equals(oldContent);
 
@@ -169,7 +168,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 await ConfigObjectCaller.AddConfigObjectAsync(configObjectDtos);
                 await PopupService.ToastSuccessAsync("操作成功");
-                Value = false;
+                SheetDialogValueChanged(false);
             }
         }
     }

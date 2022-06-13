@@ -12,6 +12,7 @@ public class ConfigObjectService : ServiceBase
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject/{Id}", RemoveAsync);
         App.MapGet("api/v1/configObjects", GetListAsync);
+        App.MapPost("api/v1/configObjects/getListbyIds", GetListByIdsAsync);
         App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
         App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
         App.MapPut("api/v1/configObject/revoke/{Id}", RevokeConfigObjectAsync);
@@ -34,6 +35,14 @@ public class ConfigObjectService : ServiceBase
         IEventBus eventBus, int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "")
     {
         var query = new ConfigObjectsQuery(envClusterId, objectId, type, configObjectName);
+        await eventBus.PublishAsync(query);
+
+        return query.Result;
+    }
+
+    public async Task<List<ConfigObjectDto>> GetListByIdsAsync(IEventBus eventBus, List<int> Ids)
+    {
+        var query = new ConfigObjectListQuery(Ids);
         await eventBus.PublishAsync(query);
 
         return query.Result;

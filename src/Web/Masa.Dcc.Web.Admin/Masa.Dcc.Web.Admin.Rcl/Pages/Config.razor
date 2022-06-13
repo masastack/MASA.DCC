@@ -84,7 +84,7 @@
                 </MRow>
             </div>
         </div>
-        <div @onclick="()=>{ _showRelationModal=true; }" style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
+        <div @onclick="ShowRelationModal" style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
             <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>关联公共配置
         </div>
     </MNavigationDrawer>
@@ -111,18 +111,17 @@
                             <MExpansionPanel Style="margin-bottom: 12px;">
                                 <MExpansionPanelHeader Context="_">
                                     <div class="text-h6 d-flex align-center">
-                                        <MTooltip Top>
-                                            <ActivatorContent>
-                                                @if (!configObject.IsPublished)
-                                                {
-                                                    <MIcon @attributes="@context.Attrs" Class="mr-3" Color="warning">mdi-clipboard-edit</MIcon>
-                                                }
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <span>有修改</span>
-                                            </ChildContent>
-                                        </MTooltip>
-                                        @configObject.Name
+                                        @if (configObject.FromRelation)
+                                        {
+                                            <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
+                                        }
+                                        @if (!configObject.IsPublished)
+                                        {
+                                            <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                有修改
+                                            </div>
+                                        }
+                                        <span>@configObject.Name</span>
                                         <span class="ml-3 text-caption">|</span>
                                         <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
                                         <MSpacer></MSpacer>
@@ -188,6 +187,20 @@
                                     </div>
                                 </MExpansionPanelHeader>
                                 <MExpansionPanelContent>
+                                    @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
+                                    {
+                                        <div class="mb-2">
+                                            <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
+                                            <span style="font-size: 14px; color: #7681AB;">已关联</span>
+                                        </div>
+                                    }
+                                    else if (configObject.FromRelation && configObject.RelationConfigObjectId == 0)
+                                    {
+                                        <div class="mb-2">
+                                            <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
+                                            <span style="font-size: 14px; color: #7681AB;">已覆盖</span>
+                                        </div>
+                                    }
                                     <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
                                 </MExpansionPanelContent>
                             </MExpansionPanel>
@@ -197,6 +210,10 @@
                             <MExpansionPanel>
                                 <MExpansionPanelHeader Context="_">
                                     <div class="text-h6 d-flex align-center">
+                                        @if (configObject.FromRelation)
+                                        {
+                                            <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
+                                        }
                                         @configObject.Name
                                         <span class="ml-3 text-caption">|</span>
                                         <sapn class="ml-2 text-caption">@configObject.FormatLabelCode</sapn>
@@ -615,7 +632,7 @@
                     }
                 </MTimeline>
             </div>
-            <div class="ml-12 content full-height full-width">
+            <div class="ml-12 content full-height full-width pr-1">
                 <div class="full-width d-flex align-center pl-2 pr-3" style="height: 40px; background: #F0F3FA; border-radius: 8px;">
                     @if (_selectReleaseHistory.IsInvalid)
                     {
@@ -854,8 +871,8 @@
                                                 @foreach (var item in configObject.ConfigObjectPropertyContents)
                                                 {
                                                     <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
-                                                        <MTextField Class="pr-6" Filled Dense HideDetails="true" Outlined @bind-Value="item.Key"></MTextField>
-                                                        <MTextField Filled Dense HideDetails="true" Outlined @bind-Value="item.Value"></MTextField>
+                                                        <MTextField Class="pr-6" Dense HideDetails="true" Outlined @bind-Value="item.Key"></MTextField>
+                                                        <MTextField Dense HideDetails="true" Outlined @bind-Value="item.Value"></MTextField>
                                                         <div class="d-flex justify-end align-center ml-6">
                                                             <MIcon Color="error" OnClick="()=>RemoveProperty(item.Key,configObject)" Class="hover-pointer mr-3">mdi-delete-outline</MIcon>
                                                         </div>
@@ -923,5 +940,5 @@
     </div>
 </SheetDialog>
 
-<Relation AppDetail="_appDetail" @bind-Value="_showRelationModal">
+<Relation @ref="_relation" AppDetail="_appDetail">
 </Relation>

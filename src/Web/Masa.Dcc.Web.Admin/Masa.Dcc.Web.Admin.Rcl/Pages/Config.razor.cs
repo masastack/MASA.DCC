@@ -117,7 +117,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private AppDetailModel _cloneSelectApp = new();
         private readonly List<ConfigObjectDto> _afterAllCloneConfigObjects = new();
         private readonly List<ConfigObjectDto> _afterSelectCloneConfigObjects = new();
-        private bool _isCloneAll = true;
+        private bool _isCloneAll = true;//clone single config object or clone all config object
 
         private bool _cloneConfigObjectAllChecked;
         public bool CloneConfigObjectAllChecked
@@ -139,6 +139,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         }
         #endregion
 
+        private Relation? _relation;
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -149,7 +151,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         public async Task InitDataAsync()
         {
-            _projectDetail = await ProjectCaller.GetAsync(ProjectId);
+            if (ProjectId != 0)
+                _projectDetail = await ProjectCaller.GetAsync(ProjectId);
+
             switch (ConfigObjectType)
             {
                 case ConfigObjectType.Public:
@@ -212,65 +216,158 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id, configObjectType, configObjectName);
             _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
+            var configObjectIds = _configObjects.Where(c => c.RelationConfigObjectId != 0).Select(c => c.RelationConfigObjectId).ToList();
+            var publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsByIdsAsync(configObjectIds);
 
             _configObjects.ForEach(config =>
             {
-                if (config.FormatLabelCode.Trim().ToLower() == "properties")
+                if (config.RelationConfigObjectId != 0)
                 {
-                    var contents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.Content) ?? new();
-                    var tempContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.TempContent) ?? new();
-
-                    var deleted = tempContents.ExceptBy(contents.Select(content => content.Key), content => content.Key)
-                        .Select(deletedContent => new ConfigObjectPropertyModel
-                        {
-                            Key = deletedContent.Key,
-                            Value = deletedContent.Value,
-                            Description = deletedContent.Description,
-                            Modifier = deletedContent.Modifier,
-                            ModificationTime = deletedContent.ModificationTime,
-                            IsDeleted = true
-                        })
-                        .ToList();
-
-                    var added = contents.ExceptBy(tempContents.Select(content => content.Key), content => content.Key)
-                        .Select(addedContent => new ConfigObjectPropertyModel
-                        {
-                            Key = addedContent.Key,
-                            Value = addedContent.Value,
-                            Description = addedContent.Description,
-                            Modifier = addedContent.Description,
-                            ModificationTime = addedContent.ModificationTime,
-                            IsAdded = true
-                        }).ToList();
-
-                    var published = contents
-                        .IntersectBy(tempContents.Select(content => new { content.Key, content.Value }),
-                            content => new { content.Key, content.Value })
-                        .Select(publishedContent => new ConfigObjectPropertyModel
-                        {
-                            Key = publishedContent.Key,
-                            Value = publishedContent.Value,
-                            Description = publishedContent.Description,
-                            Modifier = publishedContent.Modifier,
-                            ModificationTime = publishedContent.ModificationTime,
-                            IsPublished = true
-                        }).ToList();
-
-                    var publishedWithEdited = contents
-                        .IntersectBy(tempContents.Select(content => content.Key), content => content.Key).ToList();
-                    publishedWithEdited.RemoveAll(c => published.Select(d => d.Key).Contains(c.Key));
-                    var edited = publishedWithEdited.Select(editedContent => new ConfigObjectPropertyModel
+                    publicConfigObjects.ForEach(publicConfig =>
                     {
-                        Key = editedContent.Key,
-                        Value = editedContent.Value,
-                        Description = editedContent.Description,
-                        ModificationTime = editedContent.ModificationTime,
-                        Modifier = editedContent.Modifier,
-                        IsEdited = true,
-                        TempValue = tempContents.First(content => content.Key == editedContent.Key).Value
-                    }).ToList();
+                        if (config.RelationConfigObjectId == publicConfig.Id)
+                        {
+                            if (config.FormatLabelCode.Trim().ToLower() == "properties")
+                            {
+                                var publicContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(publicConfig.Content) ?? new();
+                                var publicTempContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(publicConfig.TempContent) ?? new();
+                                var appOriginalContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.Content) ?? new();
+                                var appContents = appOriginalContents.Adapt<List<ConfigObjectPropertyModel>>();
+                                var appTempContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.TempContent) ?? new();
 
-                    config.ConfigObjectPropertyContents = published.Union(deleted).Union(added).Union(edited).ToList();
+                                var appPublished = appContents
+                                    .IntersectBy(appTempContents.Select(content => new { content.Key, content.Value }),
+                                        content => new { content.Key, content.Value })
+                                    .Select(publishedContent => new ConfigObjectPropertyModel
+                                    {
+                                        Key = publishedContent.Key,
+                                        Value = publishedContent.Value,
+                                        Description = publishedContent.Description,
+                                        Modifier = publishedContent.Modifier,
+                                        ModificationTime = publishedContent.ModificationTime,
+                                        IsRelationed = false,
+                                        IsPublished = true
+                                    }).ToList();
+
+                                appContents.RemoveAll(c => appPublished.Select(p => p.Key).Contains(c.Key));
+                                var appNotPublished = appContents.Select(content => new ConfigObjectPropertyModel
+                                {
+                                    Key = content.Key,
+                                    Value = content.Value,
+                                    Description = content.Description,
+                                    Modifier = content.Modifier,
+                                    ModificationTime = content.ModificationTime,
+                                    IsRelationed = false,
+                                    IsPublished = false
+                                }).ToList();
+
+                                var relationConfigObjects = publicContents.ExceptBy(appOriginalContents.Select(c => c.Key), content => content.Key)
+                                    .Select(content => new ConfigObjectPropertyModel
+                                    {
+                                        Key = content.Key,
+                                        Value = content.Value,
+                                        Description = content.Description,
+                                        Modifier = content.Modifier,
+                                        ModificationTime = content.ModificationTime,
+                                        IsRelationed = true
+                                    }).ToList();
+                                var relationConfigObjectsPublished = relationConfigObjects
+                                    .IntersectBy(publicTempContents.Select(c => new { c.Key, c.Value }), content => new { content.Key, content.Value })
+                                    .Select(content => new ConfigObjectPropertyModel
+                                    {
+                                        Key = content.Key,
+                                        Value = content.Value,
+                                        Description = content.Description,
+                                        Modifier = content.Modifier,
+                                        ModificationTime = content.ModificationTime,
+                                        IsRelationed = true,
+                                        IsPublished = true
+                                    }).ToList();
+                                relationConfigObjects.RemoveAll(c => relationConfigObjectsPublished.Select(c => c.Key).Contains(c.Key));
+                                var relationConfigObjectsNotPublished = relationConfigObjects.Select(content => new ConfigObjectPropertyModel
+                                {
+                                    Key = content.Key,
+                                    Value = content.Value,
+                                    Description = content.Description,
+                                    Modifier = content.Modifier,
+                                    ModificationTime = content.ModificationTime,
+                                    IsRelationed = true,
+                                    IsPublished = false
+                                });
+
+                                config.ConfigObjectPropertyContents = relationConfigObjectsPublished
+                                .Union(relationConfigObjectsNotPublished)
+                                .Union(appPublished)
+                                .Union(appNotPublished)
+                                .ToList();
+                            }
+                            else
+                            {
+                                config.Content = publicConfig.Content;
+                                config.TempContent = publicConfig.TempContent;
+                            }
+                        }
+                    });
+                }
+                else
+                {
+                    if (config.FormatLabelCode.Trim().ToLower() == "properties")
+                    {
+                        var contents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.Content) ?? new();
+                        var tempContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.TempContent) ?? new();
+
+                        var deleted = tempContents.ExceptBy(contents.Select(content => content.Key), content => content.Key)
+                            .Select(deletedContent => new ConfigObjectPropertyModel
+                            {
+                                Key = deletedContent.Key,
+                                Value = deletedContent.Value,
+                                Description = deletedContent.Description,
+                                Modifier = deletedContent.Modifier,
+                                ModificationTime = deletedContent.ModificationTime,
+                                IsDeleted = true
+                            })
+                            .ToList();
+
+                        var added = contents.ExceptBy(tempContents.Select(content => content.Key), content => content.Key)
+                            .Select(addedContent => new ConfigObjectPropertyModel
+                            {
+                                Key = addedContent.Key,
+                                Value = addedContent.Value,
+                                Description = addedContent.Description,
+                                Modifier = addedContent.Description,
+                                ModificationTime = addedContent.ModificationTime,
+                                IsAdded = true
+                            }).ToList();
+
+                        var published = contents
+                            .IntersectBy(tempContents.Select(content => new { content.Key, content.Value }),
+                                content => new { content.Key, content.Value })
+                            .Select(publishedContent => new ConfigObjectPropertyModel
+                            {
+                                Key = publishedContent.Key,
+                                Value = publishedContent.Value,
+                                Description = publishedContent.Description,
+                                Modifier = publishedContent.Modifier,
+                                ModificationTime = publishedContent.ModificationTime,
+                                IsPublished = true
+                            }).ToList();
+
+                        var publishedWithEdited = contents
+                            .IntersectBy(tempContents.Select(content => content.Key), content => content.Key).ToList();
+                        publishedWithEdited.RemoveAll(c => published.Select(d => d.Key).Contains(c.Key));
+                        var edited = publishedWithEdited.Select(editedContent => new ConfigObjectPropertyModel
+                        {
+                            Key = editedContent.Key,
+                            Value = editedContent.Value,
+                            Description = editedContent.Description,
+                            ModificationTime = editedContent.ModificationTime,
+                            Modifier = editedContent.Modifier,
+                            IsEdited = true,
+                            TempValue = tempContents.First(content => content.Key == editedContent.Key).Value
+                        }).ToList();
+
+                        config.ConfigObjectPropertyContents = published.Union(deleted).Union(added).Union(edited).ToList();
+                    }
                 }
             });
 
@@ -295,32 +392,30 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     var errorLine = lineDatas.ToList().IndexOf(errorData) + 1;
                     await PopupService.ToastErrorAsync($"Line：{errorLine} key value must separate by '='");
-                    return;
                 }
                 else
                 {
-                    Dictionary<string, ConfigObjectPropertyContentDto> propertyContents = new();
+                    Dictionary<string, ConfigObjectPropertyModel> propertyContents = new();
                     foreach (var lineData in lineDatas)
                     {
                         string[] keyValues = lineData.Trim().Split('=');
-                        propertyContents.Add(keyValues[0], new ConfigObjectPropertyContentDto
+                        propertyContents.Add(keyValues[0], new ConfigObjectPropertyModel
                         {
-                            Key = keyValues[0],
-                            Value = keyValues[1]
+                            Key = keyValues[0].TrimEnd(),
+                            Value = keyValues[1].TrimStart()
                         });
                     }
-                    List<ConfigObjectPropertyContentDto> editorPropertyContents = propertyContents.Values.ToList();
+                    List<ConfigObjectPropertyModel> editorPropertyContents = propertyContents.Values.ToList();
 
 
                     var added = editorPropertyContents.ExceptBy(
                             _selectConfigObjectAllProperties.Select(content => content.Key),
                             content => content.Key)
-                        .ToList();
+                        .Adapt<List<ConfigObjectPropertyContentDto>>();
 
                     var deleted = _selectConfigObjectAllProperties.ExceptBy(
                             editorPropertyContents.Select(content => content.Key),
                             content => content.Key)
-                        .ToList()
                         .Adapt<List<ConfigObjectPropertyContentDto>>();
 
                     var normalOrEdited = editorPropertyContents.ExceptBy(
@@ -329,8 +424,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         .ExceptBy(
                             deleted.Select(content => content.Key),
                             content => content.Key
-                        ).ToList()
-                        .Adapt<List<ConfigObjectPropertyContentDto>>();
+                        ).Adapt<List<ConfigObjectPropertyContentDto>>();
 
                     var allPropertiesIntersect = _selectConfigObjectAllProperties.IntersectBy(
                         normalOrEdited.Select(content => content.Key), content => content.Key);
@@ -338,7 +432,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     var edit = normalOrEdited.ExceptBy(
                             allPropertiesIntersect.Select(content => content.Value),
                             content => content.Value)
-                        .ToList()
                         .Adapt<List<ConfigObjectPropertyContentDto>>();
 
                     await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
@@ -352,12 +445,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                     await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                     await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
-                    _tabIndex = 0;
+                    HandleTabIndexChanged(0, editorPropertyContents);
+                    _selectEditorContent.Disabled = false;
                 }
             }
         }
 
-        private void HandleTabIndexChangedAsync(StringNumber index, List<ConfigObjectPropertyModel> configObjectProperties)
+        private void HandleTabIndexChanged(StringNumber index, List<ConfigObjectPropertyModel> configObjectProperties)
         {
             _tabIndex = index;
             if (index == 1)
@@ -422,6 +516,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Content = configObject.Content,
                     FormatLabelCode = "Json"
                 });
+
+                configObject.RelationConfigObjectId = 0;
 
                 await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
             }
@@ -847,6 +943,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task CloneNextClick()
         {
+            if (!_isCloneAll)
+            {
+                _configObjects.Clear();
+                _configObjects.Add(_selectConfigObject);
+            }
+
             _step = 2;
 
             if (_cloneAppSelect)
@@ -859,19 +961,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _cloneSelectApp.EnvironmentClusters.RemoveAll(e => e.Id == _selectCluster.Id);
             }
 
-            if (_isCloneAll)
+            _afterAllCloneConfigObjects.Clear();
+            foreach (var item in _cloneSelectApp.EnvironmentClusters)
             {
-                _afterAllCloneConfigObjects.Clear();
-                foreach (var item in _cloneSelectApp.EnvironmentClusters)
-                {
-                    var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
-                    _afterAllCloneConfigObjects.AddRange(configObjects);
-                }
-            }
-            else
-            {
-                _configObjects.Clear();
-                _configObjects.Add(_selectConfigObject);
+                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
+                _afterAllCloneConfigObjects.AddRange(configObjects);
             }
         }
 
@@ -990,9 +1084,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
+        private void RemoveProperty(string key, ConfigObjectModel model)
+        {
+            model.ConfigObjectPropertyContents.RemoveAll(prop => prop.Key == key);
+        }
+
         private async Task CloneAsync()
         {
-            if (!_afterSelectCloneConfigObjects.Any())
+            if (!_selectEnvClusterIds.Any())
             {
                 await PopupService.ToastErrorAsync("请选择环境/集群");
                 return;
@@ -1013,12 +1112,25 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 foreach (var configObject in configObjects)
                 {
-                    string initialContent = (configObject.FormatLabelCode.ToLower()) switch
+                    var format = configObject.FormatLabelCode.ToLower();
+                    string initialContent;
+                    string content;
+                    if (format == "properties")
                     {
-                        "json" => "{}",
-                        "properties" => "[]",
-                        _ => "",
-                    };
+                        initialContent = "[]";
+                        content = JsonSerializer.Serialize(configObject.ConfigObjectPropertyContents);
+                    }
+                    else if (format == "json")
+                    {
+                        initialContent = "{}";
+                        content = configObject.Content;
+                    }
+                    else
+                    {
+                        initialContent = "";
+                        content = configObject.Content;
+                    }
+
                     dto.ConfigObjects.Add(new AddConfigObjectDto
                     {
                         Name = configObject.Name,
@@ -1026,7 +1138,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         Type = configObject.Type,
                         ObjectId = configObject.Id,
                         EnvironmentClusterId = envClusterId.AsT1,
-                        Content = configObject.Content,
+                        Content = content,
                         TempContent = initialContent,
                     });
                 }
@@ -1041,7 +1153,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _showCloneModal = value;
             if (!value)
             {
-                _step = 1;
+                _cloneAppCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
+                _cloneEnvCardStyle = "position: absolute; top:50%; margin-top:-65px; transition: 0.3s;";
                 _cloneAppSelect = false;
                 _cloneEnvSelect = false;
                 _cloneSelectProjectId = 0;
@@ -1051,9 +1164,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _configObjects.Clear();
                 _selectConfigObject = new();
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+                _step = 1;
             }
         }
         #endregion
 
+        private async Task ShowRelationModal()
+        {
+            if (_relation != null)
+            {
+                _relation.SheetDialogValueChanged(true);
+                await _relation.InitDataAsync();
+            }
+        }
     }
 }

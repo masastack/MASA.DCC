@@ -111,6 +111,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 FormatName = labels.FirstOrDefault(label => label.Code == configObject.FormatLabelCode)?.Name ?? "",
                 Type = configObject.Type,
                 RelationConfigObjectId = configObject.RelationConfigObjectId,
+                FromRelation = configObject.FromRelation,
                 Content = configObject.Content,
                 TempContent = configObject.TempContent,
                 CreationTime = configObject.CreationTime,
@@ -118,6 +119,14 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 ModificationTime = configObject.ModificationTime,
                 Modifier = configObject.Modifier
             }).ToList();
+        }
+
+        [EventHandler]
+        public async Task GetConfigObjectsByIdsAsync(ConfigObjectListQuery query)
+        {
+            var result = await _configObjectRepository.GetListAsync(c => query.Ids.Contains(c.Id));
+
+            query.Result = result.Adapt<List<ConfigObjectDto>>();
         }
 
         [EventHandler]

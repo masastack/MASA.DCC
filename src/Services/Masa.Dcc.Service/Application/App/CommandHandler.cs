@@ -107,7 +107,9 @@ namespace Masa.Dcc.Service.Admin.Application.App
                     configObjectDto.FormatLabelCode,
                     configObjectDto.Type,
                     configObjectDto.Content,
-                    configObjectDto.TempContent);
+                    configObjectDto.TempContent,
+                    configObjectDto.RelationConfigObjectId,
+                    configObjectDto.FromRelation);
 
                 configObjects.Add(configObject);
 

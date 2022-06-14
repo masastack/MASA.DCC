@@ -30,5 +30,9 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public string Content { get; set; } = default!;
 
         public string TempContent { get; set; } = default!;
+
+        public int RelationConfigObjectId { get; set; }
+
+        public bool FromRelation { get; set; }
     }
 }

@@ -37,6 +37,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             if (dto.FormatLabelCode.Trim().ToLower() != "properties")
             {
                 configObject.UpdateContent(dto.Content);
+                configObject.UnRelation();
             }
             else
             {

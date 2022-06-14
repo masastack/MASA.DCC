@@ -392,32 +392,30 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     var errorLine = lineDatas.ToList().IndexOf(errorData) + 1;
                     await PopupService.ToastErrorAsync($"Line：{errorLine} key value must separate by '='");
-                    return;
                 }
                 else
                 {
-                    Dictionary<string, ConfigObjectPropertyContentDto> propertyContents = new();
+                    Dictionary<string, ConfigObjectPropertyModel> propertyContents = new();
                     foreach (var lineData in lineDatas)
                     {
                         string[] keyValues = lineData.Trim().Split('=');
-                        propertyContents.Add(keyValues[0], new ConfigObjectPropertyContentDto
+                        propertyContents.Add(keyValues[0], new ConfigObjectPropertyModel
                         {
-                            Key = keyValues[0],
-                            Value = keyValues[1]
+                            Key = keyValues[0].TrimEnd(),
+                            Value = keyValues[1].TrimStart()
                         });
                     }
-                    List<ConfigObjectPropertyContentDto> editorPropertyContents = propertyContents.Values.ToList();
+                    List<ConfigObjectPropertyModel> editorPropertyContents = propertyContents.Values.ToList();
 
 
                     var added = editorPropertyContents.ExceptBy(
                             _selectConfigObjectAllProperties.Select(content => content.Key),
                             content => content.Key)
-                        .ToList();
+                        .Adapt<List<ConfigObjectPropertyContentDto>>();
 
                     var deleted = _selectConfigObjectAllProperties.ExceptBy(
                             editorPropertyContents.Select(content => content.Key),
                             content => content.Key)
-                        .ToList()
                         .Adapt<List<ConfigObjectPropertyContentDto>>();
 
                     var normalOrEdited = editorPropertyContents.ExceptBy(
@@ -426,8 +424,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         .ExceptBy(
                             deleted.Select(content => content.Key),
                             content => content.Key
-                        ).ToList()
-                        .Adapt<List<ConfigObjectPropertyContentDto>>();
+                        ).Adapt<List<ConfigObjectPropertyContentDto>>();
 
                     var allPropertiesIntersect = _selectConfigObjectAllProperties.IntersectBy(
                         normalOrEdited.Select(content => content.Key), content => content.Key);
@@ -435,7 +432,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     var edit = normalOrEdited.ExceptBy(
                             allPropertiesIntersect.Select(content => content.Value),
                             content => content.Value)
-                        .ToList()
                         .Adapt<List<ConfigObjectPropertyContentDto>>();
 
                     await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
@@ -449,12 +445,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                     await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                     await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
-                    _tabIndex = 0;
+                    HandleTabIndexChanged(0, editorPropertyContents);
+                    _selectEditorContent.Disabled = false;
                 }
             }
         }
 
-        private void HandleTabIndexChangedAsync(StringNumber index, List<ConfigObjectPropertyModel> configObjectProperties)
+        private void HandleTabIndexChanged(StringNumber index, List<ConfigObjectPropertyModel> configObjectProperties)
         {
             _tabIndex = index;
             if (index == 1)

@@ -84,9 +84,12 @@
                 </MRow>
             </div>
         </div>
-        <div @onclick="ShowRelationModal" style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
-            <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>关联公共配置
-        </div>
+        @if (ConfigObjectType == ConfigObjectType.App)
+        {
+            <div @onclick="ShowRelationModal" style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
+                <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>关联公共配置
+            </div>
+        }
     </MNavigationDrawer>
 
     <div class="pl-6" style="width: calc(100% - 300px); display:block;">
@@ -328,7 +331,7 @@
                                     {
                                         <ElevationTab TabIndex="_tabIndex"
                                           Left
-                                          TabIndexChanged="index=>HandleTabIndexChangedAsync(index,configObject.ConfigObjectPropertyContents)"
+                                          TabIndexChanged="index=>HandleTabIndexChanged(index,configObject.ConfigObjectPropertyContents)"
                                           TabMinWidth="70"
                                           ItemsClass="rounded-5"
                                           Dense
@@ -388,7 +391,7 @@
                                             </ElevationTabItem>
                                             <ElevationTabItem>
                                                 <div class="d-flex justify-end">
-                                                    <MButton StopPropagation Icon Class="mr-4">
+                                                    <MButton StopPropagation Icon Class="mr-4 mb-2">
                                                         @if (!_selectEditorContent.Disabled)
                                                         {
                                                             <MIcon Class="hover-pointer" OnClick="()=>{ _selectEditorContent.Disabled = !_selectEditorContent.Disabled; }" Color="#323D6F">mdi-pencil</MIcon>

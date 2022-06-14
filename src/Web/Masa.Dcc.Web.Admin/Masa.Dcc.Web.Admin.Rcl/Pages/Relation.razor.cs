@@ -12,10 +12,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public bool Value { get; set; }
 
         [Parameter]
-        public EventCallback<bool> ValueChanged { get; set; }
-
-        [CascadingParameter]
-        public bool _showRelationModal { get; set; }
+        public EventCallback OnSubmitAfter { get; set; }
 
         [Inject]
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = null!;
@@ -28,7 +25,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private int _selectPublicConfigObjectId;
         private ConfigObjectModel _selectConfigObject = new();
         private bool _isRelation = true;
-        private List<ConfigObjectPropertyModel> _originalProperties = new();
         private ConfigObjectModel _originalConfigObject = new();
 
         public void SheetDialogValueChanged(bool value)
@@ -167,6 +163,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
 
                 await ConfigObjectCaller.AddConfigObjectAsync(configObjectDtos);
+                if (OnSubmitAfter.HasDelegate)
+                {
+                    await OnSubmitAfter.InvokeAsync();
+                }
                 await PopupService.ToastSuccessAsync("操作成功");
                 SheetDialogValueChanged(false);
             }

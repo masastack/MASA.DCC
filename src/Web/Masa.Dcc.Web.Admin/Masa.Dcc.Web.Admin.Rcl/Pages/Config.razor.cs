@@ -231,7 +231,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                             {
                                 var publicContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(publicConfig.Content) ?? new();
                                 var publicTempContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(publicConfig.TempContent) ?? new();
-                                var appContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.Content) ?? new();
+                                var appOriginalContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.Content) ?? new();
+                                var appContents = appOriginalContents.Adapt<List<ConfigObjectPropertyModel>>();
                                 var appTempContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.TempContent) ?? new();
 
                                 var appPublished = appContents
@@ -260,7 +261,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                                     IsPublished = false
                                 }).ToList();
 
-                                var relationConfigObjects = publicContents.ExceptBy(appContents.Select(c => c.Key), content => content.Key)
+                                var relationConfigObjects = publicContents.ExceptBy(appOriginalContents.Select(c => c.Key), content => content.Key)
                                     .Select(content => new ConfigObjectPropertyModel
                                     {
                                         Key = content.Key,
@@ -294,7 +295,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                                     IsPublished = false
                                 });
 
-                                config.ConfigObjectPropertyContents = relationConfigObjectsPublished.Union(relationConfigObjectsNotPublished).Union(appPublished).Union(appNotPublished).ToList();
+                                config.ConfigObjectPropertyContents = relationConfigObjectsPublished
+                                .Union(relationConfigObjectsNotPublished)
+                                .Union(appPublished)
+                                .Union(appNotPublished)
+                                .ToList();
                             }
                             else
                             {
@@ -514,6 +519,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Content = configObject.Content,
                     FormatLabelCode = "Json"
                 });
+
+                configObject.RelationConfigObjectId = 0;
 
                 await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
             }

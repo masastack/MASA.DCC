@@ -65,8 +65,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "修改时间", Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
             new() { Text = "操作", Sortable = false, }
         };
-        private readonly DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
-        private List<LabelDto> _configObjectFormats = new();
+        private bool _showAddConfigObjectModal;
         private List<StringNumber> _selectEnvClusterIds = new();
         private ProjectDetailModel _projectDetail = new();
         private List<EnvironmentClusterModel> _allEnvClusters = new();
@@ -139,7 +138,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         }
         #endregion
 
-        private Relation? _relation;
+        private RelationModal? _relation;
+        private AddConfigObjectModal? _addConfigObjectModal;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -596,47 +596,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task ShowAddConfigObjectModal()
+        private async Task ShowAddConfigObjectModalAsync()
         {
-            _addConfigObjectModal.Show();
-            _configObjectFormats = await LabelCaller.GetLabelsByTypeCodeAsync("ConfigObjectFormat");
-        }
-
-        private async Task AddConfigObject(EditContext context)
-        {
-            _addConfigObjectModal.Data.Type = ConfigObjectType;
-            _addConfigObjectModal.Data.ObjectId = _appDetail.Id;
-            if (context.Validate())
-            {
-                string initialContent = (_addConfigObjectModal.Data.FormatLabelCode.ToLower()) switch
-                {
-                    "json" => "{}",
-                    "properties" => "[]",
-                    _ => "",
-                };
-
-                List<AddConfigObjectDto> configObjectDtos = new();
-                for (int i = 0; i < _selectEnvClusterIds.Count; i++)
-                {
-                    configObjectDtos.Add(new AddConfigObjectDto
-                    {
-                        Name = _addConfigObjectModal.Data.Name,
-                        FormatLabelCode = _addConfigObjectModal.Data.FormatLabelCode,
-                        Type = _addConfigObjectModal.Data.Type,
-                        ObjectId = _addConfigObjectModal.Data.ObjectId,
-                        EnvironmentClusterId = _selectEnvClusterIds[i].AsT1,
-                        Content = initialContent,
-                        TempContent = initialContent
-                    });
-                }
-
-                await ConfigObjectCaller.AddConfigObjectAsync(configObjectDtos);
-                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, _addConfigObjectModal.Data.Type, ""); ;
-                _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
-
-                _addConfigObjectModal.Hide();
-                _selectEnvClusterIds.Clear();
-            }
+            await _addConfigObjectModal.InitDataAsync();
         }
 
         private async Task SubmitPropertyConfigAsync(EditContext context)

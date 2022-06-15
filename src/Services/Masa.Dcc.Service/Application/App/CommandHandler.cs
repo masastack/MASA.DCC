@@ -97,37 +97,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task AddConfigObjectAsync(AddConfigObjectCommand command)
         {
-            var configObjectDtos = command.ConfigObjectDtos;
-
-            List<ConfigObject> configObjects = new();
-            foreach (var configObjectDto in configObjectDtos)
-            {
-                var configObject = new ConfigObject(
-                    configObjectDto.Name,
-                    configObjectDto.FormatLabelCode,
-                    configObjectDto.Type,
-                    configObjectDto.Content,
-                    configObjectDto.TempContent,
-                    configObjectDto.RelationConfigObjectId,
-                    configObjectDto.FromRelation);
-
-                configObjects.Add(configObject);
-
-                if (configObjectDto.Type == ConfigObjectType.Public)
-                {
-                    configObject.SetPublicConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
-                }
-                else if (configObjectDto.Type == ConfigObjectType.App)
-                {
-                    configObject.SetAppConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
-                }
-                else if (configObjectDto.Type == ConfigObjectType.Biz)
-                {
-                    configObject.SetBizConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
-                }
-            }
-
-            await _configObjectRepository.AddRangeAsync(configObjects);
+            await _configObjectDomainService.AddConfigObjectAsync(command.ConfigObjectDtos);
         }
 
         [EventHandler]

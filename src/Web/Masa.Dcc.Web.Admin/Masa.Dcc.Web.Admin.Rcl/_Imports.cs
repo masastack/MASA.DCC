@@ -19,6 +19,7 @@ global using Masa.Dcc.Contracts.Admin.Label.Dtos;
 global using Masa.Dcc.Web.Admin.Rcl.Global.Config;
 global using Masa.Dcc.Web.Admin.Rcl.Global.Nav.Model;
 global using Masa.Dcc.Web.Admin.Rcl.Model;
+global using Masa.Dcc.Web.Admin.Rcl.Pages.Modal;
 global using Masa.Dcc.Web.Admin.Rcl.Shared;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Forms;

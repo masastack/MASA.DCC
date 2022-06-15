@@ -56,9 +56,12 @@
                     <MChipGroup Column>
                         @foreach (var item in _appEnvs)
                         {
+                            var isSelected = _selectCluster.EnvironmentName == item.EnvironmentName;
+                            var textColor = isSelected ? "white" : "";
                             <MChip OnClick="()=>OnEnvChipClick(item.EnvironmentName)"
                                Outlined="@(_selectEnvName != item.EnvironmentName)"
                                Color="@item.EnvironmentColor"
+                               TextColor="@textColor"
                                Class="mr-3 mt-3">
                                 @item.EnvironmentName
                             </MChip>
@@ -100,7 +103,7 @@
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                     </PrependInnerContent>
                 </MTextField>
-                <MButton Class="rounded-pill ml-6" Color="primary" OnClick="ShowAddConfigObjectModal">
+                <MButton Class="rounded-pill ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
                     <MIcon Small>mdi-plus </MIcon>@T("Add Config")
                 </MButton>
             </div>
@@ -518,42 +521,10 @@
     </div>
 </div>
 
-<SheetDialog @bind-Value="_addConfigObjectModal.Visible" Title="@T("Create config object")" Icon="mdi-circle" IconColor="success">
-    <MForm Class="full-height" Context="formContext" EnableValidation Model="_addConfigObjectModal.Data">
-        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
-            <div>
-                <div class="text-h6 d-flex align-center">
-                    @_appDetail.Name
-                    <span class="ml-3 text-caption">|</span>
-                    <sapn class="ml-2 text-caption">@_appDetail.Identity</sapn>
-                </div>
-                <MTextField Class="mt-12" Dense Label="名称" Outlined @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
-                <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
-                         Label="格式"
-                         MenuProps="props => props.OffsetY = true"
-                         Outlined
-                         Dense
-                         Items="_configObjectFormats"
-                         ItemText="l=>l.Name"
-                         ItemValue="l=>l.Code">
-                </MSelect>
-                <p class="neutral--text" style="font-size:14px; font-weight:700;">选择集群</p>
-                <MChipGroup Multiple Column @bind-Values="_selectEnvClusterIds">
-                    @foreach (var item in _appDetail.EnvironmentClusters)
-                    {
-                        <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
-                            <div class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</div>&nbsp;&nbsp;
-                            <div style="color:#05CD99">@item.ClusterName</div>
-                        </MChip>
-                    }
-                </MChipGroup>
-            </div>
-            <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>AddConfigObject(formContext)">提交</MButton>
-            </div>
-        </div>
-    </MForm>
-</SheetDialog>
+<AddConfigObjectModal @ref="_addConfigObjectModal" AppDetail="_appDetail"
+                      ConfigObjectType="ConfigObjectType"
+                      OnSubmitAfter="@(async ()=>{ _configObjects = (await ConfigObjectCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, ConfigObjectType, "")).Adapt<List<ConfigObjectModel>>(); })">
+</AddConfigObjectModal>
 
 <SheetDialog Value="_propertyConfigModal.Visible" ValueChanged="PropertyConfigModalValueChanged" Title="@T("Create config object item")" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
@@ -1017,5 +988,5 @@
     </div>
 </SheetDialog>
 
-<Relation @ref="_relation" AppDetail="_appDetail" OnSubmitAfter="()=>GetConfigObjectsAsync(EnvironmentClusterId,ConfigObjectType)">
-</Relation>
+<RelationModal @ref="_relation" AppDetail="_appDetail" OnSubmitAfter="()=>GetConfigObjectsAsync(EnvironmentClusterId,ConfigObjectType)">
+</RelationModal>

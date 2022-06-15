@@ -1,9 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Web.Admin.Rcl.Pages
+namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 {
-    public partial class Relation
+    public partial class RelationModal
     {
         [Parameter]
         public AppDetailModel AppDetail { get; set; } = new();
@@ -91,7 +91,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             else
             {
                 var formatLabelCode = _selectConfigObject.FormatLabelCode.ToLower();
-                string initialContent = formatLabelCode switch
+                var initialContent = formatLabelCode switch
                 {
                     "json" => "{}",
                     "properties" => "[]",

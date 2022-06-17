@@ -106,5 +106,10 @@ namespace Masa.Dcc.ApiGateways.Caller
         {
             await CallerProvider.PostAsync($"{_prefix}/configObject/clone", dto);
         }
+
+        public async Task RelationConfigObjectAsync(List<RelationConfigObjectDto> dtos)
+        {
+            await CallerProvider.PostAsync($"{_prefix}/configObject/relation", dtos);
+        }
     }
 }

@@ -44,7 +44,7 @@
                                 @foreach (var project in _projects)
                                 {
                                     var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
-                                    <MExpansionPanel Style="margin-bottom: 12px;">
+                                    <MExpansionPanel>
                                         <MExpansionPanelHeader>
                                             <span style="display:flex;align-items:center;margin-right:10px;">
                                                 <div class="text-h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
@@ -111,12 +111,6 @@
                                                     </MCol>
                                                 }
                                             </MRow>
-                                            <div class="d-flex justify-space-between mt-3">
-                                                <div>
-                                                    <img style="height:24px;width:24px" src="/img/avatar/9.svg">
-                                                </div>
-                                                <div class="text-caption">编辑于一小时前</div>
-                                            </div>
                                         </MExpansionPanelContent>
                                     </MExpansionPanel>
                                 }

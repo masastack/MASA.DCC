@@ -136,6 +136,12 @@ namespace Masa.Dcc.Service.Admin.Application.App
             await _configObjectDomainService.CloneConfigObjectAsync(command.CloneConfigObject);
         }
 
+        [EventHandler]
+        public async Task AddConfigObjectAsync(RelationConfigObjectCommand command)
+        {
+            await _configObjectDomainService.RelationConfigObjectAsync(command.ConfigObjectDtos);
+        }
+
         #endregion
 
         #region Release
@@ -143,7 +149,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task AddConfigObjectRelease(AddConfigObjectReleaseCommand command)
         {
-            await _configObjectDomainService.AddConfigObjectRelease(command.ConfigObjectRelease);
+            await _configObjectDomainService.AddConfigObjectReleaseAsync(command.ConfigObjectRelease);
         }
 
         [EventHandler]

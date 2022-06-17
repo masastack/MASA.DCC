@@ -560,7 +560,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
+                await PopupService.ToastSuccessAsync("删除成功，若要生效请发布！");
             });
         }
 
@@ -1134,10 +1134,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task ShowRelationModal()
         {
             if (_relation != null)
-            {
-                _relation.SheetDialogValueChanged(true);
                 await _relation.InitDataAsync();
-            }
         }
     }
 }

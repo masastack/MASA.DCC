@@ -42,7 +42,7 @@
                                     <MListItem Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
                                         <ItemContent>
                                             <MListItemIcon Class="d-flex align-center pt-1 mr-0">
-                                                <MIcon Color="@env.Color" Size="12">mdi-circle-slice-8</MIcon>
+                                                <MIcon Color="@env.Color" Size="12">mdi-circle</MIcon>
                                             </MListItemIcon>
                                             <MListItemContent>
                                                 <MListItemTitle>@env.Name</MListItemTitle>
@@ -81,7 +81,7 @@
                                 @foreach (var project in _projects)
                                 {
                                     var apps = _apps.Where(app => app.ProjectId == project.Id && app.EnvironmentClusters.Select(envCluster => envCluster.Id).Contains(_selectEnvClusterId.AsT1)).ToList();
-                                    <MExpansionPanel Style="margin-bottom: 12px; border-radius: 20px;">
+                                    <MExpansionPanel Style="border-radius: 20px;">
                                         <MExpansionPanelHeader>
                                             <span style="display:flex;align-items:center;margin-right:10px;">
                                                 <div class="text-h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
@@ -151,11 +151,10 @@
                                                     }
                                                 }
                                             </MRow>
-                                            <div class="d-flex justify-space-between mt-3">
+                                            <div class="d-flex justify-start mt-3">
                                                 <div>
                                                     <img style="height:24px;width:24px" src="/img/avatar/9.svg">
                                                 </div>
-                                                <div class="text-caption">编辑于一小时前</div>
                                             </div>
                                         </MExpansionPanelContent>
                                     </MExpansionPanel>

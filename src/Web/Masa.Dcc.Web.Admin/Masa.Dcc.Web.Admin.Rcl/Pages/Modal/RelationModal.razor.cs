@@ -41,9 +41,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         public async Task InitDataAsync()
         {
             var publicConfig = await ConfigObjectCaller.GetPublicConfigAsync();
-            _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(0, publicConfig.First().Id, ConfigObjectType.Public);
-            _selectPublicConfigObjectId = _publicConfigObjects.FirstOrDefault()?.Id ?? 0;
-            SelectConfigObjectValueChanged(_selectPublicConfigObjectId);
+            if (!publicConfig.Any())
+            {
+                await PopupService.ToastErrorAsync("请先添加公共配置");
+            }
+            else
+            {
+                Value = true;
+                _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(0, publicConfig.First().Id, ConfigObjectType.Public);
+                _selectPublicConfigObjectId = _publicConfigObjects.FirstOrDefault()?.Id ?? 0;
+                SelectConfigObjectValueChanged(_selectPublicConfigObjectId);
+            }
         }
 
         private void SelectConfigObjectValueChanged(int configObjectId)

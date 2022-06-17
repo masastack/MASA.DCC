@@ -126,7 +126,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await _configObjectRepository.AddRangeAsync(cloneConfigObjects);
         }
 
-        public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto dto)
+        public async Task AddConfigObjectReleaseAsync(AddConfigObjectReleaseDto dto)
         {
             var configObject = (await _configObjectRepository.FindAsync(
                 configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
@@ -142,6 +142,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                    null)
                );
 
+            var relationConfigObject = await _configObjectRepository.FindAsync(
+                configObject => configObject.Id == configObject.RelationConfigObjectId);
+
             //add redis cache
             //TODO: encryption value
             var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
@@ -149,7 +152,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             {
                 ConfigObjectType = configObject.Type,
                 Content = configObject.Content,
-                FormatLabelName = (await _labelRepository.FindAsync(label => label.Code == configObject.FormatLabelCode))?.Name ?? ""
+                FormatLabelCode = configObject.FormatLabelCode
             });
         }
 
@@ -196,6 +199,23 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             var configObject = (await _configObjectRepository.FindAsync(config => config.Id == rollbackDto.ConfigObjectId))!;
             configObject.AddContent(configObject.Content, canRollbackEntity.Content);
             await _configObjectRepository.UpdateAsync(configObject);
+        }
+
+        public async Task RelationConfigObjectAsync(List<RelationConfigObjectDto> configObjectDtos)
+        {
+            await AddConfigObjectAsync(configObjectDtos.Adapt<List<AddConfigObjectDto>>());
+
+            //add redis cache
+            //foreach (var item in configObjectDtos)
+            //{
+            //    var key = $"{item.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
+            //    await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+            //    {
+            //        ConfigObjectType = configObject.Type,
+            //        Content = configObject.Content,
+            //        FormatLabelCode = configObject.FormatLabelCode
+            //    });
+            //}
         }
     }
 }

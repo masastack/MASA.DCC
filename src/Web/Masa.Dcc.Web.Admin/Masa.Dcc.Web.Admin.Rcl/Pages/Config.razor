@@ -526,7 +526,7 @@
                       OnSubmitAfter="@(async ()=>{ _configObjects = (await ConfigObjectCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, ConfigObjectType, "")).Adapt<List<ConfigObjectModel>>(); })">
 </AddConfigObjectModal>
 
-<SheetDialog Value="_propertyConfigModal.Visible" ValueChanged="PropertyConfigModalValueChanged" Title="@T("Create config object item")" Icon="mdi-circle" IconColor="success">
+<SheetDialog Value="_propertyConfigModal.Visible" ValueChanged="PropertyConfigModalValueChanged" Title="@(_propertyConfigModal.HasValue ? T("Modify config object item") : T("Create config object item"))" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>
@@ -540,25 +540,25 @@
                 <MTextarea Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
             </div>
             <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@T("Submit")</MButton>
-            </div>
-        </div>
-    </MForm>
-</SheetDialog>
-
-<SheetDialog @bind-Value="_configObjectReleaseModal.Visible" Title="@T("Release")" Icon="mdi-circle" IconColor="success">
-    <MForm Class="full-height" Context="formContext" EnableValidation Model="_configObjectReleaseModal.Data">
-        <div class="d-flex flex-column" style="width:100%; height: 100%; padding: 48px 228px">
-            <div class="full-height" style="overflow-y: auto;">
-                <div class="text-h6 d-flex align-center">
-                    @_selectConfigObject.Name
-                    <span class="ml-3 text-caption">|</span>
-                    <sapn class="ml-2 text-caption">Properties</sapn>
+                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@(_propertyConfigModal.HasValue ? T("Save") : T("Submit"))</MButton>
                 </div>
-                <MTextField Class="mt-12" Dense Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
-                <MTextarea Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
-                <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
-                @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
+            </div>
+        </MForm>
+    </SheetDialog>
+
+    <SheetDialog @bind-Value="_configObjectReleaseModal.Visible" Title="@T("Release")" Icon="mdi-circle" IconColor="success">
+        <MForm Class="full-height" Context="formContext" EnableValidation Model="_configObjectReleaseModal.Data">
+            <div class="d-flex flex-column" style="width:100%; height: 100%; padding: 48px 228px">
+                <div class="full-height" style="overflow-y: auto;">
+                    <div class="text-h6 d-flex align-center">
+                        @_selectConfigObject.Name
+                        <span class="ml-3 text-caption">|</span>
+                        <sapn class="ml-2 text-caption">Properties</sapn>
+                    </div>
+                    <MTextField Class="mt-12" Dense Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
+                    <MTextarea Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
+                    <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
+                    @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
                     <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
                         <MDataTable Headers="_releaseHeaders"

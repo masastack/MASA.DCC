@@ -48,6 +48,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             Value = true;
             _configObjectFormats = await LabelCaller.GetLabelsByTypeCodeAsync("ConfigObjectFormat");
+            _selectEnvClusterIds = AppDetail.EnvironmentClusters.Select(e => (StringNumber)e.Id).ToList();
             foreach (var item in AppDetail.EnvironmentClusters)
             {
                 var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, AppDetail.Id, ConfigObjectType);
@@ -61,6 +62,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             _addConfigObjectModal.Data.ObjectId = AppDetail.Id;
             if (context.Validate())
             {
+                if (!_selectEnvClusterIds.Any())
+                {
+                    await PopupService.ToastErrorAsync("请选择环境/集群");
+                    return;
+                }
+
                 var selectConfigObject = _configObjects.Where(c => _selectEnvClusterIds.Contains(c.EnvironmentClusterId));
                 if (selectConfigObject.Any(c => c.Name.Equals(_addConfigObjectModal.Data.Name)))
                 {

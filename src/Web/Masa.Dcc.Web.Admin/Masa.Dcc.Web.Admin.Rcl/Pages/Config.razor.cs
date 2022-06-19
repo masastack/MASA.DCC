@@ -598,7 +598,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task ShowAddConfigObjectModalAsync()
         {
-            await _addConfigObjectModal.InitDataAsync();
+            if (_addConfigObjectModal != null)
+            {
+                await _addConfigObjectModal.InitDataAsync();
+            }
         }
 
         private async Task SubmitPropertyConfigAsync(EditContext context)

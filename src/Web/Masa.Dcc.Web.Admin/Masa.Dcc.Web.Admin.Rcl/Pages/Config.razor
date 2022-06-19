@@ -15,29 +15,29 @@
                             </MButton>
                         </ActivatorContent>
                         <ChildContent>
-                            <MList Disabled Dense>
-                                <MListItem Dense>
-                                    <MIcon Color="#323D6F" Class="mr-4">mdi-key-outline</MIcon>
-                                    <MListItemContent>
-                                        <MListItemTitle>管理密钥</MListItemTitle>
-                                    </MListItemContent>
-                                </MListItem>
+                            @*<MList Disabled Dense>
+                            <MListItem Dense>
+                            <MIcon Color="#323D6F" Class="mr-4">mdi-key-outline</MIcon>
+                            <MListItemContent>
+                            <MListItemTitle>管理密钥</MListItemTitle>
+                            </MListItemContent>
+                            </MListItem>
                             </MList>
                             <MList Disabled Dense>
-                                <MListItem Dense>
-                                    <MIcon Color="#323D6F" Class="mr-4">mdi-refresh</MIcon>
-                                    <MListItemContent>
-                                        <MListItemTitle>强制刷新密钥</MListItemTitle>
-                                    </MListItemContent>
-                                </MListItem>
-                            </MList>
+                            <MListItem Dense>
+                            <MIcon Color="#323D6F" Class="mr-4">mdi-refresh</MIcon>
+                            <MListItemContent>
+                            <MListItemTitle>强制刷新密钥</MListItemTitle>
+                            </MListItemContent>
+                            </MListItem>
+                            </MList>*@
                             @if (ConfigObjectType == ConfigObjectType.App)
                             {
                                 <MList Dense>
                                     <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
                                         <MIcon Color="#323D6F" Size="20" Class="mr-4">far fa-copy</MIcon>
                                         <MListItemContent>
-                                            <MListItemTitle>克隆配置</MListItemTitle>
+                                            <MListItemTitle>@T("Clone config")</MListItemTitle>
                                         </MListItemContent>
                                     </MListItem>
                                 </MList>
@@ -90,7 +90,7 @@
         @if (ConfigObjectType == ConfigObjectType.App)
         {
             <div @onclick="ShowRelationModal" style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
-                <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>关联公共配置
+                <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>@T("Connect public config")
             </div>
         }
     </MNavigationDrawer>
@@ -104,7 +104,7 @@
                     </PrependInnerContent>
                 </MTextField>
                 <MButton Class="rounded-pill ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
-                    <MIcon Small>mdi-plus </MIcon>@T("Add Config")
+                    <MIcon Small>mdi-plus </MIcon>@T("Add")
                 </MButton>
             </div>
             <div style="margin:0 -24px; overflow:auto; @ConfigPanelStyle">
@@ -124,7 +124,7 @@
                                         @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished)
                                         {
                                             <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                有修改
+                                                @T("Modified")
                                             </div>
                                         }
                                         <span>@configObject.Name</span>
@@ -158,14 +158,14 @@
                                                     <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-history</MIcon>
                                                         <MListItemContent>
-                                                            <MListItemTitle>发布历史</MListItemTitle>
+                                                            <MListItemTitle>@T("Release history")</MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
                                                     <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-repeat</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>
-                                                                回滚
+                                                                @T("Rollback")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -173,7 +173,7 @@
                                                         <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>
-                                                                撤销
+                                                                @T("Revoke")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -182,7 +182,7 @@
                                                         <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle Class="error--text">
-                                                                删除
+                                                                @T("Delete")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -198,9 +198,9 @@
                                         <div class="mb-2">
                                             <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
                                             <span style="font-size: 14px; color: #7681AB;">
-                                                已关联
+                                                @T("Connected")
                                                 <span class="text-caption mx-1 font-size: 6px !important;">|</span>
-                                                @(configObject.IsPublished ? "已发布" : "未发布")
+                                                @(configObject.IsPublished ? @T("Released") : @T("UnReleased"))
                                             </span>
                                         </div>
                                     }
@@ -208,7 +208,7 @@
                                     {
                                         <div class="mb-2">
                                             <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
-                                            <span style="font-size: 14px; color: #7681AB;">已覆盖</span>
+                                            <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
                                         </div>
                                     }
                                     <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
@@ -248,14 +248,14 @@
                                                     <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-history</MIcon>
                                                         <MListItemContent>
-                                                            <MListItemTitle>发布历史</MListItemTitle>
+                                                            <MListItemTitle>@T("Release history")</MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
                                                     <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-repeat</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>
-                                                                回滚
+                                                                @T("Rollback")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -263,7 +263,7 @@
                                                         <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>
-                                                                撤销
+                                                                @T("Revoke")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -272,7 +272,7 @@
                                                         <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle Class="error--text">
-                                                                删除
+                                                                @T("Delete")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -306,12 +306,12 @@
                                                             @if (context.Item.IsPublished)
                                                             {
                                                                 color = "#05CD99";
-                                                                text = "已发布";
+                                                                text = @T("Released");
                                                             }
                                                             else
                                                             {
                                                                 color = "#7681AB";
-                                                                text = "未发布";
+                                                                text = @T("UnReleased");
                                                             }
                                                             <MIcon Style="margin-bottom:2px;" Size="20" Color="@color">@icon</MIcon>
                                                             <span style="color: @color;">@text</span>
@@ -338,7 +338,7 @@
                                           TabMinWidth="70"
                                           ItemsClass="rounded-5"
                                           Dense
-                                          Tabs="@(new List<string>{"表格","文本"})">
+                                          Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                             <ElevationTabItem>
                                                 <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
                                                     <MDataTable Headers="_headers"
@@ -358,7 +358,7 @@
                                                                     if (context.Item.IsPublished)
                                                                     {
                                                                         <MIcon Style="margin-bottom:2px;" Size="20" Color="#05CD99">mdi-send</MIcon>
-                                                                        <span style="color:#05CD99;">已发布</span>
+                                                                        <span style="color:#05CD99;">@T("Released")</span>
                                                                     }
                                                                     else
                                                                     {
@@ -374,7 +374,7 @@
                                                                         {
                                                                             <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-delete</MIcon>
                                                                         }
-                                                                        <span>未发布</span>
+                                                                        <span>@T("UnReleased")</span>
                                                                     }
                                                                     break;
                                                                 case "操作":
@@ -424,7 +424,7 @@
                                         @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished)
                                         {
                                             <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                有修改
+                                                @T("Modified")
                                             </div>
                                         }
                                         <span>@configObject.Name</span>
@@ -457,14 +457,14 @@
                                                     <MListItem>
                                                         <MIcon Class="mr-4" OnClick="()=>ShowReleaseHistoryAsync(configObject)">mdi-history</MIcon>
                                                         <MListItemContent>
-                                                            <MListItemTitle>发布历史</MListItemTitle>
+                                                            <MListItemTitle>@T("Release history")</MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
                                                     <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
                                                         <MIcon Class="mr-4">mdi-repeat</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>
-                                                                回滚
+                                                                @T("Rollback")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -472,7 +472,7 @@
                                                         <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>
-                                                                撤销
+                                                                @T("Revoke")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -481,7 +481,7 @@
                                                         <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle Class="error--text">
-                                                                删除
+                                                                @T("Delete")
                                                             </MListItemTitle>
                                                         </MListItemContent>
                                                     </MListItem>
@@ -497,9 +497,9 @@
                                         <div class="mb-2">
                                             <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
                                             <span style="font-size: 14px; color: #7681AB;">
-                                                已关联
+                                                @T("Connected")
                                                 <span class="text-caption mx-1 font-size: 6px !important;">|</span>
-                                                @(configObject.IsPublished ? "已发布" : "未发布")
+                                                @(configObject.IsPublished ? @T("Released") : @T("UnReleased"))
                                             </span>
                                         </div>
                                     }
@@ -507,7 +507,7 @@
                                     {
                                         <div class="mb-2">
                                             <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
-                                            <span style="font-size: 14px; color: #7681AB;">已覆盖</span>
+                                            <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
                                         </div>
                                     }
                                     <Editor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></Editor>
@@ -540,7 +540,7 @@
                 <MTextarea Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
             </div>
             <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">提交</MButton>
+                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@T("Submit")</MButton>
             </div>
         </div>
     </MForm>
@@ -548,16 +548,16 @@
 
 <SheetDialog @bind-Value="_configObjectReleaseModal.Visible" Title="@T("Release")" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_configObjectReleaseModal.Data">
-        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
-            <div>
+        <div class="d-flex flex-column" style="width:100%; height: 100%; padding: 48px 228px">
+            <div class="full-height" style="overflow-y: auto;">
                 <div class="text-h6 d-flex align-center">
                     @_selectConfigObject.Name
                     <span class="ml-3 text-caption">|</span>
                     <sapn class="ml-2 text-caption">Properties</sapn>
                 </div>
-                <MTextField Class="mt-12" Dense Label="发布名称" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
-                <MTextarea Dense Label="描述" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
-                <p class="neutral--text" style="font-size:14px; font-weight:700;">变更的配置</p>
+                <MTextField Class="mt-12" Dense Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
+                <MTextarea Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
+                <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
                 @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
                     <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
@@ -622,8 +622,8 @@
                     <MTextarea BackgroundColor="#F6F8FD" Outlined Readonly Value="@_selectConfigObject.Content"></MTextarea>
                 }
             </div>
-            <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>ReleaseAsync(formContext)">提交</MButton>
+            <div class="d-flex justify-end align-end" style="width:100%;">
+                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>ReleaseAsync(formContext)">@T("Submit")</MButton>
             </div>
         </div>
     </MForm>
@@ -641,7 +641,7 @@
     <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
         <div>
             <div class="text-h6 d-flex align-center">
-                配置对象名称
+                @T("Config object name")
                 <span class="ml-3 text-caption">|</span>
                 <sapn class="ml-2 text-caption">Properties</sapn>
             </div>
@@ -663,7 +663,7 @@
                                         </div>
                                         @if (index == 1)
                                         {
-                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">当前</div>
+                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
                                         }
                                     </div>
                                 </OppositeContent>
@@ -684,7 +684,7 @@
                 <div class="full-width d-flex align-center pl-2 pr-3" style="height: 40px; background: #F0F3FA; border-radius: 8px;">
                     @if (_selectReleaseHistory.IsInvalid)
                     {
-                        <MChip Class="mr-4" Small Label Color="#323D6F" TextColor="white">已回滚</MChip>
+                        <MChip Class="mr-4" Small Label Color="#323D6F" TextColor="white">@T("Rollbacked")</MChip>
                     }
                     <span style="color: #485585; font-weight: 700; font-size: 16px;">@_selectReleaseHistory.Name</span>
                     <MSpacer></MSpacer>
@@ -696,10 +696,10 @@
                     @_selectReleaseHistory.Version
                 </div>
                 <div style="color: #A3AED0; font-weight: 500; font-size: 12px;">
-                    来自 “@_selectReleaseHistory.Name” 的应用版本
+                    @T("App version from {xx}").Replace("{xx}",$"{_selectReleaseHistory.Name}")
                 </div>
                 <div class="mt-6">
-                    <span style="color: #323D6F; font-size: 14px;">描述说明：</span>
+                    <span style="color: #323D6F; font-size: 14px;">@T("Description")：</span>
                     <span style="color: #7681AB; font-size: 14px;">@_selectReleaseHistory.Comment</span>
                 </div>
                 @if (_releaseHistory.FormatLabelCode.Trim().ToLower() == "properties")
@@ -710,7 +710,7 @@
                               TabIndexChanged="index=>ReleaseHistoryTabIndexChanged(index)"
                               ItemsClass="rounded-2"
                               Dense
-                              Tabs="@(new List<string>{"全部配置","变更配置"})">
+                              Tabs="@(new List<string>{ @T("All configuration"), @T("Changed configuration")})">
                         <ElevationTabItem>
                             <div style="border:1px solid #E2E7F4;" class="py-1 mt-4 rounded-2">
                                 <MDataTable Headers="_allConfigheaders"
@@ -765,7 +765,7 @@
                 }
                 else
                 {
-                    <div class="mt-12" style="color: #1B2559; font-weight: 700; font-size: 14px;">全部配置</div>
+                    <div class="mt-12" style="color: #1B2559; font-weight: 700; font-size: 14px;">@T("All configuration")</div>
                     <div class="py-3">
                         <MTextarea HideDetails="true" Outlined Readonly Value="@_selectReleaseHistory.Content"></MTextarea>
                     </div>
@@ -773,7 +773,7 @@
             </div>
         </div>
         <div class="d-flex justify-end align-end" style="width:100%;">
-            <MButton Class="rounded-pill" Color="primary" OnClick="RollbackToAsync">回滚至此版本</MButton>
+            <MButton Class="rounded-pill" Color="primary" OnClick="RollbackToAsync">@T("Rollback to this version")</MButton>
         </div>
     </div>
 </SheetDialog>
@@ -783,22 +783,37 @@
         <MStepper Value="_step" Elevation=0 Class="full-height">
             <MStepperHeader Style="box-shadow:none !important">
                 <MStepperStep Step="1" Complete="_step>1">
-                    选择应用
+                    @T("Choose app")
                 </MStepperStep>
                 <MDivider></MDivider>
                 <MStepperStep Step="2">
-                    选择配置对象
+                    @T("Choose config object")
                 </MStepperStep>
             </MStepperHeader>
             <MStepperItems Style="height: calc(100% - 72px);">
                 <MStepperContent Class="full-height" Style="padding:0 !important;" Step="1">
                     <div class="full-height d-flex flex-column justify-center align-center pt-12">
                         <div style="color: #A3AED0;">
-                            克隆&nbsp;
-                            <span style="font-size: 20px; font-weight: bold; color: #323D6F;">
-                                “@_projectDetail.Name”-“@_appDetail.Name”-“<span class="@($"{_selectCluster.EnvironmentColor}--text")">@_selectCluster.EnvironmentName</span>”-“@_selectCluster.ClusterName”
-                            </span>
-                            &nbsp;的所有配置至
+                            @if (_isCloneAll)
+                            {
+                                <div>
+                                    @T("Clone")&nbsp;
+                                    <span style="font-size: 20px; font-weight: bold; color: #323D6F;">
+                                        "@_projectDetail.Name"-"@_appDetail.Name"-"<span class="@($"{_selectCluster.EnvironmentColor}--text")">@_selectCluster.EnvironmentName</span>"-"@_selectCluster.ClusterName"
+                                    </span>
+                                    &nbsp; @T("All configuration to")
+                                </div>
+                            }
+                            else
+                            {
+                                <div>
+                                    @T("Clone")&nbsp;
+                                    <span style="font-size: 20px; font-weight: bold; color: #323D6F;">
+                                        "@_projectDetail.Name"-"@_appDetail.Name"-"<span class="@($"{_selectCluster.EnvironmentColor}--text")">@_selectCluster.EnvironmentName</span>"-"@_selectCluster.ClusterName"
+                                    </span>
+                                    &nbsp; @T("`Configuration")"@_selectConfigObject.Name"@T("To")
+                                </div>
+                            }
                         </div>
                         <div class="d-flex justify-end mt-12 full-width">
                             <MRow NoGutters>
@@ -808,14 +823,14 @@
                                             <div class="hover-pointer d-flex align-center justify-center" style="@($"border-radius: 16px; width: 100px; height: 100px; background:{(_cloneAppSelect ? "#4318FF" : "#fff" )}")">
                                                 <MIcon Size="56" Color="@(_cloneAppSelect ? "#fff" : "#323D6F")">mdi-view-carousel</MIcon>
                                             </div>
-                                            <span class="mt-6" style="font-weight: 700; font-size: 20px; color: #323D6F;">其他应用</span>
+                                            <span class="mt-6" style="font-weight: 700; font-size: 20px; color: #323D6F;">@T("Other app")</span>
                                         </div>
                                         <FadeTransition>
                                             <ShowTransitionElement Value="_cloneAppSelect" Class="full-width px-6 mb-15">
                                                 <div class="mt-6" @onclick:stopPropagation>
                                                     <MSelect Value="_cloneSelectProjectId"
                                                              ValueChanged="projectId=>ProjectValueChangedAsync(projectId)"
-                                                             Label="项目"
+                                                             Label="@T("Project")"
                                                              MenuProps="props => props.OffsetY = true"
                                                              Outlined
                                                              Dense
@@ -827,7 +842,7 @@
                                                              ItemValue="l=>l.Id">
                                                     </MSelect>
                                                     <MSelect @bind-Value="_cloneSelectAppId"
-                                                             Label="应用"
+                                                             Label="@T("App")"
                                                              MenuProps="props => props.OffsetY = true"
                                                              Outlined
                                                              Dense
@@ -847,20 +862,20 @@
                                             <div class="hover-pointer d-flex align-center justify-center" style="@($"border-radius: 16px; width: 100px; height: 100px; background:{(_cloneEnvSelect ? "#4318FF" : "#fff" )}")">
                                                 <MIcon Size="56" Color="@(_cloneEnvSelect ? "#fff" : "#323D6F")">mdi-cloud</MIcon>
                                             </div>
-                                            <span class="mt-6" style="font-weight: 700; font-size: 20px; color: #323D6F;">当前应用的其他环境/集群</span>
+                                            <span class="mt-6" style="font-weight: 700; font-size: 20px; color: #323D6F;">@T("Other environments/clusters currently app")</span>
                                         </div>
                                     </MCard>
                                 </MCol>
                             </MRow>
                         </div>
                         <div class="d-flex justify-end align-end full-height" style="width:100%;">
-                            <MButton Disabled="@(!_cloneAppSelect && !_cloneEnvSelect || (_cloneAppSelect && _cloneSelectAppId==0))" Width="100" Class="rounded-pill" Color="primary" OnClick="CloneNextClick">下一步</MButton>
+                            <MButton Disabled="@(!_cloneAppSelect && !_cloneEnvSelect || (_cloneAppSelect && _cloneSelectAppId==0))" Width="100" Class="rounded-pill" Color="primary" OnClick="CloneNextClick">@T("Next")</MButton>
                         </div>
                     </div>
                 </MStepperContent>
                 <MStepperContent Class="full-height" Step="2">
                     <div style="overflow-y: auto; height: calc(100% - @(IsNeedRebase ? "80px" :"48px"));">
-                        <p style="font-size:14px; font-weight:700; color:#1B2559">需要克隆的集群</p>
+                        <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Clusters requiring cloning")</p>
                         <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="CloneEnvClusterValueChanged">
                             @foreach (var item in _cloneSelectApp.EnvironmentClusters)
                             {
@@ -870,11 +885,11 @@
                                 </MChip>
                             }
                         </MChipGroup>
-                        <p style="font-size:14px; font-weight:700; color:#1B2559">配置对象</p>
+                        <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Config object")</p>
                         <MCheckbox Value="CloneConfigObjectAllChecked"
                                    ValueChanged="CloneConfigObjectAllCheckedChanged"
                                    HideDetails="true"
-                                   Label="@(_cloneConfigObjectAllChecked ? "取消全选" : "全选")"
+                                   Label="@(_cloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
                                    Color="primary"></MCheckbox>
                         <MExpansionPanels Flat Accordion>
                             @foreach (var configObject in _configObjects)
@@ -898,7 +913,7 @@
                                                     <MTextField HideDetails="true"
                                                         Dense
                                                         Style="max-width: 270px;"
-                                                        Label="名称"
+                                                        Label="@T("Name")"
                                                         Outlined
                                                         Value="configObject.Name"
                                                         TValue="string"
@@ -913,7 +928,7 @@
                                                 <MRow Style="color: #A3AED0; font-size: 14px;" NoGutters>
                                                     <span style="width: 47.5%">Name</span>
                                                     <span style="width: 47.5%">Code</span>
-                                                    <span class="d-flex justify-center" style="width: 5%">操作</span>
+                                                    <span class="d-flex justify-center" style="width: 5%">@T("Operation")</span>
                                                 </MRow>
                                                 <MDivider Class="mt-3 mx-n6"></MDivider>
                                                 @foreach (var item in configObject.ConfigObjectPropertyContents)
@@ -948,7 +963,7 @@
                                                     <MTextField HideDetails="true"
                                                         Dense
                                                         Style="max-width: 270px;"
-                                                        Label="名称"
+                                                        Label="@T("Name")"
                                                         Outlined
                                                         Value="configObject.Name"
                                                         TValue="string"
@@ -977,8 +992,8 @@
                         else
                         {
                             <div style="position: absolute; bottom: 0; right: 0;">
-                                <MButton Outlined Width="100" Class="rounded-pill mr-6" Color="primary" OnClick="ClonePrevClick">上一步</MButton>
-                                <MButton Width="100" Class="rounded-pill" Color="primary" OnClick="CloneAsync">克隆</MButton>
+                                <MButton Outlined Width="100" Class="rounded-pill mr-6" Color="primary" OnClick="ClonePrevClick">@T("Back")</MButton>
+                                <MButton Width="100" Class="rounded-pill" Color="primary" OnClick="CloneAsync">@T("Clone")</MButton>
                             </div>
                         }
                     </div>

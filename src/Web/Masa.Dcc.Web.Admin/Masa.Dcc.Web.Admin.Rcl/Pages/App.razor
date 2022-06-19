@@ -17,8 +17,6 @@
                 <MRow NoGutters Class="mt-4">
                     @_projectDetail.Description
                 </MRow>
-                <MRow NoGutters Class="text-caption mt-6">@T("Creator")</MRow>
-                <MRow NoGutters Class="mt-4">@_projectDetail.Creator</MRow>
                 <MRow NoGutters Class="text-caption mt-6">@T("Participate team")</MRow>
                 <MRow NoGutters Class="mt-4">@_projectDetail.TeamId</MRow>
                 <MRow NoGutters Class="text-caption mt-6">@T("Environment/Cluster")</MRow>
@@ -36,7 +34,7 @@
     </MNavigationDrawer>
     <div class="pl-6" style="width: calc(100% - 300px);">
         <div class="bizCard">
-            <h6>业务配置</h6>
+            <h6>@T("Business configuration")</h6>
             <MCard Class="mt-6" Height="163">
                 <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
                     <div class="text-h7 text-overflow">
@@ -97,7 +95,7 @@
         </div>
         <div class="appCard mt-6">
             <div class="d-flex justify-space-between">
-                <h6>应用</h6>
+                <h6>@T("App")</h6>
                 <MTextField @bind-Value="_appName" OnKeyDown="SearchAppAsync" Style="max-width:300px;" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
                     <PrependInnerContent>
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>

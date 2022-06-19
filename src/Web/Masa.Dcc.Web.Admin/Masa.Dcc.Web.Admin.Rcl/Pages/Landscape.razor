@@ -61,16 +61,16 @@
                                 @foreach (var cluster in _clusters)
                                 {
                                     StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
-                                    <MTab Style="max-width:150px;" Value="envClusterId" OnClick="()=>GetProjectByEnvClusterIdAsync(cluster.EnvironmentClusterId)">
-                                        <MTooltip Top>
-                                            <ActivatorContent>
-                                                <div class="text-overflow" @attributes="@context.Attrs">@cluster.Name</div>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <span>@cluster.Name</span>
-                                            </ChildContent>
-                                        </MTooltip>
-                                    </MTab>
+                                    <MTooltip Top>
+                                        <ActivatorContent>
+                                            <MTab @attributes="@context.Attrs" Style="max-width:150px;" Value="envClusterId" OnClick="()=>GetProjectByEnvClusterIdAsync(cluster.EnvironmentClusterId)">
+                                                <div class="text-overflow">@cluster.Name</div>
+                                            </MTab>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@cluster.Name</span>
+                                        </ChildContent>
+                                    </MTooltip>
                                 }
                             </MTabs>
                         </MCard>

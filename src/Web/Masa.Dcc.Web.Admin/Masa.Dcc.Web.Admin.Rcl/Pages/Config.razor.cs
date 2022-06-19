@@ -444,7 +444,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     });
 
                     await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
+                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布");
                     HandleTabIndexChanged(0, editorPropertyContents);
                     _selectEditorContent.Disabled = false;
                 }

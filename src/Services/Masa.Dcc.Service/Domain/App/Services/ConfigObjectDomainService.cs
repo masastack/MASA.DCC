@@ -142,17 +142,20 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                    null)
                );
 
-            var relationConfigObject = await _configObjectRepository.FindAsync(
-                configObject => configObject.Id == configObject.RelationConfigObjectId);
-
             //add redis cache
             //TODO: encryption value
+            string relationKey = "";
+            if (!string.IsNullOrWhiteSpace(dto.RelationConfigObjectName))
+            {
+                relationKey = $"{dto.RelationEnvironmentName}-{dto.RelationClusterName}-{dto.RelationIdentity}-{dto.RelationConfigObjectName}";
+            }
             var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
             await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
             {
                 ConfigObjectType = configObject.Type,
                 Content = configObject.Content,
-                FormatLabelCode = configObject.FormatLabelCode
+                FormatLabelCode = configObject.FormatLabelCode,
+                RelationKey = relationKey
             });
         }
 
@@ -206,16 +209,18 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await AddConfigObjectAsync(configObjectDtos.Adapt<List<AddConfigObjectDto>>());
 
             //add redis cache
-            //foreach (var item in configObjectDtos)
-            //{
-            //    var key = $"{item.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
-            //    await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
-            //    {
-            //        ConfigObjectType = configObject.Type,
-            //        Content = configObject.Content,
-            //        FormatLabelCode = configObject.FormatLabelCode
-            //    });
-            //}
+            foreach (var item in configObjectDtos)
+            {
+                var key = $"{item.EnvironmentName}-{item.ClusterName}-{item.Identity}-{item.Name}";
+                var relationLey = $"{item.RelationEnvironmentName}-{item.RelationClusterName}-{item.RelationIdentity}-{item.RelationConfigObjectName}";
+                await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                {
+                    ConfigObjectType = item.Type,
+                    Content = item.Content,
+                    FormatLabelCode = item.FormatLabelCode,
+                    RelationKey = relationLey
+                });
+            }
         }
     }
 }

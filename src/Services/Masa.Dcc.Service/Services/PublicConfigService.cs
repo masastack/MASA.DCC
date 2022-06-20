@@ -13,6 +13,7 @@ public class PublicConfigService : ServiceBase
         App.MapPut("api/v1/publicConfig", UpdateAsync);
         App.MapDelete("api/v1/publicConfig/{Id}", RemoveAsync);
         App.MapGet("api/v1/publicConfig", GetListAsync);
+        App.MapGet("api/v1/pubConfigObjects", GetByConfigObjectIdAsync);
     }
 
     public async Task<PublicConfigDto> AddAsync(IEventBus eventBus, AddObjectConfigDto dto)
@@ -36,6 +37,14 @@ public class PublicConfigService : ServiceBase
     public async Task<List<PublicConfigDto>> GetListAsync(IEventBus eventBus)
     {
         var query = new PublicConfigsQuery();
+        await eventBus.PublishAsync(query);
+
+        return query.Result;
+    }
+
+    public async Task<PublicConfigObjectDto> GetByConfigObjectIdAsync(IEventBus eventBus, int configObjectId)
+    {
+        var query = new PublicConfigObjectQuery(configObjectId);
         await eventBus.PublishAsync(query);
 
         return query.Result;

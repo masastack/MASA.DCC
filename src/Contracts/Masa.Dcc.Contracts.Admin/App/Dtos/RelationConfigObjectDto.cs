@@ -5,13 +5,18 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
     public class RelationConfigObjectDto : AddConfigObjectDto
     {
-        [Required]
+        public string RelationEnvironmentName { get; set; } = "";
+
+        public string RelationClusterName { get; set; } = "";
+
+        public string RelationIdentity { get; set; } = "";
+
+        public string RelationConfigObjectName { get; set; } = "";
+
         public string EnvironmentName { get; set; } = "";
 
-        [Required]
         public string ClusterName { get; set; } = "";
 
-        [Required]
         public string Identity { get; set; } = "";
     }
 }

@@ -85,5 +85,10 @@
   "Back": "上一步",
   "Business configuration": "业务配置",
   "Search": "搜索",
-  "Modify config object item": "修改配置项"
+  "Modify config object item": "修改配置项",
+  "State": "状态",
+  "Need associated cluster": "需要关联的集群",
+  "Select public config object": "择公共配置对象",
+  "Environment cluster": "环境集群",
+  "Public config object": "公共配置对象"
 }

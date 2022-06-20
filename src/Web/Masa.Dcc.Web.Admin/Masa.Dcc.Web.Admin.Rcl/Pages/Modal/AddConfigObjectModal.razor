@@ -2,8 +2,8 @@
 
 <SheetDialog Value="Value" ValueChanged="SheetDialogValueChangedAsync" Title="@T("Create config object")" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_addConfigObjectModal.Data">
-        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
-            <div>
+        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px; overflow: hidden;">
+            <div class="full-height" style="overflow: auto;">
                 <div class="text-h6 d-flex align-center">
                     @AppDetail.Name
                     <span class="ml-3 text-caption">|</span>
@@ -30,7 +30,7 @@
                     }
                 </MChipGroup>
             </div>
-            <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
+            <div class="d-flex justify-end align-end" style="width:100%;">
                 <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>AddConfigObject(formContext)">提交</MButton>
             </div>
         </div>

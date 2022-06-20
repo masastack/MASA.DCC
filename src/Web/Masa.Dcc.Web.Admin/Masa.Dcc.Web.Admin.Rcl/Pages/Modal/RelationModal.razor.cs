@@ -20,19 +20,25 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Inject]
         public IPopupService PopupService { get; set; } = null!;
 
-        private List<StringNumber> _selectEnvClusterIds = new();
+        [Inject]
+        public ClusterCaller ClusterCaller { get; set; } = null!;
+
+        private List<StringNumber> _selectToEnvClusterIds = new();
         private List<ConfigObjectDto> _publicConfigObjects = new();
+        private List<EnvironmentClusterModel> _allEnvClusters = new();
         private int _selectPublicConfigObjectId;
+        private int _selectFromEnvClusterId;
         private ConfigObjectModel _selectConfigObject = new();
         private bool _isRelation = true;
         private ConfigObjectModel _originalConfigObject = new();
+        private PublicConfigDto _publicConfig = new();
 
         public void SheetDialogValueChanged(bool value)
         {
             Value = value;
             if (!value)
             {
-                _selectEnvClusterIds = new();
+                _selectToEnvClusterIds = new();
                 _selectPublicConfigObjectId = 0;
                 _selectConfigObject = new();
             }
@@ -40,6 +46,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 
         public async Task InitDataAsync()
         {
+            _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
             var publicConfig = await ConfigObjectCaller.GetPublicConfigAsync();
             if (!publicConfig.Any())
             {
@@ -47,11 +54,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             }
             else
             {
+                _publicConfig = publicConfig.First();
                 Value = true;
-                _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(0, publicConfig.First().Id, ConfigObjectType.Public);
-                _selectPublicConfigObjectId = _publicConfigObjects.FirstOrDefault()?.Id ?? 0;
-                SelectConfigObjectValueChanged(_selectPublicConfigObjectId);
             }
+        }
+
+        private async Task SelectEnvClusterValueChanged(int envClusterId)
+        {
+            _selectFromEnvClusterId = envClusterId;
+            _selectPublicConfigObjectId = 0;
+            _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(_selectFromEnvClusterId, _publicConfig.Id, ConfigObjectType.Public);
         }
 
         private void SelectConfigObjectValueChanged(int configObjectId)
@@ -88,7 +100,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 
         public async Task HandleOnSubmitAsync()
         {
-            if (!_selectEnvClusterIds.Any())
+            if (!_selectToEnvClusterIds.Any())
             {
                 await PopupService.ToastErrorAsync("请选择要关联的集群环境");
             }
@@ -98,6 +110,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             }
             else
             {
+                var fromEnvCluster = _allEnvClusters.First(envCluster => envCluster.Id == _selectFromEnvClusterId);
                 var formatLabelCode = _selectConfigObject.FormatLabelCode.ToLower();
                 var initialContent = formatLabelCode switch
                 {
@@ -106,7 +119,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                     _ => "",
                 };
 
-                List<AddConfigObjectDto> configObjectDtos = new();
+                List<RelationConfigObjectDto> configObjectDtos = new();
 
                 if (formatLabelCode == "properties")
                 {
@@ -123,9 +136,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                         unRelationContent = initialContent;
                     }
 
-                    foreach (var envClusterId in _selectEnvClusterIds)
+                    foreach (var envClusterId in _selectToEnvClusterIds)
                     {
-                        configObjectDtos.Add(new AddConfigObjectDto
+                        var toEnvCluster = AppDetail.EnvironmentClusters.First(envCluster => envCluster.Id == envClusterId);
+                        configObjectDtos.Add(new RelationConfigObjectDto
                         {
                             Name = _selectConfigObject.Name,
                             FormatLabelCode = _selectConfigObject.FormatLabelCode,
@@ -135,7 +149,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                             FromRelation = true,
                             EnvironmentClusterId = envClusterId.AsT1,
                             Type = ConfigObjectType.App,
-                            ObjectId = AppDetail.Id
+                            ObjectId = AppDetail.Id,
+                            RelationEnvironmentName = fromEnvCluster.EnvironmentName,
+                            RelationClusterName = fromEnvCluster.ClusterName,
+                            RelationIdentity = _publicConfig.Identity,
+                            RelationConfigObjectName = _selectConfigObject.Name,
+                            EnvironmentName = toEnvCluster.EnvironmentName,
+                            ClusterName = toEnvCluster.ClusterName,
+                            Identity = AppDetail.Identity
                         });
                     }
                 }
@@ -153,9 +174,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                         relationConfigObjectId = 0;
                         content = _selectConfigObject.Content;
                     }
-                    foreach (var envClusterId in _selectEnvClusterIds)
+                    foreach (var envClusterId in _selectToEnvClusterIds)
                     {
-                        configObjectDtos.Add(new AddConfigObjectDto
+                        var toEnvCluster = AppDetail.EnvironmentClusters.First(envCluster => envCluster.Id == envClusterId);
+                        configObjectDtos.Add(new RelationConfigObjectDto
                         {
                             Name = _selectConfigObject.Name,
                             FormatLabelCode = _selectConfigObject.FormatLabelCode,
@@ -165,12 +187,19 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                             FromRelation = true,
                             EnvironmentClusterId = envClusterId.AsT1,
                             Type = ConfigObjectType.App,
-                            ObjectId = AppDetail.Id
+                            ObjectId = AppDetail.Id,
+                            RelationEnvironmentName = fromEnvCluster.EnvironmentName,
+                            RelationClusterName = fromEnvCluster.ClusterName,
+                            RelationIdentity = _publicConfig.Identity,
+                            RelationConfigObjectName = _selectConfigObject.Name,
+                            EnvironmentName = toEnvCluster.EnvironmentName,
+                            ClusterName = toEnvCluster.ClusterName,
+                            Identity = AppDetail.Identity
                         });
                     }
                 }
 
-                await ConfigObjectCaller.AddConfigObjectAsync(configObjectDtos);
+                await ConfigObjectCaller.RelationConfigObjectAsync(configObjectDtos);
                 if (OnSubmitAfter.HasDelegate)
                 {
                     await OnSubmitAfter.InvokeAsync();

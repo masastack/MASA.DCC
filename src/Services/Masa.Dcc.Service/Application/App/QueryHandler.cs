@@ -147,5 +147,13 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
             query.Result = appPins.Adapt<List<AppPinDto>>();
         }
+
+        [EventHandler]
+        public async Task GetByConfigObjectIdAsync(PublicConfigObjectQuery query)
+        {
+            var configObject = await _publicConfigObjectRepository.GetByConfigObjectIdAsync(query.ConfigObjectId);
+
+            query.Result = configObject.Adapt<PublicConfigObjectDto>();
+        }
     }
 }

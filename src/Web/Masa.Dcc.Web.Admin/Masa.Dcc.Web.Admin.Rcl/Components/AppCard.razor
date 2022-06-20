@@ -1,5 +1,5 @@
 ﻿<MHover Context="hoverContext" Class="d-flex flex-column">
-    <MCard Class="hover-pointer" OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="border-radius:20px !important; border: none;">
+    <MCard Class="hover-pointer rounded-5" OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="@Style">
         <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding: 16px 16px 8px 16px !important;">
             <div class="text-h7 text-overflow" style="max-width: 240px; overflow: hidden; ">@App.Name</div>
             <div class="mx-3" style="color:#E2E7F4">|</div>
@@ -56,6 +56,9 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public string Style { get; set; } = "border: 1px solid #E2E7F4;";
 
     [Parameter]
     public bool IsPin { get; set; }

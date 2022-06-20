@@ -1,6 +1,10 @@
 ﻿html {
     font-size: 16px;
-    font-family: Roboto,'Microsoft YaHei';
+    font-family: Roboto,'Noto Sans SC';
+}
+
+.m-application {
+    font-family: Roboto,'Noto Sans SC' !important;
 }
 
 /*scrollbar*/
@@ -23,7 +27,6 @@
 
 .h1, .text-h1, h1 {
     /* Headline 1 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: 300 !important;
     font-size: 6rem !important;
@@ -36,7 +39,6 @@
 
 .h2, .text-h2, h2 {
     /* Headline 2 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: 900 !important;
     font-size: 3.75rem !important;
@@ -49,7 +51,6 @@
 
 .h3, .text-h3, h3 {
     /* Headline 3 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: 900 !important;
     font-size: 3rem !important;
@@ -60,7 +61,6 @@
 
 .h4, .text-h4, h4 {
     /* Headline 4 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: bold !important;
     font-size: 2.125rem !important;
@@ -73,7 +73,6 @@
 
 .h5, .text-h5, h5 {
     /* Headline 5 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: bold !important;
     font-size: 1.5rem !important;
@@ -85,7 +84,6 @@
 
 .h6, .text-h6, h6 {
     /* Headline 6 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: bold !important;
     font-size: 1.25rem !important;
@@ -98,7 +96,6 @@
 
 .h7, .text-h7, h7 {
     /* Headline 6 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: 500 !important;
     font-size: 1.125rem !important;
@@ -111,7 +108,6 @@
 
 .text-subtitle {
     /* Subtitle 1-副标题 1 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: bold !important;
     font-size: 1rem !important;
@@ -124,7 +120,6 @@
 
 .text-subtitle2 {
     /* Subtitle 2-2 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: bold !important;
     font-size: 0.875rem !important;
@@ -137,7 +132,6 @@
 
 .text-body {
     /* Body 1-内容 1 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: 500 !important;
     font-size: 1rem !important;
@@ -149,7 +143,6 @@
 
 .text-body2 {
     /* Body 2 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: normal !important;
     font-size: 0.875rem !important;
@@ -161,7 +154,6 @@
 
 .text-body3 {
     /* Body 1-内容 1 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: normal !important;
     font-size: 1rem !important;
@@ -173,7 +165,6 @@
 
 .text-btn {
     /* BUTTON-按钮 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: 500 !important;
     font-size: 0.875rem !important;
@@ -184,7 +175,6 @@
 
 .text-caption {
     /* Caption-说明 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: 500 !important;
     font-size: 0.875rem !important;
@@ -195,7 +185,6 @@
 
 .text-overline {
     /* OVERLINE-眉题 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: normal !important;
     font-size: 0.625rem !important;
@@ -489,7 +478,6 @@
 
 .m-input .m-label {
     /* BUTTON-按钮 */
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: 500 !important;
     font-size: 0.875rem !important;
@@ -697,7 +685,6 @@
 }
 
 .coupons .m-input__control .m-text-field__slot input::-webkit-input-placeholder {
-    font-family: Roboto !important;
     font-style: normal !important;
     font-weight: bold !important;
     font-size: 1rem !important;
@@ -1179,4 +1166,12 @@ input::-webkit-input-placeholder {
 
 .m-timeline-item {
     margin-right: 56px !important;
+}
+
+.text-overflow .m-chip__content {
+    display: initial !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    height: initial !important;
 }

@@ -65,7 +65,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "修改时间", Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
             new() { Text = "操作", Sortable = false, }
         };
-        private bool _showAddConfigObjectModal;
         private List<StringNumber> _selectEnvClusterIds = new();
         private ProjectDetailModel _projectDetail = new();
         private List<EnvironmentClusterModel> _allEnvClusters = new();
@@ -469,47 +468,47 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task UpdateJsonConfigAsync(ConfigObjectModel configObject)
         {
+            if (string.IsNullOrWhiteSpace(configObject.Content))
+            {
+                await PopupService.ToastErrorAsync("json内容不能为空");
+                return;
+            }
+
+            string indexStr = configObject.Content[..1];
+            switch (indexStr)
+            {
+                case "[":
+                    try
+                    {
+                        configObject.Content = JArray.Parse(configObject.Content).ToString();
+                    }
+                    catch
+                    {
+                        await PopupService.ToastErrorAsync("json格式有误!");
+                        return;
+                    }
+
+                    break;
+                case "{":
+                    try
+                    {
+                        configObject.Content = JObject.Parse(configObject.Content).ToString();
+                    }
+                    catch
+                    {
+                        await PopupService.ToastErrorAsync("json格式有误!");
+                        return;
+                    }
+
+                    break;
+                default:
+                    await PopupService.ToastErrorAsync("json格式有误!");
+                    return;
+            }
+
             configObject.IsEditing = !configObject.IsEditing;
             if (!configObject.IsEditing)
             {
-                if (string.IsNullOrWhiteSpace(configObject.Content))
-                {
-                    await PopupService.ToastErrorAsync("json内容不能为空");
-                    return;
-                }
-
-                string indexStr = configObject.Content[..1];
-                switch (indexStr)
-                {
-                    case "[":
-                        try
-                        {
-                            configObject.Content = JArray.Parse(configObject.Content).ToString();
-                        }
-                        catch
-                        {
-                            await PopupService.ToastErrorAsync("json格式有误!");
-                            return;
-                        }
-
-                        break;
-                    case "{":
-                        try
-                        {
-                            configObject.Content = JObject.Parse(configObject.Content).ToString();
-                        }
-                        catch
-                        {
-                            await PopupService.ToastErrorAsync("json格式有误!");
-                            return;
-                        }
-
-                        break;
-                    default:
-                        await PopupService.ToastErrorAsync("json格式有误!");
-                        return;
-                }
-
                 await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObject.Id,

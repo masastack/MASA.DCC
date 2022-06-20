@@ -62,7 +62,7 @@
                                Outlined="@(_selectEnvName != item.EnvironmentName)"
                                Color="@item.EnvironmentColor"
                                TextColor="@textColor"
-                               Class="mr-3 mt-3">
+                               Class="mr-3 mt-3 text-overflow">
                                 @item.EnvironmentName
                             </MChip>
                         }
@@ -79,7 +79,7 @@
                                Outlined="@(!isSelected)"
                                TextColor="@textColor"
                                Color="#323D6F"
-                               Class="mr-3 mt-3">
+                               Class="mr-3 mt-3 text-overflow">
                                 @item.ClusterName
                             </MChip>
                         }
@@ -121,7 +121,7 @@
                                         {
                                             <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
                                         }
-                                        @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished)
+                                        @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
                                         {
                                             <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
                                                 @T("Modified")
@@ -421,7 +421,7 @@
                                         {
                                             <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
                                         }
-                                        @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished)
+                                        @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
                                         {
                                             <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
                                                 @T("Modified")

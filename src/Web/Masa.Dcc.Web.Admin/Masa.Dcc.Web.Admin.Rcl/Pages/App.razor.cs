@@ -105,15 +105,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task SearchAppAsync()
+        private async Task SearchAppAsync(KeyboardEventArgs args)
         {
-            if (!string.IsNullOrWhiteSpace(_appName))
+            if (args.Key == "Enter")
             {
-                _apps = _apps.Where(app => app.Name.ToLower().Contains(_appName.ToLower())).ToList();
-            }
-            else
-            {
-                _apps = await GetAppByProjectIdAsync(new List<int> { ProjectId });
+                if (!string.IsNullOrWhiteSpace(_appName))
+                {
+                    _apps = _apps.Where(app => app.Name.ToLower().Contains(_appName.ToLower())).ToList();
+                }
+                else
+                {
+                    _apps = await GetAppByProjectIdAsync(new List<int> { ProjectId });
+                }
             }
         }
 

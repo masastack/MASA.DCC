@@ -108,7 +108,7 @@
                         foreach (var app in _apps)
                         {
                             <MCol Lg="4" Md="6" Sm="12">
-                                <AppCard OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                <AppCard Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
                                     <MMenu Transition="slide-y-transition" Bottom>
                                         <ActivatorContent>
                                             <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">

@@ -903,7 +903,10 @@
                                                 <div class="d-flex align-center" @onclick:stopPropagation>
                                                     @if (configObject.IsNeedRebase)
                                                     {
-                                                        <MIcon Class="mr-4" Color="warning">mdi-alert-outline</MIcon>
+                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=>CloneConfigObjectCoverClick(configObject)">
+                                                            <MIcon>mdi-alert-outline</MIcon>
+                                                            解决冲突
+                                                        </MButton>
                                                     }
                                                     <MCheckbox Value="configObject.IsChecked"
                                                        ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
@@ -953,7 +956,10 @@
                                                 <div class="d-flex align-center" @onclick:stopPropagation>
                                                     @if (configObject.IsNeedRebase)
                                                     {
-                                                        <MIcon Class="mr-4" Color="warning">mdi-alert-outline</MIcon>
+                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=>CloneConfigObjectCoverClick(configObject)">
+                                                            <MIcon>mdi-alert-outline</MIcon>
+                                                            解决冲突
+                                                        </MButton>
                                                     }
                                                     <MCheckbox Value="configObject.IsChecked"
                                                        ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"

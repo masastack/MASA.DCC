@@ -20,6 +20,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
         public bool IsNeedRebase { get; set; }
 
         /// <summary>
+        /// clone page, select config object need cover
+        /// </summary>
+        public bool IsNeedCover { get; set; }
+
+        /// <summary>
         /// handle this Content by yourself
         /// </summary>
         public List<ConfigObjectPropertyModel> ConfigObjectPropertyContents { get; set; } = new();

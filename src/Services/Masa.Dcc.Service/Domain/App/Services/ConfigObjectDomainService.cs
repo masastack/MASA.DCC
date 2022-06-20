@@ -98,8 +98,22 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
         public async Task CloneConfigObjectAsync(CloneConfigObjectDto dto)
         {
+            //add
+            await CloneConfigObjectsAsync(dto.ConfigObjects, dto.ToAppId);
+
+            //update
+            var envClusterIds = dto.CoverConfigObjects.Select(c => c.EnvironmentClusterId);
+            var appConfigObjects = await _appConfigObjectRepository.GetListAsync(
+                app => app.AppId == dto.ToAppId && envClusterIds.Contains(app.EnvironmentClusterId));
+            var needRemove = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id));
+            await _configObjectRepository.RemoveRangeAsync(needRemove);
+            await CloneConfigObjectsAsync(dto.CoverConfigObjects, dto.ToAppId);
+        }
+
+        private async Task CloneConfigObjectsAsync(List<AddConfigObjectDto> configObjects, int appId)
+        {
             List<ConfigObject> cloneConfigObjects = new();
-            foreach (var configObjectDto in dto.ConfigObjects)
+            foreach (var configObjectDto in configObjects)
             {
                 var configObject = new ConfigObject(
                     configObjectDto.Name,
@@ -111,18 +125,17 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                 if (configObjectDto.Type == ConfigObjectType.Public)
                 {
-                    configObject.SetPublicConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetPublicConfigObject(appId, configObjectDto.EnvironmentClusterId);
                 }
                 else if (configObjectDto.Type == ConfigObjectType.App)
                 {
-                    configObject.SetAppConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetAppConfigObject(appId, configObjectDto.EnvironmentClusterId);
                 }
                 else if (configObjectDto.Type == ConfigObjectType.Biz)
                 {
-                    configObject.SetBizConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetBizConfigObject(appId, configObjectDto.EnvironmentClusterId);
                 }
             }
-
             await _configObjectRepository.AddRangeAsync(cloneConfigObjects);
         }
 

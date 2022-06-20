@@ -1002,6 +1002,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
+        private void CloneConfigObjectCoverClick(ConfigObjectModel configObject)
+        {
+            configObject.IsNeedCover = true;
+            configObject.IsNeedRebase = false;
+        }
+
         private void CloneConfigObjectAllCheckedChanged(bool value)
         {
             _cloneConfigObjectAllChecked = value;
@@ -1109,16 +1115,32 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         content = configObject.Content;
                     }
 
-                    dto.ConfigObjects.Add(new AddConfigObjectDto
+                    if (configObject.IsNeedCover)
                     {
-                        Name = configObject.Name,
-                        FormatLabelCode = configObject.FormatLabelCode,
-                        Type = configObject.Type,
-                        ObjectId = configObject.Id,
-                        EnvironmentClusterId = envClusterId.AsT1,
-                        Content = content,
-                        TempContent = initialContent,
-                    });
+                        dto.CoverConfigObjects.Add(new AddConfigObjectDto
+                        {
+                            Name = configObject.Name,
+                            FormatLabelCode = configObject.FormatLabelCode,
+                            Type = configObject.Type,
+                            ObjectId = configObject.Id,
+                            EnvironmentClusterId = envClusterId.AsT1,
+                            Content = content,
+                            TempContent = initialContent,
+                        });
+                    }
+                    else
+                    {
+                        dto.ConfigObjects.Add(new AddConfigObjectDto
+                        {
+                            Name = configObject.Name,
+                            FormatLabelCode = configObject.FormatLabelCode,
+                            Type = configObject.Type,
+                            ObjectId = configObject.Id,
+                            EnvironmentClusterId = envClusterId.AsT1,
+                            Content = content,
+                            TempContent = initialContent,
+                        });
+                    }
                 }
             }
             await ConfigObjectCaller.CloneAsync(dto);

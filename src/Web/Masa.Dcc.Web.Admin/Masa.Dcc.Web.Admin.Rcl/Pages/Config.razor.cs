@@ -690,29 +690,28 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task ShowRollbackModalAsync(ConfigObjectModel configObject)
         {
             _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
-            if (configObject.FormatLabelCode.ToLower() == "properties")
-            {
-                var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).First();
-                if (latestConfigObjectRelease.FromReleaseId == 0)
-                {
-                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
-                       .OrderByDescending(release => release.Id)
-                       .Take(2)
-                       .ToList();
-                }
-                else
-                {
-                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
-                        .OrderByDescending(release => release.Id)
-                        .Where(release => release.Id <= latestConfigObjectRelease.ToReleaseId)
-                        .Take(2)
-                        .ToList();
-                }
-            }
+
             if (_releaseHistory.ConfigObjectReleases.Count <= 1)
             {
                 await PopupService.ToastErrorAsync("没有可以回滚的发布历史");
                 return;
+            }
+
+            _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).Take(2).ToList();
+
+            if (configObject.FormatLabelCode.ToLower() == "properties")
+            {
+                var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.First();
+                if (latestConfigObjectRelease.FromReleaseId == 0)
+                {
+                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.ToList();
+                }
+                else
+                {
+                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
+                        .Where(release => release.Id <= latestConfigObjectRelease.ToReleaseId)
+                        .ToList();
+                }
             }
 
             _showRollbackModal = true;

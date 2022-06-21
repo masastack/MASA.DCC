@@ -18,5 +18,15 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
 
             return configObject ?? throw new Exception("Config object does not exist");
         }
+
+        public async Task<List<ConfigObject>> GetRelationConfigObjectWithReleaseHistoriesAsync(int Id)
+        {
+            var configObjects = await Context.Set<ConfigObject>()
+                .Where(configObject => configObject.RelationConfigObjectId == Id)
+                .Include(configObject => configObject.ConfigObjectRelease)
+                .ToListAsync();
+
+            return configObjects;
+        }
     }
 }

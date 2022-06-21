@@ -29,12 +29,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         [Required]
         public string Identity { get; set; } = "";
 
-        public string RelationEnvironmentName { get; set; } = "";
-
-        public string RelationClusterName { get; set; } = "";
-
-        public string RelationIdentity { get; set; } = "";
-
-        public string RelationConfigObjectName { get; set; } = "";
+        [Required]
+        public string Content { get; set; } = "";
     }
 }

@@ -6,5 +6,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
     public interface IConfigObjectRepository : IRepository<ConfigObject>
     {
         Task<ConfigObject> GetConfigObjectWithReleaseHistoriesAsync(int Id);
+
+        Task<List<ConfigObject>> GetRelationConfigObjectWithReleaseHistoriesAsync(int Id);
     }
 }

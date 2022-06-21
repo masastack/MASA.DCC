@@ -656,25 +656,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _selectConfigObjectAllProperties = model.ConfigObjectPropertyContents.Where(prop => prop.IsPublished == false).ToList();
             }
             _configObjectReleaseModal.Show();
+
+            if (model.FormatLabelCode.ToLower() == "properties" && model.RelationConfigObjectId != 0)
+                _configObjectReleaseModal.Data.Content = JsonSerializer.Serialize(model.ConfigObjectPropertyContents.Adapt<List<ConfigObjectPropertyContentDto>>());
+            else
+                _configObjectReleaseModal.Data.Content = model.Content;
         }
 
         private async Task ReleaseAsync(EditContext context)
         {
-            if (_selectConfigObject.RelationConfigObjectId != 0)
-            {
-                var relationConfigObject = (await ConfigObjectCaller.GetConfigObjectsByIdsAsync(new List<int> { _selectConfigObject.RelationConfigObjectId })).FirstOrDefault();
-                var publicConfig = (await ConfigObjectCaller.GetPublicConfigAsync()).FirstOrDefault();
-                var publicConfigObject = await ConfigObjectCaller.GetPublicConfigObjectAsync(_selectConfigObject.RelationConfigObjectId);
-                var envCluster = _allEnvClusters.FirstOrDefault(e => e.Id == publicConfigObject.EnvironmentClusterId);
-                if (envCluster != null && publicConfig != null && relationConfigObject != null)
-                {
-                    _configObjectReleaseModal.Data.RelationEnvironmentName = envCluster.EnvironmentName;
-                    _configObjectReleaseModal.Data.RelationClusterName = envCluster.ClusterName;
-                    _configObjectReleaseModal.Data.RelationIdentity = publicConfig.Identity;
-                    _configObjectReleaseModal.Data.RelationConfigObjectName = relationConfigObject.Name;
-                }
-            }
-
             _configObjectReleaseModal.Data.ConfigObjectId = _selectConfigObject.Id;
             _configObjectReleaseModal.Data.Type = ReleaseType.MainRelease;
             _configObjectReleaseModal.Data.EnvironmentName = _selectCluster.EnvironmentName;

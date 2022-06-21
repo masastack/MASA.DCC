@@ -110,6 +110,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             }
             else
             {
+                foreach (var envClusterId in _selectToEnvClusterIds)
+                {
+                    var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(envClusterId.AsT1, AppDetail.Id, ConfigObjectType.App);
+                    var relationed = configObjects.Select(c => c.Name).Contains(_selectConfigObject.Name);
+                    if (relationed)
+                    {
+                        var envCluster = _allEnvClusters.First(c => c.Id == envClusterId.AsT1);
+                        await PopupService.ToastErrorAsync($"该公共配置对象已在 {envCluster.EnvironmentClusterName} 中关联，请勿重复关联");
+                        return;
+                    }
+                }
+
                 var fromEnvCluster = _allEnvClusters.First(envCluster => envCluster.Id == _selectFromEnvClusterId);
                 var formatLabelCode = _selectConfigObject.FormatLabelCode.ToLower();
                 var initialContent = formatLabelCode switch

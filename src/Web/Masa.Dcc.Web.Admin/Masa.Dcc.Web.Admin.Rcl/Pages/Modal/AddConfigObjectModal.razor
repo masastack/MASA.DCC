@@ -1,0 +1,38 @@
+﻿@inherits MasaCompontentBase
+
+<SheetDialog Value="Value" ValueChanged="SheetDialogValueChangedAsync" Title="@T("Create config object")" Icon="mdi-circle" IconColor="success">
+    <MForm Class="full-height" Context="formContext" EnableValidation Model="_addConfigObjectModal.Data">
+        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px; overflow: hidden;">
+            <div class="full-height" style="overflow: auto;">
+                <div class="text-h6 d-flex align-center">
+                    @AppDetail.Name
+                    <span class="ml-3 text-caption">|</span>
+                    <sapn class="ml-2 text-caption">@AppDetail.Identity</sapn>
+                </div>
+                <MTextField Class="mt-12" Dense Label="@T("Name")" Outlined Prefix="@(ConfigObjectType==ConfigObjectType.Public ? _namePrefix : "")" @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
+                <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
+                         Label="格式"
+                         MenuProps="props => props.OffsetY = true"
+                         Outlined
+                         Dense
+                         Items="_configObjectFormats"
+                         ItemText="l=>l.Name"
+                         ItemValue="l=>l.Code">
+                </MSelect>
+                <p class="neutral--text" style="font-size:14px; font-weight:700;">选择集群</p>
+                <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="EnvClusterValueChanged">
+                    @foreach (var item in AppDetail.EnvironmentClusters)
+                    {
+                        <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
+                            <div class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</div>&nbsp;&nbsp;
+                            <div style="color:#05CD99">@item.ClusterName</div>
+                        </MChip>
+                    }
+                </MChipGroup>
+            </div>
+            <div class="d-flex justify-end align-end" style="width:100%;">
+                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>AddConfigObject(formContext)">提交</MButton>
+            </div>
+        </div>
+    </MForm>
+</SheetDialog>

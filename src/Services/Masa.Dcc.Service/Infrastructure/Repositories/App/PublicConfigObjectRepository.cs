@@ -13,7 +13,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
         {
             Expression<Func<PublicConfigObject, bool>> condition = p => p.PublicConfigId == publicConfigId;
             if (envClusterId.HasValue && envClusterId != 0)
-                condition.And(p => p.EnvironmentClusterId == envClusterId);
+                condition = condition.And(p => p.EnvironmentClusterId == envClusterId);
 
             var configData = await Context.Set<PublicConfigObject>()
                 .Where(condition)
@@ -21,6 +21,14 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
                 .ToListAsync();
 
             return configData;
+        }
+
+        public async Task<PublicConfigObject> GetByConfigObjectIdAsync(int configObjectId)
+        {
+            var result = await Context.Set<PublicConfigObject>()
+                .FirstOrDefaultAsync(p => p.ConfigObjectId == configObjectId);
+
+            return result ?? new(0, 0);
         }
     }
 }

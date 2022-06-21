@@ -65,8 +65,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "修改时间", Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
             new() { Text = "操作", Sortable = false, }
         };
-        private readonly DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
-        private List<LabelDto> _configObjectFormats = new();
         private List<StringNumber> _selectEnvClusterIds = new();
         private ProjectDetailModel _projectDetail = new();
         private List<EnvironmentClusterModel> _allEnvClusters = new();
@@ -139,7 +137,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         }
         #endregion
 
-        private Relation? _relation;
+        private RelationModal? _relation;
+        private AddConfigObjectModal? _addConfigObjectModal;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -444,7 +443,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     });
 
                     await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
+                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布");
                     HandleTabIndexChanged(0, editorPropertyContents);
                     _selectEditorContent.Disabled = false;
                 }
@@ -469,47 +468,47 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task UpdateJsonConfigAsync(ConfigObjectModel configObject)
         {
+            if (string.IsNullOrWhiteSpace(configObject.Content))
+            {
+                await PopupService.ToastErrorAsync("json内容不能为空");
+                return;
+            }
+
+            string indexStr = configObject.Content[..1];
+            switch (indexStr)
+            {
+                case "[":
+                    try
+                    {
+                        configObject.Content = JArray.Parse(configObject.Content).ToString();
+                    }
+                    catch
+                    {
+                        await PopupService.ToastErrorAsync("json格式有误!");
+                        return;
+                    }
+
+                    break;
+                case "{":
+                    try
+                    {
+                        configObject.Content = JObject.Parse(configObject.Content).ToString();
+                    }
+                    catch
+                    {
+                        await PopupService.ToastErrorAsync("json格式有误!");
+                        return;
+                    }
+
+                    break;
+                default:
+                    await PopupService.ToastErrorAsync("json格式有误!");
+                    return;
+            }
+
             configObject.IsEditing = !configObject.IsEditing;
             if (!configObject.IsEditing)
             {
-                if (string.IsNullOrWhiteSpace(configObject.Content))
-                {
-                    await PopupService.ToastErrorAsync("json内容不能为空");
-                    return;
-                }
-
-                string indexStr = configObject.Content[..1];
-                switch (indexStr)
-                {
-                    case "[":
-                        try
-                        {
-                            configObject.Content = JArray.Parse(configObject.Content).ToString();
-                        }
-                        catch
-                        {
-                            await PopupService.ToastErrorAsync("json格式有误!");
-                            return;
-                        }
-
-                        break;
-                    case "{":
-                        try
-                        {
-                            configObject.Content = JObject.Parse(configObject.Content).ToString();
-                        }
-                        catch
-                        {
-                            await PopupService.ToastErrorAsync("json格式有误!");
-                            return;
-                        }
-
-                        break;
-                    default:
-                        await PopupService.ToastErrorAsync("json格式有误!");
-                        return;
-                }
-
                 await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObject.Id,
@@ -560,7 +559,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
+                await PopupService.ToastSuccessAsync("删除成功，若要生效请发布！");
             });
         }
 
@@ -596,46 +595,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task ShowAddConfigObjectModal()
+        private async Task ShowAddConfigObjectModalAsync()
         {
-            _addConfigObjectModal.Show();
-            _configObjectFormats = await LabelCaller.GetLabelsByTypeCodeAsync("ConfigObjectFormat");
-        }
-
-        private async Task AddConfigObject(EditContext context)
-        {
-            _addConfigObjectModal.Data.Type = ConfigObjectType;
-            _addConfigObjectModal.Data.ObjectId = _appDetail.Id;
-            if (context.Validate())
+            if (_addConfigObjectModal != null)
             {
-                string initialContent = (_addConfigObjectModal.Data.FormatLabelCode.ToLower()) switch
-                {
-                    "json" => "{}",
-                    "properties" => "[]",
-                    _ => "",
-                };
-
-                List<AddConfigObjectDto> configObjectDtos = new();
-                for (int i = 0; i < _selectEnvClusterIds.Count; i++)
-                {
-                    configObjectDtos.Add(new AddConfigObjectDto
-                    {
-                        Name = _addConfigObjectModal.Data.Name,
-                        FormatLabelCode = _addConfigObjectModal.Data.FormatLabelCode,
-                        Type = _addConfigObjectModal.Data.Type,
-                        ObjectId = _addConfigObjectModal.Data.ObjectId,
-                        EnvironmentClusterId = _selectEnvClusterIds[i].AsT1,
-                        Content = initialContent,
-                        TempContent = initialContent
-                    });
-                }
-
-                await ConfigObjectCaller.AddConfigObjectAsync(configObjectDtos);
-                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, _addConfigObjectModal.Data.Type, ""); ;
-                _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
-
-                _addConfigObjectModal.Hide();
-                _selectEnvClusterIds.Clear();
+                await _addConfigObjectModal.InitDataAsync();
             }
         }
 
@@ -692,6 +656,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _selectConfigObjectAllProperties = model.ConfigObjectPropertyContents.Where(prop => prop.IsPublished == false).ToList();
             }
             _configObjectReleaseModal.Show();
+
+            if (model.FormatLabelCode.ToLower() == "properties" && model.RelationConfigObjectId != 0)
+                _configObjectReleaseModal.Data.Content = JsonSerializer.Serialize(model.ConfigObjectPropertyContents.Adapt<List<ConfigObjectPropertyContentDto>>());
+            else
+                _configObjectReleaseModal.Data.Content = model.Content;
         }
 
         private async Task ReleaseAsync(EditContext context)
@@ -718,7 +687,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await ConfigObjectCaller.RevokeAsync(configObject.Id);
 
-                await InitDataAsync();
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                 await PopupService.ToastSuccessAsync("撤销成功");
             });
         }
@@ -726,29 +695,28 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task ShowRollbackModalAsync(ConfigObjectModel configObject)
         {
             _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
-            if (configObject.FormatLabelCode.ToLower() == "properties")
-            {
-                var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).First();
-                if (latestConfigObjectRelease.FromReleaseId == 0)
-                {
-                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
-                       .OrderByDescending(release => release.Id)
-                       .Take(2)
-                       .ToList();
-                }
-                else
-                {
-                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
-                        .OrderByDescending(release => release.Id)
-                        .Where(release => release.Id <= latestConfigObjectRelease.ToReleaseId)
-                        .Take(2)
-                        .ToList();
-                }
-            }
+
             if (_releaseHistory.ConfigObjectReleases.Count <= 1)
             {
                 await PopupService.ToastErrorAsync("没有可以回滚的发布历史");
                 return;
+            }
+
+            _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).Take(2).ToList();
+
+            if (configObject.FormatLabelCode.ToLower() == "properties")
+            {
+                var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.First();
+                if (latestConfigObjectRelease.FromReleaseId == 0)
+                {
+                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.ToList();
+                }
+                else
+                {
+                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
+                        .Where(release => release.Id <= latestConfigObjectRelease.ToReleaseId)
+                        .ToList();
+                }
             }
 
             _showRollbackModal = true;
@@ -978,7 +946,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _selectEnvClusterIds = envClusterIds;
 
-            //this will be chang
             _afterSelectCloneConfigObjects.Clear();
             _selectEnvClusterIds.ForEach(envClusterId =>
             {
@@ -1022,6 +989,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 configObject.IsNeedRebase = false;
             }
+        }
+
+        private void CloneConfigObjectCoverClick(ConfigObjectModel configObject)
+        {
+            configObject.IsNeedCover = true;
+            configObject.IsNeedRebase = false;
         }
 
         private void CloneConfigObjectAllCheckedChanged(bool value)
@@ -1131,16 +1104,32 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         content = configObject.Content;
                     }
 
-                    dto.ConfigObjects.Add(new AddConfigObjectDto
+                    if (configObject.IsNeedCover)
                     {
-                        Name = configObject.Name,
-                        FormatLabelCode = configObject.FormatLabelCode,
-                        Type = configObject.Type,
-                        ObjectId = configObject.Id,
-                        EnvironmentClusterId = envClusterId.AsT1,
-                        Content = content,
-                        TempContent = initialContent,
-                    });
+                        dto.CoverConfigObjects.Add(new AddConfigObjectDto
+                        {
+                            Name = configObject.Name,
+                            FormatLabelCode = configObject.FormatLabelCode,
+                            Type = configObject.Type,
+                            ObjectId = configObject.Id,
+                            EnvironmentClusterId = envClusterId.AsT1,
+                            Content = content,
+                            TempContent = initialContent,
+                        });
+                    }
+                    else
+                    {
+                        dto.ConfigObjects.Add(new AddConfigObjectDto
+                        {
+                            Name = configObject.Name,
+                            FormatLabelCode = configObject.FormatLabelCode,
+                            Type = configObject.Type,
+                            ObjectId = configObject.Id,
+                            EnvironmentClusterId = envClusterId.AsT1,
+                            Content = content,
+                            TempContent = initialContent,
+                        });
+                    }
                 }
             }
             await ConfigObjectCaller.CloneAsync(dto);
@@ -1172,10 +1161,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task ShowRelationModal()
         {
             if (_relation != null)
-            {
-                _relation.SheetDialogValueChanged(true);
                 await _relation.InitDataAsync();
-            }
         }
     }
 }

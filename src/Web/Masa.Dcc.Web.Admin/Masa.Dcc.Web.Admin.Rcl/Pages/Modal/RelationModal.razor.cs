@@ -1,9 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Web.Admin.Rcl.Pages
+namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 {
-    public partial class Relation
+    public partial class RelationModal
     {
         [Parameter]
         public AppDetailModel AppDetail { get; set; } = new();
@@ -20,19 +20,25 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public IPopupService PopupService { get; set; } = null!;
 
-        private List<StringNumber> _selectEnvClusterIds = new();
+        [Inject]
+        public ClusterCaller ClusterCaller { get; set; } = null!;
+
+        private List<StringNumber> _selectToEnvClusterIds = new();
         private List<ConfigObjectDto> _publicConfigObjects = new();
+        private List<EnvironmentClusterModel> _allEnvClusters = new();
         private int _selectPublicConfigObjectId;
+        private int _selectFromEnvClusterId;
         private ConfigObjectModel _selectConfigObject = new();
         private bool _isRelation = true;
         private ConfigObjectModel _originalConfigObject = new();
+        private PublicConfigDto _publicConfig = new();
 
         public void SheetDialogValueChanged(bool value)
         {
             Value = value;
             if (!value)
             {
-                _selectEnvClusterIds = new();
+                _selectToEnvClusterIds = new();
                 _selectPublicConfigObjectId = 0;
                 _selectConfigObject = new();
             }
@@ -40,10 +46,24 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         public async Task InitDataAsync()
         {
+            _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
             var publicConfig = await ConfigObjectCaller.GetPublicConfigAsync();
-            _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(0, publicConfig.First().Id, ConfigObjectType.Public);
-            _selectPublicConfigObjectId = _publicConfigObjects.FirstOrDefault()?.Id ?? 0;
-            SelectConfigObjectValueChanged(_selectPublicConfigObjectId);
+            if (!publicConfig.Any())
+            {
+                await PopupService.ToastErrorAsync("请先添加公共配置");
+            }
+            else
+            {
+                _publicConfig = publicConfig.First();
+                Value = true;
+            }
+        }
+
+        private async Task SelectEnvClusterValueChanged(int envClusterId)
+        {
+            _selectFromEnvClusterId = envClusterId;
+            _selectPublicConfigObjectId = 0;
+            _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(_selectFromEnvClusterId, _publicConfig.Id, ConfigObjectType.Public);
         }
 
         private void SelectConfigObjectValueChanged(int configObjectId)
@@ -80,7 +100,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         public async Task HandleOnSubmitAsync()
         {
-            if (!_selectEnvClusterIds.Any())
+            if (!_selectToEnvClusterIds.Any())
             {
                 await PopupService.ToastErrorAsync("请选择要关联的集群环境");
             }
@@ -90,8 +110,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else
             {
+                var fromEnvCluster = _allEnvClusters.First(envCluster => envCluster.Id == _selectFromEnvClusterId);
                 var formatLabelCode = _selectConfigObject.FormatLabelCode.ToLower();
-                string initialContent = formatLabelCode switch
+                var initialContent = formatLabelCode switch
                 {
                     "json" => "{}",
                     "properties" => "[]",
@@ -115,7 +136,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         unRelationContent = initialContent;
                     }
 
-                    foreach (var envClusterId in _selectEnvClusterIds)
+                    foreach (var envClusterId in _selectToEnvClusterIds)
                     {
                         configObjectDtos.Add(new AddConfigObjectDto
                         {
@@ -145,7 +166,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         relationConfigObjectId = 0;
                         content = _selectConfigObject.Content;
                     }
-                    foreach (var envClusterId in _selectEnvClusterIds)
+                    foreach (var envClusterId in _selectToEnvClusterIds)
                     {
                         configObjectDtos.Add(new AddConfigObjectDto
                         {

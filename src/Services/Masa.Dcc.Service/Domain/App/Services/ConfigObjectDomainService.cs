@@ -11,6 +11,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly ILabelRepository _labelRepository;
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
         private readonly IMemoryCacheClient _memoryCacheClient;
+        private readonly IPmClient _pmClient;
 
         public ConfigObjectDomainService(
             IDomainEventBus eventBus,
@@ -19,7 +20,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IConfigObjectRepository configObjectRepository,
             ILabelRepository labelRepository,
             IAppConfigObjectRepository appConfigObjectRepository,
-            IMemoryCacheClient memoryCacheClient) : base(eventBus)
+            IMemoryCacheClient memoryCacheClient,
+            IPmClient pmClient) : base(eventBus)
         {
             _context = context;
             _configObjectReleaseRepository = configObjectReleaseRepository;
@@ -27,6 +29,40 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _labelRepository = labelRepository;
             _appConfigObjectRepository = appConfigObjectRepository;
             _memoryCacheClient = memoryCacheClient;
+            _pmClient = pmClient;
+        }
+
+        public async Task AddConfigObjectAsync(List<AddConfigObjectDto> configObjectDtos)
+        {
+            List<ConfigObject> configObjects = new();
+            foreach (var configObjectDto in configObjectDtos)
+            {
+                var configObject = new ConfigObject(
+                    configObjectDto.Name,
+                    configObjectDto.FormatLabelCode,
+                    configObjectDto.Type,
+                    configObjectDto.Content,
+                    configObjectDto.TempContent,
+                    configObjectDto.RelationConfigObjectId,
+                    configObjectDto.FromRelation);
+
+                configObjects.Add(configObject);
+
+                if (configObjectDto.Type == ConfigObjectType.Public)
+                {
+                    configObject.SetPublicConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                }
+                else if (configObjectDto.Type == ConfigObjectType.App)
+                {
+                    configObject.SetAppConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                }
+                else if (configObjectDto.Type == ConfigObjectType.Biz)
+                {
+                    configObject.SetBizConfigObject(configObjectDto.ObjectId, configObjectDto.EnvironmentClusterId);
+                }
+            }
+
+            await _configObjectRepository.AddRangeAsync(configObjects);
         }
 
         public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)
@@ -65,8 +101,22 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
         public async Task CloneConfigObjectAsync(CloneConfigObjectDto dto)
         {
+            //add
+            await CloneConfigObjectsAsync(dto.ConfigObjects, dto.ToAppId);
+
+            //update
+            var envClusterIds = dto.CoverConfigObjects.Select(c => c.EnvironmentClusterId);
+            var appConfigObjects = await _appConfigObjectRepository.GetListAsync(
+                app => app.AppId == dto.ToAppId && envClusterIds.Contains(app.EnvironmentClusterId));
+            var needRemove = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id));
+            await _configObjectRepository.RemoveRangeAsync(needRemove);
+            await CloneConfigObjectsAsync(dto.CoverConfigObjects, dto.ToAppId);
+        }
+
+        private async Task CloneConfigObjectsAsync(List<AddConfigObjectDto> configObjects, int appId)
+        {
             List<ConfigObject> cloneConfigObjects = new();
-            foreach (var configObjectDto in dto.ConfigObjects)
+            foreach (var configObjectDto in configObjects)
             {
                 var configObject = new ConfigObject(
                     configObjectDto.Name,
@@ -78,22 +128,21 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                 if (configObjectDto.Type == ConfigObjectType.Public)
                 {
-                    configObject.SetPublicConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetPublicConfigObject(appId, configObjectDto.EnvironmentClusterId);
                 }
                 else if (configObjectDto.Type == ConfigObjectType.App)
                 {
-                    configObject.SetAppConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetAppConfigObject(appId, configObjectDto.EnvironmentClusterId);
                 }
                 else if (configObjectDto.Type == ConfigObjectType.Biz)
                 {
-                    configObject.SetBizConfigObject(dto.ToAppId, configObjectDto.EnvironmentClusterId);
+                    configObject.SetBizConfigObject(appId, configObjectDto.EnvironmentClusterId);
                 }
             }
-
             await _configObjectRepository.AddRangeAsync(cloneConfigObjects);
         }
 
-        public async Task AddConfigObjectRelease(AddConfigObjectReleaseDto dto)
+        public async Task AddConfigObjectReleaseAsync(AddConfigObjectReleaseDto dto)
         {
             var configObject = (await _configObjectRepository.FindAsync(
                 configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
@@ -109,15 +158,72 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                    null)
                );
 
-            //add redis cache
-            //TODO: encryption value
-            var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
-            await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+            var relationConfigObjects = await _configObjectRepository.GetRelationConfigObjectWithReleaseHistoriesAsync(configObject.Id);
+            if (relationConfigObjects.Any())
             {
-                ConfigObjectType = configObject.Type,
-                Content = configObject.Content,
-                FormatLabelName = (await _labelRepository.FindAsync(label => label.Code == configObject.FormatLabelCode))?.Name ?? ""
-            });
+                var allEnvClusters = await _pmClient.ClusterService.GetEnvironmentClustersAsync();
+                var appConfigObjects = await _appConfigObjectRepository.GetListAsync(app => relationConfigObjects.Select(c => c.Id).Contains(app.ConfigObjectId));
+                var apps = await _pmClient.AppService.GetListAsync();
+
+                foreach (var item in appConfigObjects)
+                {
+                    var envCluster = allEnvClusters.FirstOrDefault(c => c.Id == item.EnvironmentClusterId) ?? new();
+                    var app = apps.FirstOrDefault(a => a.Id == item.AppId) ?? new();
+                    var relationConfigObject = relationConfigObjects.First(c => c.Id == item.ConfigObjectId);
+                    var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{relationConfigObject.Name}";
+
+                    if (relationConfigObject.FormatLabelCode.ToLower() == "properties")
+                    {
+                        var appRelease = relationConfigObject.ConfigObjectRelease.OrderByDescending(c => c.Id).FirstOrDefault();
+                        if (appRelease == null)
+                        {
+                            await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                            {
+                                ConfigObjectType = configObject.Type,
+                                Content = dto.Content,
+                                FormatLabelCode = configObject.FormatLabelCode
+                            });
+                        }
+                        else
+                        {
+                            //compare
+                            var publicContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyContentDto>>(dto.Content) ?? new();
+                            var appContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyContentDto>>(appRelease.Content) ?? new();
+
+                            var exceptContent = publicContents.ExceptBy(appContents.Select(c => c.Key), content => content.Key).ToList();
+                            var content = appContents.Union(exceptContent).ToList();
+
+                            await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                            {
+                                ConfigObjectType = configObject.Type,
+                                Content = JsonSerializer.Serialize(content),
+                                FormatLabelCode = configObject.FormatLabelCode
+                            });
+                        }
+                    }
+                    else
+                    {
+                        await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                        {
+                            ConfigObjectType = configObject.Type,
+                            Content = dto.Content,
+                            FormatLabelCode = configObject.FormatLabelCode
+                        });
+                    }
+                }
+            }
+            else
+            {
+                //add redis cache
+                //TODO: encryption value
+                var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
+                await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                {
+                    ConfigObjectType = configObject.Type,
+                    Content = dto.Content,
+                    FormatLabelCode = configObject.FormatLabelCode
+                });
+            }
         }
 
         public async Task RollbackConfigObjectReleaseAsync(RollbackConfigObjectReleaseDto rollbackDto)

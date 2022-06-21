@@ -28,5 +28,8 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         [Required]
         public string Identity { get; set; } = "";
+
+        [Required]
+        public string Content { get; set; } = "";
     }
 }

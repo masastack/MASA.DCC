@@ -1,8 +1,8 @@
 ﻿<MHover Context="hoverContext" Class="d-flex flex-column">
-    <MCard Class="hover-pointer" OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="border-radius:10px !important; border: 1px solid #E2E7F4;">
-        <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
-            <div class="text-h7 text-overflow">@App.Name</div>
-            <div class="mx-4" style="color:#E2E7F4">|</div>
+    <MCard Class="hover-pointer rounded-5" OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="@Style">
+        <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding: 16px 16px 8px 16px !important;">
+            <div class="text-h7 text-overflow" style="max-width: 240px; overflow: hidden; ">@App.Name</div>
+            <div class="mx-3" style="color:#E2E7F4">|</div>
             <div class="text-h7 text-overflow">@App.Type</div>
             <MSpacer />
             <MButton Icon OnClick="OnPinClick">
@@ -10,10 +10,10 @@
             </MButton>
         </MCardTitle>
         <MCardSubtitle>
-            <div class="text-caption text-overflow">@App.Identity</div>
-            <div class="text-body3" style="display:-webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;overflow: hidden;">@App.Description</div>
+            <div style="font-weight: 400; font-size: 14px; color: #A3AED0; letter-spacing: 0.25px;">@App.Identity</div>
+            <div class="text-overflow" style="font-weight: 400; font-size: 16px; color: #485585; margin-top: 14px;">@App.Description</div>
         </MCardSubtitle>
-        <MCardActions Style="position:absolute;bottom:0;left:0;right:0; padding-bottom:16px !important;">
+        <MCardActions Style="position:absolute;bottom:0;left:0;right:0; padding-bottom:12px !important;">
             <div class="d-flex flex-column" style="overflow:hidden; width:100%;">
                 <div class="mx-2 d-flex justify-space-between" Style="height:24px;white-space: nowrap;overflow: hidden;">
                     <div class="mr-3" style="overflow:hidden">
@@ -56,6 +56,9 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public string Style { get; set; } = "border: 1px solid #E2E7F4;";
 
     [Parameter]
     public bool IsPin { get; set; }

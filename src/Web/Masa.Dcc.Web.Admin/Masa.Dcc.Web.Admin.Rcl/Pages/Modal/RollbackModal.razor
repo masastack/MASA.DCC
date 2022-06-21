@@ -5,7 +5,7 @@
             此操作将会回滚到上个发布版本，且当前版本作废，但不影响正在修改的配置。
         </MAlert>
         <MTimeline Style="position:relative; left:-228px;">
-            <MTimelineItem Color="primary" Small>
+            <MTimelineItem Color="primary" Small Right>
                 <OppositeContent>
                     <div>
                         <div style="font-size:14px; font-weight: 500; color: #1B2559;">@CurrentConfigObjectRelease.CreationTime.ToString("MM.dd").TrimStart('0')</div>
@@ -19,15 +19,15 @@
                     </div>
                 </ChildContent>
             </MTimelineItem>
-            <MTimelineItem Class="text-right d-flex align-center" Color="primary" Small>
+            <MTimelineItem Color="primary" Small Right>
                 <OppositeContent>
-                    <div>
+                    <div style="font-size:14px; font-weight: 500; color: #1B2559;">回滚至</div>
+                </OppositeContent>
+                <ChildContent>
+                     <div>
                         <div style="font-size:14px; font-weight: 500; color: #1B2559;">@RollbackConfigObjectRelease.Name</div>
                         <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@RollbackConfigObjectRelease.Version</div>
                     </div>
-                </OppositeContent>
-                <ChildContent>
-                    <div style="font-size:14px; font-weight: 500; color: #1B2559;">回滚至</div>
                 </ChildContent>
             </MTimelineItem>
         </MTimeline>

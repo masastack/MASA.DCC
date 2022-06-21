@@ -9,7 +9,7 @@
                     <span class="ml-3 text-caption">|</span>
                     <sapn class="ml-2 text-caption">@AppDetail.Identity</sapn>
                 </div>
-                <MTextField Class="mt-12" Dense Label="名称" Outlined @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
+                <MTextField Class="mt-12" Dense Label="@T("Name")" Outlined Prefix="@(ConfigObjectType==ConfigObjectType.Public ? _namePrefix : "")" @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
                 <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
                          Label="格式"
                          MenuProps="props => props.OffsetY = true"

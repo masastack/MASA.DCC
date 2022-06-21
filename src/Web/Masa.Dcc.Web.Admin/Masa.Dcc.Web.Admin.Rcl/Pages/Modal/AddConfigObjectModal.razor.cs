@@ -43,6 +43,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         private List<LabelDto> _configObjectFormats { get; set; } = new();
         private List<StringNumber> _selectEnvClusterIds = new();
         private List<ConfigObjectDto> _configObjects = new();
+        private string _namePrefix = "$public.";
 
         public async Task InitDataAsync()
         {
@@ -58,6 +59,19 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 
         private async Task AddConfigObject(EditContext context)
         {
+            if (ConfigObjectType == ConfigObjectType.Public)
+            {
+                _addConfigObjectModal.Data.Name = _namePrefix + _addConfigObjectModal.Data.Name;
+            }
+            else
+            {
+                if (_addConfigObjectModal.Data.Name.StartsWith(_namePrefix))
+                {
+                    await PopupService.ToastErrorAsync($"配置对象名称不允许包含 {_namePrefix}");
+                    return;
+                }
+            }
+
             _addConfigObjectModal.Data.Type = ConfigObjectType;
             _addConfigObjectModal.Data.ObjectId = AppDetail.Id;
             if (context.Validate())

@@ -697,7 +697,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await ConfigObjectCaller.RevokeAsync(configObject.Id);
 
-                await InitDataAsync();
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                 await PopupService.ToastSuccessAsync("撤销成功");
             });
         }
@@ -956,7 +956,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _selectEnvClusterIds = envClusterIds;
 
-            //this will be chang
             _afterSelectCloneConfigObjects.Clear();
             _selectEnvClusterIds.ForEach(envClusterId =>
             {

@@ -65,6 +65,14 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await _configObjectRepository.AddRangeAsync(configObjects);
         }
 
+        public async Task RemoveConfigObjectAsync(int configObjectId)
+        {
+            var configObjectEntity = await _configObjectRepository.FindAsync(p => p.Id == configObjectId)
+                ?? throw new UserFriendlyException("Config object does not exist");
+
+            await _configObjectRepository.RemoveAsync(configObjectEntity);
+        }
+
         public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)
         {
             var configObject = await _configObjectRepository.FindAsync(configObject => configObject.Id == dto.ConfigObjectId)
@@ -193,22 +201,24 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                             var exceptContent = publicContents.ExceptBy(appContents.Select(c => c.Key), content => content.Key).ToList();
                             var content = appContents.Union(exceptContent).ToList();
 
-                            await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                            var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
                             {
                                 ConfigObjectType = configObject.Type,
                                 Content = JsonSerializer.Serialize(content),
                                 FormatLabelCode = configObject.FormatLabelCode
                             });
+                            await _memoryCacheClient.SetAsync<string>(key.ToLower(), releaseContent);
                         }
                     }
                     else
                     {
-                        await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                        var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
                         {
                             ConfigObjectType = configObject.Type,
                             Content = dto.Content,
                             FormatLabelCode = configObject.FormatLabelCode
                         });
+                        await _memoryCacheClient.SetAsync<string>(key.ToLower(), releaseContent);
                     }
                 }
             }
@@ -217,12 +227,13 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 //add redis cache
                 //TODO: encryption value
                 var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
-                await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
                 {
                     ConfigObjectType = configObject.Type,
                     Content = dto.Content,
                     FormatLabelCode = configObject.FormatLabelCode
                 });
+                await _memoryCacheClient.SetAsync<string>(key.ToLower(), releaseContent);
             }
         }
 

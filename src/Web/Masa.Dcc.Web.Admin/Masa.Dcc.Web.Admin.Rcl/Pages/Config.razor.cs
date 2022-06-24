@@ -645,6 +645,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await ConfigObjectCaller.RemoveAsync(configObject.Id);
                 _configObjects.Remove(configObject);
+
+                await PopupService.ToastSuccessAsync("删除成功");
             });
         }
 

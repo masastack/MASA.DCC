@@ -100,7 +100,7 @@
                     {
                         <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
                             <MTextField Class="pr-6" Dense HideDetails="true" Outlined @bind-Value="item.Name" Label="Name"></MTextField>
-                            <MTextField Disabled="_labelModal.HasValue" Dense HideDetails="true" Outlined @bind-Value="item.Code" Label="Code"></MTextField>
+                            <MTextField Disabled="@(_labelModal.HasValue && item.Disabled)" Dense HideDetails="true" Outlined @bind-Value="item.Code" Label="Code"></MTextField>
                             <div class="d-flex justify-end align-center ml-6">
                                 <MIcon OnClick="()=>RemoveLabelValue(item.Index)" Class="hover-pointer mr-3">mdi-close</MIcon>
                                 <MIcon OnClick="()=>AddLabelValue(item.Index)" Class="hover-pointer">mdi-plus</MIcon>
@@ -111,8 +111,8 @@
                 <MTextarea Class="mt-12" Outlined Label="描述" @bind-Value="_labelModal.Data.Description"></MTextarea>
             </div>
             <div class="d-flex justify-end align-end" style="width:100%;">
-                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitLabelAsync(formContext)">提交</MButton>
+                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitLabelAsync(formContext)">@(_labelModal.HasValue ? T("Save") : T("Submit"))</MButton>
+                </div>
             </div>
-        </div>
-    </MForm>
-</SheetDialog>
+        </MForm>
+    </SheetDialog>

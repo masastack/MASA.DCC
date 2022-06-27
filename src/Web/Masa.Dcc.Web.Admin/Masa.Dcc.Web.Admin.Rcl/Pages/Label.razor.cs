@@ -94,6 +94,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             if (context.Validate())
             {
+                if (!_labelModal.Data.LabelValues.Any())
+                {
+                    await PopupService.ToastErrorAsync("标签值不允许为空");
+                    return;
+                }
+
                 if (_labelModal.HasValue)
                 {
                     await LabelCaller.UpdateAsync(_labelModal.Data);

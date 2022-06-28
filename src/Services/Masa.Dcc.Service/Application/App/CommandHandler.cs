@@ -103,10 +103,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task RemoveConfigObjectAsync(RemoveConfigObjectCommand command)
         {
-            var configEntity = await _configObjectRepository.FindAsync(p => p.Id == command.ConfigObjectId)
-                ?? throw new UserFriendlyException("Config object does not exist");
-
-            await _configObjectRepository.RemoveAsync(configEntity);
+            await _configObjectDomainService.RemoveConfigObjectAsync(command.ConfigObjectId);
         }
 
         [EventHandler]

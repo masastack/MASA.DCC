@@ -25,7 +25,11 @@ builder.Services.AddAuthentication(options =>
 
 var redisOptions = builder.Configuration.GetSection("redis").Get<RedisConfigurationOptions>();
 builder.Services.AddMasaRedisCache(redisOptions)
-                .AddMasaMemoryCache();
+                .AddMasaMemoryCache(options =>
+                {
+                    options.SubscribeKeyType = SubscribeKeyTypes.SpecificPrefix;
+                    options.SubscribeKeyPrefix = "masa.dcc:";
+                });
 
 builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));
 

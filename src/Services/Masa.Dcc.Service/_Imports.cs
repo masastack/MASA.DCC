@@ -3,6 +3,7 @@
 
 global using System.ComponentModel.DataAnnotations;
 global using System.ComponentModel.DataAnnotations.Schema;
+global using System.Linq.Expressions;
 global using System.Security.Cryptography.X509Certificates;
 global using System.Text.Json;
 global using FluentValidation;
@@ -40,15 +41,16 @@ global using Masa.Dcc.Service.Admin.Domain.App.Aggregates;
 global using Masa.Dcc.Service.Admin.Domain.App.Repositories;
 global using Masa.Dcc.Service.Admin.Domain.App.Services;
 global using Masa.Dcc.Service.Admin.Domain.Label.Repositories;
+global using Masa.Dcc.Service.Admin.Domain.Label.Services;
 global using Masa.Dcc.Service.Infrastructure;
 global using Masa.Dcc.Service.Infrastructure.Middleware;
+global using Masa.Utils.Caching.Core.Models;
 global using Masa.Utils.Caching.DistributedMemory.DependencyInjection;
 global using Masa.Utils.Caching.DistributedMemory.Interfaces;
 global using Masa.Utils.Caching.Redis.DependencyInjection;
 global using Masa.Utils.Caching.Redis.Models;
 global using Masa.Utils.Configuration.Json;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
-global using System.Linq.Expressions;
-
 

@@ -91,5 +91,7 @@
   "Need associated cluster": "需要关联的集群",
   "Select public config object": "择公共配置对象",
   "Environment cluster": "环境集群",
-  "Public config object": "公共配置对象"
+  "Public config object": "公共配置对象",
+  "Project detail": "项目详情",
+  "Config detail": "配置详情"
 }

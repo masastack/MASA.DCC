@@ -15,14 +15,14 @@
             <ChildContent>
                 <span class="mtab-tab-line @(_curTab.ToInt32()>0?"mtab-tab-linear-primary":"mtab-tab-linear-neutral")"></span>
                 <span class="rounded-circle mtab-tab-indicator @(_curTab.ToInt32()>0?"mtab-tab-indicator-primary":"mtab-tab-indicator-neutral")"></span>
-                <span class="mtab-tab-title">@T("App")</span>
+                <span class="mtab-tab-title">@T("Project detail")</span>
             </ChildContent>
         </MTab>
         <MTab class="text-capitalize pa-0" Disabled="_configDisabled">
             <ChildContent>
                 <span class="mtab-tab-line @(_curTab.ToInt32()>1?"mtab-tab-linear-primary":"mtab-tab-linear-neutral")"></span>
                 <span class="rounded-circle mtab-tab-indicator @(_curTab.ToInt32()>1?"mtab-tab-indicator-primary":"mtab-tab-indicator-neutral")"></span>
-                <span class="mtab-tab-title">@T("Config")</span>
+                <span class="mtab-tab-title">@T("Config detail")</span>
             </ChildContent>
         </MTab>
     </MTabs>
@@ -117,15 +117,15 @@
                                         </MExpansionPanelHeader>
                                         <MExpansionPanelContent>
                                             <MRow>
-                                                @foreach (var app in apps)
+                                                @foreach (var app in apps.Where(app => app.IsPinned).Take(3))
                                                 {
                                                     @if (app.ProjectId == project.Id)
                                                     {
                                                         <MCol Lg="4" Md="6" Sm="12">
-                                                            <AppCard OnPinClick="()=>AppPin(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                                            <AppCard OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, app.EnvironmentClusters[0].Id, ConfigObjectType.App))" OnPinClick="()=>AppPin(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
                                                                 <MMenu Transition="slide-y-transition" Bottom>
                                                                     <ActivatorContent>
-                                                                        <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
+                                                                        <MButton StopPropagation @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
                                                                             <MIcon Color="black">mdi-dots-horizontal</MIcon>
                                                                         </MButton>
                                                                     </ActivatorContent>

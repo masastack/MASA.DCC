@@ -43,7 +43,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _bizConfigName = "";
         private string _appName = "";
         private List<Model.AppModel> _apps = new();
-        private PublicModel _publicDetail = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -140,10 +139,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              Url = app.Url,
                              SwaggerUrl = app.SwaggerUrl,
                              EnvironmentClusters = app.EnvironmentClusters,
-                             IsPinned = newApp != null
+                             IsPinned = newApp != null,
+                             PinTime = newApp != null ? newApp.ModificationTime : DateTime.MinValue
                          };
 
-            return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).ToList();
+            return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.PinTime).ToList();
         }
 
         private async Task AppDetailPinAsync(Model.AppModel app)

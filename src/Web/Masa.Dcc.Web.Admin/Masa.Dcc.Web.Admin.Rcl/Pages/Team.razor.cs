@@ -102,7 +102,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             StateHasChanged();
 
-            if (_curTab == 1 && _app != null)
+            if (_curTab == 0)
+            {
+                await InitDataAsync();
+            }
+            else if (_curTab == 1 && _app != null)
             {
                 await _app.InitDataAsync();
             }

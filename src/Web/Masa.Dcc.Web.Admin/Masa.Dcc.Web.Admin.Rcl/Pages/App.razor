@@ -8,11 +8,11 @@
                 <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
                     <div class="text-h6" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@_projectDetail.Name</div>
                 </MRow>
-                <MRow NoGutters Class="mt-6">
-                    @T("AppCount")：@AppCount
-                </MRow>
-                <MRow NoGutters Class="text-caption">
+                <MRow NoGutters Class="text-caption mt-1">
                     @_projectDetail.Identity
+                </MRow>
+                <MRow NoGutters Class="mt-1">
+                    @T("AppCount")：@AppCount
                 </MRow>
                 <MRow NoGutters Class="mt-4">
                     @_projectDetail.Description

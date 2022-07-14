@@ -10,24 +10,18 @@ builder.WebHost.UseKestrel(option =>
     options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN"));
 });
 
-// Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddMasaBlazor(builder =>
+
+builder.Services.AddMasaIdentityModel(IdentityType.MultiEnvironment, options =>
 {
-    builder.UseTheme(option =>
-    {
-        option.Primary = "#4318FF";
-        option.Accent = "#4318FF";
-        option.Success = "#00B42A";
-        option.Warning = "#FF7D00";
-        option.Error = "#FF5252";
-        option.Info = "#37A7FF";
-    });
+    options.Environment = "environment";
+    options.UserName = "name";
+    options.UserId = "sub";
 });
-builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n");
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddGlobalForServer();
+builder.Services.AddMasaOpenIdConnect(builder.Configuration);
+builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
+
 builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
 
 var app = builder.Build();
@@ -35,6 +29,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
 }
 else
 {
@@ -52,7 +47,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
 app.Run();

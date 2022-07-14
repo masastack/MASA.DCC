@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("AppSecrets")]
-    public class AppSecret : BaseEntity<int, Guid>
+    public class AppSecret : FullAggregateRoot<int, Guid>
     {
         [Required]
         [Range(1, int.MaxValue)]

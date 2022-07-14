@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("AppConfigObjects")]
-    public class AppConfigObject : BaseEntity<int, Guid>
+    public class AppConfigObject : FullAggregateRoot<int, Guid>
     {
         [Comment("EnvironmentClusterId")]
         [Required]
@@ -21,7 +21,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Range(1, int.MaxValue)]
         public int ConfigObjectId { get; private set; }
 
-        public ConfigObject ConfigObject { get; set; }
+        public ConfigObject ConfigObject { get; set; } = null!;
 
         public AppConfigObject(int appId, int environmentClusterId)
         {

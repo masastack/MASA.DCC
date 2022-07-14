@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("BizConfigObjects")]
-    public class BizConfigObject : BaseEntity<int, Guid>
+    public class BizConfigObject : FullAggregateRoot<int, Guid>
     {
         [Required]
         [Range(1, int.MaxValue)]

@@ -26,6 +26,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public LabelCaller LabelCaller { get; set; } = default!;
 
+        [Inject]
+        public IAuthClient AuthClient { get; set; } = default!;
+
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
@@ -36,13 +39,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private AppComponentModel _appModel = new();
         private App? _app;
         private Config? _config;
-
-        public Guid TeamId { get; set; } = Guid.Empty;
+        private List<TeamModel> _userTeams = new();
+        private TeamModel _userTeam = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
+                _userTeams = await AuthClient.TeamService.GetAllAsync();
+                _userTeam = _userTeams.Any() ? _userTeams[0] : new();
                 await InitDataAsync();
                 StateHasChanged();
             }
@@ -50,7 +55,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task InitDataAsync()
         {
-            _projects = await ProjectCaller.GetListByTeamIdAsync(TeamId);
+            _projects = await ProjectCaller.GetListByTeamIdAsync(_userTeams.Select(t => t.Id));
             var projectIds = _projects.Select(project => project.Id).ToList();
             _apps = await GetAppByProjectIdAsync(projectIds);
         }
@@ -62,7 +67,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             var result = from app in apps
                          join appPin in appPins on app.Id equals appPin.AppId into appGroup
-                         from newApp in appGroup.DefaultIfEmpty<AppPinDto>()
+                         from newApp in appGroup.DefaultIfEmpty()
                          select new Model.AppModel
                          {
                              ProjectId = app.ProjectId,

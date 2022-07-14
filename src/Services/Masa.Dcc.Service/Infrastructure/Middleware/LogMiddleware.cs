@@ -13,6 +13,8 @@ namespace Masa.Dcc.Service.Infrastructure.Middleware
             _logger = logger;
         }
 
+        public bool SupportRecursive => true;
+
         public async Task HandleAsync(TEvent action, EventHandlerDelegate next)
         {
             var typeName = action.GetType().FullName;

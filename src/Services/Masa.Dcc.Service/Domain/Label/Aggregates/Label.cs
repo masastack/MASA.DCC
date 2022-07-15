@@ -5,7 +5,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Aggregates
 {
     [Table("Labels")]
     [Index(nameof(TypeCode), nameof(IsDeleted), Name = "IX_TypeCode")]
-    public class Label : BaseEntity<int, Guid>
+    public class Label : FullAggregateRoot<int, Guid>
     {
         [Comment("Code")]
         [Required(ErrorMessage = "Label code is required")]

@@ -14,9 +14,9 @@ namespace Masa.Dcc.Caller
 
         protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
 
-        public async Task<List<ProjectModel>> GetListByTeamIdAsync(Guid teamId)
+        public async Task<List<ProjectModel>> GetListByTeamIdAsync(IEnumerable<Guid> teamIds)
         {
-            var result = await CallerProvider.GetAsync<List<ProjectModel>>($"{_prefix}/teamProjects/{teamId}");
+            var result = await CallerProvider.PostAsync<List<ProjectModel>>($"{_prefix}/teamsProject", teamIds);
 
             return result ?? new();
         }

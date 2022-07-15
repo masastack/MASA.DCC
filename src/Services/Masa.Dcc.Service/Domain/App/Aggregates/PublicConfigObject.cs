@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("PublicConfigObjects")]
-    public class PublicConfigObject : BaseEntity<int, Guid>
+    public class PublicConfigObject : FullAggregateRoot<int, Guid>
     {
         [Required]
         [Range(1, int.MaxValue)]

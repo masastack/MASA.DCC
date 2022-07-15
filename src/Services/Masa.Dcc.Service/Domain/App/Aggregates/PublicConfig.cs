@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("PublicConfigs")]
-    public class PublicConfig : BaseEntity<int, Guid>
+    public class PublicConfig : FullAggregateRoot<int, Guid>
     {
         [Required]
         public string Name { get; private set; }

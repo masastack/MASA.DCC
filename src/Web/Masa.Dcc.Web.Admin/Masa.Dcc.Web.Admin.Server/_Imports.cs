@@ -3,8 +3,7 @@
 
 global using System.Reflection;
 global using System.Security.Cryptography.X509Certificates;
-global using Masa.Dcc.Web.Admin.Rcl.Global;
+global using Masa.BuildingBlocks.Identity.IdentityModel;
 global using Masa.Stack.Components;
-global using Masa.Utils.Caller.Core;
 global using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 

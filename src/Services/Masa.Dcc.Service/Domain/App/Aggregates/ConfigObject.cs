@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("ConfigObjects")]
-    public class ConfigObject : BaseEntity<int, Guid>
+    public class ConfigObject : FullAggregateRoot<int, Guid>
     {
         [Comment("Name")]
         [Required(ErrorMessage = "Config object name is required")]

@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("ConfigObjectReleases")]
-    public class ConfigObjectRelease : BaseEntity<int, Guid>
+    public class ConfigObjectRelease : FullAggregateRoot<int, Guid>
     {
         [Comment("Release type")]
         [Column(TypeName = "tinyint")]

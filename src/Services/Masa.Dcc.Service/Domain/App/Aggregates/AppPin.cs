@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
-    public class AppPin : BaseEntity<int, Guid>
+    public class AppPin : FullAggregateRoot<int, Guid>
     {
         [Required]
         [Range(1, int.MaxValue)]

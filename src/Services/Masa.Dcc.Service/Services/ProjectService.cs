@@ -14,7 +14,7 @@ public class ProjectService : ServiceBase
         App.MapGet("api/v1/project/{Id}", GetAsync);
         App.MapGet("api/v1/{envClusterId}/project", GetListByEnvironmentClusterIdAsync);
         App.MapGet("api/v1/project/projectType", GetProjectTypes);
-        App.MapGet("api/v1/project/teamProjects/{teamId}", GetListByTeamIdAsync);
+        App.MapPost("api/v1/project/teamsProject", GetListByTeamIdsAsync);
     }
 
     public async Task<List<ProjectAppsModel>> GetProjectListAsync(string envName)
@@ -45,9 +45,9 @@ public class ProjectService : ServiceBase
         return result;
     }
 
-    public async Task<List<ProjectModel>> GetListByTeamIdAsync(Guid teamId)
+    public async Task<List<ProjectModel>> GetListByTeamIdsAsync(List<Guid> teamIds)
     {
-        var result = await _pmClient.ProjectService.GetListByTeamIdAsync(teamId);
+        var result = await _pmClient.ProjectService.GetListByTeamIdsAsync(teamIds);
 
         return result;
     }

@@ -13,8 +13,8 @@
   <ItemGroup>
     <PackageReference Include="Mapster" Version="7.3.0" />
     <PackageReference Include="Masa.Blazor" Version="0.5.0-rc.5" />
-    <PackageReference Include="Masa.Stack.Components" Version="0.0.53" />
-    <PackageReference Include="Masa.Utils.Security.Authentication.OpenIdConnect" Version="0.5.0-preview.5" />
+    <PackageReference Include="Masa.Stack.Components" Version="0.0.54" />
+    <PackageReference Include="Masa.Utils.Security.Authentication.OpenIdConnect" Version="0.5.0-preview.6" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>

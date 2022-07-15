@@ -5,7 +5,7 @@ namespace Masa.Dcc.ApiGateways.Caller
 {
     public class LabelCaller : HttpClientCallerBase
     {
-        private readonly string _prefix = "/api/v1/label";
+        private readonly string _prefix = "/api/v1/labels";
 
         public LabelCaller(IServiceProvider serviceProvider) : base(serviceProvider)
         {
@@ -16,7 +16,7 @@ namespace Masa.Dcc.ApiGateways.Caller
 
         public async Task<List<LabelDto>> GetListAsync()
         {
-            var result = await CallerProvider.GetAsync<List<LabelDto>>($"/api/v1/labels");
+            var result = await CallerProvider.GetAsync<List<LabelDto>>(_prefix);
 
             return result ?? new();
         }
@@ -30,12 +30,12 @@ namespace Masa.Dcc.ApiGateways.Caller
 
         public async Task AddAsync(UpdateLabelDto dto)
         {
-            await CallerProvider.PostAsync($"/api/v1/labels", dto);
+            await CallerProvider.PostAsync(_prefix, dto);
         }
 
         public async Task UpdateAsync(UpdateLabelDto dto)
         {
-            await CallerProvider.PutAsync($"/api/v1/labels", dto);
+            await CallerProvider.PutAsync(_prefix, dto);
         }
     }
 }

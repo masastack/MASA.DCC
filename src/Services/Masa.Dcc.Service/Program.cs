@@ -45,13 +45,16 @@ var app = builder.Services
     .AddTransient(typeof(IMiddleware<>), typeof(ValidatorMiddleware<>))
     .AddDomainEventBus(options =>
     {
-        options.UseDaprEventBus<IntegrationEventLogService>(options => options.UseEventLog<DccDbContext>())
+        options.UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseDapr().UseEventLog<DccDbContext>())
                .UseEventBus()
                .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
                .UseEventLog<DccDbContext>()
                .UseRepository<DccDbContext>();
     })
     .AddServices(builder);
+
+//seed data
+await app.SeedDataAsync();
 
 // Configure the HTTP request pipeline.
 

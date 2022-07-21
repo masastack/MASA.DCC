@@ -50,10 +50,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _selectEnvName = "";
         private EnvironmentClusterModel _selectCluster = new();
         private List<ConfigObjectModel> _configObjects = new();
+        private List<StringNumber> _selectPanels = new();
         private string _configObjectName = "";
         private readonly EditorContentModel _selectEditorContent = new();
         private List<ConfigObjectPropertyModel> _selectConfigObjectAllProperties = new();
-        private StringNumber _tabIndex = 0;
+        private string _tabText = "";
         private readonly DataModal<ConfigObjectPropertyContentDto, int> _propertyConfigModal = new();
         private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _headers = new()
         {
@@ -86,7 +87,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private ConfigObjectReleaseModel _selectReleaseHistory = new();
         private ConfigObjectReleaseModel _prevReleaseHistory = new();
         private List<ConfigObjectPropertyModel> _changedProperties = new();
-        private int _releaseTabIndex;
+        private string _releaseTabText = "";
         private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _allConfigheaders = new()
         {
             new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
@@ -144,6 +145,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (firstRender)
             {
+                _releaseTabText = T("All configuration");
+                _tabText = T("Table");
                 await InitDataAsync();
             }
         }
@@ -444,16 +447,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                     await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                     await PopupService.ToastSuccessAsync("修改成功，若要生效请发布");
-                    HandleTabIndexChanged(0, editorPropertyContents);
+                    HandleTabIndexChanged(T("Table"), editorPropertyContents);
                     _selectEditorContent.Disabled = false;
                 }
             }
         }
 
-        private void HandleTabIndexChanged(StringNumber index, List<ConfigObjectPropertyModel> configObjectProperties)
+        private void HandleTabIndexChanged(string tabText, List<ConfigObjectPropertyModel> configObjectProperties)
         {
-            _tabIndex = index;
-            if (index == 1)
+            _tabText = tabText;
+            if (tabText == T("Text"))
             {
                 _selectConfigObjectAllProperties = configObjectProperties;
                 StringBuilder stringBuilder = new();
@@ -519,6 +522,19 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 configObject.RelationConfigObjectId = 0;
 
                 await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
+            }
+            else
+            {
+                var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
+                configObjects.ForEach(config =>
+                {
+                    config.IsEditing = false;
+                });
+
+                if (!_selectPanels.Any(id => id == configObject.Id))
+                {
+                    _selectPanels.Add(configObject.Id);
+                }
             }
         }
 
@@ -677,7 +693,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await ConfigObjectCaller.ReleaseAsync(_configObjectReleaseModal.Data);
 
-                await InitDataAsync();
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                 await PopupService.ToastSuccessAsync("发布成功");
                 _configObjectReleaseModal.Hide();
             }
@@ -779,14 +795,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             if (enableTabIndexChanged)
             {
-                ReleaseHistoryTabIndexChanged(_releaseTabIndex);
+                ReleaseHistoryTabIndexChanged(_releaseTabText);
             }
         }
 
-        private void ReleaseHistoryTabIndexChanged(StringNumber index)
+        private void ReleaseHistoryTabIndexChanged(string tabText)
         {
-            _releaseTabIndex = index.AsT1;
-            if (_releaseTabIndex == 1)
+            _releaseTabText = tabText;
+            if (_releaseTabText == T("Changed configuration"))
             {
                 if (_prevReleaseHistory.ConfigObjectProperties.Count == 0)
                 {

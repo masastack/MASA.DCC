@@ -103,18 +103,18 @@
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                     </PrependInnerContent>
                 </MTextField>
-                <MButton Class="rounded-pill ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
+                <MButton Height="40" Width="100" Class="rounded-pill ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
                     <MIcon Small>mdi-plus </MIcon>@T("Add")
                 </MButton>
             </div>
             <div style="margin:0 -24px; overflow:auto; @ConfigPanelStyle">
-                <MExpansionPanels Flat Accordion>
+                <MExpansionPanels @bind-Values="_selectPanels" Flat Accordion Multiple>
                     @foreach (var configObject in _configObjects)
                     {
                         var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                         if (formatLabelCode == "json")
                         {
-                            <MExpansionPanel Style="margin-bottom: 12px;">
+                            <MExpansionPanel Value="configObject.Id" Style="margin-bottom: 12px;">
                                 <MExpansionPanelHeader Context="_">
                                     <div class="text-h6 d-flex align-center">
                                         @if (configObject.FromRelation)
@@ -217,7 +217,7 @@
                         }
                         else if (formatLabelCode == "properties")
                         {
-                            <MExpansionPanel>
+                            <MExpansionPanel Value="configObject.Id">
                                 <MExpansionPanelHeader Context="_">
                                     <div class="text-h6 d-flex align-center">
                                         @if (configObject.FromRelation)
@@ -332,9 +332,9 @@
                                     }
                                     else
                                     {
-                                        <ElevationTab TabIndex="_tabIndex"
+                                        <ElevationTab Tab="@_tabText"
                                           Left
-                                          TabIndexChanged="index=>HandleTabIndexChanged(index,configObject.ConfigObjectPropertyContents)"
+                                          TabChanged="tabText=>HandleTabIndexChanged(tabText, configObject.ConfigObjectPropertyContents)"
                                           TabMinWidth="70"
                                           ItemsClass="rounded-5"
                                           Dense
@@ -414,7 +414,7 @@
                         }
                         else
                         {
-                            <MExpansionPanel Style="margin-bottom: 12px;">
+                            <MExpansionPanel Value="configObject.Id" Style="margin-bottom: 12px;">
                                 <MExpansionPanelHeader Context="_">
                                     <div class="text-h6 d-flex align-center">
                                         @if (configObject.FromRelation)
@@ -558,7 +558,7 @@
                     <MTextField Class="mt-12" Dense Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
                     <MTextarea Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
                     <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
-                    @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
+                @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
                     <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
                         <MDataTable Headers="_releaseHeaders"
@@ -706,8 +706,8 @@
                 {
                     <ElevationTab Class="mt-12"
                               Left
-                              TabIndex="_releaseTabIndex"
-                              TabIndexChanged="index=>ReleaseHistoryTabIndexChanged(index)"
+                              Tab="@_releaseTabText"
+                              TabChanged="tabText=>ReleaseHistoryTabIndexChanged(tabText)"
                               ItemsClass="rounded-2"
                               Dense
                               Tabs="@(new List<string>{ @T("All configuration"), @T("Changed configuration")})">
@@ -869,7 +869,7 @@
                             </MRow>
                         </div>
                         <div class="d-flex justify-end align-end full-height" style="width:100%;">
-                            <MButton Disabled="@(!_cloneAppSelect && !_cloneEnvSelect || (_cloneAppSelect && _cloneSelectAppId==0))" Width="100" Class="rounded-pill" Color="primary" OnClick="CloneNextClick">@T("Next")</MButton>
+                            <MButton Disabled="@(!_cloneAppSelect && !_cloneEnvSelect || (_cloneAppSelect && _cloneSelectAppId==0))" Height="40" Width="100" Class="rounded-pill" Color="primary" OnClick="CloneNextClick">@T("Next")</MButton>
                         </div>
                     </div>
                 </MStepperContent>
@@ -905,7 +905,7 @@
                                                     {
                                                         <MButton Outlined Color="warning" Class="mr-4" OnClick="()=>CloneConfigObjectCoverClick(configObject)">
                                                             <MIcon>mdi-alert-outline</MIcon>
-                                                            解决冲突
+                                                            @T("Conflict resolution")
                                                         </MButton>
                                                     }
                                                     <MCheckbox Value="configObject.IsChecked"

@@ -7,12 +7,21 @@ namespace Masa.Dcc.Service.Admin.Services
     {
         public OpenApiService(IServiceCollection services) : base(services)
         {
+            App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
+            App.MapPost("open-api/releasing/init/{environment}/{cluster}/{appId}", InitConfigObjectAsync);
         }
 
-        public async Task UpdateConfigObjectAsync(string environment, string cluster, string appId, string configObject,
-            [FromBody] object value, string secret)
+        public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,
+            [FromBody] string value)
         {
-            throw new NotImplementedException();
+            await eventBus.PublishAsync(
+                new UpdateConfigAndPublishCommand(environment, cluster, appId, configObject, value));
+        }
+
+        public async Task InitConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, [FromBody] Dictionary<string, string> configObjects)
+        {
+            await eventBus.PublishAsync(
+                new InitConfigObjectCommand(environment, cluster, appId, configObjects));
         }
     }
 }

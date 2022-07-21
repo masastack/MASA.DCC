@@ -39,7 +39,7 @@
                                             Color="#A3AED0">
                                 @foreach (var env in _environments)
                                 {
-                                    <MListItem Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
+                                    <MListItem Style="height: 40px !important; min-height: 40px !important;" Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
                                         <ItemContent>
                                             <MListItemIcon Class="d-flex align-center pt-1 mr-0">
                                                 <MIcon Color="@env.Color" Size="12">mdi-circle</MIcon>
@@ -55,15 +55,15 @@
                     </div>
                 </MNavigationDrawer>
                 <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
-                    <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:102px;background:#fff;padding:0 12px;">
+                    <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:88px; background:#fff;padding:0 12px;">
                         <MCard>
-                            <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
+                            <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs mt-2" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
                                 @foreach (var cluster in _clusters)
                                 {
                                     StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
                                     <MTooltip Top>
                                         <ActivatorContent>
-                                            <MTab @attributes="@context.Attrs" Style="max-width:150px;" Value="envClusterId" OnClick="()=>GetProjectByEnvClusterIdAsync(cluster.EnvironmentClusterId)">
+                                            <MTab @attributes="@context.Attrs" Style="height:40px; max-width:150px;" Value="envClusterId" OnClick="()=>GetProjectByEnvClusterIdAsync(cluster.EnvironmentClusterId)">
                                                 <div class="text-overflow">@cluster.Name</div>
                                             </MTab>
                                         </ActivatorContent>
@@ -75,7 +75,7 @@
                             </MTabs>
                         </MCard>
                     </MRow>
-                    <div class="rounded-5 mt-6 py-2" style="height:calc(100vh - 318px );background:#fff;display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
+                    <div class="rounded-5 mt-6 py-2" style="height:calc(100vh - 304px );background:#fff;display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
                         <div>
                             <MExpansionPanels Flat Accordion>
                                 @foreach (var project in _projects)

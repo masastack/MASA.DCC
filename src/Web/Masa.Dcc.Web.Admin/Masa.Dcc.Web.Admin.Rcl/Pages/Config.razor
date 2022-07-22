@@ -114,83 +114,90 @@
                         var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                         if (formatLabelCode == "json")
                         {
-                            <MExpansionPanel Value="configObject.Id" Style="margin-bottom: 12px;">
+                            <MExpansionPanel Value="configObject.Id">
                                 <MExpansionPanelHeader Context="_">
-                                    <div class="text-h6 d-flex align-center">
-                                        @if (configObject.FromRelation)
-                                        {
-                                            <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
-                                        }
-                                        @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
-                                        {
-                                            <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                @T("Modified")
-                                            </div>
-                                        }
-                                        <span>@configObject.Name</span>
-                                        <span class="ml-3 text-caption">|</span>
-                                        <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
-                                        <MSpacer></MSpacer>
-                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateJsonConfigAsync(configObject)">
-                                            @if (!configObject.IsEditing)
+                                    <ChildContent>
+                                        <div class="text-h6 d-flex align-center">
+                                            @if (configObject.FromRelation)
                                             {
-                                                <MIcon Color="#323D6F">@(configObject.RelationConfigObjectId == 0 ? "mdi-pencil" : "mdi-link-variant-off")</MIcon>
+                                                <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
                                             }
-                                            else
+                                            @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
                                             {
-                                                <MIcon Color="success">mdi-check</MIcon>
+                                                <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                    @T("Modified")
+                                                </div>
                                             }
-                                        </MButton>
-                                        @if (ConfigObjectType == ConfigObjectType.App)
-                                        {
-                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
-                                        }
-                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                            <span>@configObject.Name</span>
+                                            <span class="ml-3 text-caption">|</span>
+                                            <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
+                                            <MSpacer></MSpacer>
+                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateJsonConfigAsync(configObject)">
+                                                @if (!configObject.IsEditing)
+                                                {
+                                                    <MIcon Color="#323D6F">@(configObject.RelationConfigObjectId == 0 ? "mdi-pencil" : "mdi-link-variant-off")</MIcon>
+                                                }
+                                                else
+                                                {
+                                                    <MIcon Color="success">mdi-check</MIcon>
+                                                }
+                                            </MButton>
+                                            @if (ConfigObjectType == ConfigObjectType.App)
+                                            {
+                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                            }
+                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
 
-                                        <MMenu OffsetY>
-                                            <ActivatorContent>
-                                                <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
-                                                    <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
-                                                </MButton>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <MList>
-                                                    <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
-                                                        <MIcon Class="mr-4">mdi-history</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>@T("Release history")</MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
-                                                        <MIcon Class="mr-4">mdi-repeat</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>
-                                                                @T("Rollback")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MListItem OnClick="()=>RevokeAsync(configObject)">
-                                                        <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>
-                                                                @T("Revoke")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MDivider></MDivider>
-                                                    <MListItem OnClick="()=>RemoveAsync(configObject)">
-                                                        <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle Class="error--text">
-                                                                @T("Delete")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                </MList>
-                                            </ChildContent>
-                                        </MMenu>
-                                        <span class="mr-6 text-caption">|</span>
-                                    </div>
+                                            <MMenu OffsetY>
+                                                <ActivatorContent>
+                                                    <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                        <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
+                                                    </MButton>
+                                                </ActivatorContent>
+                                                <ChildContent>
+                                                    <MList>
+                                                        <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-history</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>@T("Release history")</MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-repeat</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>
+                                                                    @T("Rollback")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MListItem OnClick="()=>RevokeAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>
+                                                                    @T("Revoke")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MDivider></MDivider>
+                                                        <MListItem OnClick="()=>RemoveAsync(configObject)">
+                                                            <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle Class="error--text">
+                                                                    @T("Delete")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                    </MList>
+                                                </ChildContent>
+                                            </MMenu>
+                                            <span class="mr-6 text-caption">|</span>
+                                        </div>
+                                    </ChildContent>
+                                    <ActionsContent>
+                                        <MIcon Color="#485585">
+                                            mdi-chevron-down
+                                        </MIcon>
+                                    </ActionsContent>
                                 </MExpansionPanelHeader>
                                 <MExpansionPanelContent>
                                     @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
@@ -213,6 +220,7 @@
                                     }
                                     <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
                                 </MExpansionPanelContent>
+                                <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
                             </MExpansionPanel>
                         }
                         else if (formatLabelCode == "properties")
@@ -414,7 +422,7 @@
                         }
                         else
                         {
-                            <MExpansionPanel Value="configObject.Id" Style="margin-bottom: 12px;">
+                            <MExpansionPanel Value="configObject.Id">
                                 <MExpansionPanelHeader Context="_">
                                     <div class="text-h6 d-flex align-center">
                                         @if (configObject.FromRelation)

@@ -534,9 +534,9 @@
     overflow: visible !important;
 }
 
-    .navigation .m-list-group__items .m-list-item {
+    /*.navigation .m-list-group__items .m-list-item {
         padding-left: 60px !important;
-    }
+    }*/
 
     .navigation .m-list-item {
         padding-left: 28px;
@@ -1065,6 +1065,7 @@ input::-webkit-input-placeholder {
     border-radius: 20px !important;
 }
 
+/*dcc style*/
 .env-list .m-list-item__title {
     font-style: normal;
     font-weight: normal;
@@ -1174,4 +1175,8 @@ input::-webkit-input-placeholder {
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     height: initial !important;
+}
+
+.m-expansion-panel-header {
+    padding: 20px 24px !important;
 }

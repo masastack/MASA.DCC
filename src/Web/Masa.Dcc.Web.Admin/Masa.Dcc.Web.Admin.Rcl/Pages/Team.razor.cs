@@ -5,6 +5,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Team
     {
+        [Parameter]
+        public string TeamId { get; set; }
+
         [Inject]
         public IPopupService PopupService { get; set; } = default!;
 
@@ -39,15 +42,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private AppComponentModel _appModel = new();
         private App? _app;
         private Config? _config;
-        private List<TeamModel> _userTeams = new();
-        private TeamModel _userTeam = new();
+        private TeamDetailModel _userTeam = new();
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                _userTeams = await AuthClient.TeamService.GetAllAsync();
-                _userTeam = _userTeams.Any() ? _userTeams[0] : new();
+                _userTeam = await AuthClient.TeamService.GetDetailAsync(Guid.Parse(TeamId)) ?? new();
                 await InitDataAsync();
                 StateHasChanged();
             }
@@ -55,7 +56,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task InitDataAsync()
         {
-            _projects = await ProjectCaller.GetListByTeamIdAsync(_userTeams.Select(t => t.Id));
+            _projects = await ProjectCaller.GetListByTeamIdAsync(new List<Guid> { _userTeam.Id });
             var projectIds = _projects.Select(project => project.Id).ToList();
             _apps = await GetAppByProjectIdAsync(projectIds);
         }

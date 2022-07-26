@@ -7,7 +7,6 @@ namespace Masa.Dcc.Service.Admin.Application.App
     {
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
-        private readonly ILabelRepository _labelRepository;
         private readonly IAppPinRepository _appPinRepository;
         private readonly IBizConfigRepository _bizConfigRepository;
         private readonly ConfigObjectDomainService _configObjectDomainService;
@@ -15,14 +14,12 @@ namespace Masa.Dcc.Service.Admin.Application.App
         public CommandHandler(
             IPublicConfigRepository publicConfigRepository,
             IConfigObjectRepository configObjectRepository,
-            ILabelRepository labelRepository,
             IAppPinRepository appPinRepository,
             IBizConfigRepository bizConfigRepository,
             ConfigObjectDomainService configObjectDomainService)
         {
             _publicConfigRepository = publicConfigRepository;
             _configObjectRepository = configObjectRepository;
-            _labelRepository = labelRepository;
             _appPinRepository = appPinRepository;
             _bizConfigRepository = bizConfigRepository;
             _configObjectDomainService = configObjectDomainService;
@@ -169,5 +166,19 @@ namespace Masa.Dcc.Service.Admin.Application.App
         }
 
         #endregion
+
+        [EventHandler]
+        public async Task UpdateConfigObjectAsync(UpdateConfigAndPublishCommand command)
+        {
+            await _configObjectDomainService.UpdateConfigObjectAsync(command.Environment, command.Cluster,
+                 command.AppId, command.ConfigObject, command.Value);
+        }
+
+        [EventHandler]
+        public async Task InitConfigObjectAsync(InitConfigObjectCommand command)
+        {
+            await _configObjectDomainService.InitConfigObjectAsync(command.Environment, command.Cluster,
+                 command.AppId, command.ConfigObjects);
+        }
     }
 }

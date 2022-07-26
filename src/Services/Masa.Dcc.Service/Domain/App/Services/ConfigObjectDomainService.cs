@@ -281,5 +281,74 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             configObject.AddContent(configObject.Content, canRollbackEntity.Content);
             await _configObjectRepository.UpdateAsync(configObject);
         }
+
+        public async Task UpdateConfigObjectAsync(string environmentName, string clusterName, string appId,
+            string configObjectName,
+            string value)
+        {
+            var configObject = await _configObjectRepository.FindAsync(config => config.Name == configObjectName);
+            if (configObject == null)
+                throw new UserFriendlyException("ConfigObject does not exist");
+
+            configObject.UpdateContent(value);
+
+            await _configObjectRepository.UpdateAsync(configObject);
+
+            var releaseModel = new AddConfigObjectReleaseDto
+            {
+                Type = ReleaseType.MainRelease,
+                ConfigObjectId = configObject.Id,
+                Name = "通过Sdk发布",
+                EnvironmentName = environmentName,
+                ClusterName = clusterName,
+                Identity = appId,
+                Content = value
+            };
+
+            await AddConfigObjectReleaseAsync(releaseModel);
+        }
+
+        public async Task InitConfigObjectAsync(string environmentName, string clusterName, string appId, Dictionary<string, string> configObjects)
+        {
+            var envs = await _pmClient.EnvironmentService.GetListAsync();
+            var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower());
+            if (env == null)
+                throw new UserFriendlyException("Environment does not exist");
+
+            var clusters = await _pmClient.ClusterService.GetListByEnvIdAsync(env.Id);
+            var cluster = clusters.FirstOrDefault(c => c.Name.ToLower() == clusterName.ToLower());
+            if (cluster == null)
+                throw new UserFriendlyException("Cluster does not exist");
+
+            var app = await _pmClient.AppService.GetByIdentityAsync(appId);
+
+            foreach (var configObject in configObjects)
+            {
+                var newConfigObject = new ConfigObject(
+                    configObject.Key,
+                    "Json",
+                    ConfigObjectType.App,
+                    configObject.Value,
+                    "{}");
+
+                newConfigObject.SetAppConfigObject(app.Id, cluster.EnvironmentClusterId);
+
+                await _configObjectRepository.AddAsync(newConfigObject);
+                await _configObjectRepository.UnitOfWork.SaveChangesAsync();
+
+                var releaseModel = new AddConfigObjectReleaseDto
+                {
+                    Type = ReleaseType.MainRelease,
+                    ConfigObjectId = newConfigObject.Id,
+                    Name = "通过Sdk发布",
+                    EnvironmentName = environmentName,
+                    ClusterName = clusterName,
+                    Identity = appId,
+                    Content = configObject.Value,
+                };
+
+                await AddConfigObjectReleaseAsync(releaseModel);
+            }
+        }
     }
 }

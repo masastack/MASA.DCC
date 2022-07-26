@@ -13,12 +13,6 @@ builder.WebHost.UseKestrel(option =>
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
-builder.Services.AddMasaIdentityModel(IdentityType.MultiEnvironment, options =>
-{
-    options.Environment = "environment";
-    options.UserName = "name";
-    options.UserId = "sub";
-});
 builder.Services.AddMasaOpenIdConnect(builder.Configuration);
 builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
 
@@ -46,6 +40,8 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

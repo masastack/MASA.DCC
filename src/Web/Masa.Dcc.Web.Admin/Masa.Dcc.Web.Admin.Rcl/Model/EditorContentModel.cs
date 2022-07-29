@@ -5,6 +5,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
 {
     public class EditorContentModel
     {
+        public string TabText { get; set; } = "";
+
         public bool Disabled { get; set; }
 
         public string Content { get; set; } = "";

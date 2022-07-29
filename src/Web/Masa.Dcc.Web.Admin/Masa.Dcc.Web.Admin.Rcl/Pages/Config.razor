@@ -108,7 +108,7 @@
                 </MButton>
             </div>
             <div style="margin:0 -24px; overflow:auto; @ConfigPanelStyle">
-                <MExpansionPanels @bind-Values="_selectPanels" Flat Accordion Multiple>
+                <MExpansionPanels @bind-Values="_selectPanels" Flat Accordion>
                     @foreach (var configObject in _configObjects)
                     {
                         var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
@@ -147,7 +147,6 @@
                                                 <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
                                             }
                                             <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
-
                                             <MMenu OffsetY>
                                                 <ActivatorContent>
                                                     <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
@@ -227,68 +226,81 @@
                         {
                             <MExpansionPanel Value="configObject.Id">
                                 <MExpansionPanelHeader Context="_">
-                                    <div class="text-h6 d-flex align-center">
-                                        @if (configObject.FromRelation)
-                                        {
-                                            <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
-                                        }
-                                        @configObject.Name
-                                        <span class="ml-3 text-caption">|</span>
-                                        <sapn class="ml-2 text-caption">@configObject.FormatLabelCode</sapn>
-                                        <MSpacer></MSpacer>
-                                        @if (!configObject.FromRelation)
-                                        {
-                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
-                                        }
-                                        @if (ConfigObjectType == ConfigObjectType.App)
-                                        {
-                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
-                                        }
-                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
-                                        <MMenu OffsetY>
-                                            <ActivatorContent>
-                                                <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
-                                                    <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
-                                                </MButton>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <MList>
-                                                    <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
-                                                        <MIcon Class="mr-4">mdi-history</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>@T("Release history")</MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
-                                                        <MIcon Class="mr-4">mdi-repeat</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>
-                                                                @T("Rollback")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MListItem OnClick="()=>RevokeAsync(configObject)">
-                                                        <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>
-                                                                @T("Revoke")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MDivider></MDivider>
-                                                    <MListItem OnClick="()=>RemoveAsync(configObject)">
-                                                        <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle Class="error--text">
-                                                                @T("Delete")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                </MList>
-                                            </ChildContent>
-                                        </MMenu>
-                                        <span class="mr-6 text-caption">|</span>
-                                    </div>
+                                    <ChildContent>
+                                        <div class="text-h6 d-flex align-center">
+                                            @if (configObject.FromRelation)
+                                            {
+                                                <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
+                                            }
+                                            @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
+                                            {
+                                                <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                    @T("Modified")
+                                                </div>
+                                            }
+                                            <span>@configObject.Name</span>
+                                            <span class="ml-3 text-caption">|</span>
+                                            <sapn class="ml-2 text-caption">@configObject.FormatLabelCode</sapn>
+                                            <MSpacer></MSpacer>
+                                            @if (!configObject.FromRelation)
+                                            {
+                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
+                                            }
+                                            @if (ConfigObjectType == ConfigObjectType.App)
+                                            {
+                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                            }
+                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                            <MMenu OffsetY>
+                                                <ActivatorContent>
+                                                    <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                        <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
+                                                    </MButton>
+                                                </ActivatorContent>
+                                                <ChildContent>
+                                                    <MList>
+                                                        <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-history</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>@T("Release history")</MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-repeat</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>
+                                                                    @T("Rollback")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MListItem OnClick="()=>RevokeAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>
+                                                                    @T("Revoke")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MDivider></MDivider>
+                                                        <MListItem OnClick="()=>RemoveAsync(configObject)">
+                                                            <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle Class="error--text">
+                                                                    @T("Delete")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                    </MList>
+                                                </ChildContent>
+                                            </MMenu>
+                                            <span class="mr-6 text-caption">|</span>
+                                        </div>
+                                    </ChildContent>
+                                    <ActionsContent>
+                                        <MIcon Color="#485585">
+                                            mdi-chevron-down
+                                        </MIcon>
+                                    </ActionsContent>
                                 </MExpansionPanelHeader>
                                 <MExpansionPanelContent>
                                     @if (configObject.RelationConfigObjectId != 0)
@@ -340,14 +352,14 @@
                                     }
                                     else
                                     {
-                                        <ElevationTab Tab="@_tabText"
-                                          Left
-                                          TabChanged="tabText=>HandleTabIndexChanged(tabText, configObject.ConfigObjectPropertyContents)"
-                                          TabMinWidth="70"
-                                          ItemsClass="rounded-5"
-                                          Dense
-                                          Tabs="@(new List<string>{ T("Table"), T("Text") })">
-                                            <ElevationTabItem>
+                                        <SElevationTab Tab="@configObject.ElevationTabPropertyContent.TabText"
+                                           Left
+                                           TabChanged="tabText=>HandleTabIndexChanged(tabText, configObject)"
+                                           TabMinWidth="70"
+                                           ItemsClass="rounded-5"
+                                           Dense
+                                           Tabs="@(new List<string>{ T("Table"), T("Text") })">
+                                            <SElevationTabItem>
                                                 <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
                                                     <MDataTable Headers="_headers"
                                                     SortDesc="true"
@@ -365,14 +377,14 @@
                                                                 case "状态":
                                                                     if (context.Item.IsPublished)
                                                                     {
-                                                                        <MIcon Style="margin-bottom:2px;" Size="20" Color="#05CD99">mdi-send</MIcon>
+                                                                        <MIcon Style="margin-bottom:2px;" Size="16 " Color="#05CD99">mdi-send</MIcon>
                                                                         <span style="color:#05CD99;">@T("Released")</span>
                                                                     }
                                                                     else
                                                                     {
                                                                         if (context.Item.IsAdded)
                                                                         {
-                                                                            <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>
+                                                                            <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-p lus</MIcon>
                                                                         }
                                                                         else if (context.Item.IsEdited)
                                                                         {
@@ -380,14 +392,17 @@
                                                                         }
                                                                         else if (context.Item.IsDeleted)
                                                                         {
-                                                                            <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-delete</MIcon>
+                                                                            <MIcon Class="mr-1" Color="error" Style="margin-bottom:2px;" Size="16">mdi-delete</MIcon>
                                                                         }
                                                                         <span>@T("UnReleased")</span>
                                                                     }
                                                                     break;
                                                                 case "操作":
-                                                                    <MIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-pencil</MIcon>
-                                                                    <MIcon Class="hover-pointer" Size="20" Color="error" OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">mdi-delete</MIcon>
+                                                                    @if (!context.Item.IsDeleted)
+                                                                    {
+                                                                        <MIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-pencil</MIcon>
+                                                                        <MIcon Class="hover-pointer" Style="color: #FF5252 !important;" Size="20" OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">mdi-delete</MIcon>
+                                                                    }
                                                                     break;
                                                                 case "修改时间":
                                                                     <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
@@ -399,13 +414,13 @@
                                                         </ItemColContent>
                                                     </MDataTable>
                                                 </MCard>
-                                            </ElevationTabItem>
-                                            <ElevationTabItem>
+                                            </SElevationTabItem>
+                                            <SElevationTabItem>
                                                 <div class="d-flex justify-end">
                                                     <MButton StopPropagation Icon Class="mr-4 mb-2">
-                                                        @if (!_selectEditorContent.Disabled)
+                                                        @if (!configObject.ElevationTabPropertyContent.Disabled)
                                                         {
-                                                            <MIcon Class="hover-pointer" OnClick="()=>{ _selectEditorContent.Disabled = !_selectEditorContent.Disabled; }" Color="#323D6F">mdi-pencil</MIcon>
+                                                            <MIcon Class="hover-pointer" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }" Color="#323D6F">mdi-pencil</MIcon>
                                                         }
                                                         else
                                                         {
@@ -413,91 +428,99 @@
                                                         }
                                                     </MButton>
                                                 </div>
-                                                <Editor Disabled="!_selectEditorContent.Disabled" @bind-Value="@_selectEditorContent.Content"></Editor>
-                                            </ElevationTabItem>
-                                        </ElevationTab>
+                                                <Editor Disabled="!configObject.ElevationTabPropertyContent.Disabled" @bind-Value="@configObject.ElevationTabPropertyContent.Content"></Editor>
+                                            </SElevationTabItem>
+                                        </SElevationTab>
                                     }
                                 </MExpansionPanelContent>
+                                <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
                             </MExpansionPanel>
                         }
                         else
                         {
                             <MExpansionPanel Value="configObject.Id">
                                 <MExpansionPanelHeader Context="_">
-                                    <div class="text-h6 d-flex align-center">
-                                        @if (configObject.FromRelation)
-                                        {
-                                            <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
-                                        }
-                                        @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
-                                        {
-                                            <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                @T("Modified")
-                                            </div>
-                                        }
-                                        <span>@configObject.Name</span>
-                                        <span class="ml-3 text-caption">|</span>
-                                        <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
-                                        <MSpacer></MSpacer>
-                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateOtherConfigObjectContentAsync(configObject)">
-                                            @if (!configObject.IsEditing)
+                                    <ChildContent>
+                                        <div class="text-h6 d-flex align-center">
+                                            @if (configObject.FromRelation)
                                             {
-                                                <MIcon Color="#323D6F">@(configObject.RelationConfigObjectId == 0 ? "mdi-pencil" : "mdi-link-variant-off")</MIcon>
+                                                <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
                                             }
-                                            else
+                                            @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
                                             {
-                                                <MIcon Color="success">mdi-check</MIcon>
+                                                <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                    @T("Modified")
+                                                </div>
                                             }
-                                        </MButton>
-                                        @if (ConfigObjectType == ConfigObjectType.App)
-                                        {
-                                            <MButton StopPropagation Icon Class="mr-4"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
-                                        }
-                                        <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
-                                        <MMenu OffsetY>
-                                            <ActivatorContent>
-                                                <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
-                                                    <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
-                                                </MButton>
-                                            </ActivatorContent>
-                                            <ChildContent>
-                                                <MList>
-                                                    <MListItem>
-                                                        <MIcon Class="mr-4" OnClick="()=>ShowReleaseHistoryAsync(configObject)">mdi-history</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>@T("Release history")</MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
-                                                        <MIcon Class="mr-4">mdi-repeat</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>
-                                                                @T("Rollback")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MListItem OnClick="()=>RevokeAsync(configObject)">
-                                                        <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle>
-                                                                @T("Revoke")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                    <MDivider></MDivider>
-                                                    <MListItem OnClick="()=>RemoveAsync(configObject)">
-                                                        <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
-                                                        <MListItemContent>
-                                                            <MListItemTitle Class="error--text">
-                                                                @T("Delete")
-                                                            </MListItemTitle>
-                                                        </MListItemContent>
-                                                    </MListItem>
-                                                </MList>
-                                            </ChildContent>
-                                        </MMenu>
-                                        <span class="mr-6 text-caption">|</span>
-                                    </div>
+                                            <span>@configObject.Name</span>
+                                            <span class="ml-3 text-caption">|</span>
+                                            <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
+                                            <MSpacer></MSpacer>
+                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateOtherConfigObjectContentAsync(configObject)">
+                                                @if (!configObject.IsEditing)
+                                                {
+                                                    <MIcon Color="#323D6F">@(configObject.RelationConfigObjectId == 0 ? "mdi-pencil" : "mdi-link-variant-off")</MIcon>
+                                                }
+                                                else
+                                                {
+                                                    <MIcon Color="success">mdi-check</MIcon>
+                                                }
+                                            </MButton>
+                                            @if (ConfigObjectType == ConfigObjectType.App)
+                                            {
+                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                            }
+                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                            <MMenu OffsetY>
+                                                <ActivatorContent>
+                                                    <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                        <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
+                                                    </MButton>
+                                                </ActivatorContent>
+                                                <ChildContent>
+                                                    <MList>
+                                                        <MListItem OnClick="()=>ShowReleaseHistoryAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-history</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>@T("Release history")</MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MListItem OnClick="()=>ShowRollbackModalAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-repeat</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>
+                                                                    @T("Rollback")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MListItem OnClick="()=>RevokeAsync(configObject)">
+                                                            <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle>
+                                                                    @T("Revoke")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                        <MDivider></MDivider>
+                                                        <MListItem OnClick="()=>RemoveAsync(configObject)">
+                                                            <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
+                                                            <MListItemContent>
+                                                                <MListItemTitle Class="error--text">
+                                                                    @T("Delete")
+                                                                </MListItemTitle>
+                                                            </MListItemContent>
+                                                        </MListItem>
+                                                    </MList>
+                                                </ChildContent>
+                                            </MMenu>
+                                            <span class="mr-6 text-caption">|</span>
+                                        </div>
+                                    </ChildContent>
+                                    <ActionsContent>
+                                        <MIcon Color="#485585">
+                                            mdi-chevron-down
+                                        </MIcon>
+                                    </ActionsContent>
                                 </MExpansionPanelHeader>
                                 <MExpansionPanelContent>
                                     @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
@@ -520,6 +543,7 @@
                                     }
                                     <Editor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></Editor>
                                 </MExpansionPanelContent>
+                                <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
                             </MExpansionPanel>
                         }
                     }
@@ -531,10 +555,10 @@
 
 <AddConfigObjectModal @ref="_addConfigObjectModal" AppDetail="_appDetail"
                       ConfigObjectType="ConfigObjectType"
-                      OnSubmitAfter="@(async ()=>{ _configObjects = (await ConfigObjectCaller.GetConfigObjectsAsync(_selectCluster.Id, _appDetail.Id, ConfigObjectType, "")).Adapt<List<ConfigObjectModel>>(); })">
+                      OnSubmitAfter="()=>GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType)">
 </AddConfigObjectModal>
 
-<SheetDialog Value="_propertyConfigModal.Visible" ValueChanged="PropertyConfigModalValueChanged" Title="@(_propertyConfigModal.HasValue ? T("Modify config object item") : T("Create config object item"))" Icon="mdi-circle" IconColor="success">
+<SSheetDialog Value="_propertyConfigModal.Visible" ValueChanged="PropertyConfigModalValueChanged" Title="@(_propertyConfigModal.HasValue ? T("Modify config object item") : T("Create config object item"))" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>
@@ -548,20 +572,20 @@
                 <MTextarea Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
             </div>
             <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@(_propertyConfigModal.HasValue ? T("Save") : T("Submit"))</MButton>
+                <MButton Height="40" Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@(_propertyConfigModal.HasValue ? T("Save") : T("Submit"))</MButton>
                 </div>
             </div>
         </MForm>
-    </SheetDialog>
+    </SSheetDialog>
 
-    <SheetDialog @bind-Value="_configObjectReleaseModal.Visible" Title="@T("Release")" Icon="mdi-circle" IconColor="success">
+    <SSheetDialog @bind-Value="_configObjectReleaseModal.Visible" Title="@T("Release")" Icon="mdi-circle" IconColor="success">
         <MForm Class="full-height" Context="formContext" EnableValidation Model="_configObjectReleaseModal.Data">
             <div class="d-flex flex-column" style="width:100%; height: 100%; padding: 48px 228px">
                 <div class="full-height" style="overflow-y: auto;">
                     <div class="text-h6 d-flex align-center">
                         @_selectConfigObject.Name
                         <span class="ml-3 text-caption">|</span>
-                        <sapn class="ml-2 text-caption">Properties</sapn>
+                        <sapn class="ml-2 text-caption">@_selectConfigObject.FormatLabelCode</sapn>
                     </div>
                     <MTextField Class="mt-12" Dense Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
                     <MTextarea Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
@@ -631,11 +655,11 @@
                 }
             </div>
             <div class="d-flex justify-end align-end" style="width:100%;">
-                <MButton Class="rounded-pill" Color="primary" Width="100" OnClick="()=>ReleaseAsync(formContext)">@T("Submit")</MButton>
+                <MButton Height="40" Class="rounded-pill" Color="primary" Width="100" OnClick="()=>ReleaseAsync(formContext)">@T("Submit")</MButton>
             </div>
         </div>
     </MForm>
-</SheetDialog>
+</SSheetDialog>
 
 <RollbackModal @bind-Value="_showRollbackModal"
                FormatLabelCode="@_releaseHistory.FormatLabelCode"
@@ -645,13 +669,13 @@
                OnClickAfter="_handleRollbackOnClickAfter">
 </RollbackModal>
 
-<SheetDialog @bind-Value="_showReleaseHistory" Title="@T("Release history")" Icon="mdi-circle" IconColor="success">
+<SSheetDialog @bind-Value="_showReleaseHistory" Title="@T("Release history")" Icon="mdi-circle" IconColor="success">
     <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
         <div>
             <div class="text-h6 d-flex align-center">
                 @T("Config object name")
                 <span class="ml-3 text-caption">|</span>
-                <sapn class="ml-2 text-caption">Properties</sapn>
+                <sapn class="ml-2 text-caption">@_releaseHistory.FormatLabelCode</sapn>
             </div>
         </div>
         <div class="d-flex full-height full-width mt-12" style="overflow: hidden;">
@@ -663,15 +687,19 @@
                         {
                             int index = _index;
                             _index++;
-                            <MTimelineItem HideDot="!release.IsActive" Color="primary" Small Right @onclick="()=>OnTimelineItemClick(release)">
+                            <MTimelineItem HideDot="!release.IsActive" Color="primary" Small Right @onclick="()=>OnTimelineItemClickAsync(release)">
                                 <OppositeContent>
                                     <div>
                                         <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
                                             @release.CreationTime.ToString("MM-dd").TrimStart('0')
                                         </div>
-                                        @if (index == 1)
+                                        @if (index == 0)
                                         {
                                             <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
+                                        }
+                                        else if (release.IsInvalid)
+                                        {
+                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
                                         }
                                     </div>
                                 </OppositeContent>
@@ -680,7 +708,6 @@
                                         <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
                                             @release.Name
                                         </div>
-                                        <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@release.Version</div>
                                     </div>
                                 </ChildContent>
                             </MTimelineItem>
@@ -696,15 +723,9 @@
                     }
                     <span style="color: #485585; font-weight: 700; font-size: 16px;">@_selectReleaseHistory.Name</span>
                     <MSpacer></MSpacer>
-                    <span style="color: #A3AED0; font-size:12px;">发布时间：@_selectReleaseHistory.CreationTime.ToString(T("$DateTimeFormat"))</span>
+                    <span style="color: #A3AED0; font-size:12px;">@T("Release time")：@_selectReleaseHistory.CreationTime.ToString(T("$DateTimeFormat"))</span>
                     <span class="mx-2">|</span>
-                    <span style="color: #323D6F; font-size:12px;">@_selectReleaseHistory.Creator</span>
-                </div>
-                <div class="mt-12" style="color: #1B2559;font-weight: 700; font-size: 14px;">
-                    @_selectReleaseHistory.Version
-                </div>
-                <div style="color: #A3AED0; font-weight: 500; font-size: 12px;">
-                    @T("App version from {xx}").Replace("{xx}",$"{_selectReleaseHistory.Name}")
+                    <span style="color: #323D6F; font-size:12px;">@_selectReleaseHistory.CreatorName</span>
                 </div>
                 <div class="mt-6">
                     <span style="color: #323D6F; font-size: 14px;">@T("Description")：</span>
@@ -712,14 +733,14 @@
                 </div>
                 @if (_releaseHistory.FormatLabelCode.Trim().ToLower() == "properties")
                 {
-                    <ElevationTab Class="mt-12"
-                              Left
-                              Tab="@_releaseTabText"
-                              TabChanged="tabText=>ReleaseHistoryTabIndexChanged(tabText)"
-                              ItemsClass="rounded-2"
-                              Dense
-                              Tabs="@(new List<string>{ @T("All configuration"), @T("Changed configuration")})">
-                        <ElevationTabItem>
+                    <SElevationTab Class="mt-12"
+                               Left
+                               Tab="@_releaseTabText"
+                               TabChanged="tabText => ReleaseHistoryTabIndexChanged(tabText)"
+                               ItemsClass="rounded-2"
+                               Dense
+                               Tabs="@(new List<string>{ @T("All configuration"), @T("Changed configuration")})">
+                        <SElevationTabItem>
                             <div style="border:1px solid #E2E7F4;" class="py-1 mt-4 rounded-2">
                                 <MDataTable Headers="_allConfigheaders"
                                         DisableSort
@@ -732,8 +753,8 @@
                                     </HeaderColContent>
                                 </MDataTable>
                             </div>
-                        </ElevationTabItem>
-                        <ElevationTabItem>
+                        </SElevationTabItem>
+                        <SElevationTabItem>
                             <div style="border:1px solid #E2E7F4;" class="py-1 mt-4 rounded-2">
                                 <MDataTable Headers="_changedConfigheaders"
                                         DisableSort
@@ -768,8 +789,8 @@
                                     </ItemColContent>
                                 </MDataTable>
                             </div>
-                        </ElevationTabItem>
-                    </ElevationTab>
+                        </SElevationTabItem>
+                    </SElevationTab>
                 }
                 else
                 {
@@ -781,12 +802,12 @@
             </div>
         </div>
         <div class="d-flex justify-end align-end" style="width:100%;">
-            <MButton Class="rounded-pill" Color="primary" OnClick="RollbackToAsync">@T("Rollback to this version")</MButton>
+            <MButton Height="40" Class="rounded-pill" Color="primary" OnClick="RollbackToAsync">@T("Rollback to this version")</MButton>
         </div>
     </div>
-</SheetDialog>
+</SSheetDialog>
 
-<SheetDialog Value="_showCloneModal" ValueChanged="CloneDialogValueChangedAsync" Title="@T("Clone config object")" Icon="mdi-circle" IconColor="success">
+<SSheetDialog Value="_showCloneModal" ValueChanged="CloneDialogValueChangedAsync" Title="@T("Clone config object")" Icon="mdi-circle" IconColor="success">
     <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px;">
         <MStepper Value="_step" Elevation=0 Class="full-height">
             <MStepperHeader Style="box-shadow:none !important">
@@ -1006,8 +1027,8 @@
                         else
                         {
                             <div style="position: absolute; bottom: 0; right: 0;">
-                                <MButton Outlined Width="100" Class="rounded-pill mr-6" Color="primary" OnClick="ClonePrevClick">@T("Back")</MButton>
-                                <MButton Width="100" Class="rounded-pill" Color="primary" OnClick="CloneAsync">@T("Clone")</MButton>
+                                <MButton Height="40" Outlined Width="100" Class="rounded-pill mr-6" Color="primary" OnClick="ClonePrevClick">@T("Back")</MButton>
+                                <MButton Height="40" Width="100" Class="rounded-pill" Color="primary" OnClick="CloneAsync">@T("Clone")</MButton>
                             </div>
                         }
                     </div>
@@ -1015,7 +1036,7 @@
             </MStepperItems>
         </MStepper>
     </div>
-</SheetDialog>
+</SSheetDialog>
 
 <RelationModal @ref="_relation" AppDetail="_appDetail" OnSubmitAfter="()=>GetConfigObjectsAsync(EnvironmentClusterId,ConfigObjectType)">
 </RelationModal>

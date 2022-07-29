@@ -21,10 +21,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public int ProjectId { get; set; }
 
         [Parameter]
-        public string Style { get; set; } = "height: calc(100vh - 180px);";
+        public string Style { get; set; } = "height: calc(100vh - 192px);";
 
         [Parameter]
-        public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 292px);";
+        public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 304px);";
 
         [Inject]
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
@@ -43,6 +43,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         [Inject]
         public ClusterCaller ClusterCaller { get; set; } = default!;
+
+        [Inject]
+        public IUserContext UserContext { get; set; } = default!;
 
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();
@@ -146,8 +149,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (firstRender)
             {
                 _releaseTabText = T("All configuration");
-                _tabText = T("Table");
                 await InitDataAsync();
+                _configObjects.ForEach(config =>
+                {
+                    if (config.FormatLabelCode.ToLower() == "properties")
+                        config.ElevationTabPropertyContent.TabText = T("Table");
+                });
             }
         }
 
@@ -163,15 +170,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     //初始化公共配置
                     var publicConfigs = await ConfigObjectCaller.GetPublicConfigAsync();
                     var publicConfig = publicConfigs.FirstOrDefault();
-                    if (publicConfig == null)
+                    publicConfig ??= await ConfigObjectCaller.AddPublicConfigAsync(new AddObjectConfigDto
                     {
-                        publicConfig = await ConfigObjectCaller.AddPublicConfigAsync(new AddObjectConfigDto
-                        {
-                            Name = "Public",
-                            Identity = $"public-$Config",
-                            Description = "Public config"
-                        });
-                    }
+                        Name = "Public",
+                        Identity = $"public-$Config",
+                        Description = "Public config"
+                    });
                     _appDetail = publicConfig.Adapt<AppDetailModel>();
                     _appDetail.EnvironmentClusters = _allEnvClusters;
                     EnvironmentClusterId = _allEnvClusters.First().Id;
@@ -302,6 +306,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                                 .Union(appPublished)
                                 .Union(appNotPublished)
                                 .ToList();
+
+                                ConvertPropertyAsync(config.ConfigObjectPropertyContents, config);
                             }
                             else
                             {
@@ -336,7 +342,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                                 Key = addedContent.Key,
                                 Value = addedContent.Value,
                                 Description = addedContent.Description,
-                                Modifier = addedContent.Description,
+                                Modifier = addedContent.Modifier,
                                 ModificationTime = addedContent.ModificationTime,
                                 IsAdded = true
                             }).ToList();
@@ -368,12 +374,28 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                             TempValue = tempContents.First(content => content.Key == editedContent.Key).Value
                         }).ToList();
 
-                        config.ConfigObjectPropertyContents = published.Union(deleted).Union(added).Union(edited).ToList();
+                        config.ConfigObjectPropertyContents = published.Union(deleted).Union(added).Union(edited)
+                        .ToList();
+
+                        ConvertPropertyAsync(config.ConfigObjectPropertyContents, config);
                     }
                 }
             });
 
             StateHasChanged();
+        }
+
+        private void ConvertPropertyAsync(List<ConfigObjectPropertyModel> configObjectProperties, ConfigObjectModel config)
+        {
+            StringBuilder stringBuilder = new();
+            foreach (var property in configObjectProperties)
+            {
+                stringBuilder.AppendLine($"{property.Key} = {property.Value}");
+            }
+
+            config.ElevationTabPropertyContent.TabText = T("Table");
+            config.ElevationTabPropertyContent.Content = stringBuilder.ToString();
+            config.ElevationTabPropertyContent.FormatLabelCode = "Properties";
         }
 
         private async Task SearchConfigObjectAsync(KeyboardEventArgs args)
@@ -386,9 +408,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task TextConvertPropertyAsync(int configObjectId)
         {
-            if (!string.IsNullOrWhiteSpace(_selectEditorContent.Content))
+            var configObject = _configObjects.FirstOrDefault(c => c.Id == configObjectId) ?? new();
+            var selectEditorContent = configObject.ElevationTabPropertyContent;
+
+            if (!string.IsNullOrWhiteSpace(selectEditorContent.Content))
             {
-                string[] lineDatas = _selectEditorContent.Content.Trim().Split("\n");
+                string[] lineDatas = selectEditorContent.Content.Trim().Split("\n");
                 var errorData = lineDatas.FirstOrDefault(l => !l.Contains('='));
                 if (errorData != null)
                 {
@@ -447,25 +472,25 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                     await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                     await PopupService.ToastSuccessAsync("修改成功，若要生效请发布");
-                    HandleTabIndexChanged(T("Table"), editorPropertyContents);
-                    _selectEditorContent.Disabled = false;
+                    HandleTabIndexChanged(T("Table"), _configObjects.First(c => c.Id == configObjectId));
+                    selectEditorContent.Disabled = false;
                 }
             }
         }
 
-        private void HandleTabIndexChanged(string tabText, List<ConfigObjectPropertyModel> configObjectProperties)
+        private void HandleTabIndexChanged(string tabText, ConfigObjectModel configObject)
         {
-            _tabText = tabText;
+            configObject.ElevationTabPropertyContent.TabText = tabText;
             if (tabText == T("Text"))
             {
-                _selectConfigObjectAllProperties = configObjectProperties;
+                _selectConfigObjectAllProperties = configObject.ConfigObjectPropertyContents;
                 StringBuilder stringBuilder = new();
-                foreach (var property in configObjectProperties)
+                foreach (var property in _selectConfigObjectAllProperties)
                 {
                     stringBuilder.AppendLine($"{property.Key} = {property.Value}");
                 }
-                _selectEditorContent.Content = stringBuilder.ToString();
-                _selectEditorContent.FormatLabelCode = "Properties";
+                configObject.ElevationTabPropertyContent.Content = stringBuilder.ToString();
+                configObject.ElevationTabPropertyContent.FormatLabelCode = "Properties";
             }
         }
 
@@ -559,6 +584,19 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
                 }
             }
+            else
+            {
+                var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
+                configObjects.ForEach(config =>
+                {
+                    config.IsEditing = false;
+                });
+
+                if (!_selectPanels.Any(id => id == configObject.Id))
+                {
+                    _selectPanels.Add(configObject.Id);
+                }
+            }
         }
 
         private async Task DeleteConfigObjectPropertyContentAsync(ConfigObjectPropertyModel model, int configObjectId)
@@ -582,6 +620,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private void ShowPropertyModal(ConfigObjectModel configObject, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
         {
             _selectConfigObject = configObject;
+            _propertyConfigModal.Data.Modifier = UserContext.UserName ?? "";
+            _propertyConfigModal.Data.ModificationTime = DateTime.Now;
             if (models != null)
             {
                 //add
@@ -597,7 +637,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Value = model.Value,
                     Description = model.Description,
                     Modifier = model.Modifier,
-                    ModificationTime = model.ModificationTime
+                    ModificationTime = _propertyConfigModal.Data.ModificationTime,
                 };
                 _propertyConfigModal.Show(dto, configObject.Id);
             }
@@ -637,6 +677,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
                     {
                         await PopupService.ToastErrorAsync($"key：{_propertyConfigModal.Data.Key} 已存在");
+                        return;
                     }
                     else
                     {
@@ -666,8 +707,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             });
         }
 
-        private void ShowReleaseModalAsync(ConfigObjectModel model)
+        private async Task ShowReleaseModalAsync(ConfigObjectModel model)
         {
+            if (model.Content == model.TempContent)
+            {
+                await PopupService.ToastErrorAsync("配置对象内容没有变化");
+                return;
+            }
+
             _selectConfigObject = model;
             if (model.ConfigObjectPropertyContents.Any())
             {
@@ -774,14 +821,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else
             {
-                OnTimelineItemClick(_configObjectReleases.First(), false);
+                await OnTimelineItemClickAsync(_configObjectReleases.First(), false);
                 _showReleaseHistory = true;
             }
         }
 
-        private void OnTimelineItemClick(ConfigObjectReleaseModel configObjectRelease, bool enableTabIndexChanged = true)
+        private async Task OnTimelineItemClickAsync(ConfigObjectReleaseModel configObjectRelease, bool enableTabIndexChanged = true)
         {
             _selectReleaseHistory = configObjectRelease;
+
+            var creatorInfo = await GetUserAsync(_selectReleaseHistory.Creator);
+            _selectReleaseHistory.CreatorName = creatorInfo.Name;
+
             int index = _configObjectReleases.IndexOf(configObjectRelease);
             _prevReleaseHistory = _configObjectReleases.Skip(index + 1).FirstOrDefault() ?? new();
             configObjectRelease.IsActive = true;

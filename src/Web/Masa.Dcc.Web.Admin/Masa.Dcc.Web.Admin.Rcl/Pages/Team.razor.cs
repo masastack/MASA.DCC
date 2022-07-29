@@ -6,7 +6,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
     public partial class Team
     {
         [Parameter]
-        public string TeamId { get; set; }
+        public string TeamId { get; set; } = default!;
 
         [Inject]
         public IPopupService PopupService { get; set; } = default!;
@@ -46,7 +46,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
-            if (firstRender)
+            if (!string.IsNullOrEmpty(TeamId) && Guid.Parse(TeamId) != _userTeam.Id)
             {
                 _userTeam = await AuthClient.TeamService.GetDetailAsync(Guid.Parse(TeamId)) ?? new();
                 await InitDataAsync();

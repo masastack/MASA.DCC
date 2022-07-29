@@ -1,15 +1,17 @@
-﻿<DefaultModal Width="684" Title="回滚" Value="Value" ValueChanged="ValueChanged" HideCancelAction OnSave="HandOnClickAsync">
+﻿@inherits MasaComponentBase
+
+<SModal Width="684" Title="回滚" Value="Value" ValueChanged="ValueChanged" HideCancelAction OnSave="HandOnClickAsync">
     <ChildContent>
         <MAlert Dense
                 Type="AlertTypes.Warning">
-            此操作将会回滚到上个发布版本，且当前版本作废，但不影响正在修改的配置。
+            @T("This operation will be rolled back to the previous release version, and the current version will be invalidated, but it will not affect the configuration being modified")
         </MAlert>
         <MTimeline Style="position:relative; left:-228px;">
             <MTimelineItem Color="primary" Small Right>
                 <OppositeContent>
                     <div>
                         <div style="font-size:14px; font-weight: 500; color: #1B2559;">@CurrentConfigObjectRelease.CreationTime.ToString("MM.dd").TrimStart('0')</div>
-                        <div style="font-size:10px; font-weight: 400; color: #A3AED0;">当前</div>
+                        <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
                     </div>
                 </OppositeContent>
                 <ChildContent>
@@ -21,7 +23,7 @@
             </MTimelineItem>
             <MTimelineItem Color="primary" Small Right>
                 <OppositeContent>
-                    <div style="font-size:14px; font-weight: 500; color: #1B2559;">回滚至</div>
+                    <div style="font-size:14px; font-weight: 500; color: #1B2559;">@T("Rollback to")</div>
                 </OppositeContent>
                 <ChildContent>
                      <div>
@@ -76,8 +78,8 @@
         }
     </ChildContent>
     <SaveContent Context="save">
-        <MButton OnClick="save.Click" Width="100" Class="rounded-pill" Color="primary" Style="float:right;">回滚</MButton>
+        <MButton Height="40" OnClick="save.Click" Width="100" Class="rounded-pill" Color="primary" Style="float:right;">@T("Rollback")</MButton>
     </SaveContent>
-</DefaultModal>
+</SModal>
 
 

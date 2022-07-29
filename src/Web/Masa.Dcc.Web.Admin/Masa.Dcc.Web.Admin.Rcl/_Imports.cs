@@ -11,6 +11,7 @@ global using Masa.Blazor;
 global using Masa.BuildingBlocks.BasicAbility.Auth;
 global using Masa.BuildingBlocks.BasicAbility.Auth.Contracts.Model;
 global using Masa.BuildingBlocks.BasicAbility.Pm.Model;
+global using Masa.BuildingBlocks.Identity.IdentityModel;
 global using Masa.Dcc.ApiGateways.Caller;
 global using Masa.Dcc.Caller;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;

@@ -55,34 +55,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<ConfigObjectModel> _configObjects = new();
         private List<StringNumber> _selectPanels = new();
         private string _configObjectName = "";
-        private readonly EditorContentModel _selectEditorContent = new();
         private List<ConfigObjectPropertyModel> _selectConfigObjectAllProperties = new();
-        private string _tabText = "";
         private readonly DataModal<ConfigObjectPropertyContentDto, int> _propertyConfigModal = new();
-        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _headers = new()
-        {
-            new() { Text = "状态", Value = nameof(ConfigObjectPropertyModel.IsPublished) },
-            new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
-            new() { Text = "Value", Value = nameof(ConfigObjectPropertyModel.Value) },
-            new() { Text = "描述", Value = nameof(ConfigObjectPropertyModel.Description) },
-            new() { Text = "修改人", Value = nameof(ConfigObjectPropertyModel.Modifier) },
-            new() { Text = "修改时间", Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
-            new() { Text = "操作", Sortable = false, }
-        };
         private List<StringNumber> _selectEnvClusterIds = new();
         private ProjectDetailModel _projectDetail = new();
         private List<EnvironmentClusterModel> _allEnvClusters = new();
         private readonly DataModal<AddConfigObjectReleaseDto> _configObjectReleaseModal = new();
         private ConfigObjectModel _selectConfigObject = new();
-        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _releaseHeaders = new()
-        {
-            new() { Text = "状态", Value = nameof(ConfigObjectPropertyModel.IsPublished) },
-            new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
-            new() { Text = "发布的值", Value = nameof(ConfigObjectPropertyModel.TempValue) },
-            new() { Text = "未发布的值", Value = nameof(ConfigObjectPropertyModel.Value) },
-            new() { Text = "修改人", Value = nameof(ConfigObjectPropertyModel.Modifier) },
-            new() { Text = "修改时间", Value = nameof(ConfigObjectPropertyModel.ModificationTime) }
-        };
         private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
         private List<ConfigObjectReleaseModel> _configObjectReleases = new();
         private bool _showRollbackModal;
@@ -96,14 +75,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
             new() { Text = "Value", Value = nameof(ConfigObjectPropertyModel.Value) }
         };
-        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _changedConfigheaders = new()
-        {
-            new() { Text = "状态", Value = nameof(ConfigObjectPropertyModel.IsPublished) },
-            new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
-            new() { Text = "新的值", Value = nameof(ConfigObjectPropertyModel.Value) },
-            new() { Text = "变更的值", Value = nameof(ConfigObjectPropertyModel.TempValue) }
-        };
         private Action? _handleRollbackOnClickAfter = null;
+        private string? _cultureName;
+        private bool languageChanged;
 
         #region clone
         private bool _showCloneModal;
@@ -144,18 +118,88 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private RelationModal? _relation;
         private AddConfigObjectModal? _addConfigObjectModal;
 
+        private List<DataTableHeader<ConfigObjectPropertyModel>> Headers
+        {
+            get
+            {
+                var headers = new List<DataTableHeader<ConfigObjectPropertyModel>>()
+                {
+                    new() { Text = T("State"), Value = "State" },
+                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
+                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value) },
+                    new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
+                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier) },
+                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
+                    new() { Text = T("Operation"), Value="Operation", Sortable = false, }
+                };
+
+                return headers;
+            }
+        }
+
+        private List<DataTableHeader<ConfigObjectPropertyModel>> ChangedConfigheaders
+        {
+            get
+            {
+                List<DataTableHeader<ConfigObjectPropertyModel>> headers = new List<DataTableHeader<ConfigObjectPropertyModel>>
+                {
+                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished) },
+                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
+                    new() { Text = T("New value"), Value = nameof(ConfigObjectPropertyModel.Value) },
+                    new() { Text = T("Old value"), Value = nameof(ConfigObjectPropertyModel.TempValue) }
+                };
+
+                return headers;
+            }
+        }
+
+        private List<DataTableHeader<ConfigObjectPropertyModel>> ReleaseHeaders
+        {
+            get
+            {
+                return new List<DataTableHeader<ConfigObjectPropertyModel>>()
+                {
+                    new() { Text = T("State"), Value = "State" },
+                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
+                    new() { Text = T("Published values"), Value = nameof(ConfigObjectPropertyModel.TempValue) },
+                    new() { Text = T("Unpublished value"), Value = nameof(ConfigObjectPropertyModel.Value) },
+                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier) },
+                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime) }
+                };
+            }
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
                 _releaseTabText = T("All configuration");
                 await InitDataAsync();
-                _configObjects.ForEach(config =>
-                {
-                    if (config.FormatLabelCode.ToLower() == "properties")
-                        config.ElevationTabPropertyContent.TabText = T("Table");
-                });
             }
+        }
+
+        public override Task SetParametersAsync(ParameterView parameters)
+        {
+            I18n? i18n;
+            bool tryGetI18n = parameters.TryGetValue("I18n", out i18n);
+            if (tryGetI18n)
+            {
+                if (i18n?.Culture.Name != _cultureName)
+                {
+                    _cultureName = i18n?.Culture.Name;
+                    _configObjects.ForEach(config =>
+                    {
+                        if (config.FormatLabelCode.ToLower() == "properties")
+                            config.ElevationTabPropertyContent.TabText = T("Table");
+                    });
+                }
+            }
+            return base.SetParametersAsync(parameters);
+        }
+
+        protected override void OnParametersSet()
+        {
+            base.OnParametersSet();
         }
 
         public async Task InitDataAsync()
@@ -761,13 +805,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
 
-            if (_releaseHistory.ConfigObjectReleases.Count <= 1)
+            _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).ToList();
+
+            if (_releaseHistory.ConfigObjectReleases.Count <= 1
+                || _releaseHistory.ConfigObjectReleases.First().Version == _releaseHistory.ConfigObjectReleases.Last().Version)
             {
                 await PopupService.ToastErrorAsync("没有可以回滚的发布历史");
                 return;
             }
-
-            _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).Take(2).ToList();
 
             if (configObject.FormatLabelCode.ToLower() == "properties")
             {
@@ -778,11 +823,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
                 else
                 {
+                    var fromRollback = _releaseHistory.ConfigObjectReleases
+                        .First(c => c.Version == latestConfigObjectRelease.Version && c.Id != latestConfigObjectRelease.Id);
                     _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
-                        .Where(release => release.Id <= latestConfigObjectRelease.ToReleaseId)
+                        .Where(release => release.Id <= fromRollback.Id)
                         .ToList();
                 }
             }
+
+            _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.Take(2).ToList();
 
             _showRollbackModal = true;
         }

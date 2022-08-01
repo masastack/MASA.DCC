@@ -124,7 +124,7 @@
                                             }
                                             @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
                                             {
-                                                <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
                                                     @T("Modified")
                                                 </div>
                                             }
@@ -234,7 +234,7 @@
                                             }
                                             @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
                                             {
-                                                <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
                                                     @T("Modified")
                                                 </div>
                                             }
@@ -306,7 +306,7 @@
                                     @if (configObject.RelationConfigObjectId != 0)
                                     {
                                         <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
-                                            <MDataTable Headers="_headers"
+                                            <MDataTable Headers="Headers"
                                             SortDesc="true"
                                             SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                             TItem="ConfigObjectPropertyModel"
@@ -317,9 +317,9 @@
                                                     <span class="text-caption">@header.Text</span>
                                                 </HeaderColContent>
                                                 <ItemColContent>
-                                                    @switch (@context.Header.Text)
+                                                    @switch (context.Header.Value)
                                                     {
-                                                        case "状态":
+                                                        case "State":
                                                             string icon = context.Item.IsRelationed ? "mdi-link-variant" : "mdi-link-variant-off";
                                                             string color = "";
                                                             string text = "";
@@ -336,10 +336,10 @@
                                                             <MIcon Style="margin-bottom:2px;" Size="20" Color="@color">@icon</MIcon>
                                                             <span style="color: @color;">@text</span>
                                                             break;
-                                                        case "操作":
-                                                            <MIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-link-variant-off</MIcon>
+                                                        case "Operation":
+                                                            <SIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-link-variant-off</SIcon>
                                                             break;
-                                                        case "修改时间":
+                                                        case nameof(ConfigObjectPropertyModel.ModificationTime):
                                                             <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
                                                             break;
                                                         default:
@@ -352,16 +352,16 @@
                                     }
                                     else
                                     {
-                                        <SElevationTab Tab="@configObject.ElevationTabPropertyContent.TabText"
+                                        <SElevationTab Tab="@T(configObject.ElevationTabPropertyContent.TabText)"
                                            Left
-                                           TabChanged="tabText=>HandleTabIndexChanged(tabText, configObject)"
+                                           TabChanged="tabText=>HandleTabIndexChanged(T(tabText), configObject)"
                                            TabMinWidth="70"
                                            ItemsClass="rounded-5"
                                            Dense
                                            Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                             <SElevationTabItem>
                                                 <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
-                                                    <MDataTable Headers="_headers"
+                                                    <MDataTable Headers="Headers"
                                                     SortDesc="true"
                                                     SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                                     TItem="ConfigObjectPropertyModel"
@@ -372,9 +372,9 @@
                                                             <span class="text-caption">@header.Text</span>
                                                         </HeaderColContent>
                                                         <ItemColContent>
-                                                            @switch (@context.Header.Text)
+                                                            @switch (@context.Header.Value)
                                                             {
-                                                                case "状态":
+                                                                case "State":
                                                                     if (context.Item.IsPublished)
                                                                     {
                                                                         <MIcon Style="margin-bottom:2px;" Size="16 " Color="#05CD99">mdi-send</MIcon>
@@ -397,14 +397,14 @@
                                                                         <span>@T("UnReleased")</span>
                                                                     }
                                                                     break;
-                                                                case "操作":
+                                                                case "Operation":
                                                                     @if (!context.Item.IsDeleted)
                                                                     {
                                                                         <MIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-pencil</MIcon>
                                                                         <MIcon Class="hover-pointer" Style="color: #FF5252 !important;" Size="20" OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">mdi-delete</MIcon>
                                                                     }
                                                                     break;
-                                                                case "修改时间":
+                                                                case nameof(ConfigObjectPropertyModel.ModificationTime):
                                                                     <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
                                                                     break;
                                                                 default:
@@ -448,7 +448,7 @@
                                             }
                                             @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
                                             {
-                                                <div class="mr-2" style="height: 26px;width: 48px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
                                                     @T("Modified")
                                                 </div>
                                             }
@@ -593,7 +593,7 @@
                 @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
                     <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
-                        <MDataTable Headers="_releaseHeaders"
+                        <MDataTable Headers="ReleaseHeaders"
                                 DisableSort
                                 TItem="ConfigObjectPropertyModel"
                                 Items="@_selectConfigObjectAllProperties"
@@ -606,9 +606,9 @@
                                 }
                             </HeaderColContent>
                             <ItemColContent>
-                                @switch (@context.Header.Text)
+                                @switch (@context.Header.Value)
                                 {
-                                    case "状态":
+                                    case "State":
                                         if (context.Item.IsAdded)
                                         {
                                             <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus-circle</MIcon>
@@ -622,7 +622,7 @@
                                             <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-delete</MIcon>
                                         }
                                         break;
-                                    case "发布的值":
+                                    case nameof(ConfigObjectPropertyModel.TempValue):
                                         if (context.Item.IsDeleted)
                                         {
                                             <span>@context.Item.Value</span>
@@ -632,13 +632,13 @@
                                             <span>@context.Item.TempValue</span>
                                         }
                                         break;
-                                    case "未发布的值":
+                                    case nameof(ConfigObjectPropertyModel.Value):
                                         if (!context.Item.IsDeleted)
                                         {
                                             <span>@context.Item.Value</span>
                                         }
                                         break;
-                                    case "修改时间":
+                                    case nameof(ConfigObjectPropertyModel.ModificationTime):
                                         <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
                                         break;
                                     default:
@@ -687,30 +687,30 @@
                         {
                             int index = _index;
                             _index++;
-                            <MTimelineItem HideDot="!release.IsActive" Color="primary" Small Right @onclick="()=>OnTimelineItemClickAsync(release)">
-                                <OppositeContent>
-                                    <div>
-                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                            @release.CreationTime.ToString("MM-dd").TrimStart('0')
-                                        </div>
-                                        @if (index == 0)
+                                <MTimelineItem HideDot="!release.IsActive" Color="primary" Small Right @onclick="()=>OnTimelineItemClickAsync(release)">
+                                    <OppositeContent>
+                                        <div>
+                                            <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                                @release.CreationTime.ToString("MM-dd").TrimStart('0')
+                                            </div>
+                                            @if (index == 0)
                                         {
-                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
+                                                <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
                                         }
                                         else if (release.IsInvalid)
                                         {
-                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
+                                                <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
                                         }
-                                    </div>
-                                </OppositeContent>
-                                <ChildContent>
-                                    <div>
-                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                            @release.Name
                                         </div>
-                                    </div>
-                                </ChildContent>
-                            </MTimelineItem>
+                                    </OppositeContent>
+                                    <ChildContent>
+                                        <div>
+                                            <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                                @release.Name
+                                            </div>
+                                        </div>
+                                    </ChildContent>
+                                </MTimelineItem>
                         }
                     }
                 </MTimeline>
@@ -728,7 +728,12 @@
                     <span style="color: #323D6F; font-size:12px;">@_selectReleaseHistory.CreatorName</span>
                 </div>
                 <div class="mt-6">
-                    <span style="color: #323D6F; font-size: 14px;">@T("Description")：</span>
+                    @if (!string.IsNullOrWhiteSpace(_selectReleaseHistory.Comment))
+                    {
+                        <span style="color: #323D6F; font-size: 14px;">
+                            @T("Description")：
+                        </span>
+                    }
                     <span style="color: #7681AB; font-size: 14px;">@_selectReleaseHistory.Comment</span>
                 </div>
                 @if (_releaseHistory.FormatLabelCode.Trim().ToLower() == "properties")
@@ -756,7 +761,7 @@
                         </SElevationTabItem>
                         <SElevationTabItem>
                             <div style="border:1px solid #E2E7F4;" class="py-1 mt-4 rounded-2">
-                                <MDataTable Headers="_changedConfigheaders"
+                                <MDataTable Headers="ChangedConfigheaders"
                                         DisableSort
                                         TItem="ConfigObjectPropertyModel"
                                         Items="@_changedProperties"
@@ -766,9 +771,9 @@
                                         <span class="text-caption">@header.Text</span>
                                     </HeaderColContent>
                                     <ItemColContent>
-                                        @switch (@context.Header.Text)
+                                        @switch (@context.Header.Value)
                                         {
-                                            case "状态":
+                                            case "State":
                                                 if (context.Item.IsAdded)
                                                 {
                                                     <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>

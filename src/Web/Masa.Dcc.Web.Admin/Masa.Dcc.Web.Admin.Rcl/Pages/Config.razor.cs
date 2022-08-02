@@ -69,7 +69,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private ConfigObjectReleaseModel _selectReleaseHistory = new();
         private ConfigObjectReleaseModel _prevReleaseHistory = new();
         private List<ConfigObjectPropertyModel> _changedProperties = new();
-        private string _releaseTabText = "";
+        private string _releaseTabText = "All configuration";
         private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _allConfigheaders = new()
         {
             new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
@@ -77,7 +77,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         };
         private Action? _handleRollbackOnClickAfter = null;
         private string? _cultureName;
-        private bool languageChanged;
 
         #region clone
         private bool _showCloneModal;
@@ -173,15 +172,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (firstRender)
             {
-                _releaseTabText = T("All configuration");
                 await InitDataAsync();
             }
         }
 
         public override Task SetParametersAsync(ParameterView parameters)
         {
-            I18n? i18n;
-            bool tryGetI18n = parameters.TryGetValue("I18n", out i18n);
+            bool tryGetI18n = parameters.TryGetValue("I18n", out I18n? i18n);
             if (tryGetI18n)
             {
                 if (i18n?.Culture.Name != _cultureName)
@@ -190,7 +187,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     _configObjects.ForEach(config =>
                     {
                         if (config.FormatLabelCode.ToLower() == "properties")
+                        {
+                            _releaseTabText = T("All configuration");
                             config.ElevationTabPropertyContent.TabText = T("Table");
+                        }
                     });
                 }
             }
@@ -814,21 +814,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 return;
             }
 
-            if (configObject.FormatLabelCode.ToLower() == "properties")
+            var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.First();
+            if (latestConfigObjectRelease.FromReleaseId == 0)
             {
-                var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.First();
-                if (latestConfigObjectRelease.FromReleaseId == 0)
-                {
-                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.ToList();
-                }
-                else
-                {
-                    var fromRollback = _releaseHistory.ConfigObjectReleases
-                        .First(c => c.Version == latestConfigObjectRelease.Version && c.Id != latestConfigObjectRelease.Id);
-                    _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
-                        .Where(release => release.Id <= fromRollback.Id)
-                        .ToList();
-                }
+                _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.ToList();
+            }
+            else
+            {
+                var fromRollback = _releaseHistory.ConfigObjectReleases
+                    .First(c => c.Version == latestConfigObjectRelease.Version && c.Id != latestConfigObjectRelease.Id);
+                _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases
+                    .Where(release => release.Id <= fromRollback.Id)
+                    .ToList();
             }
 
             _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.Take(2).ToList();

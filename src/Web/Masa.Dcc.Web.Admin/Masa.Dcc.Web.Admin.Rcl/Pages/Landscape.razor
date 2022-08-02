@@ -38,16 +38,24 @@
                                             Color="#A3AED0">
                                 @foreach (var env in _environments)
                                 {
-                                    <MListItem Style="height: 40px !important; min-height: 40px !important;" Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
-                                        <ItemContent>
-                                            <MListItemIcon Class="d-flex align-center pt-1 mr-0">
-                                                <MIcon Color="@env.Color" Size="12">mdi-circle</MIcon>
-                                            </MListItemIcon>
-                                            <MListItemContent>
-                                                <MListItemTitle>@env.Name</MListItemTitle>
-                                            </MListItemContent>
-                                        </ItemContent>
-                                    </MListItem>
+                                    <MTooltip Left>
+                                        <ActivatorContent>
+                                            <MListItem @attributes="@context.Attrs" Context="_" Style="height: 40px !important; min-height: 40px !important;" Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
+                                                <ItemContent>
+                                                    <MListItemIcon Class="d-flex align-center pt-1 mr-0">
+                                                        <MIcon Color="@env.Color" Size="12">mdi-circle</MIcon>
+                                                    </MListItemIcon>
+                                                    <MListItemContent>
+                                                        <MListItemTitle>@env.Name</MListItemTitle>
+                                                    </MListItemContent>
+                                                </ItemContent>
+                                            </MListItem>
+                                        </ActivatorContent>
+                                        <ChildContent>
+                                            <span>@env.Name</span>
+                                        </ChildContent>
+                                    </MTooltip>
+
                                 }
                             </MListItemGroup>
                         </MList>

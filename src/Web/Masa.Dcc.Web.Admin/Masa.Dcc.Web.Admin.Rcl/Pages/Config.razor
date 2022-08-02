@@ -122,11 +122,15 @@
                                             {
                                                 <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
                                             }
-                                            @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
-                                            {
-                                                <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                    @T("Modified")
-                                                </div>
+                                            @{
+                                                string content = configObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
+                                                string tempContent = configObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
+                                                if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && content != tempContent)
+                                                {
+                                                    <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                        @T("Modified")
+                                                    </div>
+                                                }
                                             }
                                             <span>@configObject.Name</span>
                                             <span class="ml-3 text-caption">|</span>
@@ -142,14 +146,14 @@
                                                     <MIcon Color="success">mdi-check</MIcon>
                                                 }
                                             </MButton>
-                                            @if (ConfigObjectType == ConfigObjectType.App)
+                                            @if (ConfigObjectType == ConfigObjectType.App && configObject.FromRelation == false)
                                             {
-                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                                <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
                                             }
-                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                            <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
                                             <MMenu OffsetY>
                                                 <ActivatorContent>
-                                                    <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                    <MButton Disabled="configObject.IsEditing" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
                                                         <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
@@ -246,7 +250,7 @@
                                             {
                                                 <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
                                             }
-                                            @if (ConfigObjectType == ConfigObjectType.App)
+                                            @if (ConfigObjectType == ConfigObjectType.App && configObject.FromRelation == false)
                                             {
                                                 <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
                                             }
@@ -354,7 +358,7 @@
                                     {
                                         <SElevationTab Tab="@T(configObject.ElevationTabPropertyContent.TabText)"
                                            Left
-                                           TabChanged="tabText=>HandleTabIndexChanged(T(tabText), configObject)"
+                                           TabChanged="tabText=>HandleTabIndexChanged(tabText, configObject)"
                                            TabMinWidth="70"
                                            ItemsClass="rounded-5"
                                            Dense
@@ -446,11 +450,15 @@
                                             {
                                                 <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
                                             }
-                                            @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
-                                            {
-                                                <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                    @T("Modified")
-                                                </div>
+                                            @{
+                                                string content = configObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
+                                                string tempContent = configObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
+                                                if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing && content != tempContent)
+                                                {
+                                                    <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                        @T("Modified")
+                                                    </div>
+                                                }
                                             }
                                             <span>@configObject.Name</span>
                                             <span class="ml-3 text-caption">|</span>
@@ -466,14 +474,14 @@
                                                     <MIcon Color="success">mdi-check</MIcon>
                                                 }
                                             </MButton>
-                                            @if (ConfigObjectType == ConfigObjectType.App)
+                                            @if (ConfigObjectType == ConfigObjectType.App && configObject.FromRelation == false)
                                             {
-                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                                <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
                                             }
-                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                            <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
                                             <MMenu OffsetY>
                                                 <ActivatorContent>
-                                                    <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                    <MButton Disabled="configObject.IsEditing" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
                                                         <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
@@ -687,30 +695,30 @@
                         {
                             int index = _index;
                             _index++;
-                                <MTimelineItem HideDot="!release.IsActive" Color="primary" Small Right @onclick="()=>OnTimelineItemClickAsync(release)">
-                                    <OppositeContent>
-                                        <div>
-                                            <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                                @release.CreationTime.ToString("MM-dd").TrimStart('0')
-                                            </div>
-                                            @if (index == 0)
+                            <MTimelineItem HideDot="!release.IsActive" Color="primary" Small Right @onclick="()=>OnTimelineItemClickAsync(release)">
+                                <OppositeContent>
+                                    <div>
+                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                            @release.CreationTime.ToString("MM-dd").TrimStart('0')
+                                        </div>
+                                        @if (index == 0)
                                         {
-                                                <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
+                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
                                         }
                                         else if (release.IsInvalid)
                                         {
-                                                <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
+                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
                                         }
+                                    </div>
+                                </OppositeContent>
+                                <ChildContent>
+                                    <div>
+                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                            @release.Name
                                         </div>
-                                    </OppositeContent>
-                                    <ChildContent>
-                                        <div>
-                                            <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                                @release.Name
-                                            </div>
-                                        </div>
-                                    </ChildContent>
-                                </MTimelineItem>
+                                    </div>
+                                </ChildContent>
+                            </MTimelineItem>
                         }
                     }
                 </MTimeline>
@@ -740,10 +748,11 @@
                 {
                     <SElevationTab Class="mt-12"
                                Left
-                               Tab="@_releaseTabText"
+                               Tab="@T(_releaseTabText)"
                                TabChanged="tabText => ReleaseHistoryTabIndexChanged(tabText)"
                                ItemsClass="rounded-2"
                                Dense
+                               TabMinWidth="160"
                                Tabs="@(new List<string>{ @T("All configuration"), @T("Changed configuration")})">
                         <SElevationTabItem>
                             <div style="border:1px solid #E2E7F4;" class="py-1 mt-4 rounded-2">
@@ -926,7 +935,7 @@
                                    Label="@(_cloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
                                    Color="primary"></MCheckbox>
                         <MExpansionPanels Flat Accordion>
-                            @foreach (var configObject in _configObjects)
+                            @foreach (var configObject in _configObjects.Where(c => !c.FromRelation))
                             {
                                 var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                                 if (formatLabelCode == "properties")

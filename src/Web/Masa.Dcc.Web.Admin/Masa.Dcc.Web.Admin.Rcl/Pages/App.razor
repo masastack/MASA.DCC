@@ -38,7 +38,7 @@
             <MCard Class="mt-6" Height="163">
                 <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
                     <div class="text-h7 text-overflow">
-                        <MTextField Disabled="!_isEditBiz" Dense HideDetails="true" Outlined @bind-Value="@_bizDetail.Name"></MTextField>
+                        <MTextField Rules="_bizNameRules" Disabled="!_isEditBiz" Dense Outlined @bind-Value="@_bizDetail.Name"></MTextField>
                     </div>
                     <div class="mx-4" style="color:#E2E7F4">|</div>
                     <div class="text-h7 text-overflow">Biz</div>
@@ -54,10 +54,10 @@
                         }
                     </MButton>
                 </MCardTitle>
-                <MCardSubtitle Class="pb-0 pt-2">
+                <MCardSubtitle Class="pb-0">
                     <div class="text-caption text-overflow">@_bizDetail.Identity</div>
                 </MCardSubtitle>
-                <MCardActions Class="pb-2 d-flex align-end">
+                <MCardActions Class="pb-2 d-flex">
                     <div style="overflow:hidden; height:64px; margin:0 16px 0 0;">
                         @{
                             foreach (var item in _projectEnvClusters)

@@ -53,6 +53,8 @@ var app = builder.Services
     })
     .AddServices(builder);
 
+app.UseMasaExceptionHandler();
+
 //seed data
 await app.SeedDataAsync();
 

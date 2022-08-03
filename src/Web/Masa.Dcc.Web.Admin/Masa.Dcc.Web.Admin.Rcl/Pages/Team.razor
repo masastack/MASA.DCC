@@ -27,7 +27,7 @@
         </MTab>
     </MTabs>
 
-    <MTabsItems Value="_curTab" class="pt-6">
+    <MTabsItems Style="background-color: transparent !important;" Value="_curTab" class="pt-6">
         <MTabItem>
             <div class="d-flex">
                 <div class="pr-6" style="width: calc(100% - 300px); display:block;">
@@ -48,7 +48,7 @@
                                         <MExpansionPanelHeader>
                                             <ChildContent>
                                                 <span style="display:flex;align-items:center;margin-right:10px;">
-                                                    <div class="text-h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
+                                                    <div class="emphasis--text h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
                                                         @project.Name
                                                         <span class="ml-2 text-caption">|</span>
                                                         <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>

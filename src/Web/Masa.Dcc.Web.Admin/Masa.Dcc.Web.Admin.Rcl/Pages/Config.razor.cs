@@ -1114,7 +1114,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private void CloneConfigObjectAllCheckedChanged(bool value)
         {
-            _cloneConfigObjectAllChecked = value;
+            CloneConfigObjectAllChecked = value;
 
             if (value)
             {

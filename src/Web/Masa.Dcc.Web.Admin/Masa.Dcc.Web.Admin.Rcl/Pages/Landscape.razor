@@ -26,11 +26,11 @@
         </MTab>
     </MTabs>
 
-    <MTabsItems Value="_curTab" class="pt-6">
+    <MTabsItems Style="background-color: transparent !important;" Value="_curTab" class="pt-6">
         <MTabItem>
             <div class="d-flex">
                 <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 192px );">
-                    <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 206px );">
+                    <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 200px );">
                         <MList Width="194">
                             <MListItemGroup Class="rounded-2"
                                             @bind-Value="_selectedEnvId"
@@ -88,15 +88,15 @@
                                 @foreach (var project in _projects)
                                 {
                                     var apps = _apps.Where(app => app.ProjectId == project.Id && app.EnvironmentClusters.Select(envCluster => envCluster.Id).Contains(_selectEnvClusterId.AsT1)).ToList();
-                                    <MExpansionPanel Style="border-radius: 20px;">
+                                    <MExpansionPanel Class="rounded-5">
                                         <MExpansionPanelHeader>
                                             <ChildContent>
                                                 <span style="display:flex;align-items:center;margin-right:10px;">
-                                                    <div class="text-h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
+                                                    <div class="emphasis--text h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
                                                         @project.Name
-                                                        <span class="ml-2 text-caption">|</span>
-                                                        <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>
-                                                        <div class="text-caption d-flex" style="padding:0">
+                                                        <span class="ml-2 regular3--text btn">|</span>
+                                                        <sapn class="ml-1 regular3--text btn">@T("AppCount"):@apps.Count</sapn>
+                                                        <div class="regular3--text btn d-flex" style="padding:0">
                                                             @{
                                                                 string backgroundColor;
                                                                 switch (project.LabelCode.ToLower())

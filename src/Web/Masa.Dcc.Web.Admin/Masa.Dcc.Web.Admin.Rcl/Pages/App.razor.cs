@@ -101,8 +101,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             foreach (var ruleFunc in _bizNameRules)
             {
-                var b = ruleFunc.Invoke(_bizDetail.Name).Value;
-                if (b is string)
+                var value = ruleFunc.Invoke(_bizDetail.Name).Value;
+                if (value is string)
                 {
                     return;
                 }

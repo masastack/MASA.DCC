@@ -33,7 +33,7 @@
                 <div class="pr-6" style="width: calc(100% - 300px); display:block;">
                     <div class="rounded-5 pa-6" style="background:#fff;overflow: hidden;">
                         <div class="d-flex mb-6">
-                            <MTextField @bind-Value="_projectName" OnKeyDown="SearchProject" Class="rounded-2" Height="40" Flat Dense Solo BackgroundColor="fill-lighten-1" HideDetails="@("auto")" Placeholder="@T("Please enter the project name and press enter to query")">
+                            <MTextField @bind-Value="_projectName" OnKeyDown="SearchProject" Class="rounded-2" Height="40" Flat Dense Solo BackgroundColor="fill-background" HideDetails="@("auto")" Placeholder="@T("Please enter the project name and press enter to query")">
                                 <PrependInnerContent>
                                     <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                                 </PrependInnerContent>
@@ -50,9 +50,9 @@
                                                 <span style="display:flex;align-items:center;margin-right:10px;">
                                                     <div class="emphasis--text h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
                                                         @project.Name
-                                                        <span class="ml-2 text-caption">|</span>
-                                                        <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>
-                                                        <div class="text-caption d-flex" style="padding:0">
+                                                        <span class="ml-2 regular3--text btn">|</span>
+                                                        <sapn class="ml-1 regular3--text btn">@T("AppCount"):@apps.Count</sapn>
+                                                        <div class="regular3--text btn d-flex" style="padding:0">
                                                             @{
                                                                 string backgroundColor;
                                                                 switch (project.LabelCode.ToLower())

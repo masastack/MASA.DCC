@@ -18,9 +18,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Comment("Rollback From Release Id")]
         public int FromReleaseId { get; set; }
 
-        [Comment("Rollback To Release Id")]
-        public int ToReleaseId { get; set; }
-
         [Comment("If it is rolled back, it will be true")]
         public bool IsInvalid { get; set; }
 
@@ -47,7 +44,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Column(TypeName = "ntext")]
         public string Content { get; set; }
 
-        public ConfigObjectRelease(int configObjectId, string name, string comment, string content, string? version, int fromReleaseId = 0, int toReleaseId = 0, ReleaseType type = ReleaseType.MainRelease)
+        public ConfigObjectRelease(int configObjectId, string name, string comment, string content, string? version = null, int fromReleaseId = 0, ReleaseType type = ReleaseType.MainRelease)
         {
             ConfigObjectId = configObjectId;
             Name = name;
@@ -55,7 +52,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             Content = content;
             Version = version ?? DateTime.Now.ToString("yyyyMMddHHmmss");
             FromReleaseId = fromReleaseId;
-            ToReleaseId = toReleaseId;
             Type = type;
         }
 

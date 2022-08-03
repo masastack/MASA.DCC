@@ -1,6 +1,6 @@
 ﻿<MCard Outlined Flat Color="@Color" Style="padding:6px 6px 6px 0;">
-    <div style="width: 100%; min-height: 312px; height: 314px; overflow-y: auto; ">
-        <div style="display: flex; padding: 2px">
+    <div style="width: 100%; min-height: 312px; height: 312px; overflow-y: auto; ">
+        <div style="display: flex;height:@((_lineCount+1)*24)px">
             <div style="width:50px;text-align:center;color:rgb(46,117,182);">
                 @for (int i = 0; i < _lineCount; i++)
                 {
@@ -10,7 +10,7 @@
                     </div>
                 }
             </div>
-            <textarea style="outline:none; resize:none; width:100%; height: 310px;" autofocus
+            <textarea style="outline:none;resize:none;width:100%;" autofocus
                       disabled="@Disabled"
                       @oninput="OnInput" @ref="Ref" value="@Value" @onchange="HandleOnChange">
             </textarea>

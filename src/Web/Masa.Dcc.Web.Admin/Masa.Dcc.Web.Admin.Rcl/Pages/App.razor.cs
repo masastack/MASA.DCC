@@ -43,6 +43,27 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _bizConfigName = "";
         private string _appName = "";
         private List<Model.AppModel> _apps = new();
+        private Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required.";
+        private Func<string, StringBoolean> _counterRule = value => (value.Length <= 25 && value.Length > 0) ? true : "Biz config name length range is [1-25]";
+        private Func<string, StringBoolean> _strRule = value =>
+        {
+            Regex regex = new Regex(@"^[\u4E00-\u9FA5A-Za-z0-9`~@!$%^&*()_<>?:{}|,.\/;""·~！￥%……&*（）——\-+={}|《》？：“”【】、；]+$");
+            if (!regex.IsMatch(value))
+            {
+                return "Special symbols are not allowed";
+            }
+            else
+            {
+                return true;
+            }
+        };
+
+        private IEnumerable<Func<string, StringBoolean>> _bizNameRules => new List<Func<string, StringBoolean>>
+        {
+            _requiredRule,
+            _counterRule,
+            _strRule
+        };
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -78,6 +99,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task UpdateBizAsync()
         {
+            foreach (var ruleFunc in _bizNameRules)
+            {
+                var value = ruleFunc.Invoke(_bizDetail.Name).Value;
+                if (value is string errorMsg)
+                {
+                    await PopupService.ToastErrorAsync(errorMsg);
+                    return;
+                }
+            }
+
             _isEditBiz = !_isEditBiz;
 
             if (!_isEditBiz && _bizConfigName != _bizDetail.Name)
@@ -87,6 +118,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Id = _bizDetail.Id,
                     Name = _bizDetail.Name
                 });
+                _bizConfigName = _bizDetail.Name;
                 _bizDetail = bizConfigDto.Adapt<BizModel>();
                 await PopupService.ToastSuccessAsync("修改成功");
             }

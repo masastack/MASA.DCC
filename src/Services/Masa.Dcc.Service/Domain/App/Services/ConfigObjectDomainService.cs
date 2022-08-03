@@ -162,8 +162,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                    dto.ConfigObjectId,
                    dto.Name,
                    dto.Comment,
-                   configObject.Content,
-                   null)
+                   configObject.Content)
                );
 
             var relationConfigObjects = await _configObjectRepository.GetRelationConfigObjectWithReleaseHistoriesAsync(configObject.Id);
@@ -244,10 +243,10 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 .OrderByDescending(cor => cor.Id)
                 .FirstOrDefaultAsync();
 
-            var canRollbackEntity = await _configObjectReleaseRepository.FindAsync(
+            var rollbackToEntity = await _configObjectReleaseRepository.FindAsync(
                 ocr => ocr.Id == rollbackDto.RollbackToReleaseId);
 
-            if (latestConfigObjectRelease == null || canRollbackEntity == null)
+            if (latestConfigObjectRelease == null || rollbackToEntity == null)
             {
                 throw new Exception("要回滚的版本不存在");
             }
@@ -256,7 +255,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             {
                 throw new UserFriendlyException("该版本已作废");
             }
-            if (rollbackDto.RollbackToReleaseId == latestConfigObjectRelease.ToReleaseId)
+            if (rollbackToEntity.Version == latestConfigObjectRelease.Version)
             {
                 throw new UserFriendlyException("两个版本相同");
             }
@@ -264,11 +263,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             //rollback
             //add
             await _configObjectReleaseRepository.AddAsync(new ConfigObjectRelease(
-                     canRollbackEntity.ConfigObjectId,
-                     canRollbackEntity.Name,
-                     $"由 {latestConfigObjectRelease.Name} 回滚至 {canRollbackEntity.Name}",
-                     canRollbackEntity.Content,
-                     canRollbackEntity.Version,
+                     rollbackToEntity.ConfigObjectId,
+                     rollbackToEntity.Name,
+                     $"由 {latestConfigObjectRelease.Name} 回滚至 {rollbackToEntity.Name}",
+                     rollbackToEntity.Content,
+                     rollbackToEntity.Version,
                      latestConfigObjectRelease.Id
                  ));
 
@@ -278,7 +277,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
             //Update ConfigObject entity
             var configObject = (await _configObjectRepository.FindAsync(config => config.Id == rollbackDto.ConfigObjectId))!;
-            configObject.AddContent(configObject.Content, canRollbackEntity.Content);
+            configObject.AddContent(configObject.Content, rollbackToEntity.Content);
             await _configObjectRepository.UpdateAsync(configObject);
         }
 

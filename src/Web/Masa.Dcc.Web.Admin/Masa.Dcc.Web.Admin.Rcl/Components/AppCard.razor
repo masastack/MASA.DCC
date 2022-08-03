@@ -1,17 +1,17 @@
 ﻿<MHover Context="hoverContext" Class="d-flex flex-column">
-    <MCard Ripple=false Class="hover-pointer rounded-5" OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="@Style">
+    <MCard Ripple=false OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Class="rounded-5" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="@Style">
         <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding: 16px 16px 8px 16px !important;">
-            <div class="text-h7 text-overflow" style="max-width: 240px; overflow: hidden; ">@App.Name</div>
+            <div class="emphasis2--text h7 text-overflow" style="max-width: 240px; overflow: hidden;">@App.Name</div>
             <div class="mx-3" style="color:#E2E7F4">|</div>
-            <div class="text-h7 text-overflow">@App.Type</div>
+            <div class="emphasis2--text h7 text-overflow">@App.Type</div>
             <MSpacer />
             <MButton Icon OnClick="OnPinClick">
                 <MIcon Color="@(IsPin ? "#FFB547" : "")" Size="20">mdi-pin</MIcon>
             </MButton>
         </MCardTitle>
         <MCardSubtitle>
-            <div style="font-weight: 400; font-size: 14px; color: #A3AED0; letter-spacing: 0.25px;">@App.Identity</div>
-            <div class="text-overflow" style="font-weight: 400; font-size: 16px; color: #485585; margin-top: 14px;">@App.Description</div>
+            <div class="body2 regular3--text text-overflow">@App.Identity</div>
+            <div class="text-overflow regular--text body text-overflow mt-4">@App.Description</div>
         </MCardSubtitle>
         <MCardActions Style="position:absolute;bottom:0;left:0;right:0; padding-bottom:12px !important;">
             <div class="d-flex flex-column" style="overflow:hidden; width:100%;">

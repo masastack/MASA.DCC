@@ -27,7 +27,7 @@
         </MTab>
     </MTabs>
 
-    <MTabsItems Value="_curTab" class="pt-6">
+    <MTabsItems Style="background-color: transparent !important;" Value="_curTab" class="pt-6">
         <MTabItem>
             <div class="d-flex">
                 <div class="pr-6" style="width: calc(100% - 300px); display:block;">
@@ -39,7 +39,7 @@
                                 </PrependInnerContent>
                             </MTextField>
                         </div>
-                        <div style="margin:0 -24px; height: calc(100vh - 292px); overflow:auto;">
+                        <div style="margin:0 -24px; height: calc(100vh - 304px); overflow:auto;">
                             <MExpansionPanels Flat Accordion>
                                 @foreach (var project in _projects)
                                 {
@@ -48,7 +48,7 @@
                                         <MExpansionPanelHeader>
                                             <ChildContent>
                                                 <span style="display:flex;align-items:center;margin-right:10px;">
-                                                    <div class="text-h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
+                                                    <div class="emphasis--text h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
                                                         @project.Name
                                                         <span class="ml-2 text-caption">|</span>
                                                         <sapn class="ml-1 text-caption">@T("AppCount"):@apps.Count</sapn>
@@ -128,24 +128,40 @@
                     </div>
                 </div>
 
-                <MNavigationDrawer Right Permanent Class="rounded-4" Width="300" Style="height: calc(100vh - 180px);">
+                <MNavigationDrawer Right Permanent Class="rounded-4" Width="300" Style="height: calc(100vh - 192px);">
                     <div class="py-4 px-6" style="min-width:300px; display:flex; flex-direction:column; overflow: auto;">
                         <MAvatar>
-                            <MImage Height="48" Width="48" Src="https://cdn.masastack.com/stack/images/website/masa-blazor/jack.png"></MImage>
+                            <MImage Height="48" Width="48" Src="@_userTeam.Avatar"></MImage>
                         </MAvatar>
                         <MRow NoGutters Class="mt-6">
-                            <div class="text-h6">@T("Team name")</div>
+                            <div class="emphasis--text h6">@_userTeam.Name</div>
                         </MRow>
                         <MRow NoGutters Class="mt-1 text-body2">
                             @T("ProjectCount")：@_projects.Count
                         </MRow>
                         <MRow NoGutters Class="mt-4 text-body2">
-                            This is your team's workspace. Invite members to your team to start collaborating. Click here to edit this description.Professional team
+                            @_userTeam.Description
                         </MRow>
-                        <MRow NoGutters Class="text-caption mt-6">@T("Admin")</MRow>
-                        <MRow NoGutters Class="mt-4 text-body2">管理员1</MRow>
-                        <MRow NoGutters Class="text-caption mt-6">@T("Members")</MRow>
-                        <MRow NoGutters Class="mt-4 text-body2">成员1</MRow>
+                        <MRow NoGutters Class="regular3--text btn mt-6">@T("Admin")</MRow>
+                        @foreach (var item in _userTeam.Admins)
+                        {
+                            <MRow Align="AlignTypes.Center" NoGutters Class="mt-4 text-body2">
+                                <MAvatar Class="mr-3">
+                                    <MImage Height="48" Width="48" Src="@item.Avatar"></MImage>
+                                </MAvatar>
+                                @item.Name
+                            </MRow>
+                        }
+                        <MRow NoGutters Class="regular3--text btn mt-6">@T("Members")</MRow>
+                        @foreach (var item in _userTeam.Members)
+                        {
+                            <MRow Align="AlignTypes.Center" NoGutters Class="mt-4 text-body2">
+                                <MAvatar MinHeight="40" MinWidth="40" Height="40" Width="40" Class="mr-3">
+                                    <MImage Height="40" Width="40" Src="@item.Avatar"></MImage>
+                                </MAvatar>
+                                @item.Name
+                            </MRow>
+                        }
                     </div>
                 </MNavigationDrawer>
             </div>

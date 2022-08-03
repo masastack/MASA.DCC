@@ -94,5 +94,18 @@
   "Public config object": "公共配置对象",
   "Project detail": "项目详情",
   "Config detail": "配置详情",
-  "Conflict resolution": "解决冲突"
+  "Conflict resolution": "解决冲突",
+  "Environment": "环境",
+  "Cluster": "集群",
+  "Please enter the config name and press enter to query": "请输入配置对象名称并按回车进行搜索",
+  "PublicConfig": "公共配置",
+  "LabelManagement": "标签管理",
+  "This operation will be rolled back to the previous release version, and the current version will be invalidated, but it will not affect the configuration being modified": "此操作将会回滚到上个发布版本，且当前版本作废，但不影响正在修改的配置",
+  "Rollback to": "回滚至",
+  "Release time": "发布时间",
+  "New value": "新的值",
+  "Old value": "旧的值",
+  "Published values": "发布的值",
+  "Unpublished value": "未发布的值",
+  "Clone": "克隆"
 }

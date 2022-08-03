@@ -9,6 +9,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
 
         public bool IsPublished => Content.Equals(TempContent);
 
+        public EditorContentModel ElevationTabPropertyContent { get; set; } = new();
+
         /// <summary>
         /// clone page, select config object
         /// </summary>

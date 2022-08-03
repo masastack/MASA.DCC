@@ -102,8 +102,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             foreach (var ruleFunc in _bizNameRules)
             {
                 var value = ruleFunc.Invoke(_bizDetail.Name).Value;
-                if (value is string)
+                if (value is string errorMsg)
                 {
+                    await PopupService.ToastErrorAsync(errorMsg);
                     return;
                 }
             }

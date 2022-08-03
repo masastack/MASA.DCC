@@ -75,7 +75,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
             new() { Text = "Value", Value = nameof(ConfigObjectPropertyModel.Value) }
         };
-        private Action? _handleRollbackOnClickAfter = null;
+        private Action _handleRollbackOnClickAfter = () => { };
         private string? _cultureName;
 
         #region clone

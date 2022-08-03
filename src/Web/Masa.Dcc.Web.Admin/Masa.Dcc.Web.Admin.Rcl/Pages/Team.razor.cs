@@ -29,9 +29,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public LabelCaller LabelCaller { get; set; } = default!;
 
-        [Inject]
-        public IAuthClient AuthClient { get; set; } = default!;
-
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;

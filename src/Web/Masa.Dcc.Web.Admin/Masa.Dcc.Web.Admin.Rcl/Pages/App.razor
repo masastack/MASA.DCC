@@ -8,7 +8,7 @@
                 <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
                     <div class="emphasis--text h6" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@_projectDetail.Name</div>
                 </MRow>
-                <MRow NoGutters Class="text-caption mt-1">
+                <MRow NoGutters Class="regular3--text body2 mt-1">
                     @_projectDetail.Identity
                 </MRow>
                 <MRow NoGutters Class="mt-1">
@@ -17,9 +17,9 @@
                 <MRow NoGutters Class="mt-4">
                     @_projectDetail.Description
                 </MRow>
-                <MRow NoGutters Class="text-caption mt-6">@T("Participate team")</MRow>
+                <MRow NoGutters Class="regular3--text body2 mt-6">@T("Participate team")</MRow>
                 <MRow NoGutters Class="mt-4">@_projectDetail.TeamId</MRow>
-                <MRow NoGutters Class="text-caption mt-6">@T("Environment/Cluster")</MRow>
+                <MRow NoGutters Class="regular3--text body2 mt-6">@T("Environment/Cluster")</MRow>
                 <div style="display:flex; flex-direction:column;align-items:start">
                     @{
                         var envCluster = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id));
@@ -34,11 +34,18 @@
     </MNavigationDrawer>
     <div class="pl-6" style="width: calc(100% - 300px);">
         <div class="bizCard">
-            <h6>@T("Business configuration")</h6>
-            <MCard Class="mt-6" Height="163">
+            <h6 class="emphasis2--text h6">@T("Business configuration")</h6>
+            <MCard Class="mt-6 rounded-5" Height="163">
                 <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
                     <div class="emphasis2--text h7 text-overflow">
-                        <MTextField Rules="_bizNameRules" Disabled="!_isEditBiz" Dense Outlined @bind-Value="@_bizDetail.Name"></MTextField>
+                        @if (!_isEditBiz)
+                        {
+                            @_bizDetail.Name
+                        }
+                        else
+                        {
+                            <STextField HideDetails="true" Dense  Outlined @bind-Value="@_bizDetail.Name"></STextField>
+                        }
                     </div>
                     <div class="mx-4" style="color:#E2E7F4">|</div>
                     <div class="emphasis2--text h7 text-overflow">Biz</div>
@@ -46,7 +53,7 @@
                     <MButton Icon OnClick="UpdateBizAsync">
                         @if (!_isEditBiz)
                         {
-                            <MIcon>mdi-pencil</MIcon>
+                            <MIcon Color="#323D6F" Size="20">mdi-pencil</MIcon>
                         }
                         else
                         {
@@ -55,7 +62,7 @@
                     </MButton>
                 </MCardTitle>
                 <MCardSubtitle Class="pb-0">
-                    <div class="text-caption text-overflow">@_bizDetail.Identity</div>
+                    <div class="regular3--text body2 text-overflow mt-1">@_bizDetail.Identity</div>
                 </MCardSubtitle>
                 <MCardActions Class="pb-2 d-flex">
                     <div style="overflow:hidden; height:64px; margin:0 16px 0 0;">
@@ -94,8 +101,8 @@
             </MCard>
         </div>
         <div class="appCard mt-6">
-            <div class="d-flex justify-space-between">
-                <h6>@T("App")</h6>
+            <div class="d-flex justify-space-between align-end">
+                <h6 class="emphasis2--text h6">@T("App")</h6>
                 <MTextField @bind-Value="_appName" OnKeyDown="SearchAppAsync" Style="max-width:300px;" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
                     <PrependInnerContent>
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>

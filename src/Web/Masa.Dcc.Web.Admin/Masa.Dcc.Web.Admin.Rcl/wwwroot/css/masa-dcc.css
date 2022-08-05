@@ -63,7 +63,7 @@
 
 .m-card {
     box-shadow: 0px 0px 0px 0px rgb(0 0 0 / 20%), 0px 0px 0px 0px rgb(0 0 0 / 14%), 0px 0px 0px 0px rgb(0 0 0 / 12%) !important;
-    border-radius: 20px;
+    border-radius: 20px !important;
 }
 
     .m-card.line {
@@ -88,6 +88,14 @@
     /*    line-height: 1rem !important;*/
     /* default color */
     color: #7681AB;
+}
+
+.m-input__icon.m-input__icon--append {
+    height: 48px !important;
+}
+
+.m-input__append-inner {
+    margin-top: 0 !important;
 }
 
 .m-input--checkbox .mdi-checkbox-blank-outline {
@@ -579,40 +587,6 @@ input::-webkit-input-placeholder {
 .m-dialog--drawer .m-card {
     border-radius: 0;
 }
-
-.m-text-field--outlined:not(.m-textarea) {
-    height: 48px !important;
-}
-
-    .m-text-field--outlined:not(.m-textarea) fieldset {
-        height: 53px !important;
-    }
-
-.m-select.m-text-field--outlined .m-label {
-    top: 14px !important;
-}
-
-    .m-select.m-text-field--outlined .m-label.m-label--active {
-        top: 18px !important;
-    }
-
-.m-text-field--outlined .m-text-field__details {
-    margin-top: -5px !important;
-}
-
-.m-text-field--outlined:not(.m-textarea) .m-input__slot {
-    height: 48px !important;
-    min-height: 0px !important;
-}
-
-.m-input__icon.m-input__icon--append {
-    height: 48px !important;
-}
-
-.m-input__append-inner {
-    margin-top: 0 !important;
-}
-
 
 /*dcc style*/
 .m-dialog--persistent {

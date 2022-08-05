@@ -36,6 +36,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public ClusterCaller ClusterCaller { get; set; } = default!;
 
         private ProjectDetailModel _projectDetail = new();
+        private TeamDetailModel _projectTeamDetail = new();
         private List<EnvironmentClusterModel> _projectEnvClusters = new();
         private List<EnvironmentClusterModel> _allEnvClusters = new();
         private bool _isEditBiz;
@@ -43,7 +44,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _bizConfigName = "";
         private string _appName = "";
         private List<Model.AppModel> _apps = new();
-        private Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required.";
+        private Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required";
         private Func<string, StringBoolean> _counterRule = value => (value.Length <= 25 && value.Length > 0) ? true : "Biz config name length range is [1-25]";
         private Func<string, StringBoolean> _strRule = value =>
         {
@@ -77,6 +78,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
             _projectDetail = await ProjectCaller.GetAsync(ProjectId);
+            _projectTeamDetail = await AuthClient.TeamService.GetDetailAsync(_projectDetail.TeamId) ?? new();
             _apps = await GetAppByProjectIdAsync(new List<int> { ProjectId });
             _projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
 

@@ -123,7 +123,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 var headers = new List<DataTableHeader<ConfigObjectPropertyModel>>()
                 {
-                    new() { Text = T("State"), Value = "State" },
+                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished) },
                     new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
                     new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value) },
                     new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
@@ -158,7 +158,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 return new List<DataTableHeader<ConfigObjectPropertyModel>>()
                 {
-                    new() { Text = T("State"), Value = "State" },
+                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished) },
                     new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
                     new() { Text = T("Published values"), Value = nameof(ConfigObjectPropertyModel.TempValue) },
                     new() { Text = T("Unpublished value"), Value = nameof(ConfigObjectPropertyModel.Value) },
@@ -535,6 +535,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
                 configObject.ElevationTabPropertyContent.Content = stringBuilder.ToString();
                 configObject.ElevationTabPropertyContent.FormatLabelCode = "Properties";
+            }
+            else
+            {
+                configObject.ElevationTabPropertyContent.Disabled = false;
             }
         }
 

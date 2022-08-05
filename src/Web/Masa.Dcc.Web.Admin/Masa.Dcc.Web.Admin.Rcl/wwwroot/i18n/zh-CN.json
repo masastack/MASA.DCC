@@ -51,6 +51,7 @@
   "Revoke": "撤销",
   "Delete": "删除",
   "Connected": "已关联",
+  "UnConnected": "取消关联",
   "Released": "已发布",
   "Unpublished": "未发布",
   "Covered": "已覆盖",
@@ -107,5 +108,9 @@
   "Old value": "旧的值",
   "Published values": "发布的值",
   "Unpublished value": "未发布的值",
-  "Clone": "克隆"
+  "Clone": "克隆",
+  "The configuration object name conflicts, and the same configuration object name will overwrite the configuration information. If you need to clone, please modify the configuration object name": "配置对象名称冲突，配置对象名称相同将会覆盖配置信息，如需克隆请修改配置对象名称",
+  "Publish": "发布",
+  "Edit": "编辑",
+  "Add config item": "添加配置项"
 }

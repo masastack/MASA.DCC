@@ -4,7 +4,7 @@
 <div class="d-flex">
     <MNavigationDrawer Right Permanent Class="rounded-4" Width="300" Style="@Style">
         <div style="min-width:300px; padding:16px 24px; display:flex; flex-direction:column; align-items:center; overflow: auto;">
-            <div style="width:100%;" class="text-body2">
+            <div style="width:100%;" class="regular--text body2">
                 <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
                     <div class="full-width d-flex">
                         <div class="emphasis--text h6">@_appDetail.Name</div>
@@ -47,13 +47,13 @@
                         </MMenu>
                     </div>
                 </MRow>
-                <MRow NoGutters Class="text-caption">
+                <MRow NoGutters Class="regular3--text btn">
                     @_appDetail.Identity
                 </MRow>
                 <MRow NoGutters Class="mt-4">
                     @_appDetail.Description
                 </MRow>
-                <MRow NoGutters Class="text-caption mt-6">@T("Environment")</MRow>
+                <MRow NoGutters Class="regular3--text btn mt-6">@T("Environment")</MRow>
                 <MRow NoGutters>
                     <MChipGroup Column>
                         @foreach (var item in _appEnvs)
@@ -70,7 +70,7 @@
                         }
                     </MChipGroup>
                 </MRow>
-                <MRow NoGutters Class="text-caption mt-6">@T("Cluster")</MRow>
+                <MRow NoGutters Class="regular3--text btn mt-6">@T("Cluster")</MRow>
                 <MRow NoGutters>
                     <MChipGroup Column>
                         @foreach (var item in _appClusters)
@@ -100,7 +100,7 @@
     <div class="pl-6" style="width: calc(100% - 300px); display:block;">
         <div class="rounded-5 pa-6" style="background:#fff;overflow: hidden;">
             <div class="d-flex mb-6">
-                <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObjectAsync" Class="rounded-2" Height="40" Flat Dense Solo BackgroundColor="fill-lighten-1" HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
+                <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObjectAsync" Class="rounded-2" Height="40" Flat Dense Solo BackgroundColor="fill-background" HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
                     <PrependInnerContent>
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                     </PrependInnerContent>
@@ -135,24 +135,25 @@
                                                 }
                                             }
                                             <span>@configObject.Name</span>
-                                            <span class="ml-3 text-caption">|</span>
-                                            <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
+                                            <span class="ml-3 regular3--text btn">|</span>
+                                            <sapn class="ml-2 regular3--text btn">@configObject.FormatName</sapn>
                                             <MSpacer></MSpacer>
                                             <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateJsonConfigAsync(configObject)">
                                                 @if (!configObject.IsEditing)
                                                 {
-                                                    <MIcon Color="#323D6F">@(configObject.RelationConfigObjectId == 0 ? "mdi-pencil" : "mdi-link-variant-off")</MIcon>
+                                                    var relation = configObject.RelationConfigObjectId != 0;
+                                                    <SIcon Tooltip="@(relation ? T("UnConnected"):T("Edit"))" Color="#323D6F">@(relation ? "mdi-link-variant-off" : "mdi-pencil")</SIcon>
                                                 }
                                                 else
                                                 {
-                                                    <MIcon Color="success">mdi-check</MIcon>
+                                                    <SIcon Tooltip="@(T("Save"))" Color="success">mdi-check</SIcon>
                                                 }
                                             </MButton>
                                             @if (ConfigObjectType == ConfigObjectType.App && configObject.FromRelation == false)
                                             {
-                                                <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                                <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><SIcon Tooltip="@(T("Clone"))" Size="20" Color="#323D6F">fas fa-copy</SIcon></MButton>
                                             }
-                                            <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                            <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><SIcon Tooltip="@(T("Publish"))" Color="#323D6F">mdi-send</SIcon></MButton>
                                             <MMenu OffsetY>
                                                 <ActivatorContent>
                                                     <MButton Disabled="configObject.IsEditing" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
@@ -195,7 +196,7 @@
                                                     </MList>
                                                 </ChildContent>
                                             </MMenu>
-                                            <span class="mr-6 text-caption">|</span>
+                                            <span class="mr-6 regular3--text btn">|</span>
                                         </div>
                                     </ChildContent>
                                     <ActionsContent>
@@ -211,7 +212,7 @@
                                             <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
                                             <span style="font-size: 14px; color: #7681AB;">
                                                 @T("Connected")
-                                                <span class="text-caption mx-1 font-size: 6px !important;">|</span>
+                                                <span class="regular3--text btn mx-1 font-size: 6px !important;">|</span>
                                                 @(configObject.IsPublished ? @T("Released") : @T("UnReleased"))
                                             </span>
                                         </div>
@@ -236,7 +237,7 @@
                                         <div class="emphasis--text h6 d-flex align-center">
                                             @if (configObject.FromRelation)
                                             {
-                                                <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
+                                                <SIcon Tooltip="@(T("Connected"))" Color="primary" Class="mr-2">mdi-link-variant</SIcon>
                                             }
                                             @if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing)
                                             {
@@ -245,21 +246,21 @@
                                                 </div>
                                             }
                                             <span>@configObject.Name</span>
-                                            <span class="ml-3 text-caption">|</span>
-                                            <sapn class="ml-2 text-caption">@configObject.FormatLabelCode</sapn>
+                                            <span class="ml-3 regular3--text btn">|</span>
+                                            <sapn class="ml-2 regular3--text btn">@configObject.FormatLabelCode</sapn>
                                             <MSpacer></MSpacer>
                                             @if (!configObject.FromRelation)
                                             {
-                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject,configObject.ConfigObjectPropertyContents)"><MIcon Color="#323D6F">mdi-plus-circle</MIcon></MButton>
+                                                <MButton Disabled="configObject.ElevationTabPropertyContent.Disabled" StopPropagation Icon Class="mr-4" OnClick="()=>ShowPropertyModal(configObject,configObject.ConfigObjectPropertyContents)"><SIcon Tooltip="@(T("Add config item"))" Color="#323D6F">mdi-plus-circle</SIcon></MButton>
                                             }
                                             @if (ConfigObjectType == ConfigObjectType.App && configObject.FromRelation == false)
                                             {
-                                                <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                                <MButton Disabled="configObject.ElevationTabPropertyContent.Disabled" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><SIcon Tooltip="@(T("Clone"))" Size="20" Color="#323D6F">fas fa-copy</SIcon></MButton>
                                             }
-                                            <MButton StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                            <MButton Disabled="configObject.ElevationTabPropertyContent.Disabled" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><SIcon Tooltip="@(T("Publish"))" Color="#323D6F">mdi-send</SIcon></MButton>
                                             <MMenu OffsetY>
                                                 <ActivatorContent>
-                                                    <MButton @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                                                    <MButton Disabled="configObject.ElevationTabPropertyContent.Disabled" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
                                                         <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
                                                     </MButton>
                                                 </ActivatorContent>
@@ -299,7 +300,7 @@
                                                     </MList>
                                                 </ChildContent>
                                             </MMenu>
-                                            <span class="mr-6 text-caption">|</span>
+                                            <span class="mr-6 regular3--text btn">|</span>
                                         </div>
                                     </ChildContent>
                                     <ActionsContent>
@@ -311,7 +312,7 @@
                                 <MExpansionPanelContent>
                                     @if (configObject.RelationConfigObjectId != 0)
                                     {
-                                        <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
+                                        <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4 rounded-5">
                                             <MDataTable Headers="Headers"
                                             SortDesc="true"
                                             SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
@@ -320,12 +321,12 @@
                                             Class="table-border-none"
                                             HideDefaultFooter>
                                                 <HeaderColContent Context="header">
-                                                    <span class="text-caption">@header.Text</span>
+                                                    <span class="regular3--text btn">@header.Text</span>
                                                 </HeaderColContent>
                                                 <ItemColContent>
                                                     @switch (context.Header.Value)
                                                     {
-                                                        case "State":
+                                                        case nameof(ConfigObjectPropertyModel.IsPublished):
                                                             string icon = context.Item.IsRelationed ? "mdi-link-variant" : "mdi-link-variant-off";
                                                             string color = "";
                                                             string text = "";
@@ -366,7 +367,7 @@
                                            Dense
                                            Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                             <SElevationTabItem>
-                                                <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4">
+                                                <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-3 mt-4 rounded-5">
                                                     <MDataTable Headers="Headers"
                                                     SortDesc="true"
                                                     SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
@@ -375,12 +376,12 @@
                                                     Class="table-border-none"
                                                     HideDefaultFooter>
                                                         <HeaderColContent Context="header">
-                                                            <span class="text-caption">@header.Text</span>
+                                                            <span class="regular3--text btn">@header.Text</span>
                                                         </HeaderColContent>
                                                         <ItemColContent>
                                                             @switch (@context.Header.Value)
                                                             {
-                                                                case "State":
+                                                                case nameof(ConfigObjectPropertyModel.IsPublished):
                                                                     if (context.Item.IsPublished)
                                                                     {
                                                                         <MIcon Style="margin-bottom:2px;" Size="16 " Color="#05CD99">mdi-send</MIcon>
@@ -426,11 +427,11 @@
                                                     <MButton StopPropagation Icon Class="mr-4 mb-2">
                                                         @if (!configObject.ElevationTabPropertyContent.Disabled)
                                                         {
-                                                            <MIcon Class="hover-pointer" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }" Color="#323D6F">mdi-pencil</MIcon>
+                                                            <SIcon Tooltip="@(T("Edit"))" Class="hover-pointer" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }" Color="#323D6F">mdi-pencil</SIcon>
                                                         }
                                                         else
                                                         {
-                                                            <MIcon OnClick="()=>TextConvertPropertyAsync(configObject.Id)" Color="success">mdi-check</MIcon>
+                                                            <SIcon Tooltip="@(T("Save"))" OnClick="()=>TextConvertPropertyAsync(configObject.Id)" Color="success">mdi-check</SIcon>
                                                         }
                                                     </MButton>
                                                 </div>
@@ -450,7 +451,7 @@
                                         <div class="emphasis--text h6 d-flex align-center">
                                             @if (configObject.FromRelation)
                                             {
-                                                <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
+                                                <SIcon Tooltip="@(T("Connected"))" Color="primary" Class="mr-2">mdi-link-variant</SIcon>
                                             }
                                             @{
                                                 string content = configObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
@@ -463,24 +464,25 @@
                                                 }
                                             }
                                             <span>@configObject.Name</span>
-                                            <span class="ml-3 text-caption">|</span>
-                                            <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
+                                            <span class="ml-3 regular3--text btn">|</span>
+                                            <sapn class="ml-2 regular3--text btn">@configObject.FormatName</sapn>
                                             <MSpacer></MSpacer>
                                             <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateOtherConfigObjectContentAsync(configObject)">
                                                 @if (!configObject.IsEditing)
                                                 {
-                                                    <MIcon Color="#323D6F">@(configObject.RelationConfigObjectId == 0 ? "mdi-pencil" : "mdi-link-variant-off")</MIcon>
+                                                    var relation = configObject.RelationConfigObjectId != 0;
+                                                    <SIcon Tooltip="@(relation ? T("UnConnected"):T("Edit"))" Color="#323D6F">@(relation ? "mdi-link-variant-off" : "mdi-pencil")</SIcon>
                                                 }
                                                 else
                                                 {
-                                                    <MIcon Color="success">mdi-check</MIcon>
+                                                    <SIcon Tooltip="@(T("Save"))" Color="success">mdi-check</SIcon>
                                                 }
                                             </MButton>
                                             @if (ConfigObjectType == ConfigObjectType.App && configObject.FromRelation == false)
                                             {
-                                                <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><MIcon Size="20" Color="#323D6F">fas fa-copy</MIcon></MButton>
+                                                <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><SIcon Tooltip="@("Clone")" Size="20" Color="#323D6F">fas fa-copy</SIcon></MButton>
                                             }
-                                            <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><MIcon Color="#323D6F">mdi-send</MIcon></MButton>
+                                            <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><SIcon Tooltip="@("Publish")" Color="#323D6F">mdi-send</SIcon></MButton>
                                             <MMenu OffsetY>
                                                 <ActivatorContent>
                                                     <MButton Disabled="configObject.IsEditing" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
@@ -523,7 +525,7 @@
                                                     </MList>
                                                 </ChildContent>
                                             </MMenu>
-                                            <span class="mr-6 text-caption">|</span>
+                                            <span class="mr-6 regular3--text btn">|</span>
                                         </div>
                                     </ChildContent>
                                     <ActionsContent>
@@ -539,7 +541,7 @@
                                             <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
                                             <span style="font-size: 14px; color: #7681AB;">
                                                 @T("Connected")
-                                                <span class="text-caption mx-1 font-size: 6px !important;">|</span>
+                                                <span class="regular3--text btn mx-1 font-size: 6px !important;">|</span>
                                                 @(configObject.IsPublished ? @T("Released") : @T("UnReleased"))
                                             </span>
                                         </div>
@@ -574,12 +576,12 @@
             <div>
                 <div class="emphasis--text h6 d-flex align-center">
                     @_selectConfigObject.Name
-                    <span class="ml-3 text-caption">|</span>
-                    <sapn class="ml-2 text-caption">Properties</sapn>
+                    <span class="ml-3 regular3--text btn">|</span>
+                    <sapn class="ml-2 regular3--text btn">Properties</sapn>
                 </div>
-                <MTextField Class="mt-12" Disabled="_propertyConfigModal.HasValue" Dense Label="Key" Outlined @bind-Value="_propertyConfigModal.Data.Key"></MTextField>
-                <MTextField Dense Label="Value" Outlined @bind-Value="_propertyConfigModal.Data.Value"></MTextField>
-                <MTextarea Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
+                <STextField Class="mt-12" Disabled="_propertyConfigModal.HasValue" Label="Key" Outlined @bind-Value="_propertyConfigModal.Data.Key"></STextField>
+                <STextField Class="mt-6" Label="Value" Outlined @bind-Value="_propertyConfigModal.Data.Value"></STextField>
+                <MTextarea Class="mt-6" Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
             </div>
             <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
                 <MButton Height="40" Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@(_propertyConfigModal.HasValue ? T("Save") : T("Submit"))</MButton>
@@ -594,11 +596,11 @@
                 <div class="full-height" style="overflow-y: auto;">
                     <div class="emphasis--text h6 d-flex align-center">
                         @_selectConfigObject.Name
-                        <span class="ml-3 text-caption">|</span>
-                        <sapn class="ml-2 text-caption">@_selectConfigObject.FormatLabelCode</sapn>
+                        <span class="ml-3 regular3--text btn">|</span>
+                        <sapn class="ml-2 regular3--text btn">@_selectConfigObject.FormatLabelCode</sapn>
                     </div>
-                    <MTextField Class="mt-12" Dense Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></MTextField>
-                    <MTextarea Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
+                    <STextField Class="mt-12" Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></STextField>
+                    <MTextarea Class="mt-6" Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
                     <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
                 @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
@@ -612,13 +614,13 @@
                             <HeaderColContent Context="header">
                                 @if (!string.IsNullOrWhiteSpace(header.Value))
                                 {
-                                    <span class="text-caption">@header.Text</span>
+                                    <span class="regular3--text btn">@header.Text</span>
                                 }
                             </HeaderColContent>
                             <ItemColContent>
                                 @switch (@context.Header.Value)
                                 {
-                                    case "State":
+                                    case nameof(ConfigObjectPropertyModel.IsPublished):
                                         if (context.Item.IsAdded)
                                         {
                                             <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus-circle</MIcon>
@@ -684,8 +686,8 @@
         <div>
             <div class="emphasis--text h6 d-flex align-center">
                 @T("Config object name")
-                <span class="ml-3 text-caption">|</span>
-                <sapn class="ml-2 text-caption">@_releaseHistory.FormatLabelCode</sapn>
+                <span class="ml-3 regular3--text btn">|</span>
+                <sapn class="ml-2 regular3--text btn">@_releaseHistory.FormatLabelCode</sapn>
             </div>
         </div>
         <div class="d-flex full-height full-width mt-12" style="overflow: hidden;">
@@ -765,7 +767,7 @@
                                         Class="table-border-none"
                                         HideDefaultFooter>
                                     <HeaderColContent Context="header">
-                                        <span class="text-caption">@header.Text</span>
+                                        <span class="regular3--text btn">@header.Text</span>
                                     </HeaderColContent>
                                 </MDataTable>
                             </div>
@@ -779,12 +781,12 @@
                                         Class="table-border-none"
                                         HideDefaultFooter>
                                     <HeaderColContent Context="header">
-                                        <span class="text-caption">@header.Text</span>
+                                        <span class="regular3--text btn">@header.Text</span>
                                     </HeaderColContent>
                                     <ItemColContent>
                                         @switch (@context.Header.Value)
                                         {
-                                            case "State":
+                                            case nameof(ConfigObjectPropertyModel.IsPublished):
                                                 if (context.Item.IsAdded)
                                                 {
                                                     <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>
@@ -873,29 +875,28 @@
                                         <FadeTransition>
                                             <ShowTransitionElement Value="_cloneAppSelect" Class="full-width px-6 mb-15">
                                                 <div class="mt-6" @onclick:stopPropagation>
-                                                    <MSelect Value="_cloneSelectProjectId"
+                                                    <SSelect Value="_cloneSelectProjectId"
                                                              ValueChanged="projectId=>ProjectValueChangedAsync(projectId)"
                                                              Label="@T("Project")"
                                                              MenuProps="props => props.OffsetY = true"
                                                              Outlined
-                                                             Dense
                                                              TItem="ProjectModel"
                                                              TItemValue="int"
                                                              TValue="int"
                                                              Items="_allProjects"
                                                              ItemText="l=>l.Name"
                                                              ItemValue="l=>l.Id">
-                                                    </MSelect>
-                                                    <MSelect @bind-Value="_cloneSelectAppId"
+                                                    </SSelect>
+                                                    <SSelect @bind-Value="_cloneSelectAppId"
                                                              Label="@T("App")"
+                                                             Class="mt-6"
                                                              MenuProps="props => props.OffsetY = true"
                                                              Outlined
-                                                             Dense
                                                              HideDetails="true"
                                                              Items="_cloneApps.Where(app=>app.Id!=_appDetail.Id).ToList()"
                                                              ItemText="l=>l.Name"
                                                              ItemValue="l=>l.Id">
-                                                    </MSelect>
+                                                    </SSelect>
                                                 </div>
                                             </ShowTransitionElement>
                                         </FadeTransition>
@@ -944,32 +945,38 @@
                                 {
                                     <MExpansionPanel Style="margin-bottom: 12px;">
                                         <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
-                                            <div class="d-flex align-center">
-                                                <div class="d-flex align-center" @onclick:stopPropagation>
-                                                    @if (configObject.IsNeedRebase)
-                                                    {
-                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=>CloneConfigObjectCoverClick(configObject)">
-                                                            <MIcon>mdi-alert-outline</MIcon>
-                                                            @T("Conflict resolution")
-                                                        </MButton>
-                                                    }
-                                                    <MCheckbox Value="configObject.IsChecked"
-                                                       ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
-                                                       HideDetails="true"
-                                                       Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
-                                                       Color="primary"></MCheckbox>
-                                                    <MTextField HideDetails="true"
-                                                        Dense
-                                                        Style="max-width: 270px;"
-                                                        Label="@T("Name")"
-                                                        Outlined
-                                                        Value="configObject.Name"
-                                                        TValue="string"
-                                                        ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></MTextField>
+                                            <ChildContent>
+                                                <div class="d-flex align-center">
+                                                    <div class="d-flex align-center" @onclick:stopPropagation>
+                                                        @if (configObject.IsNeedRebase)
+                                                        {
+                                                            <MButton Outlined Color="warning" Class="mr-4" OnClick="()=>CloneConfigObjectCoverClick(configObject)">
+                                                                <MIcon>mdi-alert-outline</MIcon>
+                                                                @T("Conflict resolution")
+                                                            </MButton>
+                                                        }
+                                                        <MCheckbox Value="configObject.IsChecked"
+                                                           ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
+                                                           HideDetails="true"
+                                                           Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
+                                                           Color="primary"></MCheckbox>
+                                                        <STextField HideDetails="true"
+                                                            Style="max-width: 270px;"
+                                                            Label="@T("Name")"
+                                                            Outlined
+                                                            Value="configObject.Name"
+                                                            TValue="string"
+                                                            ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></STextField>
+                                                    </div>
+                                                    <span class="ml-3 regular3--text btn">|</span>
+                                                    <sapn class="ml-2 regular3--text btn">properties</sapn>
                                                 </div>
-                                                <span class="ml-3 text-caption">|</span>
-                                                <sapn class="ml-2 text-caption">properties</sapn>
-                                            </div>
+                                            </ChildContent>
+                                            <ActionsContent>
+                                                <MIcon Color="#485585">
+                                                    mdi-chevron-down
+                                                </MIcon>
+                                            </ActionsContent>
                                         </MExpansionPanelHeader>
                                         <MExpansionPanelContent Style="padding-left: 8px;">
                                             <div style="border-radius: 8px; border: 1px solid #E2E7F4; padding:12px 24px;">
@@ -982,8 +989,8 @@
                                                 @foreach (var item in configObject.ConfigObjectPropertyContents)
                                                 {
                                                     <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
-                                                        <MTextField Class="pr-6" Dense HideDetails="true" Outlined @bind-Value="item.Key"></MTextField>
-                                                        <MTextField Dense HideDetails="true" Outlined @bind-Value="item.Value"></MTextField>
+                                                        <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
+                                                        <STextField Outlined @bind-Value="item.Value"></STextField>
                                                         <div class="d-flex justify-end align-center ml-6">
                                                             <MIcon Color="error" OnClick="()=>RemoveProperty(item.Key,configObject)" Class="hover-pointer mr-3">mdi-delete-outline</MIcon>
                                                         </div>
@@ -997,32 +1004,38 @@
                                 {
                                     <MExpansionPanel Style="margin-bottom: 12px;" @key="configObject">
                                         <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
-                                            <div class="d-flex align-center">
-                                                <div class="d-flex align-center" @onclick:stopPropagation>
-                                                    @if (configObject.IsNeedRebase)
-                                                    {
-                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=>CloneConfigObjectCoverClick(configObject)">
-                                                            <MIcon>mdi-alert-outline</MIcon>
-                                                            解决冲突
-                                                        </MButton>
-                                                    }
-                                                    <MCheckbox Value="configObject.IsChecked"
-                                                       ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
-                                                       HideDetails="true"
-                                                       Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
-                                                       Color="primary"></MCheckbox>
-                                                    <MTextField HideDetails="true"
-                                                        Dense
-                                                        Style="max-width: 270px;"
-                                                        Label="@T("Name")"
-                                                        Outlined
-                                                        Value="configObject.Name"
-                                                        TValue="string"
-                                                        ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></MTextField>
+                                            <ChildContent>
+                                                <div class="d-flex align-center">
+                                                    <div class="d-flex align-center" @onclick:stopPropagation>
+                                                        @if (configObject.IsNeedRebase)
+                                                        {
+                                                            <MButton Outlined Color="warning" Class="mr-4" OnClick="()=>CloneConfigObjectCoverClick(configObject)">
+                                                                <MIcon>mdi-alert-outline</MIcon>
+                                                                @T("Conflict resolution")
+                                                            </MButton>
+                                                        }
+                                                        <MCheckbox Value="configObject.IsChecked"
+                                                           ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
+                                                           HideDetails="true"
+                                                           Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
+                                                           Color="primary"></MCheckbox>
+                                                        <STextField Dense
+                                                            Style="max-width: 270px;"
+                                                            Label="@T("Name")"
+                                                            Outlined
+                                                            Value="configObject.Name"
+                                                            TValue="string"
+                                                            ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></STextField>
+                                                    </div>
+                                                    <span class="ml-3 regular3--text btn">|</span>
+                                                    <sapn class="ml-2 regular3--text btn">@configObject.FormatName</sapn>
                                                 </div>
-                                                <span class="ml-3 text-caption">|</span>
-                                                <sapn class="ml-2 text-caption">@configObject.FormatName</sapn>
-                                            </div>
+                                            </ChildContent>
+                                            <ActionsContent>
+                                                <MIcon Color="#485585">
+                                                    mdi-chevron-down
+                                                </MIcon>
+                                            </ActionsContent>
                                         </MExpansionPanelHeader>
                                         <MExpansionPanelContent Style="padding-left: 8px;">
                                             <MTextarea Outlined @bind-Value="configObject.Content"></MTextarea>
@@ -1036,7 +1049,7 @@
                             <div style="width: calc(100% - 48px); position: absolute; bottom: 0;">
                                 <MAlert Prominent
                                     Type="AlertTypes.Warning">
-                                    配置对象名称冲突，配置对象名称相同将会覆盖配置信息，如需克隆请修改配置对象名称。
+                                    @T("The configuration object name conflicts, and the same configuration object name will overwrite the configuration information. If you need to clone, please modify the configuration object name")
                                 </MAlert>
                             </div>
                         }

@@ -136,16 +136,17 @@
                         <MRow NoGutters Class="mt-6">
                             <div class="emphasis--text h6">@_userTeam.Name</div>
                         </MRow>
-                        <MRow NoGutters Class="mt-1 text-body2">
-                            @T("ProjectCount")：@_projects.Count
+                        <MRow NoGutters Class="mt-1 regular--text body2">
+                            @T("ProjectCount")：
+                            <span class="subtitle2">@_projects.Count</span>
                         </MRow>
-                        <MRow NoGutters Class="mt-4 text-body2">
+                        <MRow NoGutters Class="mt-4 regular--text body2">
                             @_userTeam.Description
                         </MRow>
                         <MRow NoGutters Class="regular3--text btn mt-6">@T("Admin")</MRow>
                         @foreach (var item in _userTeam.Admins)
                         {
-                            <MRow Align="AlignTypes.Center" NoGutters Class="mt-4 text-body2">
+                            <MRow Align="AlignTypes.Center" NoGutters Class="mt-4 regular--text body2">
                                 <MAvatar Class="mr-3">
                                     <MImage Height="48" Width="48" Src="@item.Avatar"></MImage>
                                 </MAvatar>
@@ -155,7 +156,7 @@
                         <MRow NoGutters Class="regular3--text btn mt-6">@T("Members")</MRow>
                         @foreach (var item in _userTeam.Members)
                         {
-                            <MRow Align="AlignTypes.Center" NoGutters Class="mt-4 text-body2">
+                            <MRow Align="AlignTypes.Center" NoGutters Class="mt-4 regular--text body2">
                                 <MAvatar MinHeight="40" MinWidth="40" Height="40" Width="40" Class="mr-3">
                                     <MImage Height="40" Width="40" Src="@item.Avatar"></MImage>
                                 </MAvatar>

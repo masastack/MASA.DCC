@@ -6,11 +6,12 @@
             <div class="full-height" style="overflow: auto;">
                 <div class="emphasis--text h6 d-flex align-center">
                     @AppDetail.Name
-                    <span class="ml-3 text-caption">|</span>
-                    <sapn class="ml-2 text-caption">@AppDetail.Identity</sapn>
+                    <span class="ml-3 regular3--text btn">|</span>
+                    <sapn class="ml-2 regular3--text btn">@AppDetail.Identity</sapn>
                 </div>
-                <MTextField Class="mt-12" Dense Label="@T("Name")" Outlined Prefix="@(ConfigObjectType==ConfigObjectType.Public ? _namePrefix : "")" @bind-Value="_addConfigObjectModal.Data.Name"></MTextField>
-                <MSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
+                <STextField Class="mt-12" Dense Label="@T("Name")" Outlined Prefix="@(ConfigObjectType==ConfigObjectType.Public ? _namePrefix : "")" @bind-Value="_addConfigObjectModal.Data.Name"></STextField>
+                <SSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
+                         Class="pt-6"
                          Label="格式"
                          MenuProps="props => props.OffsetY = true"
                          Outlined
@@ -18,8 +19,8 @@
                          Items="_configObjectFormats"
                          ItemText="l=>l.Name"
                          ItemValue="l=>l.Code">
-                </MSelect>
-                <p class="neutral--text" style="font-size:14px; font-weight:700;">选择集群</p>
+                </SSelect>
+                <p class="neutral--text pt-6" style="font-size:14px; font-weight:700;">选择集群</p>
                 <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="EnvClusterValueChanged">
                     @foreach (var item in AppDetail.EnvironmentClusters)
                     {

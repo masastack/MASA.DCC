@@ -37,5 +37,10 @@ namespace Masa.Dcc.ApiGateways.Caller
         {
             await CallerProvider.PutAsync(_prefix, dto);
         }
+
+        public async Task RemoveAsync(string typeCode)
+        {
+            await CallerProvider.DeleteAsync($"{_prefix}/{typeCode}", null);
+        }
     }
 }

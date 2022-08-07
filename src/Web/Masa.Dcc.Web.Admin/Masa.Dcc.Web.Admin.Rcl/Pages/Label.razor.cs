@@ -90,7 +90,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task SubmitLabelAsync(EditContext context)
         {
-            _labelModal.Data.LabelValues = _labelValues.Select(l => new LabelValueDto { Code = l.Code, Name = l.Name }).ToList();
+            _labelModal.Data.LabelValues = _labelValues
+                .Where(l => !string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.Code))
+                .Select(l => new LabelValueDto { Code = l.Code, Name = l.Name })
+                .ToList();
 
             if (context.Validate())
             {
@@ -122,6 +125,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _labelModal.Hide();
                 _labelValues.Clear();
             }
+        }
+
+        private async Task RemoveLabelAsync(string typeCode)
+        {
+            await LabelCaller.RemoveAsync(typeCode);
+
+            await PopupService.ToastSuccessAsync("操作成功");
+
+            LabelModalValueChanged(false);
+            _labels = await GetListAsync();
         }
     }
 }

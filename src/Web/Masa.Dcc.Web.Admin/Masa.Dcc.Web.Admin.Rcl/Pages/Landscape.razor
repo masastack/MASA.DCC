@@ -137,29 +137,16 @@
                                                     {
                                                         <MCol Lg="4" Md="6" Sm="12">
                                                             <AppCard OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, app.EnvironmentClusters[0].Id, ConfigObjectType.App))" OnPinClick="()=>AppPin(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                                                <MMenu Transition="slide-y-transition" Bottom>
-                                                                    <ActivatorContent>
-                                                                        <MButton StopPropagation @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
-                                                                            <MIcon Color="black">mdi-dots-horizontal</MIcon>
-                                                                        </MButton>
-                                                                    </ActivatorContent>
-
-                                                                    <ChildContent>
-                                                                        <MList Dense>
-                                                                            @foreach (var item in app.EnvironmentClusters)
-                                                                            {
-                                                                                <MListItem OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, item.Id, ConfigObjectType.App))">
-                                                                                    <MListItemContent>
-                                                                                        <MListItemTitle>
-                                                                                            <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
-                                                                                            <span>@item.ClusterName</span>
-                                                                                        </MListItemTitle>
-                                                                                    </MListItemContent>
-                                                                                </MListItem>
-                                                                            }
-                                                                        </MList>
-                                                                    </ChildContent>
-                                                                </MMenu>
+                                                                <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                                                    @foreach (var item in app.EnvironmentClusters)
+                                                                    {
+                                                                        <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, item.Id, ConfigObjectType.App))"
+                                                                        Style="margin:0 12px 1px 0;"
+                                                                        EnvironmentName="@item.EnvironmentName"
+                                                                        EnvironmentColor="@item.EnvironmentColor"
+                                                                        ClusterName="@item.ClusterName" />
+                                                                    }
+                                                                </MChipGroup>
                                                             </AppCard>
                                                         </MCol>
                                                     }
@@ -197,3 +184,36 @@
         </MTabItem>
     </MTabsItems>
 </CascadingValue>
+
+@code {
+    private string[] _tags = new string[]
+    {
+        "Work",
+        "Home Improvement",
+        "Vacation",
+        "Food",
+        "Drawers",
+        "Shopping",
+        "Art",
+        "Tech",
+        "Creative Writing",
+        "Work",
+        "Home Improvement",
+        "Vacation",
+        "Food",
+        "Drawers",
+        "Shopping",
+        "Art",
+        "Tech",
+        "Creative Writing",
+        "Work",
+        "Home Improvement",
+        "Vacation",
+        "Food",
+        "Drawers",
+        "Shopping",
+        "Art",
+        "Tech",
+        "Creative Writing"
+    };
+}

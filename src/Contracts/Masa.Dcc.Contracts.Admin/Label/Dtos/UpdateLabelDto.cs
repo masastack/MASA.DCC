@@ -14,7 +14,6 @@ namespace Masa.Dcc.Contracts.Admin.Label.Dtos
         [StringLength(255, MinimumLength = 0, ErrorMessage = "Description length range is [0-255]")]
         public string Description { get; set; } = "";
 
-        [MinCount(1)]
         public List<LabelValueDto> LabelValues { get; set; } = new();
     }
 

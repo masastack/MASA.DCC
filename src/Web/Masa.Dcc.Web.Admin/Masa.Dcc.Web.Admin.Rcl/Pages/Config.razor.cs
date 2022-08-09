@@ -24,7 +24,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public string Style { get; set; } = "height: calc(100vh - 192px);";
 
         [Parameter]
-        public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 304px);";
+        public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 244px);";
 
         [Inject]
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
@@ -46,6 +46,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         [Inject]
         public IUserContext UserContext { get; set; } = default!;
+
+        [Inject]
+        public IJSRuntime Js { get; set; } = default!;
 
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();
@@ -77,6 +80,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         };
         private Action _handleRollbackOnClickAfter = () => { };
         private string? _cultureName;
+        private bool _configNameCopyClicked;
+
 
         #region clone
         private bool _showCloneModal;
@@ -1054,6 +1059,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
                 _afterAllCloneConfigObjects.AddRange(configObjects);
             }
+
+            CloneEnvClusterValueChanged(_cloneSelectApp.EnvironmentClusters.Select(ec => (StringNumber)ec.Id).ToList());
         }
 
         private void ClonePrevClick()
@@ -1281,6 +1288,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (_relation != null)
                 await _relation.InitDataAsync();
+        }
+
+        private async Task Copy(string value)
+        {
+            _configNameCopyClicked = true;
+
+            await Js.InvokeVoidAsync(JsInteropConstants.Copy, value);
+
+            await Task.Delay(500);
+
+            _configNameCopyClicked = false;
         }
     }
 }

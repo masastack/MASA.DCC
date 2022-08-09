@@ -36,6 +36,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<Model.AppModel> _apps = new();
         private ConfigComponentModel _configModel = new();
         private AppComponentModel _appModel = new();
+        private List<TeamModel> _allTeams = new();
         private App? _app;
         private Config? _config;
 
@@ -46,6 +47,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 NavigationManager.LocationChanged += HandleLocationChanged;
 
+                _allTeams = await AuthClient.TeamService.GetAllAsync();
                 _environments = await EnvironmentCaller.GetListAsync();
                 if (_environments.Any())
                 {
@@ -133,6 +135,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _curTab = value;
 
+            StateHasChanged();
+
             if (_curTab == 0)
             {
                 await GetProjectByEnvClusterIdAsync(_selectEnvClusterId.AsT1);
@@ -145,7 +149,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             else if (_curTab == 2 && _config != null)
             {
                 await _config.InitDataAsync();
-                StateHasChanged();
             }
         }
 

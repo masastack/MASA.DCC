@@ -15,6 +15,27 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _typeName = "";
         private DataModal<UpdateLabelDto> _labelModal = new();
         private List<LabelValueModel> _labelValues = new();
+        private Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required";
+        private Func<string, StringBoolean> _counterRule = value => (value.Length <= 50 && value.Length >= 2) ? true : "length range is [2-50]";
+        private Func<string, StringBoolean> _strRule = value =>
+        {
+            Regex regex = new Regex(@"^[\u4E00-\u9FA5A-Za-z0-9_.-]+$");
+            if (!regex.IsMatch(value))
+            {
+                return "Special symbols are not allowed";
+            }
+            else
+            {
+                return true;
+            }
+        };
+
+        private IEnumerable<Func<string, StringBoolean>> LabelValueRules => new List<Func<string, StringBoolean>>
+        {
+            _requiredRule,
+            _counterRule,
+            _strRule
+        };
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -94,6 +115,24 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 .Where(l => !string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.Code))
                 .Select(l => new LabelValueDto { Code = l.Code, Name = l.Name })
                 .ToList();
+
+            foreach (var labelValue in _labelModal.Data.LabelValues)
+            {
+                foreach (var rule in LabelValueRules)
+                {
+                    var nameRule = rule.Invoke(labelValue.Name).Value;
+                    if (nameRule is string)
+                    {
+                        return;
+                    }
+
+                    var codeRule = rule.Invoke(labelValue.Code).Value;
+                    if (codeRule is string)
+                    {
+                        return;
+                    }
+                }
+            }
 
             if (context.Validate())
             {

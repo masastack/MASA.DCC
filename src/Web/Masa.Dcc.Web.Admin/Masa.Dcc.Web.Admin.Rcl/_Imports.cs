@@ -8,10 +8,10 @@ global using BlazorComponent;
 global using BlazorComponent.I18n;
 global using Mapster;
 global using Masa.Blazor;
-global using Masa.BuildingBlocks.BasicAbility.Auth;
-global using Masa.BuildingBlocks.BasicAbility.Auth.Contracts.Model;
+global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.BasicAbility.Pm.Model;
-global using Masa.BuildingBlocks.Identity.IdentityModel;
+global using Masa.BuildingBlocks.StackSdks.Auth;
+global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 global using Masa.Dcc.ApiGateways.Caller;
 global using Masa.Dcc.Caller;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
@@ -25,3 +25,4 @@ global using Microsoft.AspNetCore.Components.Web;
 global using Microsoft.JSInterop;
 global using Newtonsoft.Json.Linq;
 global using ProjectModel = Masa.BuildingBlocks.BasicAbility.Pm.Model.ProjectModel;
+

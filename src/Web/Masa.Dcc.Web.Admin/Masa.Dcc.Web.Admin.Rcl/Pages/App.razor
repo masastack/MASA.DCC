@@ -49,7 +49,7 @@
                         }
                         else
                         {
-                            <STextField HideDetails="true" Dense Outlined @bind-Value="@_bizDetail.Name"></STextField>
+                            <STextField Rules="BizNameRules" Dense Outlined @bind-Value="@_bizDetail.Name"></STextField>
                         }
                     </div>
                     <div class="mx-4" style="color:#E2E7F4">|</div>
@@ -71,12 +71,18 @@
                 </MCardSubtitle>
                 <MCardActions Class="pb-2 d-flex">
                     <div style="overflow:hidden; height:64px; margin:0 16px 0 0;">
-                        @{
-                            foreach (var item in _projectEnvClusters)
+                        <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                            @foreach (var item in _projectEnvClusters)
                             {
-                                <EnvClusterChip Class="mb-3" Style="margin:0 6px;" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                                <EnvClusterChip Class="mb-3"
+                                            OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(_bizDetail.Id, ProjectId,item.Id, ConfigObjectType.Biz))"
+                                            Style="margin:0 6px;"
+                                            EnvironmentName="@item.EnvironmentName"
+                                            EnvironmentColor="@item.EnvironmentColor"
+                                            ClusterName="@item.ClusterName">
+                                </EnvClusterChip>
                             }
-                        }
+                        </MChipGroup>
                     </div>
                     <MSpacer></MSpacer>
                     <MMenu Transition="slide-y-transition" Bottom>

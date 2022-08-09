@@ -98,9 +98,9 @@
     </MNavigationDrawer>
 
     <div class="pl-6" style="width: calc(100% - 300px); display:block;">
-        <div class="rounded-5 pa-6" style="background:#fff;overflow: hidden;">
-            <div class="d-flex mb-6">
-                <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObjectAsync" Class="rounded-2" Height="40" Flat Dense Solo BackgroundColor="fill-background" HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
+        <div style="overflow: hidden;">
+            <div class="d-flex mb-3">
+                <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObjectAsync" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
                     <PrependInnerContent>
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                     </PrependInnerContent>
@@ -109,15 +109,15 @@
                     <MIcon Small>mdi-plus </MIcon>@T("Add")
                 </MButton>
             </div>
-            <div style="margin:0 -24px; overflow:auto; @ConfigPanelStyle">
+            <div class="mt-3" style="overflow:auto; @ConfigPanelStyle">
                 <MExpansionPanels @bind-Values="_selectPanels" Flat Accordion>
                     @foreach (var configObject in _configObjects)
                     {
                         var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                         if (formatLabelCode == "json")
                         {
-                            <MExpansionPanel Value="configObject.Id">
-                                <MExpansionPanelHeader Context="_">
+                            <MExpansionPanel Value="configObject.Id" Class="rounded-5 my-3">
+                                <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                     <ChildContent>
                                         <div class="emphasis--text h6 d-flex align-center">
                                             @if (configObject.FromRelation)
@@ -134,9 +134,30 @@
                                                     </div>
                                                 }
                                             }
-                                            <span>@configObject.Name</span>
-                                            <span class="ml-3 regular3--text btn">|</span>
-                                            <sapn class="ml-2 regular3--text btn">@configObject.FormatName</sapn>
+                                            <MHover Context="hContext">
+                                                <div @attributes=hContext.Attrs class="hover-pointer d-flex align-center" style="position: relative;">
+                                                    @configObject.Name
+                                                    <FadeTransition>
+                                                        <ShowTransitionElement Value="hContext.Hover">
+                                                            <MButton StopPropagation Class="m-btn--copy" Icon
+                                                             OnClick="()=>Copy(configObject.Name)">
+                                                                @if (_configNameCopyClicked)
+                                                                {
+                                                                    <SIcon Size="18" Color="success">mdi-check</SIcon>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <SIcon Tooltip="@T("Copy name")" Size="18" Color="grey">mdi-content-copy</SIcon>
+                                                                }
+                                                            </MButton>
+                                                        </ShowTransitionElement>
+                                                    </FadeTransition>
+                                                    <div class="regular3--text btn" style="@(hContext.Hover ? "position: absolute; left: ; transition: 0.5s;" : "position: absolute; left: 48px; transition: 0.5s;")">
+                                                        <span class="ml-3">|</span>
+                                                        <sapn class="ml-2">@configObject.FormatName</sapn>
+                                                    </div>
+                                                </div>
+                                            </MHover>
                                             <MSpacer></MSpacer>
                                             <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateJsonConfigAsync(configObject)">
                                                 @if (!configObject.IsEditing)
@@ -226,13 +247,12 @@
                                     }
                                     <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
                                 </MExpansionPanelContent>
-                                <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
                             </MExpansionPanel>
                         }
                         else if (formatLabelCode == "properties")
                         {
-                            <MExpansionPanel Value="configObject.Id">
-                                <MExpansionPanelHeader Context="_">
+                            <MExpansionPanel Value="configObject.Id" Class="rounded-5 my-3">
+                                <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                     <ChildContent>
                                         <div class="emphasis--text h6 d-flex align-center">
                                             @if (configObject.FromRelation)
@@ -245,9 +265,30 @@
                                                     @T("Modified")
                                                 </div>
                                             }
-                                            <span>@configObject.Name</span>
-                                            <span class="ml-3 regular3--text btn">|</span>
-                                            <sapn class="ml-2 regular3--text btn">@configObject.FormatLabelCode</sapn>
+                                            <MHover Context="hContext">
+                                                <div @attributes=hContext.Attrs class="hover-pointer d-flex align-center">
+                                                    @configObject.Name
+                                                    <FadeTransition>
+                                                        <ShowTransitionElement Value="hContext.Hover">
+                                                            <MButton StopPropagation Class="m-btn--copy" Icon
+                                                             OnClick="()=>Copy(configObject.Name)">
+                                                                @if (_configNameCopyClicked)
+                                                                {
+                                                                    <SIcon Size="18" Color="success">mdi-check</SIcon>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <SIcon Tooltip="@T("Copy name")" Size="18" Color="grey">mdi-content-copy</SIcon>
+                                                                }
+                                                            </MButton>
+                                                        </ShowTransitionElement>
+                                                    </FadeTransition>
+                                                </div>
+                                                <div class="regular3--text btn" style="@(hContext.Hover ? "position: absolute; left: 80px; transition: 0.5s;" : "position: absolute; left: 48px; transition: 0.5s;")">
+                                                    <span class="ml-3">|</span>
+                                                    <sapn class="ml-2">@configObject.FormatName</sapn>
+                                                </div>
+                                            </MHover>
                                             <MSpacer></MSpacer>
                                             @if (!configObject.FromRelation)
                                             {
@@ -445,8 +486,8 @@
                         }
                         else
                         {
-                            <MExpansionPanel Value="configObject.Id">
-                                <MExpansionPanelHeader Context="_">
+                            <MExpansionPanel Value="configObject.Id" Class="rounded-5 my-3">
+                                <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                     <ChildContent>
                                         <div class="emphasis--text h6 d-flex align-center">
                                             @if (configObject.FromRelation)
@@ -463,9 +504,30 @@
                                                     </div>
                                                 }
                                             }
-                                            <span>@configObject.Name</span>
-                                            <span class="ml-3 regular3--text btn">|</span>
-                                            <sapn class="ml-2 regular3--text btn">@configObject.FormatName</sapn>
+                                            <MHover Context="hContext">
+                                                <div @attributes=hContext.Attrs class="hover-pointer d-flex align-center" style="position: relative;">
+                                                    @configObject.Name
+                                                    <FadeTransition>
+                                                        <ShowTransitionElement Value="hContext.Hover">
+                                                            <MButton StopPropagation Class="m-btn--copy" Icon
+                                                             OnClick="()=>Copy(configObject.Name)">
+                                                                @if (_configNameCopyClicked)
+                                                                {
+                                                                    <SIcon Size="18" Color="success">mdi-check</SIcon>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <SIcon Tooltip="@T("Copy name")" Size="18" Color="grey">mdi-content-copy</SIcon>
+                                                                }
+                                                            </MButton>
+                                                        </ShowTransitionElement>
+                                                    </FadeTransition>
+                                                </div>
+                                                <div class="regular3--text btn" style="@(hContext.Hover ? "position: absolute; left: 80px; transition: 0.5s;" : "position: absolute; left: 48px; transition: 0.5s;")">
+                                                    <span class="ml-3">|</span>
+                                                    <sapn class="ml-2">@configObject.FormatName</sapn>
+                                                </div>
+                                            </MHover>
                                             <MSpacer></MSpacer>
                                             <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateOtherConfigObjectContentAsync(configObject)">
                                                 @if (!configObject.IsEditing)

@@ -112,5 +112,7 @@
   "The configuration object name conflicts, and the same configuration object name will overwrite the configuration information. If you need to clone, please modify the configuration object name": "配置对象名称冲突，配置对象名称相同将会覆盖配置信息，如需克隆请修改配置对象名称",
   "Publish": "发布",
   "Edit": "编辑",
-  "Add config item": "添加配置项"
+  "Add config item": "添加配置项",
+  "More": "更多",
+  "Copy name": "复制名称"
 }

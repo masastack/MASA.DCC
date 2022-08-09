@@ -135,29 +135,21 @@
                                                 }
                                             }
                                             <MHover Context="hContext">
-                                                <div @attributes=hContext.Attrs class="hover-pointer d-flex align-center" style="position: relative;">
-                                                    @configObject.Name
-                                                    <FadeTransition>
-                                                        <ShowTransitionElement Value="hContext.Hover">
-                                                            <MButton StopPropagation Class="m-btn--copy" Icon
-                                                             OnClick="()=>Copy(configObject.Name)">
-                                                                @if (_configNameCopyClicked)
-                                                                {
-                                                                    <SIcon Size="18" Color="success">mdi-check</SIcon>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <SIcon Tooltip="@T("Copy name")" Size="18" Color="grey">mdi-content-copy</SIcon>
-                                                                }
-                                                            </MButton>
-                                                        </ShowTransitionElement>
-                                                    </FadeTransition>
-                                                    <div class="regular3--text btn" style="@(hContext.Hover ? "position: absolute; left: ; transition: 0.5s;" : "position: absolute; left: 48px; transition: 0.5s;")">
-                                                        <span class="ml-3">|</span>
-                                                        <sapn class="ml-2">@configObject.FormatName</sapn>
+                                                <div @attributes=hContext.Attrs class="hover-pointer d-flex align-center">
+                                                    <span class="mr-2">@configObject.Name</span>
+                                                    <div @onclick="()=>Copy(configObject.Name)" @onclick:stopPropagation>
+                                                        <SIcon Tooltip="@T("Copy name")"
+                                                            Color="@(_configNameCopyClicked ? "success" : "gray")"
+                                                            Style="@(hContext.Hover ? "width: 18px; height: 18px; margin-right: 12px; transition: 0.5s;" : "opacity:0; width: 18px; height: 0px; margin-left: -24px; transition: 0.4s;")">
+                                                            @(_configNameCopyClicked ? _checkSvg : _copySvg)
+                                                        </SIcon>
                                                     </div>
                                                 </div>
                                             </MHover>
+                                            <div class="regular3--text btn d-flex">
+                                                <span>|</span>
+                                                <sapn class="ml-2">@configObject.FormatName</sapn>
+                                            </div>
                                             <MSpacer></MSpacer>
                                             <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateJsonConfigAsync(configObject)">
                                                 @if (!configObject.IsEditing)
@@ -267,28 +259,20 @@
                                             }
                                             <MHover Context="hContext">
                                                 <div @attributes=hContext.Attrs class="hover-pointer d-flex align-center">
-                                                    @configObject.Name
-                                                    <FadeTransition>
-                                                        <ShowTransitionElement Value="hContext.Hover">
-                                                            <MButton StopPropagation Class="m-btn--copy" Icon
-                                                             OnClick="()=>Copy(configObject.Name)">
-                                                                @if (_configNameCopyClicked)
-                                                                {
-                                                                    <SIcon Size="18" Color="success">mdi-check</SIcon>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <SIcon Tooltip="@T("Copy name")" Size="18" Color="grey">mdi-content-copy</SIcon>
-                                                                }
-                                                            </MButton>
-                                                        </ShowTransitionElement>
-                                                    </FadeTransition>
-                                                </div>
-                                                <div class="regular3--text btn" style="@(hContext.Hover ? "position: absolute; left: 80px; transition: 0.5s;" : "position: absolute; left: 48px; transition: 0.5s;")">
-                                                    <span class="ml-3">|</span>
-                                                    <sapn class="ml-2">@configObject.FormatName</sapn>
+                                                    <span class="mr-2">@configObject.Name</span>
+                                                    <div @onclick="()=>Copy(configObject.Name)" @onclick:stopPropagation>
+                                                        <SIcon Tooltip="@T("Copy name")"
+                                                            Color="@(_configNameCopyClicked ? "success" : "gray")"
+                                                            Style="@(hContext.Hover ? "width: 18px; height: 18px; margin-right: 12px; transition: 0.5s;" : "opacity:0; width: 18px; height: 0px; margin-left: -24px; transition: 0.4s;")">
+                                                            @(_configNameCopyClicked ? _checkSvg : _copySvg)
+                                                        </SIcon>
+                                                    </div>
                                                 </div>
                                             </MHover>
+                                            <div class="regular3--text btn d-flex">
+                                                <span>|</span>
+                                                <sapn class="ml-2">@configObject.FormatName</sapn>
+                                            </div>
                                             <MSpacer></MSpacer>
                                             @if (!configObject.FromRelation)
                                             {
@@ -505,29 +489,21 @@
                                                 }
                                             }
                                             <MHover Context="hContext">
-                                                <div @attributes=hContext.Attrs class="hover-pointer d-flex align-center" style="position: relative;">
-                                                    @configObject.Name
-                                                    <FadeTransition>
-                                                        <ShowTransitionElement Value="hContext.Hover">
-                                                            <MButton StopPropagation Class="m-btn--copy" Icon
-                                                             OnClick="()=>Copy(configObject.Name)">
-                                                                @if (_configNameCopyClicked)
-                                                                {
-                                                                    <SIcon Size="18" Color="success">mdi-check</SIcon>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <SIcon Tooltip="@T("Copy name")" Size="18" Color="grey">mdi-content-copy</SIcon>
-                                                                }
-                                                            </MButton>
-                                                        </ShowTransitionElement>
-                                                    </FadeTransition>
-                                                </div>
-                                                <div class="regular3--text btn" style="@(hContext.Hover ? "position: absolute; left: 80px; transition: 0.5s;" : "position: absolute; left: 48px; transition: 0.5s;")">
-                                                    <span class="ml-3">|</span>
-                                                    <sapn class="ml-2">@configObject.FormatName</sapn>
+                                                <div @attributes=hContext.Attrs class="hover-pointer d-flex align-center">
+                                                    <span class="mr-2">@configObject.Name</span>
+                                                    <div @onclick="()=>Copy(configObject.Name)" @onclick:stopPropagation>
+                                                        <SIcon Tooltip="@T("Copy name")"
+                                                            Color="@(_configNameCopyClicked ? "success" : "gray")"
+                                                            Style="@(hContext.Hover ? "width: 18px; height: 18px; margin-right: 12px; transition: 0.5s;" : "opacity:0; width: 18px; height: 0px; margin-left: -24px; transition: 0.4s;")">
+                                                            @(_configNameCopyClicked ? _checkSvg : _copySvg)
+                                                        </SIcon>
+                                                    </div>
                                                 </div>
                                             </MHover>
+                                            <div class="regular3--text btn d-flex">
+                                                <span>|</span>
+                                                <sapn class="ml-2">@configObject.FormatName</sapn>
+                                            </div>
                                             <MSpacer></MSpacer>
                                             <MButton StopPropagation Icon Class="mr-4" OnClick="()=> UpdateOtherConfigObjectContentAsync(configObject)">
                                                 @if (!configObject.IsEditing)
@@ -542,9 +518,9 @@
                                             </MButton>
                                             @if (ConfigObjectType == ConfigObjectType.App && configObject.FromRelation == false)
                                             {
-                                                <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><SIcon Tooltip="@("Clone")" Size="20" Color="#323D6F">fas fa-copy</SIcon></MButton>
+                                                <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowCloneModalAsync(configObject)"><SIcon Tooltip="@T("Clone")" Size="20" Color="#323D6F">fas fa-copy</SIcon></MButton>
                                             }
-                                            <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><SIcon Tooltip="@("Publish")" Color="#323D6F">mdi-send</SIcon></MButton>
+                                            <MButton Disabled="configObject.IsEditing" StopPropagation Icon Class="mr-4" OnClick="()=>ShowReleaseModalAsync(configObject)"><SIcon Tooltip="@T("Publish")" Color="#323D6F">mdi-send</SIcon></MButton>
                                             <MMenu OffsetY>
                                                 <ActivatorContent>
                                                     <MButton Disabled="configObject.IsEditing" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
@@ -664,7 +640,7 @@
                     <STextField Class="mt-12" Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></STextField>
                     <MTextarea Class="mt-6" Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
                     <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
-                @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
+                    @if (_selectConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
                     <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
                         <MDataTable Headers="ReleaseHeaders"

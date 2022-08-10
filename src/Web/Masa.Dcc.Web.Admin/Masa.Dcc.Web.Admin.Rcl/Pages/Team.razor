@@ -54,7 +54,7 @@
                                                                 @project.Name
                                                             </span>
                                                         </MHover>
-                                                        <div class="regular3--text btn d-flex" style="padding:0">
+                                                        <div class="mt-1 regular3--text btn d-flex" style="padding:0">
                                                             @{
                                                                 string backgroundColor;
                                                                 switch (project.LabelCode.ToLower())
@@ -76,7 +76,7 @@
                                                             <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px;">
                                                                 @project.LabelName
                                                             </div>
-                                                            @project.Identity
+                                                            <span class="regular3--text body2">@project.Identity</span>
                                                             <span class="ml-2 regular3--text body2">|</span>
                                                             <sapn class="ml-1 regular3--text body2">@T("AppCount"):@apps.Count</sapn>
                                                         </div>

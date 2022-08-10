@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Dcc.ApiGateways.Caller;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Masa.Dcc.Caller;
 
 public abstract class DccHttpClientCallerBase : HttpClientCallerBase

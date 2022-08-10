@@ -62,6 +62,7 @@
   "Release name": "发布名称",
   "Description": "描述",
   "Changed configuration": "变更的配置",
+  "Create config object": "添加配置对象",
   "Create config object item": "添加配置项",
   "Config object name": "配置对象名称",
   "Current": "当前",
@@ -114,5 +115,10 @@
   "Edit": "编辑",
   "Add config item": "添加配置项",
   "More": "更多",
-  "Copy name": "复制名称"
+  "Copy name": "复制名称",
+  "Edit in": "编辑于",
+  "Edit label": "编辑标签",
+  "Add label": "新增标签",
+  "Label": "标签",
+  "Label values": "标签值"
 }

@@ -1,13 +1,13 @@
 ﻿@page "/Label"
 @inherits MasaCompontentBase
 
-<MTextField @bind-Value="_typeName" OnKeyDown="SearchAsync" Class="rounded-2" Height="40" Flat Solo Placeholder="@T("Search")">
+<MTextField @bind-Value="_typeName" HideDetails="true" Dense OnKeyDown="SearchAsync" Class="rounded-2" Height="40" Flat Solo Placeholder="@T("Search")">
     <PrependInnerContent>
         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
     </PrependInnerContent>
 </MTextField>
 
-<MRow NoGutters Style="margin: 0 -12px !important">
+<MRow NoGutters Style="margin: 12px -12px !important">
     @foreach (var labelGroup in _labels.GroupBy(l => l.TypeCode))
     {
         var label = labelGroup.FirstOrDefault() ?? new();
@@ -36,9 +36,9 @@
                         }
                     </MChipGroup>
                     <div class="mx-2 d-flex justify-end regular3--text btn text-overflow" style="margin:16px 0 0 0;">
-                        <span style="font-size: 12px; color: #323D6F;">叶子</span>
+                        <span style="font-size: 12px; color: #323D6F;">@label.ModifierName</span>
                         <span class="mx-2" style="color:#E2E7F4">|</span>
-                        <span style="font-size: 12px; color: #A3AED0;">编辑于1小时前</span>
+                        <span style="font-size: 12px; color: #A3AED0;">@T("Edit in") @label.ModificationTime.Humanize(utcDate: true, culture:I18n.Culture)</span>
                     </div>
                 </div>
             </MCard>
@@ -49,26 +49,26 @@
             <MCard Ripple=false OnClick="()=>ShowLabelModal(null)" @attributes="hoverContext.Attrs" Elevation="@(hoverContext.Hover ? 6 : 0)" Class="hover-pointer ma-3 d-flex justify-center align-center" Outlined MinHeight="242" Style="border-radius:16px !important; border: none;">
                 <div>
                     <MIcon Color="#323D6F">mdi-plus-circle-outline</MIcon>
-                    <span style="color: #323D6F; font-size: 18px;">新增标签</span>
+                    <span style="color: #323D6F; font-size: 18px;">@T("Add label")</span>
                 </div>
             </MCard>
         </MHover>
-    </MCol>
+    </MCol> 
 </MRow>
 
-<SSheetDialog Value="_labelModal.Visible" ValueChanged="LabelModalValueChanged" Title="@T("Edit")" Icon="mdi-circle" IconColor="success">
+<SSheetDialog Value="_labelModal.Visible" ValueChanged="LabelModalValueChanged" Title="@(_labelModal.HasValue ? T("Edit label") : T("Add label"))" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_labelModal.Data">
-        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px; overflow: hidden;">
+        <div class="d-flex flex-column" style="width:100%; height:100%; padding:  48px 228px; overflow: hidden;">
             <div class="full-height" style="overflow-y: auto;">
-                <p style="font-size:14px; font-weight:700; color:#1B2559">标签</p>
+                <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Label")</p>
                 <STextField Outlined @bind-Value="_labelModal.Data.TypeName" Label="TypeName"></STextField>
                 <STextField Disabled="_labelModal.HasValue" Class="mt-12" Outlined @bind-Value="_labelModal.Data.TypeCode" Label="TypeCode"></STextField>
-                <p class="mt-12" style="font-size:14px; font-weight:700; color:#1B2559">标签值</p>
+                <p class="mt-12" style="font-size:14px; font-weight:700; color:#1B2559">@T("Label values")</p>
                 <div style="border-radius: 8px; border: 1px solid #E2E7F4;" class="py-3">
                     <MRow Style="color: #A3AED0; font-size: 14px;" Class="px-6" NoGutters>
                         <span style="width: 47.5%">Name</span>
                         <span style="width: 47.5%">Code</span>
-                        <span class="d-flex justify-center" style="width: 5%">操作</span>
+                        <span class="d-flex justify-center" style="width: 5%">@T("Operation")</span>
                     </MRow>
                     <MDivider Class="mt-3"></MDivider>
                     @foreach (var item in _labelValues)
@@ -83,7 +83,7 @@
                         </MRow>
                     }
                 </div>
-                <MTextarea Class="mt-12" Outlined Label="描述" @bind-Value="_labelModal.Data.Description"></MTextarea>
+                <MTextarea Class="mt-12" Outlined Label="@T("Description")" @bind-Value="_labelModal.Data.Description"></MTextarea>
             </div>
             <div class="d-flex justify-space-between align-end" style="width:100%;">
                 <SButton Text Color="error" Small OnClick="()=>RemoveLabelAsync(_labelModal.Data.TypeCode)">@T("Delete")</SButton>

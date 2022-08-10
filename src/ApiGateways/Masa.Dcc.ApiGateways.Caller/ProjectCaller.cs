@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Caller
 {
-    public class ProjectCaller : HttpClientCallerBase
+    public class ProjectCaller : DccHttpClientCallerBase
     {
         private readonly string _prefix = "/api/v1/project";
 

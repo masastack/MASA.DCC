@@ -42,6 +42,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (firstRender)
             {
                 _labels = await GetListAsync();
+
                 StateHasChanged();
             }
         }
@@ -49,6 +50,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task<List<LabelDto>> GetListAsync()
         {
             var labels = await LabelCaller.GetListAsync();
+
+            var users = await AuthClient.UserService.GetUserPortraitsAsync(labels.Select(l => l.Modifier).ToArray());
+            foreach (var label in labels)
+            {
+                label.ModifierName = users.FirstOrDefault(user => user.Id == label.Modifier)?.Name ?? "";
+            }
 
             return labels;
         }
@@ -159,9 +166,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private void LabelModalValueChanged(bool value)
         {
+            _labelModal.Visible = value;
             if (!value)
             {
-                _labelModal.Hide();
+                _labelModal.Data = new();
                 _labelValues.Clear();
             }
         }

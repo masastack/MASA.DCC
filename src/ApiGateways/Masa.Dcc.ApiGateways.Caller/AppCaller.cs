@@ -12,8 +12,6 @@ namespace Masa.Dcc.Caller
             Name = nameof(AppCaller);
         }
 
-        protected override string BaseAddress { get; set; } = "";
-
         public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int Id)
         {
             var result = await CallerProvider.GetAsync<AppDetailModel>($"api/v1/appWithEnvCluster/{Id}");

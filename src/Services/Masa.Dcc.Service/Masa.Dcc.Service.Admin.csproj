@@ -19,6 +19,7 @@
 	<ItemGroup>
 		<PackageReference Include="Mapster" Version="7.3.0" />
 		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="0.6.0-preview.3" />
+		<PackageReference Include="Masa.Contrib.Authentication.Identity" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Contrib.Data.Contracts.EFCore" Version="0.6.0-preview.3" />
 		<PackageReference Include="Masa.Contrib.Data.EFCore.SqlServer" Version="0.6.0-preview.3" />

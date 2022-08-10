@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.ApiGateways.Caller
 {
-    public class LabelCaller : HttpClientCallerBase
+    public class LabelCaller : DccHttpClientCallerBase
     {
         private readonly string _prefix = "/api/v1/labels";
 
@@ -36,6 +36,11 @@ namespace Masa.Dcc.ApiGateways.Caller
         public async Task UpdateAsync(UpdateLabelDto dto)
         {
             await CallerProvider.PutAsync(_prefix, dto);
+        }
+
+        public async Task RemoveAsync(string typeCode)
+        {
+            await CallerProvider.DeleteAsync($"{_prefix}/{typeCode}", null);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<MChip Ripple=false Small Outlined Class="@Class" Style="@Style">
+﻿<MChip OnClick="OnClick" Ripple=false Small Outlined Class="@Class" Style="@Style">
     <div class="@($"{EnvironmentColor}--text")">@EnvironmentName</div>&nbsp;&nbsp;
     <div style="color:#05CD99">@ClusterName</div>
 </MChip>
@@ -18,4 +18,7 @@
 
     [Parameter]
     public string ClusterName { get; set; } = "";
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
 }

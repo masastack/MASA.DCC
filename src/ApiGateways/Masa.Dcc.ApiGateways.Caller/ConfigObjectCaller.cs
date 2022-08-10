@@ -1,11 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Dcc.Contracts.Admin.App.Enums;
-
 namespace Masa.Dcc.ApiGateways.Caller
 {
-    public class ConfigObjectCaller : HttpClientCallerBase
+    public class ConfigObjectCaller : DccHttpClientCallerBase
     {
         private readonly string _prefix = "/api/v1";
 
@@ -13,8 +11,6 @@ namespace Masa.Dcc.ApiGateways.Caller
         {
             Name = nameof(ConfigObjectCaller);
         }
-
-        protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
 
         public async Task<BizConfigDto> GetBizConfigAsync(string identity)
         {

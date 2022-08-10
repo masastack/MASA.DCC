@@ -25,5 +25,11 @@ namespace Masa.Dcc.Service.Admin.Application.Label
         {
             await _labelDomainService.UpdateLabelAsync(command.LabelDto);
         }
+
+        [EventHandler]
+        public async Task RemoveLabelAsync(RemoveLabelCommand command)
+        {
+            await _labelDomainService.RemoveLaeblAsync(command.TypeCode);
+        }
     }
 }

@@ -735,3 +735,17 @@ input::-webkit-input-placeholder {
 .m-expansion-panel-header {
     padding: 20px 24px !important;
 }
+
+.env-cluster-chip-group .m-slide-group__prev {
+    width: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    margin-right: 8px;
+}
+
+.env-cluster-chip-group .m-slide-group__next {
+    width: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    margin-left: 8px;
+}

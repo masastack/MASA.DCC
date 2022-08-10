@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Dcc.ApiGateways.Caller;
+
 var builder = WebApplication.CreateBuilder(args);
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
@@ -16,6 +18,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMasaOpenIdConnect(builder.Configuration);
 builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
 
+builder.Services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
 builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
 
 var app = builder.Build();

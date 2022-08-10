@@ -7,7 +7,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
     {
         public bool Visible { get; set; }
 
-        public T Data { get; private set; }
+        public T Data { get; set; }
 
         public bool HasValue { get; private set; }
 

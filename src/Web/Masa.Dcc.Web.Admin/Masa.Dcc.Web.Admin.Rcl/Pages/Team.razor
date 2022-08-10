@@ -31,28 +31,30 @@
         <MTabItem>
             <div class="d-flex">
                 <div class="pr-6" style="width: calc(100% - 300px); display:block;">
-                    <div class="rounded-5 pa-6" style="background:#fff;overflow: hidden;">
-                        <div class="d-flex mb-6">
-                            <MTextField @bind-Value="_projectName" OnKeyDown="SearchProject" Class="rounded-2" Height="40" Flat Dense Solo BackgroundColor="fill-background" HideDetails="@("auto")" Placeholder="@T("Please enter the project name and press enter to query")">
+                    <div style="overflow: hidden;">
+                        <div class="d-flex mb-3">
+                            <MTextField @bind-Value="_projectName" OnKeyDown="SearchProject" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the project name and press enter to query")">
                                 <PrependInnerContent>
                                     <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                                 </PrependInnerContent>
                             </MTextField>
                         </div>
-                        <div style="margin:0 -24px; height: calc(100vh - 304px); overflow:auto;">
+                        <div class="mt-3" style="height: calc(100vh - 244px); overflow:auto;">
                             <MExpansionPanels Flat Accordion>
                                 @foreach (var project in _projects)
                                 {
                                     var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
-                                    <MExpansionPanel>
-                                        <MExpansionPanelHeader>
+                                    <MExpansionPanel Class="rounded-5 my-3">
+                                        <MExpansionPanelHeader Style="height: 56px;" Class="my-6">
                                             <ChildContent>
-                                                <span style="display:flex;align-items:center;margin-right:10px;">
-                                                    <div class="emphasis--text h6" @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)">
-                                                        @project.Name
-                                                        <span class="ml-2 regular3--text btn">|</span>
-                                                        <sapn class="ml-1 regular3--text btn">@T("AppCount"):@apps.Count</sapn>
-                                                        <div class="regular3--text btn d-flex" style="padding:0">
+                                                <span style="display:flex;align-items:center; margin-right:10px;">
+                                                    <div class="emphasis--text h6">
+                                                        <MHover Context="hoverContext">
+                                                            <span @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)" @attributes="hoverContext.Attrs" class="@(hoverContext.Hover ? "primary--text":"")">
+                                                                @project.Name
+                                                            </span>
+                                                        </MHover>
+                                                        <div class="mt-1 regular3--text btn d-flex" style="padding:0">
                                                             @{
                                                                 string backgroundColor;
                                                                 switch (project.LabelCode.ToLower())
@@ -74,7 +76,9 @@
                                                             <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px;">
                                                                 @project.LabelName
                                                             </div>
-                                                            @project.Identity
+                                                            <span class="regular3--text body2">@project.Identity</span>
+                                                            <span class="ml-2 regular3--text body2">|</span>
+                                                            <sapn class="ml-1 regular3--text body2">@T("AppCount"):@apps.Count</sapn>
                                                         </div>
                                                     </div>
                                                 </span>
@@ -90,36 +94,33 @@
                                                 @foreach (var app in apps.Where(app => app.IsPinned).Take(3))
                                                 {
                                                     <MCol Lg="4" Md="6" Sm="12">
-                                                        <AppCard OnPinClick="()=>AppPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                                            <MMenu Transition="slide-y-transition" Bottom>
-                                                                <ActivatorContent>
-                                                                    <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4" Icon Width="24" Height="24">
-                                                                        <MIcon Color="black">mdi-dots-horizontal</MIcon>
-                                                                    </MButton>
-                                                                </ActivatorContent>
-
-                                                                <ChildContent>
-                                                                    <MList Dense>
-                                                                        @foreach (var item in app.EnvironmentClusters)
-                                                                        {
-                                                                            <MListItem OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, item.Id, ConfigObjectType.App))">
-                                                                                <MListItemContent>
-                                                                                    <MListItemTitle>
-                                                                                        <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
-                                                                                        <span>@item.ClusterName</span>
-                                                                                    </MListItemTitle>
-                                                                                </MListItemContent>
-                                                                            </MListItem>
-                                                                        }
-                                                                    </MList>
-                                                                </ChildContent>
-                                                            </MMenu>
+                                                        <AppCard OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, app.EnvironmentClusters[0].Id, ConfigObjectType.App))" OnPinClick="()=>AppPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                                            <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                                                @foreach (var item in app.EnvironmentClusters)
+                                                                {
+                                                                    <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, item.Id, ConfigObjectType.App))"
+                                                                        Style="margin:0 12px 1px 0;"
+                                                                        EnvironmentName="@item.EnvironmentName"
+                                                                        EnvironmentColor="@item.EnvironmentColor"
+                                                                        ClusterName="@item.ClusterName" />
+                                                                }
+                                                            </MChipGroup>
                                                         </AppCard>
                                                     </MCol>
                                                 }
                                             </MRow>
+                                            <div class="d-flex justify-end align-flex-end mt-3 mb-2">
+                                                <MHover>
+                                                    @{
+                                                        var mClass = $"{(context.Hover ? "primary--text" : "regular2--text")}";
+                                                        <div @onclick="()=>NavigateToAppAsync(project.Id)" @attributes="context.Attrs" class="@($"hover-pointer btn {mClass}")">
+                                                            @T("More")
+                                                            <MIcon Class="@($"ml-1 {mClass}")" Size="18">mdi-chevron-right</MIcon>
+                                                        </div>
+                                                    }
+                                                </MHover>
+                                            </div>
                                         </MExpansionPanelContent>
-                                        <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
                                     </MExpansionPanel>
                                 }
 

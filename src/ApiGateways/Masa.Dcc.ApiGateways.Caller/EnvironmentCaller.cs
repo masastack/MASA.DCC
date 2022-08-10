@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Caller
 {
-    public class EnvironmentCaller : HttpClientCallerBase
+    public class EnvironmentCaller : DccHttpClientCallerBase
     {
         private readonly string _prefix = "/api/v1/env";
 
@@ -11,8 +11,6 @@ namespace Masa.Dcc.Caller
         {
             Name = nameof(EnvironmentCaller);
         }
-
-        protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
 
         public async Task<EnvironmentDetailModel> GetAsync(int Id)
         {

@@ -24,7 +24,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public string Style { get; set; } = "height: calc(100vh - 192px);";
 
         [Parameter]
-        public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 304px);";
+        public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 244px);";
 
         [Inject]
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
@@ -46,6 +46,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         [Inject]
         public IUserContext UserContext { get; set; } = default!;
+
+        [Inject]
+        public IJSRuntime Js { get; set; } = default!;
 
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();
@@ -77,6 +80,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         };
         private Action _handleRollbackOnClickAfter = () => { };
         private string? _cultureName;
+        private bool _configNameCopyClicked;
+        private string _checkSvg = "M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z";
+        private string _copySvg = "M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z";
+
 
         #region clone
         private bool _showCloneModal;
@@ -1054,6 +1061,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
                 _afterAllCloneConfigObjects.AddRange(configObjects);
             }
+
+            CloneEnvClusterValueChanged(_cloneSelectApp.EnvironmentClusters.Select(ec => (StringNumber)ec.Id).ToList());
         }
 
         private void ClonePrevClick()
@@ -1281,6 +1290,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (_relation != null)
                 await _relation.InitDataAsync();
+        }
+
+        private async Task Copy(string value)
+        {
+            _configNameCopyClicked = true;
+
+            await Js.InvokeVoidAsync(JsInteropConstants.Copy, value);
+
+            await Task.Delay(500);
+
+            _configNameCopyClicked = false;
         }
     }
 }

@@ -11,6 +11,7 @@ namespace Masa.Dcc.Service.Admin.Services
             App.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync);
             App.MapPost("api/v1/labels", AddAsync);
             App.MapPut("api/v1/labels", UpdateAsync);
+            App.MapDelete("api/v1/labels/{typeCode}", RemoveAsync);
         }
 
         public async Task<List<LabelDto>> GetLabelsByTypeCodeAsync(IEventBus eventBus, string typeCode)
@@ -37,6 +38,11 @@ namespace Masa.Dcc.Service.Admin.Services
         public async Task UpdateAsync(IEventBus eventBus, UpdateLabelDto dto)
         {
             await eventBus.PublishAsync(new UpdateLabelCommand(dto));
+        }
+
+        public async Task RemoveAsync(IEventBus eventBus, string typeCode)
+        {
+            await eventBus.PublishAsync(new RemoveLabelCommand(typeCode));
         }
     }
 }

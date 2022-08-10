@@ -22,7 +22,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
         {
             if (!labelDto.LabelValues.Any())
             {
-                throw new UserFriendlyException("");
+                throw new UserFriendlyException("Label values can not be null");
             }
             else
             {
@@ -64,6 +64,14 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
                 await _labelRepository.AddRangeAsync(labels);
                 await _distributedCacheClient.SetAsync(labelDto.TypeCode, labels.Adapt<List<LabelDto>>());
             }
+        }
+
+        public async Task RemoveLaeblAsync(string typeCode)
+        {
+            var labels = await _labelRepository.GetListAsync(label => label.TypeCode == typeCode) ?? throw new UserFriendlyException("Label does not exist");
+            await _labelRepository.RemoveRangeAsync(labels);
+
+            await _distributedCacheClient.RemoveAsync<List<LabelDto>>(typeCode);
         }
     }
 }

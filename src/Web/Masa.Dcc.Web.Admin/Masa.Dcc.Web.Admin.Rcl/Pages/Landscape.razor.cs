@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
-    public partial class Landscape
+    public partial class Landscape : IDisposable
     {
         [Inject]
         public IPopupService PopupService { get; set; } = default!;
@@ -20,6 +20,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public AppCaller AppCaller { get; set; } = default!;
 
+        [Inject]
+        public NavigationManager NavigationManager { get; set; } = default!;
+
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
@@ -31,13 +34,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<Model.AppModel> _apps = new();
         private ConfigComponentModel _configModel = new();
         private AppComponentModel _appModel = new();
+        private List<TeamModel> _allTeams = new();
         private App? _app;
         private Config? _config;
+
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
+                NavigationManager.LocationChanged += HandleLocationChanged;
+
+                _allTeams = await AuthClient.TeamService.GetAllAsync();
                 _environments = await EnvironmentCaller.GetListAsync();
                 if (_environments.Any())
                 {
@@ -47,6 +55,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     StateHasChanged();
                 }
             }
+        }
+
+        private async void HandleLocationChanged(object? sender, LocationChangedEventArgs args)
+        {
+            await TabValueChangedAsync(0);
+
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task<List<ClusterModel>> GetClustersByEnvIdAsync(int envId, bool isFetchProjects = true)
@@ -126,6 +141,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else if (_curTab == 1 && _app != null)
             {
+                _configDisabled = true;
                 await _app.InitDataAsync();
             }
             else if (_curTab == 2 && _config != null)
@@ -166,6 +182,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _configModel = new(model.AppId, model.EnvClusterId, model.ConfigObjectType, project.Identity, project.Id);
 
             await TabValueChangedAsync(2);
+        }
+
+        public void Dispose()
+        {
+            NavigationManager.LocationChanged -= HandleLocationChanged;
         }
     }
 }

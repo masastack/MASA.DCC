@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Caller
 {
-    public class ClusterCaller : HttpClientCallerBase
+    public class ClusterCaller : DccHttpClientCallerBase
     {
         private readonly string _prefix = "/api/v1/cluster";
 
@@ -11,8 +11,6 @@ namespace Masa.Dcc.Caller
         {
             Name = nameof(ClusterCaller);
         }
-
-        protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
 
         public async Task<List<ClusterModel>> GetListByEnvIdAsync(int envId)
         {

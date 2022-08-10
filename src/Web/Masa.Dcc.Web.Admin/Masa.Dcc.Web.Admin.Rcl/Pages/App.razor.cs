@@ -59,7 +59,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         };
 
-        private IEnumerable<Func<string, StringBoolean>> _bizNameRules => new List<Func<string, StringBoolean>>
+        private IEnumerable<Func<string, StringBoolean>> BizNameRules => new List<Func<string, StringBoolean>>
         {
             _requiredRule,
             _counterRule,
@@ -101,12 +101,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task UpdateBizAsync()
         {
-            foreach (var ruleFunc in _bizNameRules)
+            foreach (var ruleFunc in BizNameRules)
             {
                 var value = ruleFunc.Invoke(_bizDetail.Name).Value;
-                if (value is string errorMsg)
+                if (value is string)
                 {
-                    await PopupService.ToastErrorAsync(errorMsg);
                     return;
                 }
             }

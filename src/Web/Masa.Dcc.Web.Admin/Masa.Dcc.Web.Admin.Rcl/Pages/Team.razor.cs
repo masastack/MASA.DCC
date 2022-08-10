@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Microsoft.AspNetCore.Components.Routing;
+
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Team
@@ -29,6 +31,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public LabelCaller LabelCaller { get; set; } = default!;
 
+        [Inject]
+        public NavigationManager NavigationManager { get; set; } = default!;
+
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
@@ -41,6 +46,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private Config? _config;
         private TeamDetailModel _userTeam = new();
 
+        protected override void OnInitialized()
+        {
+            NavigationManager.LocationChanged += HandleLocationChanged;
+
+            base.OnInitialized();
+        }
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (!string.IsNullOrEmpty(TeamId) && Guid.Parse(TeamId) != _userTeam.Id)
@@ -49,6 +61,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 await InitDataAsync();
                 StateHasChanged();
             }
+        }
+
+        private async void HandleLocationChanged(object? sender, LocationChangedEventArgs args)
+        {
+            await TabValueChangedAsync(0);
+
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task InitDataAsync()
@@ -103,8 +122,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _curTab = value;
 
-            StateHasChanged();
-
             if (_curTab == 0)
             {
                 await InitDataAsync();
@@ -122,6 +139,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task NavigateToAppAsync(int projectId)
         {
             _teamDetailDisabled = false;
+            _configDisabled = true;
 
             var apps = _apps.Where(app => app.ProjectId == projectId);
             _appModel = new(projectId, apps.Count());
@@ -137,6 +155,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _configModel = new(model.AppId, model.EnvClusterId, model.ConfigObjectType, project.Identity, project.Id);
 
             await TabValueChangedAsync(2);
+
+            await InvokeAsync(StateHasChanged);
         }
 
         public async Task NavigateToConfigAsync(NavigateToConfigModel model)

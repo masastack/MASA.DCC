@@ -10,7 +10,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public int Id { get; set; }
 
         [Required]
-        [RegularExpression(@"^[\u4E00-\u9FA5A-Za-z0-9_-.]+$", ErrorMessage = "Please enter [Chinese, English、and - _ . symbols] ")]
+        [RegularExpression(@"^[\u4E00-\u9FA5A-Za-z0-9_-.]+$", ErrorMessage = "Please enter [Chinese、Number、 English、and - _ . symbols] ")]
         [StringLength(50, MinimumLength = 2)]
         public string Name { get; set; } = "";
 

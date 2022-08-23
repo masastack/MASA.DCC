@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Microsoft.AspNetCore.Components.Routing;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Team
@@ -34,87 +32,38 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public NavigationManager NavigationManager { get; set; } = default!;
 
+        private int _projectCount;
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
-        private List<ProjectModel> _projects = new();
         private List<Model.AppModel> _apps = new();
         private string _projectName = "";
         private ConfigComponentModel _configModel = new();
         private AppComponentModel _appModel = new();
         private App? _app;
         private Config? _config;
+        private ProjectList? _projectListComponent;
         private TeamDetailModel _userTeam = new();
 
-        protected override void OnInitialized()
+        protected override async Task OnParametersSetAsync()
         {
-            NavigationManager.LocationChanged += HandleLocationChanged;
-
-            base.OnInitialized();
-        }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (!string.IsNullOrEmpty(TeamId) && Guid.Parse(TeamId) != _userTeam.Id)
+            if (TeamId != _userTeam.Id.ToString())
             {
+                await TabValueChangedAsync(0);
                 _userTeam = await AuthClient.TeamService.GetDetailAsync(Guid.Parse(TeamId)) ?? new();
-                await InitDataAsync();
-                StateHasChanged();
             }
         }
 
-        private async void HandleLocationChanged(object? sender, LocationChangedEventArgs args)
+        private void GetProjectCount(int projectCount)
         {
-            await TabValueChangedAsync(0);
-
-            await InvokeAsync(StateHasChanged);
-        }
-
-        private async Task InitDataAsync()
-        {
-            _projects = await ProjectCaller.GetListByTeamIdAsync(new List<Guid> { _userTeam.Id });
-            var projectIds = _projects.Select(project => project.Id).ToList();
-            _apps = await GetAppByProjectIdAsync(projectIds);
-        }
-
-        private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
-        {
-            var apps = await AppCaller.GetListByProjectIdsAsync(projectIds.ToList());
-            var appPins = await AppCaller.GetAppPinListAsync();
-
-            var result = from app in apps
-                         join appPin in appPins on app.Id equals appPin.AppId into appGroup
-                         from newApp in appGroup.DefaultIfEmpty()
-                         select new Model.AppModel
-                         {
-                             ProjectId = app.ProjectId,
-                             Id = app.Id,
-                             Name = app.Name,
-                             Identity = app.Identity,
-                             Description = app.Description,
-                             Type = app.Type,
-                             ServiceType = app.ServiceType,
-                             Url = app.Url,
-                             SwaggerUrl = app.SwaggerUrl,
-                             EnvironmentClusters = app.EnvironmentClusters,
-                             IsPinned = newApp != null
-                         };
-
-            return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).ToList();
+            _projectCount = projectCount;
         }
 
         private async Task SearchProject(KeyboardEventArgs args)
         {
-            if (args.Key == "Enter")
+            if (args.Key == "Enter" && _projectListComponent != null)
             {
-                if (!string.IsNullOrWhiteSpace(_projectName))
-                {
-                    _projects = _projects.Where(project => project.Name.ToLower().Contains(_projectName.ToLower())).ToList();
-                }
-                else
-                {
-                    await InitDataAsync();
-                }
+                await _projectListComponent.SearchProjectsByNameAsync(_projectName);
             }
         }
 
@@ -122,11 +71,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _curTab = value;
 
-            if (_curTab == 0)
-            {
-                await InitDataAsync();
-            }
-            else if (_curTab == 1 && _app != null)
+            if (_curTab == 1 && _app != null)
             {
                 await _app.InitDataAsync();
             }
@@ -142,33 +87,29 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _configDisabled = true;
 
             var apps = _apps.Where(app => app.ProjectId == projectId);
-            _appModel = new(projectId, apps.Count());
+            _appModel = new(projectId);
 
             await TabValueChangedAsync(1);
         }
 
-        public async Task AppNavigateToConfigAsync(NavigateToConfigModel model)
+        public async Task AppNavigateToConfigAsync(ConfigComponentModel model)
         {
             _teamDetailDisabled = false;
             _configDisabled = false;
-            var project = _projects.First(project => project.Id == model.ProjectId);
-            _configModel = new(model.AppId, model.EnvClusterId, model.ConfigObjectType, project.Identity, project.Id);
+            _configModel = model;
 
             await TabValueChangedAsync(2);
 
             await InvokeAsync(StateHasChanged);
         }
 
-        public async Task NavigateToConfigAsync(NavigateToConfigModel model)
+        public async Task NavigateToConfigAsync(ConfigComponentModel model)
         {
             _teamDetailDisabled = false;
             _configDisabled = false;
 
-            var apps = _apps.Where(app => app.ProjectId == model.ProjectId);
-            _appModel = new(model.ProjectId, apps.Count());
-
-            var project = _projects.First(project => project.Id == model.ProjectId);
-            _configModel = new(model.AppId, model.EnvClusterId, model.ConfigObjectType, project.Identity, project.Id);
+            _configModel = model;
+            _appModel = new(model.ProjectId);
 
             await TabValueChangedAsync(2);
         }
@@ -176,14 +117,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task AppPinAsync(Model.AppModel app)
         {
             if (app.IsPinned)
-            {
                 await AppCaller.RemoveAppPinAsync(app.Id);
-            }
             else
-            {
                 await AppCaller.AddAppPinAsync(app.Id);
-            }
-            _apps = await GetAppByProjectIdAsync(new List<int>() { app.ProjectId });
         }
     }
 }

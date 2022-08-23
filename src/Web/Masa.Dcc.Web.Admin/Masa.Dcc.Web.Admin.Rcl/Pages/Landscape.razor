@@ -55,7 +55,6 @@
                                             <span>@env.Name</span>
                                         </ChildContent>
                                     </MTooltip>
-
                                 }
                             </MListItemGroup>
                         </MList>
@@ -70,7 +69,7 @@
                                     StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
                                     <MTooltip Top>
                                         <ActivatorContent>
-                                            <MTab @attributes="@context.Attrs" Style="height:40px; max-width:150px;" Value="envClusterId" OnClick="()=>GetProjectByEnvClusterIdAsync(cluster.EnvironmentClusterId)">
+                                            <MTab @attributes="@context.Attrs" Style="height:40px; max-width:150px;" Value="envClusterId">
                                                 <div class="text-overflow">@cluster.Name</div>
                                             </MTab>
                                         </ActivatorContent>
@@ -82,116 +81,18 @@
                             </MTabs>
                         </MCard>
                     </MRow>
-                    <div class="rounded-5 mt-3" style="height:calc(100vh - 292px ); display:flex; flex-direction:column; justify-content:space-between; overflow:auto;">
-                        <div>
-                            <MExpansionPanels Flat Accordion>
-                                @foreach (var project in _projects)
-                                {
-                                    var apps = _apps.Where(app => app.ProjectId == project.Id && app.EnvironmentClusters.Select(envCluster => envCluster.Id).Contains(_selectEnvClusterId.AsT1)).ToList();
-                                    <MExpansionPanel Class="rounded-5 my-3">
-                                        <MExpansionPanelHeader Style="height: 56px;" Class="my-6">
-                                            <ChildContent>
-                                                <span style="display:flex;align-items:center; margin-right:10px;">
-                                                    <div class="emphasis--text h6">
-                                                        <MHover Context="hoverContext">
-                                                            <span @onclick:stopPropagation @onclick="()=>NavigateToAppAsync(project.Id)" @attributes="hoverContext.Attrs" class="@(hoverContext.Hover ? "primary--text":"")">
-                                                                @project.Name
-                                                            </span>
-                                                        </MHover>
-                                                        <div class="mt-1 regul ar3--text body2 d-flex" style="padding:0">
-                                                            @{
-                                                                string backgroundColor;
-                                                                switch (project.LabelCode.ToLower())
-                                                                {
-                                                                    case "basicability":
-                                                                        backgroundColor = "#37D7AD";
-                                                                        break;
-                                                                    case "operator":
-                                                                        backgroundColor = "#FFB547";
-                                                                        break;
-                                                                    case "datafactory":
-                                                                        backgroundColor = "#5FB9FF";
-                                                                        break;
-                                                                    default:
-                                                                        backgroundColor = "#BDBDBD";
-                                                                        break;
-                                                                }
-                                                            }
-                                                            <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px;">
-                                                                @project.LabelName
-                                                            </div>
-                                                            <span class="regular3--text body2">@project.Identity</span>
-                                                            <span class="ml-2 regular3--text body2">|</span>
-                                                            <sapn class="ml-2 regular3--text body2">@T("AppCount"):@apps.Count</sapn>
-                                                        </div>
-                                                    </div>
-                                                </span>
-                                            </ChildContent>
-                                            <ActionsContent>
-                                                <MIcon Color="#485585">
-                                                    mdi-chevron-down
-                                                </MIcon>
-                                            </ActionsContent>
-                                        </MExpansionPanelHeader>
-                                        <MExpansionPanelContent>
-                                            <MRow>
-                                                @foreach (var app in apps.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).Take(6))
-                                                {
-                                                    @if (app.ProjectId == project.Id)
-                                                    {
-                                                        <MCol Lg="4" Md="6" Sm="12">
-                                                            <AppCard OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, app.EnvironmentClusters[0].Id, ConfigObjectType.App))" OnPinClick="()=>AppPin(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                                                <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
-                                                                    @foreach (var item in app.EnvironmentClusters)
-                                                                    {
-                                                                        <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, item.Id, ConfigObjectType.App))"
-                                                                        Style="margin:0 12px 1px 0;"
-                                                                        EnvironmentName="@item.EnvironmentName"
-                                                                        EnvironmentColor="@item.EnvironmentColor"
-                                                                        ClusterName="@item.ClusterName" />
-                                                                    }
-                                                                </MChipGroup>
-                                                            </AppCard>
-                                                        </MCol>
-                                                    }
-                                                }
-                                            </MRow>
-                                            <div class="d-flex justify-space-between align-flex-end mt-3 mb-2">
-                                                @{
-                                                    var team = _allTeams.FirstOrDefault(team => team.Id == project.TeamId) ?? new();
-                                                    <MTooltip Right>
-                                                        <ActivatorContent>
-                                                            <MAvatar Size="24" @attributes="@context.Attrs">
-                                                                <MImage Src="@team.Avatar"></MImage>
-                                                            </MAvatar>
-                                                        </ActivatorContent>
-                                                        <ChildContent>
-                                                            <span>@team.Name</span>
-                                                        </ChildContent>
-                                                    </MTooltip>
-                                                }
-                                                <MHover>
-                                                    @{
-                                                        var mClass = $"{(context.Hover ? "primary--text" : "regular2--text")}";
-                                                        <div @onclick="()=>NavigateToAppAsync(project.Id)" @attributes="context.Attrs" class="@($"hover-pointer btn {mClass}")">
-                                                            @T("More")
-                                                            <MIcon Class="@($"ml-1 {mClass}")" Size="18">mdi-chevron-right</MIcon>
-                                                        </div>
-                                                    }
-                                                </MHover>
-                                            </div>
-                                        </MExpansionPanelContent>
-                                    </MExpansionPanel>
-                                }
-                            </MExpansionPanels>
-                        </div>
+                    <div class="mt-6" style="height:calc(100vh - 304px ); display:flex; flex-direction:column; justify-content:space-between; overflow: hidden; position: relative;">
+                        <ProjectList LandscapePage
+                                     EnvironmentClusterId="_selectEnvClusterId.AsT1"
+                                     OnNameClick="NavigateToAppAsync"
+                                     OnAppCardClick="NavigateToConfigAsync"
+                                     OnAppPinClick="AppPin" />
                     </div>
                 </div>
             </div>
         </MTabItem>
         <MTabItem>
             <Masa.Dcc.Web.Admin.Rcl.Pages.App ProjectId="_appModel.ProjectId"
-                                              AppCount="_appModel.AppCount"
                                               @ref="_app">
             </Masa.Dcc.Web.Admin.Rcl.Pages.App>
         </MTabItem>

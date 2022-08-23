@@ -11,9 +11,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Parameter]
         public int AppCount { get; set; }
 
-        [Parameter]
-        public EventCallback<NavigateToConfigModel> OnNavigateToConfig { get; set; }
-
         [CascadingParameter]
         public Landscape? Landscape { get; set; }
 
@@ -48,7 +45,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private Func<string, StringBoolean> _counterRule = value => (value.Length <= 25 && value.Length > 0) ? true : "Biz config name length range is [1-25]";
         private Func<string, StringBoolean> _strRule = value =>
         {
-            Regex regex = new Regex(@"^[\u4E00-\u9FA5A-Za-z0-9`~@!$%^&*()_<>?:{}|,.\/;""·~！￥%……&*（）——\-+={}|《》？：“”【】、；]+$");
+            Regex regex = new Regex(@"^[\u4E00-\u9FA5A-Za-z0-9`~!@#%^&*()_\-+=<>?:""{}|,.\/;'\\[\]·~！￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]+$");
             if (!regex.IsMatch(value))
             {
                 return "Special symbols are not allowed";
@@ -125,7 +122,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task NavigateToConfigAsync(NavigateToConfigModel model)
+        private async Task NavigateToConfigAsync(ConfigComponentModel model)
         {
             if (Landscape != null)
             {

@@ -9,19 +9,22 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public EventCallback<int> OnNameClick { get; set; }
 
         [Parameter]
-        public EventCallback<NavigateToConfigModel> OnAppCardClick { get; set; }
+        public EventCallback<ConfigComponentModel> OnAppCardClick { get; set; }
 
         [Parameter]
         public EventCallback<Model.AppModel> OnAppPinClick { get; set; }
 
         [Parameter]
-        public bool LandscapePage { get; set; } = true;
+        public bool LandscapePage { get; set; }
 
         [Parameter]
         public int EnvironmentClusterId { get; set; }
 
         [Parameter]
         public Guid TeamId { get; set; }
+
+        [Parameter]
+        public EventCallback<int> FetchProjectCount { get; set; }
 
         [Inject]
         public ProjectCaller ProjectCaller { get; set; } = default!;
@@ -35,9 +38,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<ProjectModel> _backupProjects = new();
         public List<TeamModel> _allTeams = new();
         private List<Model.AppModel> _apps = new();
-        private ProjectDetailModel _projectDetail = new();
-        private UserPortraitModel _userInfo = new();
-        private List<int> _disableEnvironmentClusterIds = new();
         private bool _showProcess;
 
         protected override async Task OnParametersSetAsync()
@@ -51,6 +51,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 try
                 {
                     await InitDataAsync();
+
+                    if (FetchProjectCount.HasDelegate)
+                    {
+                        await FetchProjectCount.InvokeAsync(_projects.Count);
+                    }
                 }
                 finally
                 {
@@ -115,16 +120,34 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 await OnNameClick.InvokeAsync(projectId);
         }
 
-        private async Task HandleAppCardClick(NavigateToConfigModel model)
+        private async Task HandleAppCardClick(ConfigComponentModel model)
         {
             if (OnAppCardClick.HasDelegate)
+            {
+                model.ProjectIdentity = _projects.Find(project => project.Id == model.ProjectId)?.Identity ?? "";
                 await OnAppCardClick.InvokeAsync(model);
+            }
         }
 
         private async Task HandleAppPinClick(Model.AppModel model)
         {
             if (OnAppPinClick.HasDelegate)
+            {
                 await OnAppPinClick.InvokeAsync(model);
+                _apps = await GetAppByProjectIdAsync(new List<int>() { model.ProjectId });
+            }
+        }
+
+        public async Task SearchProjectsByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                await InitDataAsync();
+            }
+            else
+            {
+                _projects = _backupProjects.Where(project => project.Name.ToLower().Contains(name.ToLower())).ToList();
+            }
         }
     }
 }

@@ -12,7 +12,7 @@
                     @_projectDetail.Identity
                 </MRow>
                 <MRow NoGutters Class="mt-2 body2">
-                    @T("AppCount")：<span class="subtitle2">@AppCount</span>
+                    @T("AppCount")：<span class="subtitle2">@_apps.Count</span>
                 </MRow>
                 <MRow NoGutters Class="mt-4 body2">
                     @_projectDetail.Description
@@ -30,7 +30,7 @@
                         var envCluster = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id));
                         foreach (var item in envCluster)
                         {
-                            <EnvClusterChip Class="mt-4" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                                    <EnvClusterChip Class="mt-4" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
                         }
                     }
                 </div>
@@ -69,45 +69,18 @@
                 <MCardSubtitle Class="pb-0">
                     <div class="regular3--text body2 text-overflow mt-1">@_bizDetail.Identity</div>
                 </MCardSubtitle>
-                <MCardActions Class="pb-2 d-flex">
-                    <div style="overflow:hidden; height:64px; margin:0 16px 0 0;">
+                <MCardActions Class="pa-0 mx-4" Style="position: absolute; bottom: 16px; right: 0; left: 0;">
                         <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
                             @foreach (var item in _projectEnvClusters)
                             {
-                                <EnvClusterChip Class="mb-3"
-                                            OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(_bizDetail.Id, ProjectId,item.Id, ConfigObjectType.Biz))"
-                                            Style="margin:0 6px;"
-                                            EnvironmentName="@item.EnvironmentName"
-                                            EnvironmentColor="@item.EnvironmentColor"
-                                            ClusterName="@item.ClusterName">
-                                </EnvClusterChip>
+                                <EnvClusterChip
+                                    OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, item.Id, ConfigObjectType.Biz, ProjectId))"
+                                    Style="margin:0 6px;"
+                                    EnvironmentName="@item.EnvironmentName"
+                                    EnvironmentColor="@item.EnvironmentColor"
+                                    ClusterName="@item.ClusterName" />
                             }
                         </MChipGroup>
-                    </div>
-                    <MSpacer></MSpacer>
-                    <MMenu Transition="slide-y-transition" Bottom>
-                        <ActivatorContent>
-                            <MButton @attributes="@context.Attrs" Style="border: 1px solid #E2E7F4; margin:8px 12px;" Icon Width="24" Height="24">
-                                <MIcon Color="black">mdi-dots-horizontal</MIcon>
-                            </MButton>
-                        </ActivatorContent>
-
-                        <ChildContent>
-                            <MList Dense>
-                                @foreach (var item in _projectEnvClusters)
-                                {
-                                    <MListItem OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(_bizDetail.Id, ProjectId,item.Id, ConfigObjectType.Biz))">
-                                        <MListItemContent>
-                                            <MListItemTitle>
-                                                <span class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</span>&nbsp;
-                                                <span>@item.ClusterName</span>
-                                            </MListItemTitle>
-                                        </MListItemContent>
-                                    </MListItem>
-                                }
-                            </MList>
-                        </ChildContent>
-                    </MMenu>
                 </MCardActions>
             </MCard>
         </div>
@@ -125,20 +98,20 @@
                     @{
                         foreach (var app in _apps)
                         {
-                            <MCol Lg="4" Md="6" Sm="12">
-                                <AppCard OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, app.ProjectId, app.EnvironmentClusters[0].Id, ConfigObjectType.App))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                    <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
-                                        @foreach (var item in app.EnvironmentClusters)
+                                    <MCol Lg="4" Md="6" Sm="12">
+                                        <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                            <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                                @foreach (var item in app.EnvironmentClusters)
                                         {
-                                            <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new NavigateToConfigModel(app.Id, ProjectId, item.Id, ConfigObjectType.App))"
+                                                    <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"
                                                 Style="margin:0 12px 1px 0;"
                                                 EnvironmentName="@item.EnvironmentName"
                                                 EnvironmentColor="@item.EnvironmentColor"
                                                 ClusterName="@item.ClusterName" />
                                         }
-                                    </MChipGroup>
-                                </AppCard>
-                            </MCol>
+                                            </MChipGroup>
+                                        </AppCard>
+                                    </MCol>
                         }
                     }
                 </MRow>

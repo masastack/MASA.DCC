@@ -56,6 +56,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _selectEnvName = "";
         private EnvironmentClusterModel _selectCluster = new();
         private List<ConfigObjectModel> _configObjects = new();
+        private List<ConfigObjectModel> _backupConfigObjects = new();
         private List<StringNumber> _selectPanels = new();
         private string _configObjectName = "";
         private List<ConfigObjectPropertyModel> _selectConfigObjectAllProperties = new();
@@ -202,11 +203,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
             }
             return base.SetParametersAsync(parameters);
-        }
-
-        protected override void OnParametersSet()
-        {
-            base.OnParametersSet();
         }
 
         public async Task InitDataAsync()
@@ -433,6 +429,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
             });
 
+            _backupConfigObjects = new List<ConfigObjectModel>(_configObjects.ToArray());
             StateHasChanged();
         }
 
@@ -449,11 +446,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             config.ElevationTabPropertyContent.FormatLabelCode = "Properties";
         }
 
-        private async Task SearchConfigObjectAsync(KeyboardEventArgs args)
+        private void SearchConfigObject(KeyboardEventArgs args)
         {
             if (args.Key == "Enter")
             {
-                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType, _configObjectName);
+                if (!string.IsNullOrWhiteSpace(_configObjectName))
+                    _configObjects = _backupConfigObjects
+                    .Where(config => config.Name.ToLower().Contains(_configObjectName.ToLower()))
+                    .ToList();
+                else
+                    _configObjects = _backupConfigObjects;
             }
         }
 

@@ -34,10 +34,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<Model.AppModel> _apps = new();
         private ConfigComponentModel _configModel = new();
         private AppComponentModel _appModel = new();
-        private List<TeamModel> _allTeams = new();
         private App? _app;
         private Config? _config;
-
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -45,7 +43,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 NavigationManager.LocationChanged += HandleLocationChanged;
 
-                _allTeams = await AuthClient.TeamService.GetAllAsync();
                 _environments = await EnvironmentCaller.GetListAsync();
                 if (_environments.Any())
                 {
@@ -71,7 +68,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (_clusters.Any() && isFetchProjects)
             {
                 _selectEnvClusterId = _clusters[0].EnvironmentClusterId;
-                _projects = await GetProjectByEnvClusterIdAsync(_clusters[0].EnvironmentClusterId);
+            }
+            else
+            {
+                _selectEnvClusterId = 0;
             }
 
             return _clusters;
@@ -135,13 +135,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             StateHasChanged();
 
-            if (_curTab == 0)
+            if (_curTab == 1 && _app != null)
             {
-                await GetProjectByEnvClusterIdAsync(_selectEnvClusterId.AsT1);
-            }
-            else if (_curTab == 1 && _app != null)
-            {
-                _configDisabled = true;
                 await _app.InitDataAsync();
             }
             else if (_curTab == 2 && _config != null)
@@ -152,34 +147,32 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task NavigateToAppAsync(int projectId)
         {
-            _teamDetailDisabled = false;
+            if (projectId != _appModel.ProjectId)
+                _configDisabled = true;
 
-            var apps = _apps.Where(app => app.ProjectId == projectId);
-            _appModel = new(projectId, apps.Count());
+            _teamDetailDisabled = false;
+            _appModel = new(projectId);
 
             await TabValueChangedAsync(1);
         }
 
-        public async Task AppNavigateToConfigAsync(NavigateToConfigModel model)
+        public async Task AppNavigateToConfigAsync(ConfigComponentModel model)
         {
             _teamDetailDisabled = false;
             _configDisabled = false;
-            var project = _projects.First(project => project.Id == model.ProjectId);
-            _configModel = new(model.AppId, model.EnvClusterId, model.ConfigObjectType, project.Identity, project.Id);
+
+            _configModel = model;
 
             await TabValueChangedAsync(2);
         }
 
-        public async Task NavigateToConfigAsync(NavigateToConfigModel model)
+        public async Task NavigateToConfigAsync(ConfigComponentModel model)
         {
             _teamDetailDisabled = false;
             _configDisabled = false;
 
-            var apps = _apps.Where(app => app.ProjectId == model.ProjectId);
-            _appModel = new(model.ProjectId, apps.Count());
-
-            var project = _projects.First(project => project.Id == model.ProjectId);
-            _configModel = new(model.AppId, model.EnvClusterId, model.ConfigObjectType, project.Identity, project.Id);
+            _appModel = new(model.ProjectId);
+            _configModel = model;
 
             await TabValueChangedAsync(2);
         }

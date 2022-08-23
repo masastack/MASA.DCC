@@ -117,7 +117,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task HandleProjectNameClick(int projectId)
         {
             if (OnNameClick.HasDelegate)
+            {
                 await OnNameClick.InvokeAsync(projectId);
+            }
         }
 
         private async Task HandleAppCardClick(ConfigComponentModel model)

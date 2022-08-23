@@ -54,7 +54,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private void GetProjectCount(int projectCount)
+        private void ProjectCountHandler(int projectCount)
         {
             _projectCount = projectCount;
         }
@@ -117,9 +117,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task AppPinAsync(Model.AppModel app)
         {
             if (app.IsPinned)
+            {
                 await AppCaller.RemoveAppPinAsync(app.Id);
+            }
             else
+            {
                 await AppCaller.AddAppPinAsync(app.Id);
+            }
         }
     }
 }

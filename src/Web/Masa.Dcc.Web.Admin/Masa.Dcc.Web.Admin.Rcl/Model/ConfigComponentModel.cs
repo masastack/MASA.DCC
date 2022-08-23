@@ -19,12 +19,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
         {
         }
 
-        public ConfigComponentModel(int appId, int environmentClusterId, ConfigObjectType configObjectType, string projectIdentity, int projectId)
+        public ConfigComponentModel(int appId, int environmentClusterId, ConfigObjectType configObjectType, int projectId)
         {
             AppId = appId;
             EnvironmentClusterId = environmentClusterId;
             ConfigObjectType = configObjectType;
-            ProjectIdentity = projectIdentity;
             ProjectId = projectId;
         }
     }

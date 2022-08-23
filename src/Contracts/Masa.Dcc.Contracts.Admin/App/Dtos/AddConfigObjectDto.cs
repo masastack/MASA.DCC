@@ -8,7 +8,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         private string _name = "";
 
         [Required]
-        [RegularExpression(@"^[\u4E00-\u9FA5A-Za-z0-9`~@!$%^&*()_<>?:{}|,.\/;""·~！￥%……&*（）——\-+={}|《》？：“”【】、；]+$", ErrorMessage = "Special symbols are not allowed")]
+        [RegularExpression(@"^[\u4E00-\u9FA5A-Za-z0-9`~!@#%^&*()_\-+=<>?:""{}|,.\/;'\\[\]·~！￥%……&*（）——《》？：“”【】、；‘’，。]+$", ErrorMessage = "Special symbols are not allowed")]
         [StringLength(50, MinimumLength = 2)]
         public string Name { get => _name; set => _name = value.Trim(); }
 

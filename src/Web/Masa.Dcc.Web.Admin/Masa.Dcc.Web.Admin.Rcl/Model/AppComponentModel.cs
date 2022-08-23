@@ -7,16 +7,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
     {
         public int ProjectId { get; set; }
 
-        public int AppCount { get; set; }
-
         public AppComponentModel()
         {
         }
 
-        public AppComponentModel(int projectId, int appCount)
+        public AppComponentModel(int projectId)
         {
             ProjectId = projectId;
-            AppCount = appCount;
         }
     }
 }

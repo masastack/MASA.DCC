@@ -100,7 +100,7 @@
     <div class="pl-6" style="width: calc(100% - 300px); display:block;">
         <div style="overflow: hidden;">
             <div class="d-flex mb-3">
-                <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObjectAsync" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
+                <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObject" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
                     <PrependInnerContent>
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                     </PrependInnerContent>

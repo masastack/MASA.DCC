@@ -59,19 +59,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 
         private async Task AddConfigObject(EditContext context)
         {
-            if (ConfigObjectType == ConfigObjectType.Public)
-            {
-                _addConfigObjectModal.Data.Name = _namePrefix + _addConfigObjectModal.Data.Name;
-            }
-            else
-            {
-                if (_addConfigObjectModal.Data.Name.StartsWith(_namePrefix))
-                {
-                    await PopupService.ToastErrorAsync($"配置对象名称不允许包含 {_namePrefix}");
-                    return;
-                }
-            }
-
             _addConfigObjectModal.Data.Type = ConfigObjectType;
             _addConfigObjectModal.Data.ObjectId = AppDetail.Id;
             if (context.Validate())
@@ -95,6 +82,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                     "properties" => "[]",
                     _ => "",
                 };
+
+                if (ConfigObjectType == ConfigObjectType.Public)
+                {
+                    _addConfigObjectModal.Data.Name = _namePrefix + _addConfigObjectModal.Data.Name;
+                }
 
                 List<AddConfigObjectDto> configObjectDtos = new();
                 for (int i = 0; i < _selectEnvClusterIds.Count; i++)

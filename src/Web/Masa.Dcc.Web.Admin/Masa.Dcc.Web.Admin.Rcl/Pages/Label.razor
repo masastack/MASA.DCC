@@ -56,7 +56,7 @@
     </MCol> 
 </MRow>
 
-<SSheetDialog Value="_labelModal.Visible" ValueChanged="LabelModalValueChanged" Title="@(_labelModal.HasValue ? T("Edit label") : T("Add label"))" Icon="mdi-circle" IconColor="success">
+<SSheetDialog @key="_labelModal.Visible" Value="_labelModal.Visible" ValueChanged="LabelModalValueChanged" Title="@(_labelModal.HasValue ? T("Edit label") : T("Add label"))" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_labelModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding:  48px 228px; overflow: hidden;">
             <div class="full-height" style="overflow-y: auto;">

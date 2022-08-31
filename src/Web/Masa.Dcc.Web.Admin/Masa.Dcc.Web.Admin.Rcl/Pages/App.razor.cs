@@ -18,7 +18,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public Team? Team { get; set; }
 
         [Inject]
-        public ConfigObjectCaller ConfigObjecCaller { get; set; } = default!;
+        public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
 
         [Inject]
         public IPopupService PopupService { get; set; } = default!;
@@ -41,9 +41,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _bizConfigName = "";
         private string _appName = "";
         private List<Model.AppModel> _apps = new();
-        private Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required";
-        private Func<string, StringBoolean> _counterRule = value => (value.Length <= 25 && value.Length > 0) ? true : "Biz config name length range is [1-25]";
-        private Func<string, StringBoolean> _strRule = value =>
+        private readonly Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required";
+        private readonly Func<string, StringBoolean> _counterRule = value => (value.Length <= 25 && value.Length > 0) ? true : "Biz config name length range is [1-25]";
+        private readonly Func<string, StringBoolean> _strRule = value =>
         {
             Regex regex = new Regex(@"^[\u4E00-\u9FA5A-Za-z0-9`~!@#%^&*()_\-+=<>?:""{}|,.\/;'\\[\]·~！￥%……&*（）——《》？：“”【】、；‘’，。]+$");
             if (!regex.IsMatch(value))
@@ -80,10 +80,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
 
             //初始化业务配置
-            var bizConfig = await ConfigObjecCaller.GetBizConfigAsync($"{_projectDetail.Identity}-$biz");
+            var bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{_projectDetail.Identity}-$biz");
             if (bizConfig.Id == 0)
             {
-                bizConfig = await ConfigObjecCaller.AddBizConfigAsync(new AddObjectConfigDto
+                bizConfig = await ConfigObjectCaller.AddBizConfigAsync(new AddObjectConfigDto
                 {
                     Name = "Biz",
                     Identity = $"{_projectDetail.Identity}-$biz"
@@ -111,7 +111,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             if (!_isEditBiz && _bizConfigName != _bizDetail.Name)
             {
-                var bizConfigDto = await ConfigObjecCaller.UpdateBizConfigAsync(new UpdateObjectConfigDto
+                var bizConfigDto = await ConfigObjectCaller.UpdateBizConfigAsync(new UpdateObjectConfigDto
                 {
                     Id = _bizDetail.Id,
                     Name = _bizDetail.Name
@@ -124,6 +124,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task NavigateToConfigAsync(ConfigComponentModel model)
         {
+            model.ProjectIdentity = _projectDetail.Identity;
             if (Landscape != null)
             {
                 await Landscape.AppNavigateToConfigAsync(model);

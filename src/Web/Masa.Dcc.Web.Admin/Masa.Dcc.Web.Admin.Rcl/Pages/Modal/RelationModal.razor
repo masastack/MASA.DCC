@@ -1,6 +1,6 @@
 ﻿@inherits MasaCompontentBase
 
-<SSheetDialog Value="Value" ValueChanged="SheetDialogValueChanged" Title="@T("Relation public config")" Icon="mdi-circle" IconColor="success">
+<SSheetDialog @key="@($"relationModal-{Value}")" Value="Value" ValueChanged="SheetDialogValueChanged" Title="@T("Relation public config")" Icon="mdi-circle" IconColor="success">
     <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px; overflow: hidden;">
         <div class="full-height" style="overflow: auto;">
             <div class="emphasis--text h6 d-flex align-center">
@@ -13,7 +13,7 @@
                 @foreach (var item in AppDetail.EnvironmentClusters)
                 {
                     <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
-                        <div class="@($"{item.EnvironmentColor}--text")">@item.EnvironmentName</div>&nbsp;&nbsp;
+                        <div style="@($"color: {item.EnvironmentColor} !important")">@item.EnvironmentName</div>&nbsp;&nbsp;
                         <div style="color:#05CD99">@item.ClusterName</div>
                     </MChip>
                 }

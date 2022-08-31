@@ -5,7 +5,10 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
     public class CloneConfigObjectDto
     {
-        public int ToAppId { get; set; }
+        /// <summary>
+        /// AppId or BizId or PublicId
+        /// </summary>
+        public int ToObjectId { get; set; }
 
         public List<AddConfigObjectDto> ConfigObjects { get; set; } = new();
 

@@ -110,15 +110,15 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         public async Task CloneConfigObjectAsync(CloneConfigObjectDto dto)
         {
             //add
-            await CloneConfigObjectsAsync(dto.ConfigObjects, dto.ToAppId);
+            await CloneConfigObjectsAsync(dto.ConfigObjects, dto.ToObjectId);
 
             //update
             var envClusterIds = dto.CoverConfigObjects.Select(c => c.EnvironmentClusterId);
             var appConfigObjects = await _appConfigObjectRepository.GetListAsync(
-                app => app.AppId == dto.ToAppId && envClusterIds.Contains(app.EnvironmentClusterId));
+                app => app.AppId == dto.ToObjectId && envClusterIds.Contains(app.EnvironmentClusterId));
             var needRemove = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id));
             await _configObjectRepository.RemoveRangeAsync(needRemove);
-            await CloneConfigObjectsAsync(dto.CoverConfigObjects, dto.ToAppId);
+            await CloneConfigObjectsAsync(dto.CoverConfigObjects, dto.ToObjectId);
         }
 
         private async Task CloneConfigObjectsAsync(List<AddConfigObjectDto> configObjects, int appId)

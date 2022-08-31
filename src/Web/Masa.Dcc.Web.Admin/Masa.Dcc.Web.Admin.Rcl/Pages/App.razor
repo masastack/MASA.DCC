@@ -3,7 +3,7 @@
 
 <div class="d-flex">
     <MNavigationDrawer Right Permanent Class="rounded-4 py-6" Width="300" Style="height: calc(100vh - 192px);">
-        <div style="min-width:300px; padding:0 24px; display:flex; flex-direction:column; align-items:center; overflow: auto;">
+        <div style="min-width:300px; padding:0 24px; display:flex; flex-direction:column; align-items:center;">
             <div style="width:100%; overflow-x: hidden;" class="regular--text">
                 <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
                     <div class="emphasis--text h6" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@_projectDetail.Name</div>
@@ -14,25 +14,27 @@
                 <MRow NoGutters Class="mt-2 body2">
                     @T("AppCount")：<span class="subtitle2">@_apps.Count</span>
                 </MRow>
-                <MRow NoGutters Class="mt-4 body2">
-                    @_projectDetail.Description
-                </MRow>
-                <MRow NoGutters Class="regular3--text body2 mt-6">@T("Participate team")</MRow>
-                <MRow NoGutters Class="mt-4">
-                    <MAvatar Height="24" Width="24" MinHeight="24" MinWidth="24" Class="mr-3">
-                        <MImage Height="24" Width="24" Src="@_projectTeamDetail.Avatar"></MImage>
-                    </MAvatar>
-                    @_projectTeamDetail.Name
-                </MRow>
-                <MRow NoGutters Class="regular3--text body2 mt-6">@T("Environment/Cluster")</MRow>
-                <div style="display:flex; flex-direction:column;align-items:start">
-                    @{
-                        var envCluster = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id));
-                        foreach (var item in envCluster)
-                        {
-                                    <EnvClusterChip Class="mt-4" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                <div style="height: calc(100vh - 320px); overflow-y: auto; overflow-x: hidden;">
+                    <MRow NoGutters Class="mt-4 body2">
+                        @_projectDetail.Description
+                    </MRow>
+                    <MRow NoGutters Class="regular3--text body2 mt-6">@T("Participate team")</MRow>
+                    <MRow NoGutters Class="mt-4">
+                        <MAvatar Height="24" Width="24" MinHeight="24" MinWidth="24" Class="mr-3">
+                            <MImage Height="24" Width="24" Src="@_projectTeamDetail.Avatar"></MImage>
+                        </MAvatar>
+                        @_projectTeamDetail.Name
+                    </MRow>
+                    <MRow NoGutters Class="regular3--text body2 mt-6">@T("Environment/Cluster")</MRow>
+                    <div style="display:flex; flex-direction:column;align-items:start">
+                        @{
+                            var envCluster = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id));
+                            foreach (var item in envCluster)
+                            {
+                                <EnvClusterChip Class="mt-4" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                            }
                         }
-                    }
+                    </div>
                 </div>
             </div>
         </div>
@@ -70,17 +72,16 @@
                     <div class="regular3--text body2 text-overflow mt-1">@_bizDetail.Identity</div>
                 </MCardSubtitle>
                 <MCardActions Class="pa-0 mx-4" Style="position: absolute; bottom: 16px; right: 0; left: 0;">
-                        <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
-                            @foreach (var item in _projectEnvClusters)
-                            {
-                                <EnvClusterChip
-                                    OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, item.Id, ConfigObjectType.Biz, ProjectId))"
-                                    Style="margin:0 6px;"
-                                    EnvironmentName="@item.EnvironmentName"
-                                    EnvironmentColor="@item.EnvironmentColor"
-                                    ClusterName="@item.ClusterName" />
-                            }
-                        </MChipGroup>
+                    <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                        @foreach (var item in _projectEnvClusters)
+                        {
+                            <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, item.Id, ConfigObjectType.Biz, ProjectId))"
+                                        Style="margin:0 6px;"
+                                        EnvironmentName="@item.EnvironmentName"
+                                        EnvironmentColor="@item.EnvironmentColor"
+                                        ClusterName="@item.ClusterName" />
+                        }
+                    </MChipGroup>
                 </MCardActions>
             </MCard>
         </div>
@@ -95,24 +96,22 @@
             </div>
             <div class="mt-6" style="width:100%; height: calc(100vh - 497px);overflow-y:auto; overflow-x:hidden;">
                 <MRow>
-                    @{
-                        foreach (var app in _apps)
-                        {
-                                    <MCol Lg="4" Md="6" Sm="12">
-                                        <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                            <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
-                                                @foreach (var item in app.EnvironmentClusters)
-                                        {
-                                                    <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"
+                    @foreach (var app in _apps)
+                    {
+                        <MCol Lg="4" Md="6" Sm="12">
+                            <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                    @foreach (var item in app.EnvironmentClusters)
+                                    {
+                                        <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"
                                                 Style="margin:0 12px 1px 0;"
                                                 EnvironmentName="@item.EnvironmentName"
                                                 EnvironmentColor="@item.EnvironmentColor"
                                                 ClusterName="@item.ClusterName" />
-                                        }
-                                            </MChipGroup>
-                                        </AppCard>
-                                    </MCol>
-                        }
+                                    }
+                                </MChipGroup>
+                            </AppCard>
+                        </MCol>
                     }
                 </MRow>
             </div>

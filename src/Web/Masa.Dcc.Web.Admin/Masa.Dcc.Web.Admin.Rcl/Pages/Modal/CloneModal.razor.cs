@@ -105,6 +105,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 _cloneApps = await AppCaller.GetListByProjectIdsAsync(new List<int> { projectId });
                 _cloneApps = _cloneApps.Where(app => app.Id != AppDetail.Id).ToList();
             }
+
+            if (_cloneApps.Any())
+            {
+                _cloneSelectAppId = _cloneApps[0].Id;
+            }
         }
 
         public async Task ShowCloneModalAsync(ConfigObjectModel? configObject = null)

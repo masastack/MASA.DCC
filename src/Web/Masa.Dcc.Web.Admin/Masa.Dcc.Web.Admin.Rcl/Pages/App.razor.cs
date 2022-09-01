@@ -41,6 +41,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _bizConfigName = "";
         private string _appName = "";
         private List<Model.AppModel> _apps = new();
+        private List<Model.AppModel> _backupApps = new();
         private readonly Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required";
         private readonly Func<string, StringBoolean> _counterRule = value => (value.Length <= 25 && value.Length > 0) ? true : "Biz config name length range is [1-25]";
         private readonly Func<string, StringBoolean> _strRule = value =>
@@ -77,6 +78,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _projectDetail = await ProjectCaller.GetAsync(ProjectId);
             _projectTeamDetail = await AuthClient.TeamService.GetDetailAsync(_projectDetail.TeamId) ?? new();
             _apps = await GetAppByProjectIdAsync(new List<int> { ProjectId });
+            _backupApps = new List<Model.AppModel>(_apps.ToArray());
             _projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
 
             //初始化业务配置
@@ -135,17 +137,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task SearchAppAsync(KeyboardEventArgs args)
+        private void SearchApp(KeyboardEventArgs args)
         {
             if (args.Key == "Enter")
             {
                 if (!string.IsNullOrWhiteSpace(_appName))
                 {
-                    _apps = _apps.Where(app => app.Name.ToLower().Contains(_appName.ToLower())).ToList();
+                    _apps = _backupApps.Where(app => app.Name.ToLower().Contains(_appName.ToLower())).ToList();
                 }
                 else
                 {
-                    _apps = await GetAppByProjectIdAsync(new List<int> { ProjectId });
+                    _apps = _backupApps;
                 }
             }
         }
@@ -170,6 +172,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              Url = app.Url,
                              SwaggerUrl = app.SwaggerUrl,
                              EnvironmentClusters = app.EnvironmentClusters,
+                             ModificationTime = app.ModificationTime,
                              IsPinned = newApp != null,
                              PinTime = newApp != null ? newApp.ModificationTime : DateTime.MinValue
                          };
@@ -188,6 +191,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 await AppCaller.AddAppPinAsync(app.Id);
             }
             _apps = await GetAppByProjectIdAsync(new List<int>() { app.ProjectId });
+            _backupApps = new List<Model.AppModel>(_apps.ToArray());
         }
     }
 }

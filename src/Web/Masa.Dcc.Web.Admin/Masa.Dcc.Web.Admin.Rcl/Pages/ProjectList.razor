@@ -2,7 +2,7 @@
 @inherits MasaCompontentBase
 
 <div class="full-height" style="overflow: auto;">
-    <MExpansionPanels Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
+    <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
         @foreach (var project in _projects)
         {
             var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
@@ -53,7 +53,7 @@
                 </MExpansionPanelHeader>
                 <MExpansionPanelContent>
                     <MRow>
-                        @foreach (var app in apps.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).Take(6))
+                        @foreach (var app in apps.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).Take(3))
                         {
                             @if (app.ProjectId == project.Id)
                             {

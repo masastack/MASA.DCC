@@ -100,7 +100,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
                     new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier) },
                     new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
-                    new() { Text = T("Operation"), Value="Operation", Sortable = false, }
+                    new() { Text = T("Operation"), Value="Operation", Sortable = false }
                 };
 
                 return headers;
@@ -745,8 +745,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task ShowRollbackModalAsync(ConfigObjectModel configObject)
         {
+            _selectConfigObject = configObject;
             _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
-
             _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).ToList();
 
             if (_releaseHistory.ConfigObjectReleases.Count <= 1
@@ -790,6 +790,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task ShowReleaseHistoryAsync(ConfigObjectModel configObject)
         {
+            _selectConfigObject = configObject;
             _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
             _configObjectReleases = _releaseHistory.ConfigObjectReleases
                 .OrderByDescending(release => release.Id)
@@ -834,6 +835,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             if (enableTabIndexChanged)
             {
+                _releaseTabText = "All configuration";
                 ReleaseHistoryTabIndexChanged(_releaseTabText);
             }
         }

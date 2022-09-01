@@ -108,6 +108,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              Url = app.Url,
                              SwaggerUrl = app.SwaggerUrl,
                              EnvironmentClusters = app.EnvironmentClusters,
+                             ModificationTime = app.ModificationTime,
                              IsPinned = newApp != null
                          };
 

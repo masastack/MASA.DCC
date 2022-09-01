@@ -88,7 +88,7 @@
         <div class="appCard mt-6">
             <div class="d-flex justify-space-between align-end">
                 <h6 class="emphasis2--text h6">@T("App")</h6>
-                <MTextField @bind-Value="_appName" OnKeyDown="SearchAppAsync" Style="max-width:300px;" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
+                <MTextField @bind-Value="_appName" OnKeyDown="SearchApp" Style="max-width:300px;" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
                     <PrependInnerContent>
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                     </PrependInnerContent>
@@ -96,7 +96,7 @@
             </div>
             <div class="mt-6" style="width:100%; height: calc(100vh - 497px);overflow-y:auto; overflow-x:hidden;">
                 <MRow>
-                    @foreach (var app in _apps)
+                    @foreach (var app in _apps.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime))
                     {
                         <MCol Lg="4" Md="6" Sm="12">
                             <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">

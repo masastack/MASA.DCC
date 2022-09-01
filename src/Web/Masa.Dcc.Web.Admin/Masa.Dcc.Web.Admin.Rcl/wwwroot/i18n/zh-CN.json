@@ -44,7 +44,7 @@
   "Landscape": "全景",
   "Clone config": "克隆配置",
   "Connect public config": "关联公共配置",
-  "Add": "添加",
+  "Add": "新增",
   "Modified": "有修改",
   "Release history": "发布历史",
   "Rollback": "回滚",
@@ -121,5 +121,6 @@
   "Add label": "新增标签",
   "Label": "标签",
   "Label values": "标签值",
-  "All configuration to": "的所有配置至"
+  "All configuration to": "的所有配置至",
+  "Team detail": "团队详情"
 }

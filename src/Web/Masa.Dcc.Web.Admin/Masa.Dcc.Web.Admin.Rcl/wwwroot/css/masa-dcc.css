@@ -685,10 +685,25 @@ input::-webkit-input-placeholder {
     border-radius: 8px !important;
 }
 
+.cluster-tabs .m-slide-group__content.m-tabs-bar__content {
+    display: flex;
+    align-items: center;
+}
+
 .text-overflow {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+
+.text-overflow2 {
+    -webkit-line-clamp: 2;
+    word-break: break-all;
+    overflow: hidden;
+    white-space: pre-wrap;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
 }
 
 .m-menu__content {
@@ -748,6 +763,10 @@ input::-webkit-input-placeholder {
     min-width: 24px !important;
     max-width: 24px !important;
     margin-left: 8px;
+}
+
+.project-list .m-expansion-panel:last-child {
+    margin-bottom: 0 !important;
 }
 
 textarea:disabled {

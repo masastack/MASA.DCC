@@ -42,7 +42,7 @@
                                         <ActivatorContent>
                                             <MListItem @attributes="@context.Attrs" Context="_" Style="height: 40px !important; min-height: 40px !important;" Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
                                                 <ItemContent>
-                                                    <MListItemIcon Class="d-flex align-center pt-1 mr-0">
+                                                    <MListItemIcon Class="d-flex align-center mr-0">
                                                         <MIcon Color="@env.Color" Size="12">mdi-circle</MIcon>
                                                     </MListItemIcon>
                                                     <MListItemContent>
@@ -63,7 +63,7 @@
                 <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
                     <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:88px; background:#fff;padding:0 12px;">
                         <MCard>
-                            <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs mt-2" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
+                            <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
                                 @foreach (var cluster in _clusters)
                                 {
                                     StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;

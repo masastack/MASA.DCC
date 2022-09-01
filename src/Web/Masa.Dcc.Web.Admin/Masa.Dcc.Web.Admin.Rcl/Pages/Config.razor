@@ -47,7 +47,8 @@
                         </MMenu>
                     </div>
                 </MRow>
-                <MRow NoGutters Class="regular3--text btn">
+                <MRow NoGutters Class="regular3--text body2">
+                    <div class="regular--text">@_appDetail.Type</div>&nbsp;|
                     @_appDetail.Identity
                 </MRow>
                 @if (ConfigObjectType == ConfigObjectType.App)
@@ -65,6 +66,7 @@
                             var textColor = isSelected ? "white" : "";
                             <MChip OnClick="()=>OnEnvChipClick(item.EnvironmentName)"
                                Outlined="@(_selectEnvName != item.EnvironmentName)"
+                               Style="@($"border:1px solid {@item.EnvironmentColor} !important;")"
                                Color="@item.EnvironmentColor"
                                TextColor="@textColor"
                                Class="mr-3 mt-3 text-overflow">
@@ -132,9 +134,9 @@
                                                 string tempContent = configObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
                                                 if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && content != tempContent)
                                                 {
-                                                    <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                        @T("Modified")
-                                                    </div>
+                                                            <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                                @T("Modified")
+                                                            </div>
                                                 }
                                             }
                                             <MHover Context="hContext">
@@ -419,7 +421,7 @@
                                                                     {
                                                                         if (context.Item.IsAdded)
                                                                         {
-                                                                            <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-p lus</MIcon>
+                                                                            <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>
                                                                         }
                                                                         else if (context.Item.IsEdited)
                                                                         {
@@ -486,9 +488,9 @@
                                                 string tempContent = configObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
                                                 if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing && content != tempContent)
                                                 {
-                                                    <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                        @T("Modified")
-                                                    </div>
+                                                            <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                                @T("Modified")
+                                                            </div>
                                                 }
                                             }
                                             <MHover Context="hContext">
@@ -622,7 +624,7 @@
                 </div>
                 <STextField Class="mt-12" Disabled="_propertyConfigModal.HasValue" Label="Key" Outlined @bind-Value="_propertyConfigModal.Data.Key"></STextField>
                 <STextField Class="mt-6" Label="Value" Outlined @bind-Value="_propertyConfigModal.Data.Value"></STextField>
-                <MTextarea Class="mt-6" Label="Description" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
+                <MTextarea Class="mt-6" Label="@T("Description")" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
             </div>
             <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
                 <MButton Height="40" Class="rounded-pill" Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@(_propertyConfigModal.HasValue ? T("Save") : T("Submit"))</MButton>
@@ -647,18 +649,18 @@
            OnClickAfter="_handleRollbackOnClickAfter" />
 
 <SSheetDialog @key="@($"releaseHistoryModal-{_showReleaseHistory}")" @bind-Value="_showReleaseHistory" Title="@T("Release history")" Icon="mdi-circle" IconColor="success">
-        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
-            <div>
-                <div class="emphasis--text h6 d-flex align-center">
-                    @T("Config object name")
-                    <span class="ml-3 regular3--text btn">|</span>
-                    <sapn class="ml-2 regular3--text btn">@_releaseHistory.FormatLabelCode</sapn>
-                </div>
+    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+        <div>
+            <div class="emphasis--text h6 d-flex align-center">
+                @_selectConfigObject.Name
+                <span class="ml-3 regular3--text btn">|</span>
+                <sapn class="ml-2 regular3--text btn">@_releaseHistory.FormatLabelCode</sapn>
             </div>
-            <div class="d-flex full-height full-width mt-12" style="overflow: hidden;">
-                <div class="full-height" style="min-width: 248px; border-right: 1px solid #E2E7F4; overflow-x: hidden; overflow-y: auto;">
-                    <MTimeline>
-                        @{
+        </div>
+        <div class="d-flex full-height full-width mt-12" style="overflow: hidden;">
+            <div class="full-height" style="min-width: 248px; width: 248px; border-right: 1px solid #E2E7F4; overflow-x: hidden; overflow-y: auto;">
+                <MTimeline>
+                    @{
                         int _index = 0;
                         foreach (var release in _configObjectReleases)
                         {
@@ -681,10 +683,8 @@
                                     </div>
                                 </OppositeContent>
                                 <ChildContent>
-                                    <div>
-                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                            @release.Name
-                                        </div>
+                                    <div class="text-overflow2" style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                        @release.Name
                                     </div>
                                 </ChildContent>
                             </MTimelineItem>
@@ -692,13 +692,13 @@
                     }
                 </MTimeline>
             </div>
-            <div class="ml-12 content full-height full-width pr-1">
+            <div class="ml-12 content full-height full-width pr-1" style="overflow-y: auto;">
                 <div class="full-width d-flex align-center pl-2 pr-3" style="height: 40px; background: #F0F3FA; border-radius: 8px;">
                     @if (_selectReleaseHistory.IsInvalid)
                     {
                         <MChip Class="mr-4" Small Label Color="#323D6F" TextColor="white">@T("Rollbacked")</MChip>
                     }
-                    <span style="color: #485585; font-weight: 700; font-size: 16px;">@_selectReleaseHistory.Name</span>
+                    <span class="text-overflow" style="color: #485585; font-weight: 700; font-size: 16px; width:700px;">@_selectReleaseHistory.Name</span>
                     <MSpacer></MSpacer>
                     <span style="color: #A3AED0; font-size:12px;">@T("Release time")：@_selectReleaseHistory.CreationTime.ToString(T("$DateTimeFormat"))</span>
                     <span class="mx-2">|</span>

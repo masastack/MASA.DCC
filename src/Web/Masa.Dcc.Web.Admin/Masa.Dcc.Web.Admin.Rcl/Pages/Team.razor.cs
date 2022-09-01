@@ -70,6 +70,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task TabValueChangedAsync(StringNumber value)
         {
             _curTab = value;
+            StateHasChanged();
 
             if (_curTab == 1 && _app != null)
             {
@@ -99,8 +100,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _configModel = model;
 
             await TabValueChangedAsync(2);
-
-            await InvokeAsync(StateHasChanged);
         }
 
         public async Task NavigateToConfigAsync(ConfigComponentModel model)

@@ -169,7 +169,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _labelModal.Visible = value;
             if (!value)
             {
-                _labelModal.Data = new();
+                _labelModal.Hide();
                 _labelValues.Clear();
             }
         }

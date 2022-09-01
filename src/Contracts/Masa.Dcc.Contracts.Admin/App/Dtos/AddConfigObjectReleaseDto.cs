@@ -13,7 +13,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public int ConfigObjectId { get; set; }
 
         [Required(ErrorMessage = "Name is required", AllowEmptyStrings = true)]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "Name length range is [2-100]")]
+        [StringLength(50, MinimumLength = 2, ErrorMessage = "Name length range is [2-50]")]
         public string Name { get; set; } = "";
 
         [Required(ErrorMessage = "Comment is required", AllowEmptyStrings = true)]

@@ -160,7 +160,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _teamDetailDisabled = false;
             _configDisabled = false;
-
             _configModel = model;
 
             await TabValueChangedAsync(2);

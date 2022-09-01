@@ -747,7 +747,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _selectConfigObject = configObject;
             _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
-
             _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).ToList();
 
             if (_releaseHistory.ConfigObjectReleases.Count <= 1

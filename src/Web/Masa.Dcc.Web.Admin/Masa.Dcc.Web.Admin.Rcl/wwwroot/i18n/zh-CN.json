@@ -122,5 +122,6 @@
   "Label": "标签",
   "Label values": "标签值",
   "All configuration to": "的所有配置至",
-  "Team detail": "团队详情"
+  "Team detail": "团队详情",
+  "Line:{errorLine}, key value must separate by '='": "第{errorLine}行，键和值必须以‘=’分割"
 }

@@ -455,10 +455,6 @@ input::-webkit-input-placeholder {
     font-size: 12px !important;
 }
 
-.m-data-table-header__icon {
-    position: absolute !important;
-}
-
 .user .m-data-table-header__icon {
     margin-top: 1px;
 }
@@ -737,6 +733,11 @@ input::-webkit-input-placeholder {
 
 .m-timeline-item {
     margin-right: 56px !important;
+}
+
+.m-timeline-item__dot--small {
+    width: 20px !important;
+    height: 20px !important;
 }
 
 .text-overflow .m-chip__content {

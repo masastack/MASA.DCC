@@ -6,6 +6,9 @@
         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
     </PrependInnerContent>
 </MTextField>
+<MButton Height="40" Width="100" Class="rounded-lg ml-6" Color="primary" OnClick="()=>ShowLabelModal(null)">
+    <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
+</MButton>
 
 <MRow NoGutters Style="margin: 12px -12px !important">
     @foreach (var labelGroup in _labels.GroupBy(l => l.TypeCode))

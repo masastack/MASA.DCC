@@ -215,7 +215,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
         {
             var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id, configObjectType, configObjectName);
-            _configObjects = configObjects.Adapt<List<ConfigObjectModel>>();
+            _configObjects = configObjects.OrderByDescending(config => config.CreationTime).Adapt<List<ConfigObjectModel>>();
             var configObjectIds = _configObjects.Where(c => c.RelationConfigObjectId != 0).Select(c => c.RelationConfigObjectId).ToList();
             var publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsByIdsAsync(configObjectIds);
 
@@ -418,7 +418,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 if (errorData != null)
                 {
                     var errorLine = lineDatas.ToList().IndexOf(errorData) + 1;
-                    await PopupService.ToastErrorAsync($"Line：{errorLine} key value must separate by '='");
+                    await PopupService.ToastErrorAsync(T("Line:{errorLine}, key value must separate by '='").Replace("{errorLine}", errorLine + ""));
                 }
                 else
                 {
@@ -426,7 +426,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     foreach (var lineData in lineDatas)
                     {
                         string[] keyValues = lineData.Trim().Split('=');
-                        propertyContents.Add(keyValues[0], new ConfigObjectPropertyModel
+                        propertyContents.TryAdd(keyValues[0], new ConfigObjectPropertyModel
                         {
                             Key = keyValues[0].TrimEnd(),
                             Value = keyValues[1].TrimStart()
@@ -434,48 +434,60 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     List<ConfigObjectPropertyModel> editorPropertyContents = propertyContents.Values.ToList();
 
-
-                    var added = editorPropertyContents.ExceptBy(
-                            _selectConfigObjectAllProperties.Select(content => content.Key),
-                            content => content.Key)
-                        .Adapt<List<ConfigObjectPropertyContentDto>>();
-
-                    var deleted = _selectConfigObjectAllProperties.ExceptBy(
-                            editorPropertyContents.Select(content => content.Key),
-                            content => content.Key)
-                        .Adapt<List<ConfigObjectPropertyContentDto>>();
-
-                    var normalOrEdited = editorPropertyContents.ExceptBy(
-                            added.Select(content => content.Key),
-                            content => content.Key)
-                        .ExceptBy(
-                            deleted.Select(content => content.Key),
-                            content => content.Key
-                        ).Adapt<List<ConfigObjectPropertyContentDto>>();
-
-                    var allPropertiesIntersect = _selectConfigObjectAllProperties.IntersectBy(
-                        normalOrEdited.Select(content => content.Key), content => content.Key);
-
-                    var edit = normalOrEdited.ExceptBy(
-                            allPropertiesIntersect.Select(content => content.Value),
-                            content => content.Value)
-                        .Adapt<List<ConfigObjectPropertyContentDto>>();
-
-                    await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
-                    {
-                        ConfigObjectId = configObjectId,
-                        FormatLabelCode = "Properties",
-                        DeleteConfigObjectPropertyContent = deleted,
-                        AddConfigObjectPropertyContent = added,
-                        EditConfigObjectPropertyContent = edit
-                    });
-
-                    await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布");
-                    HandleTabIndexChanged(T("Table"), _configObjects.First(c => c.Id == configObjectId));
-                    selectEditorContent.Disabled = false;
+                    await HandleTextConvertPropertyAsync(editorPropertyContents, configObjectId);
                 }
             }
+            else
+            {
+                await HandleTextConvertPropertyAsync(new List<ConfigObjectPropertyModel>(), configObjectId);
+            }
+
+            selectEditorContent.Disabled = false;
+        }
+
+        private async Task HandleTextConvertPropertyAsync(List<ConfigObjectPropertyModel> editorPropertyContents, int configObjectId)
+        {
+            DateTime now = DateTime.Now;
+            TypeAdapterConfig<ConfigObjectPropertyModel, ConfigObjectPropertyContentDto>.NewConfig()
+                .Map(dest => dest.ModificationTime, src => now);
+            var added = editorPropertyContents.ExceptBy(
+                    _selectConfigObjectAllProperties.Select(content => content.Key),
+                    content => content.Key)
+                .Adapt<List<ConfigObjectPropertyContentDto>>();
+
+            var deleted = _selectConfigObjectAllProperties.ExceptBy(
+                    editorPropertyContents.Select(content => content.Key),
+                    content => content.Key)
+                .Adapt<List<ConfigObjectPropertyContentDto>>();
+
+            var normalOrEdited = editorPropertyContents.ExceptBy(
+                    added.Select(content => content.Key),
+                    content => content.Key)
+                .ExceptBy(
+                    deleted.Select(content => content.Key),
+                    content => content.Key
+                ).Adapt<List<ConfigObjectPropertyContentDto>>();
+
+            var allPropertiesIntersect = _selectConfigObjectAllProperties.IntersectBy(
+                normalOrEdited.Select(content => content.Key), content => content.Key);
+
+            var edit = normalOrEdited.ExceptBy(
+                    allPropertiesIntersect.Select(content => content.Value),
+                    content => content.Value)
+                .Adapt<List<ConfigObjectPropertyContentDto>>();
+
+            await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+            {
+                ConfigObjectId = configObjectId,
+                FormatLabelCode = "Properties",
+                DeleteConfigObjectPropertyContent = deleted,
+                AddConfigObjectPropertyContent = added,
+                EditConfigObjectPropertyContent = edit
+            });
+
+            await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+            await PopupService.ToastSuccessAsync("修改成功，若要生效请发布");
+            HandleTabIndexChanged(T("Table"), _configObjects.First(c => c.Id == configObjectId));
         }
 
         private void HandleTabIndexChanged(string tabText, ConfigObjectModel configObject)
@@ -502,8 +514,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (string.IsNullOrWhiteSpace(configObject.Content))
             {
-                await PopupService.ToastErrorAsync("json内容不能为空");
-                return;
+                configObject.Content = "{}";
             }
 
             string indexStr = configObject.Content[..1];
@@ -572,21 +583,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             configObject.IsEditing = !configObject.IsEditing;
             if (!configObject.IsEditing)
             {
-                if (string.IsNullOrWhiteSpace(configObject.Content))
+                await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
-                    await PopupService.ToastErrorAsync("内容不能为空");
-                    return;
-                }
-                else
-                {
-                    await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
-                    {
-                        ConfigObjectId = configObject.Id,
-                        Content = configObject.Content
-                    });
+                    ConfigObjectId = configObject.Id,
+                    Content = configObject.Content
+                });
 
-                    await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
-                }
+                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
             }
             else
             {
@@ -734,7 +737,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RevokeAsync(ConfigObjectModel configObject)
         {
-            await PopupService.ConfirmAsync("撤销配置", $"配置对象“{configObject.Name}”下已修改但尚未发布的配置将呗撤销，您确定要撤销吗？", async args =>
+            await PopupService.ConfirmAsync("撤销配置", $"配置对象“{configObject.Name}”下已修改但尚未发布的配置将被撤销，您确定要撤销吗？", async args =>
             {
                 await ConfigObjectCaller.RevokeAsync(configObject.Id);
 

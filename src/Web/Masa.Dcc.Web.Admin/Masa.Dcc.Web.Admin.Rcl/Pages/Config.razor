@@ -48,7 +48,12 @@
                     </div>
                 </MRow>
                 <MRow NoGutters Class="regular3--text body2">
-                    <div class="regular--text">@_appDetail.Type</div>&nbsp;|
+                    @if (ConfigObjectType == ConfigObjectType.App)
+                    {
+                        <div class="regular--text">@_appDetail.Type</div>
+
+                        <span>&nbsp;|&nbsp;</span>
+                    }
                     @_appDetail.Identity
                 </MRow>
                 @if (ConfigObjectType == ConfigObjectType.App)
@@ -110,8 +115,8 @@
                         <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                     </PrependInnerContent>
                 </MTextField>
-                <MButton Height="40" Width="100" Class="rounded-pill ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
-                    <MIcon Small>mdi-plus </MIcon>@T("Add")
+                <MButton Height="40" Width="100" Class="rounded-lg ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
+                    <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
                 </MButton>
             </div>
             <div class="mt-3" style="overflow:auto; @ConfigPanelStyle">
@@ -134,9 +139,9 @@
                                                 string tempContent = configObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
                                                 if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && content != tempContent)
                                                 {
-                                                            <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                                @T("Modified")
-                                                            </div>
+                                                                <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                                    @T("Modified")
+                                                                </div>
                                                 }
                                             }
                                             <MHover Context="hContext">
@@ -343,7 +348,7 @@
                                     @if (configObject.RelationConfigObjectId != 0)
                                     {
                                         <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4 rounded-5">
-                                            <MDataTable Headers="Headers"
+                                            <MDataTable FixedHeader Height="312" Headers="Headers"
                                             SortDesc="true"
                                             SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                             TItem="ConfigObjectPropertyModel"
@@ -398,7 +403,7 @@
                                            Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                             <SElevationTabItem>
                                                 <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-3 mt-4 rounded-5">
-                                                    <MDataTable Headers="Headers"
+                                                    <MDataTable FixedHeader Height="312" Headers="Headers"
                                                     SortDesc="true"
                                                     SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                                     TItem="ConfigObjectPropertyModel"
@@ -488,9 +493,9 @@
                                                 string tempContent = configObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
                                                 if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && !configObject.IsEditing && content != tempContent)
                                                 {
-                                                            <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                                @T("Modified")
-                                                            </div>
+                                                    <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                        @T("Modified")
+                                                    </div>
                                                 }
                                             }
                                             <MHover Context="hContext">
@@ -658,7 +663,7 @@
             </div>
         </div>
         <div class="d-flex full-height full-width mt-12" style="overflow: hidden;">
-            <div class="full-height" style="min-width: 248px; width: 248px; border-right: 1px solid #E2E7F4; overflow-x: hidden; overflow-y: auto;">
+            <div class="full-height" style="min-width: 290px; width: 290px; margin-left: -85px; border-right: 1px solid #E2E7F4; overflow-x: hidden; overflow-y: auto;">
                 <MTimeline>
                     @{
                         int _index = 0;
@@ -666,28 +671,31 @@
                         {
                             int index = _index;
                             _index++;
-                            <MTimelineItem HideDot="!release.IsActive" Color="primary" Small Right @onclick="()=>OnTimelineItemClickAsync(release)">
-                                <OppositeContent>
-                                    <div>
-                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                            @release.CreationTime.ToString("MM-dd").TrimStart('0')
-                                        </div>
-                                        @if (index == 0)
+                                <MTimelineItem Class="d-flex align-start" HideDot="!release.IsActive" Small FillDot Right @onclick="()=>OnTimelineItemClickAsync(release)">
+                                    <IconContent>
+                                        <MIcon Size="20" Color="primary">mdi-circle</MIcon>
+                                    </IconContent>
+                                    <OppositeContent>
+                                        <div>
+                                            <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                                @release.CreationTime.ToString("MM-dd").TrimStart('0')
+                                            </div>
+                                            @if (index == 0)
                                         {
-                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
+                                                <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
                                         }
                                         else if (release.IsInvalid)
                                         {
-                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
+                                                <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
                                         }
-                                    </div>
-                                </OppositeContent>
-                                <ChildContent>
-                                    <div class="text-overflow2" style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                        @release.Name
-                                    </div>
-                                </ChildContent>
-                            </MTimelineItem>
+                                        </div>
+                                    </OppositeContent>
+                                    <ChildContent>
+                                        <div class="text-overflow2" style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559; width: 80px;" : "font-size:12px; font-weight: 500; color: #485585; width: 80px;")">
+                                            @release.Name
+                                        </div>
+                                    </ChildContent>
+                                </MTimelineItem>
                         }
                     }
                 </MTimeline>

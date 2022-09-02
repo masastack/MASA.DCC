@@ -51,7 +51,6 @@
                     @if (ConfigObjectType == ConfigObjectType.App)
                     {
                         <div class="regular--text">@_appDetail.Type</div>
-
                         <span>&nbsp;|&nbsp;</span>
                     }
                     @_appDetail.Identity
@@ -139,9 +138,9 @@
                                                 string tempContent = configObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
                                                 if (configObject.RelationConfigObjectId == 0 && !configObject.IsPublished && content != tempContent)
                                                 {
-                                                                <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                                                                    @T("Modified")
-                                                                </div>
+                                                    <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                                                        @T("Modified")
+                                                    </div>
                                                 }
                                             }
                                             <MHover Context="hContext">

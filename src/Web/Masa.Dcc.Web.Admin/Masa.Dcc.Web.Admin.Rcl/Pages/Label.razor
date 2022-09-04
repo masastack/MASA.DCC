@@ -1,14 +1,16 @@
 ﻿@page "/Label"
 @inherits MasaCompontentBase
 
-<MTextField @bind-Value="_typeName" HideDetails="true" Dense OnKeyDown="SearchAsync" Class="rounded-2" Height="40" Flat Solo Placeholder="@T("Search")">
-    <PrependInnerContent>
-        <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
-    </PrependInnerContent>
-</MTextField>
-<MButton Height="40" Width="100" Class="rounded-lg ml-6" Color="primary" OnClick="()=>ShowLabelModal(null)">
-    <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
-</MButton>
+<MRow NoGutters>
+    <MTextField @bind-Value="_typeName" HideDetails="true" Dense OnKeyDown="SearchAsync" Class="rounded-2" Height="40" Flat Solo Placeholder="@T("Search")">
+        <PrependInnerContent>
+            <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
+        </PrependInnerContent>
+    </MTextField>
+    <MButton Height="40" Width="100" Class="rounded-lg ml-6" Color="primary" OnClick="()=>ShowLabelModal(null)">
+        <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
+    </MButton>
+</MRow>
 
 <MRow NoGutters Style="margin: 12px -12px !important">
     @foreach (var labelGroup in _labels.GroupBy(l => l.TypeCode))
@@ -47,16 +49,6 @@
             </MCard>
         </MCol>
     }
-    <MCol Cols="4">
-        <MHover Context="hoverContext">
-            <MCard Ripple=false OnClick="()=>ShowLabelModal(null)" @attributes="hoverContext.Attrs" Elevation="@(hoverContext.Hover ? 6 : 0)" Class="hover-pointer ma-3 d-flex justify-center align-center" Outlined MinHeight="242" Style="border-radius:16px !important; border: none;">
-                <div>
-                    <MIcon Color="#323D6F">mdi-plus-circle-outline</MIcon>
-                    <span style="color: #323D6F; font-size: 18px;">@T("Add label")</span>
-                </div>
-            </MCard>
-        </MHover>
-    </MCol>
 </MRow>
 
 <SSheetDialog @key="@($"labelModal-{_labelModal.Visible}")" Value="_labelModal.Visible" ValueChanged="LabelModalValueChanged" Title="@(_labelModal.HasValue ? T("Edit label") : T("Add label"))" Icon="mdi-circle" IconColor="success">

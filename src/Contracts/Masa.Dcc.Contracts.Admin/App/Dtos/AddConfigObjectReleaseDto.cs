@@ -17,7 +17,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public string Name { get; set; } = "";
 
         [Required(ErrorMessage = "Comment is required", AllowEmptyStrings = true)]
-        [StringLength(500, MinimumLength = 0, ErrorMessage = "Comment length range is [0-500]")]
+        [StringLength(255, MinimumLength = 0, ErrorMessage = "Comment length range is [0-255]")]
         public string Comment { get; set; } = "";
 
         [Required]

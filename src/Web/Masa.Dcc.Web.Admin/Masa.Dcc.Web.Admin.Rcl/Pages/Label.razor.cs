@@ -120,6 +120,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _labelModal.Data.LabelValues = _labelValues
                 .Where(l => !string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.Code))
+                .DistinctBy(l => l.Code)
+                .DistinctBy(l => l.Name)
                 .Select(l => new LabelValueDto { Code = l.Code, Name = l.Name })
                 .ToList();
 
@@ -176,12 +178,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RemoveLabelAsync(string typeCode)
         {
-            await LabelCaller.RemoveAsync(typeCode);
+            await PopupService.ConfirmAsync("删除标签", $"您确定要删除{typeCode}标签吗？", async args =>
+            {
+                await LabelCaller.RemoveAsync(typeCode);
 
-            await PopupService.ToastSuccessAsync("操作成功");
+                await PopupService.ToastSuccessAsync("操作成功");
 
-            LabelModalValueChanged(false);
-            _labels = await GetListAsync();
+                LabelModalValueChanged(false);
+                _labels = await GetListAsync();
+            });
         }
     }
 }

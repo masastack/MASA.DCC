@@ -670,31 +670,31 @@
                         {
                             int index = _index;
                             _index++;
-                                <MTimelineItem Class="d-flex align-start" HideDot="!release.IsActive" Small FillDot Right @onclick="()=>OnTimelineItemClickAsync(release)">
-                                    <IconContent>
-                                        <MIcon Size="20" Color="primary">mdi-circle</MIcon>
-                                    </IconContent>
-                                    <OppositeContent>
-                                        <div>
-                                            <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                                @release.CreationTime.ToString("MM-dd").TrimStart('0')
-                                            </div>
-                                            @if (index == 0)
+                            <MTimelineItem Class="d-flex align-start" HideDot="!release.IsActive" Small FillDot Right @onclick="()=>OnTimelineItemClickAsync(release)">
+                                <IconContent>
+                                    <MIcon Size="20" Color="primary">mdi-circle</MIcon>
+                                </IconContent>
+                                <OppositeContent>
+                                    <div>
+                                        <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
+                                            @release.CreationTime.ToString("MM-dd").TrimStart('0')
+                                        </div>
+                                        @if (index == 0)
                                         {
-                                                <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
+                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
                                         }
                                         else if (release.IsInvalid)
                                         {
-                                                <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
+                                            <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
                                         }
-                                        </div>
-                                    </OppositeContent>
-                                    <ChildContent>
-                                        <div class="text-overflow2" style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559; width: 80px;" : "font-size:12px; font-weight: 500; color: #485585; width: 80px;")">
-                                            @release.Name
-                                        </div>
-                                    </ChildContent>
-                                </MTimelineItem>
+                                    </div>
+                                </OppositeContent>
+                                <ChildContent>
+                                    <div class="text-overflow2" style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559; width: 80px;" : "font-size:12px; font-weight: 500; color: #485585; width: 80px;")">
+                                        @release.Name
+                                    </div>
+                                </ChildContent>
+                            </MTimelineItem>
                         }
                     }
                 </MTimeline>
@@ -705,7 +705,9 @@
                     {
                         <MChip Class="mr-4" Small Label Color="#323D6F" TextColor="white">@T("Rollbacked")</MChip>
                     }
-                    <span class="text-overflow" style="color: #485585; font-weight: 700; font-size: 16px; width:700px;">@_selectReleaseHistory.Name</span>
+                    <div class="text-overflow" style="color: #485585; font-weight: 700; font-size: 16px; width:700px;">
+                        @_selectReleaseHistory.Name
+                    </div>
                     <MSpacer></MSpacer>
                     <span style="color: #A3AED0; font-size:12px;">@T("Release time")：@_selectReleaseHistory.CreationTime.ToString(T("$DateTimeFormat"))</span>
                     <span class="mx-2">|</span>

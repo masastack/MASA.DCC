@@ -813,12 +813,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else
             {
-                await OnTimelineItemClickAsync(_configObjectReleases.First(), false);
+                await OnTimelineItemClickAsync(_configObjectReleases.First());
                 _showReleaseHistory = true;
             }
         }
 
-        private async Task OnTimelineItemClickAsync(ConfigObjectReleaseModel configObjectRelease, bool enableTabIndexChanged = true)
+        private async Task OnTimelineItemClickAsync(ConfigObjectReleaseModel configObjectRelease)
         {
             _selectReleaseHistory = configObjectRelease;
 
@@ -836,11 +836,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
             });
 
-            if (enableTabIndexChanged)
-            {
-                _releaseTabText = "All configuration";
-                ReleaseHistoryTabIndexChanged(_releaseTabText);
-            }
+            _releaseTabText = "All configuration";
+            ReleaseHistoryTabIndexChanged(_releaseTabText);
         }
 
         private void ReleaseHistoryTabIndexChanged(string tabText)
@@ -865,7 +862,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                     var added = current.ExceptBy(prev.Select(content => content.Key), content => content.Key)
                         .Select(content => new ConfigObjectPropertyModel
-                        { IsAdded = true, Key = content.Key, TempValue = content.Value })
+                        { IsAdded = true, Key = content.Key, Value = content.Value })
                         .ToList();
                     var deleted = prev.ExceptBy(current.Select(content => content.Key), content => content.Key)
                         .Select(content => new ConfigObjectPropertyModel

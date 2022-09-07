@@ -21,6 +21,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         public ConfigObjectType Type { get; private set; }
 
         [Required]
+        public bool Encryption { get; private set; }
+
+        [Required]
         [Column(TypeName = "ntext")]
         public string Content { get; private set; }
 
@@ -42,7 +45,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         private readonly List<ConfigObjectRelease> _configObjectRelease = new();
         public IReadOnlyCollection<ConfigObjectRelease> ConfigObjectRelease => _configObjectRelease;
 
-        public ConfigObject(string name, string formatLabelCode, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0, bool fromRelation = false)
+        public ConfigObject(string name, string formatLabelCode, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0, bool fromRelation = false, bool encryption = false)
         {
             Name = name;
             FormatLabelCode = formatLabelCode;
@@ -51,6 +54,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             TempContent = tempContent;
             RelationConfigObjectId = relationConfigObjectId;
             FromRelation = fromRelation;
+            Encryption = encryption;
         }
 
         public void UpdateContent(string content)

@@ -10,5 +10,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public string FormatLabelCode { get; set; } = "";
 
         public ConfigObjectType ConfigObjectType { get; set; }
+
+        public bool Encryption { get; set; }
     }
 }

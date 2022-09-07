@@ -96,6 +96,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                         Name = _addConfigObjectModal.Data.Name,
                         FormatLabelCode = _addConfigObjectModal.Data.FormatLabelCode,
                         Type = _addConfigObjectModal.Data.Type,
+                        Encryption = _addConfigObjectModal.Data.Encryption,
                         ObjectId = _addConfigObjectModal.Data.ObjectId,
                         EnvironmentClusterId = _selectEnvClusterIds[i].AsT1,
                         Content = initialContent,

@@ -12,6 +12,7 @@ builder.WebHost.UseKestrel(option =>
     options.ServerCertificate = new X509Certificate2(Path.Combine("Certificates", "7348307__lonsid.cn.pfx"), "cqUza0MN"));
 });
 
+builder.Services.AddDaprClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
@@ -20,6 +21,15 @@ builder.Services.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configu
 
 builder.Services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
 builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDaprStarter(opt =>
+    {
+        opt.DaprHttpPort = 3700;
+        opt.DaprGrpcPort = 3701;
+    });
+}
 
 var app = builder.Build();
 

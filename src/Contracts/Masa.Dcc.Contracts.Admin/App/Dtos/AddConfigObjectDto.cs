@@ -19,6 +19,8 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         [Range(1, int.MaxValue)]
         public ConfigObjectType Type { get; set; }
 
+        public bool Encryption { get; set; }
+
         /// <summary>
         /// appid or publicid or bizid
         /// </summary>

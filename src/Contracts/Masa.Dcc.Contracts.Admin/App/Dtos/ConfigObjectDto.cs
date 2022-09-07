@@ -24,5 +24,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public string Content { get; set; } = "";
 
         public string TempContent { get; set; } = "";
+
+        public bool Encryption { get; set; }
     }
 }

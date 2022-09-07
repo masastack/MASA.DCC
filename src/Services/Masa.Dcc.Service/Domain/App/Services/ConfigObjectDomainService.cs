@@ -8,28 +8,28 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly DccDbContext _context;
         private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
-        private readonly ILabelRepository _labelRepository;
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
         private readonly IMemoryCacheClient _memoryCacheClient;
         private readonly IPmClient _pmClient;
+        private readonly DaprClient _daprClient;
 
         public ConfigObjectDomainService(
             IDomainEventBus eventBus,
             DccDbContext context,
             IConfigObjectReleaseRepository configObjectReleaseRepository,
             IConfigObjectRepository configObjectRepository,
-            ILabelRepository labelRepository,
             IAppConfigObjectRepository appConfigObjectRepository,
             IMemoryCacheClient memoryCacheClient,
-            IPmClient pmClient) : base(eventBus)
+            IPmClient pmClient,
+            DaprClient daprClient) : base(eventBus)
         {
             _context = context;
             _configObjectReleaseRepository = configObjectReleaseRepository;
             _configObjectRepository = configObjectRepository;
-            _labelRepository = labelRepository;
             _appConfigObjectRepository = appConfigObjectRepository;
             _memoryCacheClient = memoryCacheClient;
             _pmClient = pmClient;
+            _daprClient = daprClient;
         }
 
         public async Task AddConfigObjectAsync(List<AddConfigObjectDto> configObjectDtos)
@@ -44,7 +44,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     configObjectDto.Content,
                     configObjectDto.TempContent,
                     configObjectDto.RelationConfigObjectId,
-                    configObjectDto.FromRelation);
+                    configObjectDto.FromRelation,
+                    configObjectDto.Encryption);
 
                 configObjects.Add(configObject);
 
@@ -80,12 +81,24 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
             if (dto.FormatLabelCode.Trim().ToLower() != "properties")
             {
-                configObject.UpdateContent(dto.Content);
+                string content = dto.Content;
+                if (configObject.Encryption)
+                {
+                    content = await EncryptContentAsync(dto.Content);
+                }
+
+                configObject.UpdateContent(content);
                 configObject.UnRelation();
             }
             else
             {
-                var propertyEntities = JsonSerializer.Deserialize<List<ConfigObjectPropertyContentDto>>(configObject.Content) ?? new();
+                string content = configObject.Content;
+                if (configObject.Encryption && configObject.Content != "[]")
+                {
+                    content = await DecryptContentAsync(configObject.Content);
+                }
+
+                var propertyEntities = JsonSerializer.Deserialize<List<ConfigObjectPropertyContentDto>>(content) ?? new();
                 if (dto.AddConfigObjectPropertyContent.Any())
                 {
                     propertyEntities.AddRange(dto.AddConfigObjectPropertyContent);
@@ -100,11 +113,33 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     propertyEntities.AddRange(dto.EditConfigObjectPropertyContent);
                 }
 
-                var content = JsonSerializer.Serialize(propertyEntities);
+                content = JsonSerializer.Serialize(propertyEntities);
+                if (configObject.Encryption)
+                {
+                    content = await EncryptContentAsync(content);
+                }
                 configObject.UpdateContent(content);
             }
 
             await _configObjectRepository.UpdateAsync(configObject);
+        }
+
+        private async Task<string> EncryptContentAsync(string content)
+        {
+            var config = await _daprClient.GetSecretAsync("local-secret-store", "Config");
+            var secret = config["dcc-config-secret"];
+
+            var encryptContent = AesUtils.Encrypt(content, secret, FillType.Left);
+            return encryptContent;
+        }
+
+        private async Task<string> DecryptContentAsync(string content)
+        {
+            var config = await _daprClient.GetSecretAsync("local-secret-store", "Config");
+            var secret = config["dcc-config-secret"];
+
+            var encryptContent = AesUtils.Decrypt(content, secret, FillType.Left);
+            return encryptContent;
         }
 
         public async Task CloneConfigObjectAsync(CloneConfigObjectDto dto)
@@ -226,11 +261,16 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 //add redis cache
                 //TODO: encryption value
                 var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
+                if (configObject.Encryption)
+                {
+                    dto.Content = await EncryptContentAsync(dto.Content);
+                }
                 var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
                 {
                     ConfigObjectType = configObject.Type,
                     Content = dto.Content,
-                    FormatLabelCode = configObject.FormatLabelCode
+                    FormatLabelCode = configObject.FormatLabelCode,
+                    Encryption = configObject.Encryption
                 });
                 await _memoryCacheClient.SetAsync<string>(key.ToLower(), releaseContent);
             }

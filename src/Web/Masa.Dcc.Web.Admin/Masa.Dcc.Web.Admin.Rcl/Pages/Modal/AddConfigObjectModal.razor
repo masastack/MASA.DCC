@@ -20,6 +20,11 @@
                          ItemText="l=>l.Name"
                          ItemValue="l=>l.Code">
                 </SSelect>
+                <p class="neutral--text pt-6" style="font-size:14px; font-weight:700;">是否开启加密</p>
+                <MSwitch Class="ml-3 mt-0" Style="display: inline-block;" @bind-Value="_addConfigObjectModal.Data.Encryption"
+                         Label="@(_addConfigObjectModal.Data.Encryption ? T("ON") : T("OFF"))"
+                         Inset>
+                </MSwitch>
                 <p class="neutral--text pt-6" style="font-size:14px; font-weight:700;">选择集群</p>
                 <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="EnvClusterValueChanged">
                     @foreach (var item in AppDetail.EnvironmentClusters)

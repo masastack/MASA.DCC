@@ -112,6 +112,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 Type = configObject.Type,
                 RelationConfigObjectId = configObject.RelationConfigObjectId,
                 FromRelation = configObject.FromRelation,
+                Encryption = configObject.Encryption,
                 Content = configObject.Content,
                 TempContent = configObject.TempContent,
                 CreationTime = configObject.CreationTime,

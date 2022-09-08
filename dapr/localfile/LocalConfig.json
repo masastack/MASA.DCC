@@ -1,5 +1,5 @@
 {
-  "Config": {
+  "dcc-config": {
     "dcc-config-secret": "xxx" // replace your secret
   }
 }

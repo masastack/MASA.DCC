@@ -126,7 +126,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
         private async Task<string> EncryptContentAsync(string content)
         {
-            var config = await _daprClient.GetSecretAsync("local-secret-store", "Config");
+            var config = await _daprClient.GetSecretAsync("local-secret-store", "dcc-config");
             var secret = config["dcc-config-secret"];
 
             var encryptContent = AesUtils.Encrypt(content, secret, FillType.Left);
@@ -135,7 +135,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
         private async Task<string> DecryptContentAsync(string content)
         {
-            var config = await _daprClient.GetSecretAsync("local-secret-store", "Config");
+            var config = await _daprClient.GetSecretAsync("local-secret-store", "dcc-config");
             var secret = config["dcc-config-secret"];
 
             var encryptContent = AesUtils.Decrypt(content, secret, FillType.Left);

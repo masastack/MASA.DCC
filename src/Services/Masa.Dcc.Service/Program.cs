@@ -63,7 +63,10 @@ var app = builder.Services
     .AddDomainEventBus(options =>
     {
         options.UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseDapr().UseEventLog<DccDbContext>())
-               .UseEventBus()
+               .UseEventBus(eventBusBuilder =>
+               {
+                   eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
+               })
                .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
                .UseEventLog<DccDbContext>()
                .UseRepository<DccDbContext>();

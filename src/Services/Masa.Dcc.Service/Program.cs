@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Dcc.Service.Admin.Infrastructure.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMasaIdentityModel(options =>
@@ -63,7 +65,10 @@ var app = builder.Services
     .AddDomainEventBus(options =>
     {
         options.UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseDapr().UseEventLog<DccDbContext>())
-               .UseEventBus()
+               .UseEventBus(eventBusBuilder =>
+               {
+                   eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
+               })
                .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
                .UseEventLog<DccDbContext>()
                .UseRepository<DccDbContext>();

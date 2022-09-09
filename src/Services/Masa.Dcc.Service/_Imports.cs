@@ -10,6 +10,7 @@ global using Dapr.Client;
 global using FluentValidation;
 global using FluentValidation.AspNetCore;
 global using Mapster;
+global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Full;
 global using Masa.BuildingBlocks.Ddd.Domain.Events;

@@ -404,7 +404,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 string secret = "";
                 Task.Run(async () =>
                 {
-                    var config = await DaprClient.GetSecretAsync("local-secret-store", "dcc-config");
+                    var config = await DaprClient.GetSecretAsync("localsecretstore", "dcc-config");
                     secret = config["dcc-config-secret"];
                 }).Wait();
 

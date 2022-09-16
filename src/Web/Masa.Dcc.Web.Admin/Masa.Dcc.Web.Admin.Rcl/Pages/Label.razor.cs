@@ -143,7 +143,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 if (_labelModal.Data.LabelValues.Count(l => l.Code == labelValue.Code) > 1
                     || _labelModal.Data.LabelValues.Count(l => l.Name == labelValue.Name) > 1)
                 {
-                    await PopupService.ToastErrorAsync("标签Code和标签Name不允许重复");
+                    await PopupService.ToastErrorAsync(T("Lable code and label name cannot be repeated"));
                     return;
                 }
             }
@@ -152,7 +152,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 if (!_labelModal.Data.LabelValues.Any())
                 {
-                    await PopupService.ToastErrorAsync("标签值不允许为空");
+                    await PopupService.ToastErrorAsync(T("Label value cannot be empty"));
                     return;
                 }
 

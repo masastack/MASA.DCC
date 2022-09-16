@@ -14,7 +14,7 @@ public class AppService : ServiceBase
         App.MapGet("api/v1/appWithEnvCluster/{Id}", GetWithEnvironmentClusterAsync);
         App.MapPost("api/v1/app/pin/{appid}", AddAppPinAsync);
         App.MapDelete("api/v1/app/pin/{appId}", RemoveAppPinAsync);
-        App.MapPost("api/v1/app/pin", GetAppPinListAsync);
+        App.MapGet("api/v1/app/pin", GetAppPinListAsync);
     }
 
     public async Task<AppDetailModel> GetAsync(int Id)
@@ -55,7 +55,7 @@ public class AppService : ServiceBase
         await eventBus.PublishAsync(new RemoveAppPinCommand(appId));
     }
 
-    public async Task<List<AppPinDto>> GetAppPinListAsync(IEventBus eventBus, List<int> appIds)
+    public async Task<List<AppPinDto>> GetAppPinListAsync(IEventBus eventBus, [FromBody] List<int> appIds)
     {
         var query = new AppPinQuery(appIds);
         await eventBus.PublishAsync(query);

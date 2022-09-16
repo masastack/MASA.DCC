@@ -6,9 +6,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
     public class AppPinRepository : Repository<DccDbContext, AppPin>, IAppPinRepository
     {
         public AppPinRepository(DccDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
-        {
-        }
-
+        { }
 
         public async Task<List<AppPin>> GetListAsync(List<int> appIds)
         {

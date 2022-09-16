@@ -8,5 +8,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public int Id { get; set; }
 
         public int AppId { get; set; }
+
+        public bool IsDeleted { get; set; }
     }
 }

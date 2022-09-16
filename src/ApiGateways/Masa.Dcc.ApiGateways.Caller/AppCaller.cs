@@ -33,9 +33,9 @@ namespace Masa.Dcc.Caller
             return result ?? new();
         }
 
-        public async Task<List<AppPinDto>> GetAppPinListAsync()
+        public async Task<List<AppPinDto>> GetAppPinListAsync(List<int> appIds)
         {
-            var result = await CallerProvider.GetAsync<List<AppPinDto>>($"{_prefix}/pin");
+            var result = await CallerProvider.PostAsync<List<AppPinDto>>($"{_prefix}/pin", appIds);
 
             return result ?? new();
         }

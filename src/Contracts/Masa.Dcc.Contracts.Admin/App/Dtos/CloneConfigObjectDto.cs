@@ -10,6 +10,8 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         /// </summary>
         public int ToObjectId { get; set; }
 
+        public ConfigObjectType ConfigObjectType { get; set; }
+
         public List<AddConfigObjectDto> ConfigObjects { get; set; } = new();
 
         public List<AddConfigObjectDto> CoverConfigObjects { get; set; } = new();

@@ -8,5 +8,18 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
         public AppPinRepository(DccDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
         {
         }
+
+
+        public async Task<List<AppPin>> GetListAsync(List<int> appIds)
+        {
+            var result = await Context.Set<AppPin>()
+                .IgnoreQueryFilters()
+                .Where(app => appIds.Contains(app.AppId))
+                .GroupBy(app => app.AppId)
+                .Select(app => app.OrderByDescending(a => a.Id).First())
+                .ToListAsync();
+
+            return result;
+        }
     }
 }

@@ -120,8 +120,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _labelModal.Data.LabelValues = _labelValues
                 .Where(l => !string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.Code))
-                .DistinctBy(l => l.Code)
-                .DistinctBy(l => l.Name)
                 .Select(l => new LabelValueDto { Code = l.Code, Name = l.Name })
                 .ToList();
 
@@ -140,6 +138,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     {
                         return;
                     }
+                }
+
+                if (_labelModal.Data.LabelValues.Count(l => l.Code == labelValue.Code) > 1
+                    || _labelModal.Data.LabelValues.Count(l => l.Name == labelValue.Name) > 1)
+                {
+                    await PopupService.ToastErrorAsync("标签Code和标签Name不允许重复");
+                    return;
                 }
             }
 

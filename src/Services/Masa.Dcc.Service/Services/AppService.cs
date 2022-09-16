@@ -1,6 +1,5 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
-
 namespace Masa.Dcc.Service.Services;
 
 public class AppService : ServiceBase
@@ -15,7 +14,7 @@ public class AppService : ServiceBase
         App.MapGet("api/v1/appWithEnvCluster/{Id}", GetWithEnvironmentClusterAsync);
         App.MapPost("api/v1/app/pin/{appid}", AddAppPinAsync);
         App.MapDelete("api/v1/app/pin/{appId}", RemoveAppPinAsync);
-        App.MapGet("api/v1/app/pin", GetAppPinListAsync);
+        App.MapPost("api/v1/app/pin", GetAppPinListAsync);
     }
 
     public async Task<AppDetailModel> GetAsync(int Id)
@@ -32,7 +31,7 @@ public class AppService : ServiceBase
         return result;
     }
 
-    public async Task<List<AppDetailModel>> GetListByProjectIdsAsync([FromBody] List<int> projectIds)
+    public async Task<List<AppDetailModel>> GetListByProjectIdsAsync([FromServices] MasaUser masaUser, [FromBody] List<int> projectIds)
     {
         var result = await _pmClient.AppService.GetListByProjectIdsAsync(projectIds);
 
@@ -56,9 +55,9 @@ public class AppService : ServiceBase
         await eventBus.PublishAsync(new RemoveAppPinCommand(appId));
     }
 
-    public async Task<List<AppPinDto>> GetAppPinListAsync(IEventBus eventBus)
+    public async Task<List<AppPinDto>> GetAppPinListAsync(IEventBus eventBus, List<int> appIds)
     {
-        var query = new AppPinQuery();
+        var query = new AppPinQuery(appIds);
         await eventBus.PublishAsync(query);
 
         return query.Result;

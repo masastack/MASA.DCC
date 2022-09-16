@@ -71,7 +71,7 @@
                         <MRow Class="pt-4 px-6" NoGutters Justify="JustifyTypes.SpaceBetween">
                             <STextField Class="pr-6" Outlined @bind-Value="item.Name" Label="Name"></STextField>
                             <STextField Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
-                            <div class="d-flex justify-end align-center ml-6" style="width: 5%">
+                            <div class="d-flex justify-end align-start ml-6" style="width: 5%; margin-top: 14px;">
                                 <MIcon Disabled="@(_labelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="hover-pointer mr-3">mdi-close</MIcon>
                                 <MIcon OnClick="()=>AddLabelValue(item.Index)" Class="hover-pointer">mdi-plus</MIcon>
                             </div>

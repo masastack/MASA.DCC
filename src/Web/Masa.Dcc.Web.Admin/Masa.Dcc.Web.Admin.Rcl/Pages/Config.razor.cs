@@ -98,13 +98,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 var headers = new List<DataTableHeader<ConfigObjectPropertyModel>>()
                 {
-                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished) },
-                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
-                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value) },
+                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished), Width = 100 },
+                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key), Width = 120 },
+                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value), Width = 120  },
                     new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
-                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier) },
-                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
-                    new() { Text = T("Operation"), Value="Operation", Sortable = false }
+                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier), Width = 98  },
+                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime), Width = 114 },
+                    new() { Text = T("Operation"), Value="Operation", Sortable = false, Width = 88 }
                 };
 
                 return headers;
@@ -460,18 +460,26 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
                 else
                 {
+                    List<ConfigObjectPropertyModel> editorPropertyContents = new();
                     Dictionary<string, ConfigObjectPropertyModel> propertyContents = new();
                     foreach (var lineData in lineDatas)
                     {
                         string[] keyValues = lineData.Trim().Split('=');
-                        propertyContents.TryAdd(keyValues[0], new ConfigObjectPropertyModel
+                        var key = keyValues[0].TrimEnd();
+                        if (editorPropertyContents.Any(property => property.Key == key))
                         {
-                            Key = keyValues[0].TrimEnd(),
-                            Value = keyValues[1].TrimStart()
-                        });
+                            await PopupService.ToastErrorAsync(T("Key: {key} already exists".Replace("{key}", key)));
+                            return;
+                        }
+                        else
+                        {
+                            editorPropertyContents.Add(new ConfigObjectPropertyModel
+                            {
+                                Key = keyValues[0].TrimEnd(),
+                                Value = keyValues[1].TrimStart()
+                            });
+                        }
                     }
-                    List<ConfigObjectPropertyModel> editorPropertyContents = propertyContents.Values.ToList();
-
                     await HandleTextConvertPropertyAsync(editorPropertyContents, configObjectId);
                 }
             }
@@ -537,7 +545,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 StringBuilder stringBuilder = new();
                 foreach (var property in _selectConfigObjectAllProperties)
                 {
-                    stringBuilder.AppendLine($"{property.Key} = {property.Value}");
+                    if (!property.IsDeleted)
+                    {
+                        stringBuilder.AppendLine($"{property.Key} = {property.Value}");
+                    }
                 }
                 configObject.ElevationTabPropertyContent.Content = stringBuilder.ToString();
                 configObject.ElevationTabPropertyContent.FormatLabelCode = "Properties";
@@ -681,7 +692,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Key = model.Key,
                     Value = model.Value,
                     Description = model.Description,
-                    Modifier = model.Modifier,
+                    Modifier = _propertyConfigModal.Data.Modifier,
                     ModificationTime = _propertyConfigModal.Data.ModificationTime,
                 };
                 _propertyConfigModal.Show(dto, configObject.Id);
@@ -721,7 +732,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
                     {
-                        await PopupService.ToastErrorAsync($"key：{_propertyConfigModal.Data.Key} 已存在");
+                        await PopupService.ToastErrorAsync(T("Key: {key} already exists".Replace("{key}", _propertyConfigModal.Data.Key)));
                         return;
                     }
                     else
@@ -832,7 +843,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 RollbackToReleaseId = _releaseHistory.ConfigObjectReleases.Last().Id
             });
 
-            await InitDataAsync();
+            await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
             _showRollbackModal = false;
             await PopupService.ToastSuccessAsync("回滚成功");
         }

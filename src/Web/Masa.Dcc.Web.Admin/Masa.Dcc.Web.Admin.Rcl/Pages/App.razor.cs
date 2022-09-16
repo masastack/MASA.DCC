@@ -81,7 +81,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _backupApps = new List<Model.AppModel>(_apps.ToArray());
             _projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
 
-            //初始化业务配置
+            //init biz config
             var bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{_projectDetail.Identity}-$biz");
             if (bizConfig.Id == 0)
             {
@@ -155,11 +155,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
             var apps = await AppCaller.GetListByProjectIdsAsync(projectIds.ToList());
-            var appPins = await AppCaller.GetAppPinListAsync();
+            var appPins = await AppCaller.GetAppPinListAsync(apps.Select(app => app.Id).ToList());
 
             var result = from app in apps
                          join appPin in appPins on app.Id equals appPin.AppId into appGroup
-                         from newApp in appGroup.DefaultIfEmpty<AppPinDto>()
+                         from newApp in appGroup.DefaultIfEmpty()
                          select new Model.AppModel
                          {
                              ProjectId = app.ProjectId,
@@ -173,11 +173,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              SwaggerUrl = app.SwaggerUrl,
                              EnvironmentClusters = app.EnvironmentClusters,
                              ModificationTime = app.ModificationTime,
-                             IsPinned = newApp != null,
+                             IsPinned = newApp != null && !newApp.IsDeleted,
                              PinTime = newApp != null ? newApp.ModificationTime : DateTime.MinValue
                          };
 
-            return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.PinTime).ToList();
+            return result.OrderByDescending(app => app.IsPinned)
+                .ThenByDescending(app => app.PinTime)
+                .ThenByDescending(app => app.ModificationTime)
+                .ToList();
         }
 
         private async Task AppDetailPinAsync(Model.AppModel app)

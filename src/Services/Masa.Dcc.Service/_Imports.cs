@@ -18,6 +18,7 @@ global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.BuildingBlocks.Dispatcher.Events;
 global using Masa.BuildingBlocks.ReadWriteSpliting.Cqrs.Commands;
 global using Masa.BuildingBlocks.ReadWriteSpliting.Cqrs.Queries;
+global using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
 global using Masa.BuildingBlocks.StackSdks.Pm;
 global using Masa.BuildingBlocks.StackSdks.Pm.Enum;
 global using Masa.BuildingBlocks.StackSdks.Pm.Model;

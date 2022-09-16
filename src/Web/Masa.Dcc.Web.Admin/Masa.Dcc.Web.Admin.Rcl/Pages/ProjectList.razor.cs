@@ -64,7 +64,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task InitDataAsync()
+        public async Task InitDataAsync()
         {
             if (LandscapePage)
             {
@@ -91,7 +91,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
             var apps = await AppCaller.GetListByProjectIdsAsync(projectIds.ToList());
-            var appPins = await AppCaller.GetAppPinListAsync();
+            var appPins = await AppCaller.GetAppPinListAsync(apps.Select(app => app.Id).ToList());
 
             var result = from app in apps
                          join appPin in appPins on app.Id equals appPin.AppId into appGroup
@@ -109,10 +109,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              SwaggerUrl = app.SwaggerUrl,
                              EnvironmentClusters = app.EnvironmentClusters,
                              ModificationTime = app.ModificationTime,
-                             IsPinned = newApp != null
+                             IsPinned = newApp != null && !newApp.IsDeleted,
+                             PinTime = newApp != null ? newApp.ModificationTime : DateTime.MinValue
                          };
 
-            return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).ToList();
+            return result.OrderByDescending(app => app.IsPinned)
+                .ThenByDescending(app => app.PinTime)
+                .ThenByDescending(app => app.ModificationTime).ToList();
         }
 
         private async Task HandleProjectNameClick(int projectId)

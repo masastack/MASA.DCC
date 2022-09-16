@@ -144,7 +144,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task GetAppPinAsync(AppPinQuery query)
         {
-            var appPins = await _appPinRepository.GetListAsync();
+            var appPins = await _appPinRepository.GetListAsync(query.AppIds);
 
             query.Result = appPins.Adapt<List<AppPinDto>>();
         }

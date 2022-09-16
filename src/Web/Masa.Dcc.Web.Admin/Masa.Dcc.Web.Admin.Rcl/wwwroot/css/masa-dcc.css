@@ -773,3 +773,13 @@ input::-webkit-input-placeholder {
 textarea:disabled {
     color: rgba(0,0,0,.5);
 }
+
+.masa-stack-components .m-input.m-textarea.rounded-r-0 fieldset {
+    border-bottom-right-radius: 0 !important;
+    border-top-right-radius: 0 !important;
+}
+
+.masa-stack-components .m-input.m-textarea.rounded-l-0 fieldset {
+    border-bottom-left-radius: 0 !important;
+    border-top-left-radius: 0 !important;
+}

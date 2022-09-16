@@ -30,12 +30,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private StringNumber _selectEnvClusterId = 0;
         private List<EnvironmentModel> _environments = new();
         private List<ClusterModel> _clusters = new();
-        private List<ProjectModel> _projects = new();
-        private List<Model.AppModel> _apps = new();
         private ConfigComponentModel _configModel = new();
         private AppComponentModel _appModel = new();
         private App? _app;
         private Config? _config;
+        private ProjectList? _projectList;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -77,45 +76,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             return _clusters;
         }
 
-        private async Task<List<ProjectModel>> GetProjectByEnvClusterIdAsync(int envClusterId)
-        {
-            _selectEnvClusterId = envClusterId;
-            _projects = await ProjectCaller.GetListByEnvIdAsync(envClusterId);
-            if (_projects.Any())
-            {
-                var projectIds = _projects.Select(project => project.Id);
-                _apps = await GetAppByProjectIdAsync(projectIds);
-            }
-
-            return _projects;
-        }
-
-        private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
-        {
-            var apps = await AppCaller.GetListByProjectIdsAsync(projectIds.ToList());
-            var appPins = await AppCaller.GetAppPinListAsync();
-
-            var result = from app in apps
-                         join appPin in appPins on app.Id equals appPin.AppId into appGroup
-                         from newApp in appGroup.DefaultIfEmpty<AppPinDto>()
-                         select new Model.AppModel
-                         {
-                             ProjectId = app.ProjectId,
-                             Id = app.Id,
-                             Name = app.Name,
-                             Identity = app.Identity,
-                             Description = app.Description,
-                             Type = app.Type,
-                             ServiceType = app.ServiceType,
-                             Url = app.Url,
-                             SwaggerUrl = app.SwaggerUrl,
-                             EnvironmentClusters = app.EnvironmentClusters,
-                             IsPinned = newApp != null
-                         };
-
-            return result.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).ToList();
-        }
-
         private async Task AppPin(Model.AppModel app)
         {
             if (app.IsPinned)
@@ -126,7 +86,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await AppCaller.AddAppPinAsync(app.Id);
             }
-            _apps = await GetAppByProjectIdAsync(new List<int>() { app.ProjectId });
         }
 
         private async Task TabValueChangedAsync(StringNumber value)
@@ -135,6 +94,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             StateHasChanged();
 
+            if (_curTab == 0 && _projectList != null)
+            {
+                await _projectList.InitDataAsync();
+            }
             if (_curTab == 1 && _app != null)
             {
                 await _app.InitDataAsync();

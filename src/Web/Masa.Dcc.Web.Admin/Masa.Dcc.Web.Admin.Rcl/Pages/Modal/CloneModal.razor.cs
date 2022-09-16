@@ -126,6 +126,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 
             Value = true;
             _allProjects = await GetProjectList();
+            if (ConfigObjectType == ConfigObjectType.Biz)
+            {
+                _allProjects.RemoveAll(project => project.Id == ProjectDetail.Id);
+            }
         }
 
         private void SelectOtherApp()
@@ -159,6 +163,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                     var allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
                     var projectEnvClusters = allEnvClusters.Where(envCluster => ProjectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
                     _cloneSelectApp.EnvironmentClusters = projectEnvClusters;
+                    _cloneSelectApp.Id = _cloneSelectAppId;
                 }
                 else if (ConfigObjectType == ConfigObjectType.App)
                 {
@@ -321,7 +326,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 
             var dto = new CloneConfigObjectDto
             {
-                ToObjectId = _cloneSelectApp.Id
+                ToObjectId = _cloneSelectApp.Id,
+                ConfigObjectType = ConfigObjectType
             };
             foreach (var envClusterId in _selectEnvClusterIds)
             {

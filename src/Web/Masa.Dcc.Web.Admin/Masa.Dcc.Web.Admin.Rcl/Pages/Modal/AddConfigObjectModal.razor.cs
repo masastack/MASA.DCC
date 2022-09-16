@@ -57,7 +57,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             }
         }
 
-        private async Task AddConfigObject(EditContext context)
+        private async Task AddConfigObject(FormContext context)
         {
             _addConfigObjectModal.Data.Type = ConfigObjectType;
             _addConfigObjectModal.Data.ObjectId = AppDetail.Id;

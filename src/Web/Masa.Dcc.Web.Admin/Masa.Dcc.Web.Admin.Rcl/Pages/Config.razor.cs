@@ -715,7 +715,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task SubmitPropertyConfigAsync(EditContext context)
+        private async Task SubmitPropertyConfigAsync(FormContext context)
         {
             if (context.Validate())
             {

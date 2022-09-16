@@ -1,13 +1,12 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Stack.Components.Configs;
+
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
-    public partial class Team
+    public partial class Team : IDisposable
     {
-        [Parameter]
-        public string TeamId { get; set; } = default!;
-
         [Inject]
         public IPopupService PopupService { get; set; } = default!;
 
@@ -32,6 +31,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public NavigationManager NavigationManager { get; set; } = default!;
 
+        [Inject]
+        public GlobalConfig GlobalConfig { get; set; } = default!;
+
         private int _projectCount;
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
@@ -45,13 +47,29 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private ProjectList? _projectListComponent;
         private TeamDetailModel _userTeam = new();
 
-        protected override async Task OnParametersSetAsync()
+        protected override Task OnInitializedAsync()
         {
-            if (TeamId != _userTeam.Id.ToString())
+            GlobalConfig.OnCurrentTeamChanged += HandleCurrentTeamChanged;
+            return base.OnInitializedAsync();
+        }
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (firstRender)
+            {
+                HandleCurrentTeamChanged(GlobalConfig.CurrentTeamId);
+            }
+        }
+
+        private async void HandleCurrentTeamChanged(Guid teamId)
+        {
+            if (teamId != _userTeam.Id)
             {
                 await TabValueChangedAsync(0);
-                _userTeam = await AuthClient.TeamService.GetDetailAsync(Guid.Parse(TeamId)) ?? new();
+                _userTeam = await AuthClient.TeamService.GetDetailAsync(teamId) ?? new();
             }
+
+            await InvokeAsync(StateHasChanged);
         }
 
         private void ProjectCountHandler(int projectCount)
@@ -127,6 +145,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await AppCaller.AddAppPinAsync(app.Id);
             }
+        }
+
+        public void Dispose()
+        {
+            GlobalConfig.OnCurrentTeamChanged -= HandleCurrentTeamChanged;
         }
     }
 }

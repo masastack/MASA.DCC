@@ -116,7 +116,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task SubmitLabelAsync(EditContext context)
+        private async Task SubmitLabelAsync(FormContext context)
         {
             _labelModal.Data.LabelValues = _labelValues
                 .Where(l => !string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.Code))

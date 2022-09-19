@@ -90,14 +90,6 @@
     color: #7681AB;
 }
 
-.m-input__icon.m-input__icon--append {
-    height: 48px !important;
-}
-
-.m-input__append-inner {
-    margin-top: 0 !important;
-}
-
 .m-input--checkbox .mdi-checkbox-blank-outline {
     color: #A3AED0 !important;
     caret-color: #A3AED0 !important;
@@ -687,12 +679,8 @@ input::-webkit-input-placeholder {
 }
 
 .text-overflow {
-    -webkit-line-clamp: 1;
-    word-break: break-all;
+    white-space: nowrap;
     overflow: hidden;
-    white-space: pre-wrap;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
     text-overflow: ellipsis;
 }
 

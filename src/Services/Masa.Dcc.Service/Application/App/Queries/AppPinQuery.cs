@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Queries
 {
-    public record AppPinQuery() : Query<List<AppPinDto>>
+    public record AppPinQuery(List<int> AppIds) : Query<List<AppPinDto>>
     {
         public override List<AppPinDto> Result { get; set; } = new();
     }

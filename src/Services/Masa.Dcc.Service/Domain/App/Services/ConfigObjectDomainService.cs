@@ -9,6 +9,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
         private readonly IConfigObjectRepository _configObjectRepository;
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
+        private readonly IBizConfigObjectRepository _bizConfigObjectRepository;
+        private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
         private readonly IMemoryCacheClient _memoryCacheClient;
         private readonly IPmClient _pmClient;
         private readonly DaprClient _daprClient;
@@ -19,6 +21,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IConfigObjectReleaseRepository configObjectReleaseRepository,
             IConfigObjectRepository configObjectRepository,
             IAppConfigObjectRepository appConfigObjectRepository,
+            IBizConfigObjectRepository bizConfigObjectRepository,
+            IPublicConfigObjectRepository publicConfigObjectRepository,
             IMemoryCacheClient memoryCacheClient,
             IPmClient pmClient,
             DaprClient daprClient) : base(eventBus)
@@ -27,6 +31,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _configObjectReleaseRepository = configObjectReleaseRepository;
             _configObjectRepository = configObjectRepository;
             _appConfigObjectRepository = appConfigObjectRepository;
+            _bizConfigObjectRepository = bizConfigObjectRepository;
+            _publicConfigObjectRepository = publicConfigObjectRepository;
             _memoryCacheClient = memoryCacheClient;
             _pmClient = pmClient;
             _daprClient = daprClient;
@@ -149,9 +155,27 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
             //update
             var envClusterIds = dto.CoverConfigObjects.Select(c => c.EnvironmentClusterId);
-            var appConfigObjects = await _appConfigObjectRepository.GetListAsync(
-                app => app.AppId == dto.ToObjectId && envClusterIds.Contains(app.EnvironmentClusterId));
-            var needRemove = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id));
+
+            IEnumerable<ConfigObject> needRemove = new List<ConfigObject>();
+            if (dto.ConfigObjectType == ConfigObjectType.App)
+            {
+                var appConfigObjects = await _appConfigObjectRepository.GetListAsync(
+                    app => app.AppId == dto.ToObjectId && envClusterIds.Contains(app.EnvironmentClusterId));
+                needRemove = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id));
+            }
+            else if (dto.ConfigObjectType == ConfigObjectType.Biz)
+            {
+                var bizConfigObjects = await _bizConfigObjectRepository.GetListAsync(
+                    biz => biz.BizConfigId == dto.ToObjectId && envClusterIds.Contains(biz.EnvironmentClusterId));
+                needRemove = await _configObjectRepository.GetListAsync(c => bizConfigObjects.Select(biz => biz.ConfigObjectId).Contains(c.Id));
+            }
+            else if (dto.ConfigObjectType == ConfigObjectType.Public)
+            {
+                var publicConfigObjects = await _publicConfigObjectRepository.GetListAsync(
+                    publicConfig => publicConfig.PublicConfigId == dto.ToObjectId && envClusterIds.Contains(publicConfig.EnvironmentClusterId));
+                needRemove = await _configObjectRepository.GetListAsync(c => publicConfigObjects.Select(publicConfig => publicConfig.ConfigObjectId).Contains(c.Id));
+            }
+
             await _configObjectRepository.RemoveRangeAsync(needRemove);
             await CloneConfigObjectsAsync(dto.CoverConfigObjects, dto.ToObjectId);
         }

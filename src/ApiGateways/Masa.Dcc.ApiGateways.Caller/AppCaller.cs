@@ -1,6 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using System.Text;
+using System.Text.Json;
+
 namespace Masa.Dcc.Caller
 {
     public class AppCaller : DccHttpClientCallerBase
@@ -33,9 +36,11 @@ namespace Masa.Dcc.Caller
             return result ?? new();
         }
 
-        public async Task<List<AppPinDto>> GetAppPinListAsync()
+        public async Task<List<AppPinDto>> GetAppPinListAsync(List<int> appIds)
         {
-            var result = await CallerProvider.GetAsync<List<AppPinDto>>($"{_prefix}/pin");
+            HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{_prefix}/pin");
+            httpRequest.Content = new StringContent(JsonSerializer.Serialize(appIds), Encoding.UTF8, "application/json");
+            var result = await CallerProvider.SendAsync<List<AppPinDto>>(httpRequest);
 
             return result ?? new();
         }

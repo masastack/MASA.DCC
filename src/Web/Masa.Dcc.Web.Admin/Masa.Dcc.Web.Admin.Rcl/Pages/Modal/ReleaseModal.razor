@@ -11,9 +11,9 @@
                 </div>
                 <STextField Class="mt-12" Label="@T("Release name")" Outlined @bind-Value="_configObjectReleaseModal.Data.Name"></STextField>
                 <MTextarea Class="mt-6" Dense Label="@T("Description")" Outlined @bind-Value="_configObjectReleaseModal.Data.Comment"></MTextarea>
-                <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
                 @if (SelectConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
+                    <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
                     <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
                         <MDataTable Headers="ReleaseHeaders"
                                 DisableSort
@@ -73,6 +73,7 @@
                 }
                 else
                 {
+                    <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Released configuration")</p>
                     <MTextarea BackgroundColor="#F6F8FD" Outlined Readonly Value="@SelectConfigObject.Content"></MTextarea>
                 }
             </div>

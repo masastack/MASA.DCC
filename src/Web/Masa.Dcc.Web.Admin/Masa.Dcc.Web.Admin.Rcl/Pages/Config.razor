@@ -45,7 +45,7 @@
                 <div style="height: calc(100vh - 320px); overflow: auto;">
                     @if (ConfigObjectType == ConfigObjectType.App)
                     {
-                        <MRow NoGutters Class="mt-4">
+                        <MRow NoGutters Class="mt-4" Style="word-break: break-all;">
                             @_appDetail.Description
                         </MRow>
                     }
@@ -69,7 +69,7 @@
                     </MRow>
                     <MRow NoGutters Class="regular3--text btn mt-6">@T("Cluster")</MRow>
                     <MRow NoGutters>
-                        <MChipGroup Column>
+                        <MChipGroup @key="_appClusters" Column>
                             @foreach (var item in _appClusters)
                             {
                                 var isSelected = _selectCluster.ClusterName == item.ClusterName;
@@ -653,19 +653,19 @@
                OnClick="RollbackAsync"
                OnClickAfter="_handleRollbackOnClickAfter" />
 
-    <SSheetDialog @key="@($"releaseHistoryModal-{_showReleaseHistory}")" @bind-Value="_showReleaseHistory" Title="@T("Release history")" Icon="mdi-circle" IconColor="success">
-        <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
-            <div>
-                <div class="emphasis--text h6 d-flex align-center">
-                    @_selectConfigObject.Name
-                    <span class="ml-3 regular3--text btn">|</span>
-                    <sapn class="ml-2 regular3--text btn">@_releaseHistory.FormatLabelCode</sapn>
-                </div>
+<SSheetDialog @key="@($"releaseHistoryModal-{_showReleaseHistory}")" @bind-Value="_showReleaseHistory" Title="@T("Release history")" Icon="mdi-circle" IconColor="success">
+    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
+        <div>
+            <div class="emphasis--text h6 d-flex align-center">
+                @_selectConfigObject.Name
+                <span class="ml-3 regular3--text btn">|</span>
+                <sapn class="ml-2 regular3--text btn">@_releaseHistory.FormatLabelCode</sapn>
             </div>
-            <div class="d-flex full-height full-width mt-12" style="overflow: hidden;">
-                <div class="full-height" style="min-width: 290px; width: 290px; margin-left: -85px; border-right: 1px solid #E2E7F4; overflow-x: hidden; overflow-y: auto;">
-                    <MTimeline>
-                        @{
+        </div>
+        <div class="d-flex full-height full-width mt-12" style="overflow: hidden;">
+            <div class="full-height" style="min-width: 290px; width: 290px; margin-left: -85px; border-right: 1px solid #E2E7F4; overflow-x: hidden; overflow-y: auto;">
+                <MTimeline>
+                    @{
                         int _index = 0;
                         foreach (var release in _configObjectReleases)
                         {
@@ -681,13 +681,13 @@
                                                 @release.CreationTime.ToString("MM-dd").TrimStart('0')
                                             </div>
                                             @if (index == 0)
-                                        {
+                                            {
                                                 <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
-                                        }
-                                        else if (release.IsInvalid)
-                                        {
+                                            }
+                                            else if (release.IsInvalid)
+                                            {
                                                 <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Rollbacked")</div>
-                                        }
+                                            }
                                         </div>
                                     </OppositeContent>
                                     <ChildContent>
@@ -721,7 +721,7 @@
                             @T("Description")：
                         </span>
                     }
-                    <span style="color: #7681AB; font-size: 14px;">@_selectReleaseHistory.Comment</span>
+                    <span style="color: #7681AB; font-size: 14px; word-break: break-all;">@_selectReleaseHistory.Comment</span>
                 </div>
                 @if (_releaseHistory.FormatLabelCode.Trim().ToLower() == "properties")
                 {

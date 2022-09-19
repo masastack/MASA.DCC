@@ -26,7 +26,7 @@
                     <div style="font-size:14px; font-weight: 500; color: #1B2559;">@T("Rollback to")</div>
                 </OppositeContent>
                 <ChildContent>
-                     <div>
+                    <div>
                         <div style="font-size:14px; font-weight: 500; color: #1B2559;">@RollbackConfigObjectRelease.Name</div>
                         <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@RollbackConfigObjectRelease.Version</div>
                     </div>
@@ -73,7 +73,10 @@
         else
         {
             <div class="py-3">
-                <MTextarea HideDetails="true" BackgroundColor="#F6F8FD" Outlined Readonly Value="@RollbackConfigObjectRelease?.Content"></MTextarea>
+                <MRow NoGutters>
+                    <MTextarea Label="@(T("Before rollback"))" Class="rounded-r-0" MinHeight="300" HideDetails="true" Outlined Readonly Value="@CurrentConfigObjectRelease?.Content"></MTextarea>
+                    <MTextarea Label="@(T("After rollback"))" Class="rounded-l-0" MinHeight="300" HideDetails="true" Outlined Readonly Value="@RollbackConfigObjectRelease?.Content"></MTextarea>
+                </MRow>
             </div>
         }
     </ChildContent>
@@ -81,5 +84,3 @@
         <MButton Height="40" OnClick="save.Click" Width="100" Class="rounded-pill" Color="primary" Style="float:right;">@T("Rollback")</MButton>
     </SaveContent>
 </SModal>
-
-

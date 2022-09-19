@@ -53,7 +53,7 @@
                 </MExpansionPanelHeader>
                 <MExpansionPanelContent>
                     <MRow>
-                        @foreach (var app in apps.OrderByDescending(app => app.IsPinned).ThenByDescending(app => app.ModificationTime).Take(3))
+                        @foreach (var app in apps.Take(3))
                         {
                             @if (app.ProjectId == project.Id)
                             {

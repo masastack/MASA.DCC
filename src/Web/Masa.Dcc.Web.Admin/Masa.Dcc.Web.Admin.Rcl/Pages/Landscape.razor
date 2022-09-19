@@ -69,7 +69,7 @@
                                     StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
                                     <MTooltip Top>
                                         <ActivatorContent>
-                                            <MTab @attributes="@context.Attrs" Style="height:40px; max-width:150px;" Value="envClusterId">
+                                            <MTab @attributes="@context.Attrs" Style="height: 40px; max-width: 150px;" Value="envClusterId">
                                                 <div class="text-overflow">@cluster.Name</div>
                                             </MTab>
                                         </ActivatorContent>
@@ -82,7 +82,8 @@
                         </MCard>
                     </MRow>
                     <div class="mt-6" style="height:calc(100vh - 304px ); display:flex; flex-direction:column; justify-content:space-between; overflow: hidden; position: relative;">
-                        <ProjectList LandscapePage
+                        <ProjectList @ref="_projectList"
+                                     LandscapePage
                                      EnvironmentClusterId="_selectEnvClusterId.AsT1"
                                      OnNameClick="NavigateToAppAsync"
                                      OnAppCardClick="NavigateToConfigAsync"

@@ -63,7 +63,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             }
         }
 
-        private async Task ReleaseAsync(EditContext context)
+        private async Task ReleaseAsync(FormContext context)
         {
             _configObjectReleaseModal.Data.ConfigObjectId = SelectConfigObject.Id;
             _configObjectReleaseModal.Data.Type = ReleaseType.MainRelease;

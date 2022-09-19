@@ -5,5 +5,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
 {
     public interface IAppPinRepository : IRepository<AppPin>
     {
+        Task<List<AppPin>> GetListAsync(List<int> appIds);
     }
 }

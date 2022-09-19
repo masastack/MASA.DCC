@@ -3,11 +3,21 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddMasaIdentityModel(options =>
+builder.Services.AddMasaIdentity(options =>
 {
-    options.Environment = "environment";
     options.UserName = "name";
     options.UserId = "sub";
+    options.Role = IdentityClaimConsts.ROLES;
+    options.Environment = IdentityClaimConsts.ENVIRONMENT;
+    options.Mapping(nameof(MasaUser.CurrentTeamId), IdentityClaimConsts.CURRENT_TEAM);
+    options.Mapping(nameof(MasaUser.StaffId), IdentityClaimConsts.STAFF);
+    options.Mapping(nameof(MasaUser.Account), IdentityClaimConsts.ACCOUNT);
+});
+
+builder.Services.AddScoped(serviceProvider =>
+{
+    var masaUser = serviceProvider.GetRequiredService<IUserContext>().GetUser<MasaUser>() ?? new MasaUser();
+    return masaUser;
 });
 
 builder.WebHost.UseKestrel(option =>

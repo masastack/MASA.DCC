@@ -116,12 +116,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task SubmitLabelAsync(EditContext context)
+        private async Task SubmitLabelAsync(FormContext context)
         {
             _labelModal.Data.LabelValues = _labelValues
                 .Where(l => !string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.Code))
-                .DistinctBy(l => l.Code)
-                .DistinctBy(l => l.Name)
                 .Select(l => new LabelValueDto { Code = l.Code, Name = l.Name })
                 .ToList();
 
@@ -141,13 +139,20 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         return;
                     }
                 }
+
+                if (_labelModal.Data.LabelValues.Count(l => l.Code == labelValue.Code) > 1
+                    || _labelModal.Data.LabelValues.Count(l => l.Name == labelValue.Name) > 1)
+                {
+                    await PopupService.ToastErrorAsync(T("Lable code and label name cannot be repeated"));
+                    return;
+                }
             }
 
             if (context.Validate())
             {
                 if (!_labelModal.Data.LabelValues.Any())
                 {
-                    await PopupService.ToastErrorAsync("标签值不允许为空");
+                    await PopupService.ToastErrorAsync(T("Label value cannot be empty"));
                     return;
                 }
 

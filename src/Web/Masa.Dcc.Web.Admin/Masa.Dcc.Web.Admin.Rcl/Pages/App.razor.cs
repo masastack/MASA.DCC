@@ -12,7 +12,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public int AppCount { get; set; }
 
         [CascadingParameter]
-        public Landscape? Landscape { get; set; }
+        public Overview? Overview { get; set; }
 
         [CascadingParameter]
         public Team? Team { get; set; }
@@ -127,9 +127,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task NavigateToConfigAsync(ConfigComponentModel model)
         {
             model.ProjectIdentity = _projectDetail.Identity;
-            if (Landscape != null)
+            if (Overview != null)
             {
-                await Landscape.AppNavigateToConfigAsync(model);
+                await Overview.AppNavigateToConfigAsync(model);
             }
             else if (Team != null)
             {

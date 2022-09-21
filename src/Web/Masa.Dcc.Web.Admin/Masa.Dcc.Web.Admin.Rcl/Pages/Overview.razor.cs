@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
-    public partial class Landscape : IDisposable
+    public partial class Overview : IDisposable
     {
         [Inject]
         public IPopupService PopupService { get; set; } = default!;

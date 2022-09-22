@@ -5,7 +5,7 @@ namespace Masa.Dcc.Service.Admin.Services
 {
     public class BizConfigService : ServiceBase
     {
-        public BizConfigService(IServiceCollection services) : base(services)
+        public BizConfigService()
         {
             App.MapPost("api/v1/bizConfig", AddAsync);
             App.MapPut("api/v1/bizConfig", UpdateAsync);

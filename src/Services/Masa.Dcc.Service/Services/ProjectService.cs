@@ -7,7 +7,7 @@ public class ProjectService : ServiceBase
 {
     private readonly IPmClient _pmClient;
 
-    public ProjectService(IServiceCollection services, IPmClient pmClient) : base(services)
+    public ProjectService(IPmClient pmClient)
     {
         _pmClient = pmClient;
         App.MapGet("api/v1/projectwithapps/{envName}", GetProjectListAsync);

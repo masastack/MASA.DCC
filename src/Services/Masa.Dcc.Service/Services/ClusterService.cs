@@ -7,7 +7,7 @@ public class ClusterService : ServiceBase
 {
     private readonly IPmClient _pmClient;
 
-    public ClusterService(IServiceCollection services, IPmClient pmClient) : base(services)
+    public ClusterService(IPmClient pmClient)
     {
         _pmClient = pmClient;
         App.MapGet("api/v1/cluster", GetListAsync);

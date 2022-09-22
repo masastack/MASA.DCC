@@ -6,7 +6,7 @@ public class AppService : ServiceBase
 {
     private readonly IPmClient _pmClient;
 
-    public AppService(IServiceCollection services, IPmClient pmClient) : base(services)
+    public AppService(IPmClient pmClient)
     {
         _pmClient = pmClient;
         App.MapGet("api/v1/app/{Id}", GetAsync);

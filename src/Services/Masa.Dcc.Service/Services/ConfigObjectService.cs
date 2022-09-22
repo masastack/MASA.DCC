@@ -38,7 +38,7 @@ public class ConfigObjectService : ServiceBase
         return query.Result;
     }
 
-    public async Task<List<ConfigObjectDto>> GetListByIdsAsync(IEventBus eventBus, List<int> Ids)
+    public async Task<List<ConfigObjectDto>> GetListByIdsAsync(IEventBus eventBus, [FromBody] List<int> Ids)
     {
         var query = new ConfigObjectListQuery(Ids);
         await eventBus.PublishAsync(query);

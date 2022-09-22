@@ -45,7 +45,7 @@ public class ProjectService : ServiceBase
         return result;
     }
 
-    public async Task<List<ProjectModel>> GetListByTeamIdsAsync(List<Guid> teamIds)
+    public async Task<List<ProjectModel>> GetListByTeamIdsAsync([FromBody] List<Guid> teamIds)
     {
         var result = await _pmClient.ProjectService.GetListByTeamIdsAsync(teamIds);
 

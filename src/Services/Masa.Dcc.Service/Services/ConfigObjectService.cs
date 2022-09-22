@@ -5,7 +5,7 @@ namespace Masa.Dcc.Service.Services;
 
 public class ConfigObjectService : ServiceBase
 {
-    public ConfigObjectService(IServiceCollection services) : base(services)
+    public ConfigObjectService()
     {
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject/{Id}", RemoveAsync);

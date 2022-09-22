@@ -5,7 +5,7 @@ namespace Masa.Dcc.Service.Admin.Services
 {
     public class LabelService : ServiceBase
     {
-        public LabelService(IServiceCollection services) : base(services)
+        public LabelService()
         {
             App.MapGet("api/v1/labels", GetListAsync);
             App.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync);

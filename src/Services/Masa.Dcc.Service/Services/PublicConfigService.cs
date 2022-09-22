@@ -5,7 +5,7 @@ namespace Masa.Dcc.Service.Services;
 
 public class PublicConfigService : ServiceBase
 {
-    public PublicConfigService(IServiceCollection services) : base(services)
+    public PublicConfigService()
     {
         App.MapPost("api/v1/publicConfig", AddAsync);
         App.MapPut("api/v1/publicConfig", UpdateAsync);

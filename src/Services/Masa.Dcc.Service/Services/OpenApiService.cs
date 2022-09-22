@@ -5,7 +5,7 @@ namespace Masa.Dcc.Service.Admin.Services
 {
     public class OpenApiService : ServiceBase
     {
-        public OpenApiService(IServiceCollection services) : base(services)
+        public OpenApiService()
         {
             App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
             App.MapPost("open-api/releasing/init/{environment}/{cluster}/{appId}", InitConfigObjectAsync);

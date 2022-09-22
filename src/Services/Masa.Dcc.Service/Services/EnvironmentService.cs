@@ -7,7 +7,7 @@ public class EnvironmentService : ServiceBase
 {
     private readonly IPmClient _pmClient;
 
-    public EnvironmentService(IServiceCollection services, IPmClient pmClient) : base(services)
+    public EnvironmentService(IPmClient pmClient)
     {
         _pmClient = pmClient;
         App.MapGet("api/v1/env", GetListAsync);

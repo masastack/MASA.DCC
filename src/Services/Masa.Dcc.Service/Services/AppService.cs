@@ -31,7 +31,7 @@ public class AppService : ServiceBase
         return result;
     }
 
-    public async Task<List<AppDetailModel>> GetListByProjectIdsAsync([FromServices] MasaUser masaUser, [FromBody] List<int> projectIds)
+    public async Task<List<AppDetailModel>> GetListByProjectIdsAsync([FromBody] List<int> projectIds)
     {
         var result = await _pmClient.AppService.GetListByProjectIdsAsync(projectIds);
 

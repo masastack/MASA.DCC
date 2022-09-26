@@ -60,7 +60,7 @@ builder.Services.AddMasaRedisCache(redisOptions)
 
 builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));
 
-var app = builder.Services
+builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
@@ -80,8 +80,12 @@ var app = builder.Services
                .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
                .UseEventLog<DccDbContext>()
                .UseRepository<DccDbContext>();
-    })
-    .AddServices(builder);
+    });
+
+var app = builder.AddServices(options =>
+{
+    options.DisableAutoMapRoute = true; // todo :remove it before v1.0
+});
 
 app.UseMasaExceptionHandler();
 

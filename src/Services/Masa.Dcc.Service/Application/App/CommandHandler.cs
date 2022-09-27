@@ -100,7 +100,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task RemoveConfigObjectAsync(RemoveConfigObjectCommand command)
         {
-            await _configObjectDomainService.RemoveConfigObjectAsync(command.ConfigObjectId);
+            await _configObjectDomainService.RemoveConfigObjectAsync(command.ConfigObjectDto);
         }
 
         [EventHandler]

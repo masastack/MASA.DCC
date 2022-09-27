@@ -8,7 +8,7 @@ public class ConfigObjectService : ServiceBase
     public ConfigObjectService()
     {
         App.MapPost("api/v1/configObject", AddAsync);
-        App.MapDelete("api/v1/configObject/{Id}", RemoveAsync);
+        App.MapDelete("api/v1/configObject", RemoveAsync);
         App.MapGet("api/v1/configObjects", GetListAsync);
         App.MapPost("api/v1/configObjects/getListbyIds", GetListByIdsAsync);
         App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
@@ -24,9 +24,9 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(new AddConfigObjectCommand(dtos));
     }
 
-    public async Task RemoveAsync(IEventBus eventBus, [FromRoute] int Id)
+    public async Task RemoveAsync(IEventBus eventBus, [FromBody] RemoveConfigObjectDto dto)
     {
-        await eventBus.PublishAsync(new RemoveConfigObjectCommand(Id));
+        await eventBus.PublishAsync(new RemoveConfigObjectCommand(dto));
     }
 
     public async Task<List<ConfigObjectDto>> GetListAsync(

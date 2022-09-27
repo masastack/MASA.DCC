@@ -72,12 +72,15 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await _configObjectRepository.AddRangeAsync(configObjects);
         }
 
-        public async Task RemoveConfigObjectAsync(int configObjectId)
+        public async Task RemoveConfigObjectAsync(RemoveConfigObjectDto dto)
         {
-            var configObjectEntity = await _configObjectRepository.FindAsync(p => p.Id == configObjectId)
+            var configObjectEntity = await _configObjectRepository.FindAsync(p => p.Id == dto.ConfigObjectId)
                 ?? throw new UserFriendlyException("Config object does not exist");
 
             await _configObjectRepository.RemoveAsync(configObjectEntity);
+
+            var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.AppId}-{configObjectEntity.Name}";
+            await _memoryCacheClient.RemoveAsync<string>(key.ToLower());
         }
 
         public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)

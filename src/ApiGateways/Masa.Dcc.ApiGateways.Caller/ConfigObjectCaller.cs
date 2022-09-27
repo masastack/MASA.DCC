@@ -71,9 +71,9 @@ namespace Masa.Dcc.ApiGateways.Caller
             return result ?? new();
         }
 
-        public async Task RemoveAsync(int configObjectId)
+        public async Task RemoveAsync(RemoveConfigObjectDto dto)
         {
-            await CallerProvider.DeleteAsync($"{_prefix}/configObject/{configObjectId}", null);
+            await CallerProvider.DeleteAsync($"{_prefix}/configObject", dto);
         }
 
         public async Task ReleaseAsync(AddConfigObjectReleaseDto dto)

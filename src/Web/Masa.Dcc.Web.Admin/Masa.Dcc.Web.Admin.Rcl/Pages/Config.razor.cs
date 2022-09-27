@@ -756,7 +756,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             await PopupService.ConfirmAsync("删除配置对象", $"删除配置对象“{configObject.Name}”将导致实例获取不到此配置对象的配置，确定要删除吗？", async args =>
             {
-                await ConfigObjectCaller.RemoveAsync(configObject.Id);
+                await ConfigObjectCaller.RemoveAsync(new RemoveConfigObjectDto
+                {
+                    ConfigObjectId = configObject.Id,
+                    EnvironmentName = _selectCluster.EnvironmentName,
+                    ClusterName = _selectCluster.ClusterName,
+                    AppId = _appDetail.Identity
+                });
                 _configObjects.Remove(configObject);
 
                 await PopupService.ToastSuccessAsync("删除成功");

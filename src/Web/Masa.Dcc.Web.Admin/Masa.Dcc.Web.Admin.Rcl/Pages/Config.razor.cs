@@ -576,7 +576,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch
                     {
-                        await PopupService.ToastErrorAsync("json格式有误!");
+                        await PopupService.ToastErrorAsync(T("Wrong format"));
                         return;
                     }
 
@@ -588,13 +588,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch
                     {
-                        await PopupService.ToastErrorAsync("json格式有误!");
+                        await PopupService.ToastErrorAsync(T("Wrong format"));
                         return;
                     }
 
                     break;
                 default:
-                    await PopupService.ToastErrorAsync("json格式有误!");
+                    await PopupService.ToastErrorAsync(T("Wrong format"));
                     return;
             }
 
@@ -610,7 +610,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 configObject.RelationConfigObjectId = 0;
 
-                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
+                await PopupService.ToastSuccessAsync(T("Modification succeeded. Please publish to take effect!"));
             }
             else
             {
@@ -629,19 +629,33 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task UpdateOtherConfigObjectContentAsync(ConfigObjectModel configObject)
         {
-            configObject.IsEditing = !configObject.IsEditing;
-            if (!configObject.IsEditing)
+            if (configObject.IsEditing)
             {
+                if (configObject.FormatLabelCode.ToLower() == "xml")
+                {
+                    try
+                    {
+                        Newtonsoft.Json.JsonConvert.DeserializeXmlNode(configObject.Content);
+                    }
+                    catch (Exception)
+                    {
+                        await PopupService.ToastErrorAsync(T("Wrong format"));
+                        return;
+                    }
+                }
+
+                configObject.IsEditing = !configObject.IsEditing;
                 await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObject.Id,
                     Content = configObject.Content
                 });
 
-                await PopupService.ToastSuccessAsync("修改成功，若要生效请发布！");
+                await PopupService.ToastSuccessAsync(T("Modification succeeded. Please publish to take effect!"));
             }
             else
             {
+                configObject.IsEditing = !configObject.IsEditing;
                 var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
                 configObjects.ForEach(config =>
                 {
@@ -965,12 +979,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             var current = _configObjectReleases.First();
             if (_selectReleaseHistory.IsInvalid)
             {
-                await PopupService.ToastErrorAsync("此版本已作废，无法回滚");
+                await PopupService.ToastErrorAsync(T("This version is obsolete and cannot be rolled back"));
                 return;
             }
             if (current.ToReleaseId == _selectReleaseHistory.Id || _selectReleaseHistory.Id == current.Id || current.Version == _selectReleaseHistory.Version)
             {
-                await PopupService.ToastErrorAsync("该版本与当前版本配置相同，无法回滚");
+                await PopupService.ToastErrorAsync(T("This version is the same as the current version and cannot be rolled back"));
                 return;
             }
 

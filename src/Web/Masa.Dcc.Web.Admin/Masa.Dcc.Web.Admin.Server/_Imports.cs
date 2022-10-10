@@ -3,7 +3,7 @@
 
 global using System.Reflection;
 global using System.Security.Cryptography.X509Certificates;
-global using Masa.Contrib.Configuration.ConfigurationApi.Dcc;
+global using Masa.BuildingBlocks.Configuration;
 global using Masa.Dcc.ApiGateways.Caller;
 global using Masa.Stack.Components;
 global using Microsoft.AspNetCore.Hosting.StaticWebAssets;

@@ -22,7 +22,6 @@ global using Masa.Dcc.Web.Admin.Rcl.Model;
 global using Masa.Dcc.Web.Admin.Rcl.Pages.Modal;
 global using Masa.Utils.Security.Cryptography;
 global using Microsoft.AspNetCore.Components;
-global using Microsoft.AspNetCore.Components.Forms;
 global using Microsoft.AspNetCore.Components.Routing;
 global using Microsoft.AspNetCore.Components.Web;
 global using Microsoft.JSInterop;

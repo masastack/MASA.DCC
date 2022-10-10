@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using System.Xml.Linq;
+
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Config
@@ -468,7 +470,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         var key = keyValues[0].TrimEnd();
                         if (editorPropertyContents.Any(property => property.Key == key))
                         {
-                            await PopupService.ToastErrorAsync(T("Key: {key} already exists".Replace("{key}", key)));
+                            await PopupService.ToastErrorAsync(T("Key: {key} already exists").Replace("{key}", key));
                             return;
                         }
                         else
@@ -635,7 +637,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     try
                     {
-                        Newtonsoft.Json.JsonConvert.DeserializeXmlNode(configObject.Content);
+                        XElement contacts = XElement.Parse(configObject.Content);
+                        configObject.Content = contacts.ToString();
                     }
                     catch (Exception)
                     {

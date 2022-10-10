@@ -42,7 +42,8 @@
     <div class="pl-6" style="width: calc(100% - 300px);">
         <div class="bizCard">
             <h6 class="emphasis2--text h6">@T("Business configuration")</h6>
-            <MCard Class="mt-6 rounded-5" Height="163">
+            <MCard Ripple=false Class="mt-6 rounded-5" Height="163"
+                   OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, _projectEnvClusters[0].Id, ConfigObjectType.Biz, ProjectId))">
                 <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
                     <div class="emphasis2--text h7 text-overflow">
                         @if (!_isEditBiz)
@@ -57,7 +58,7 @@
                     <div class="mx-4" style="color:#E2E7F4">|</div>
                     <div class="emphasis2--text h7 text-overflow">Biz</div>
                     <MSpacer />
-                    <MButton Icon OnClick="UpdateBizAsync">
+                    <MButton Icon OnClick="UpdateBizAsync" StopPropagation>
                         @if (!_isEditBiz)
                         {
                             <MIcon Color="#323D6F" Size="20">mdi-pencil</MIcon>

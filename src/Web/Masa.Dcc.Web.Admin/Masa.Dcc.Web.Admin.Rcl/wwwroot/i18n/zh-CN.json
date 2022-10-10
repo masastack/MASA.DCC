@@ -74,7 +74,7 @@
   "Choose config object": "选择配置对象",
   "Clone config object": "克隆配置对象",
   "All configurations to": "的所有配置至",
-  "`Configuration": "的配置",
+  "`Config object": "的配置对象",
   "To": "至",
   "Other app": "其他应用",
   "Other environments/clusters currently app": "当前应用的其他环境/集群",

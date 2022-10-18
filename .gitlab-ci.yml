@@ -67,7 +67,7 @@ deploy-test:
   script:
     - echo $KUBE_CONFIG_DEV | base64 -d > ./config
     - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n $NAMESPACE_TEST
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_TEST
+    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_TEST
   retry: 2
   when: manual
 

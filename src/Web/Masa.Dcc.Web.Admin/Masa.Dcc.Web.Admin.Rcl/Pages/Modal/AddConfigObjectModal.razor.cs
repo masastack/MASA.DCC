@@ -65,14 +65,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             {
                 if (!_selectEnvClusterIds.Any())
                 {
-                    await PopupService.ToastErrorAsync("请选择环境/集群");
+                    await PopupService.AlertAsync("Please select environment/cluster", AlertTypes.Error);
                     return;
                 }
 
                 var selectConfigObject = _configObjects.Where(c => _selectEnvClusterIds.Contains(c.EnvironmentClusterId));
                 if (selectConfigObject.Any(c => c.Name.Equals(_addConfigObjectModal.Data.Name)))
                 {
-                    await PopupService.ToastErrorAsync("配置对象名称已存在");
+                    await PopupService.AlertAsync(T("Config object already exists"), AlertTypes.Error);
                     return;
                 }
 

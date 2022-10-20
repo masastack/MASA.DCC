@@ -93,6 +93,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private RelationModal? _relation;
         private AddConfigObjectModal? _addConfigObjectModal;
         private UserModel _userInfo = new();
+        private string _tempContent = "";
 
         private List<DataTableHeader<ConfigObjectPropertyModel>> Headers
         {
@@ -458,7 +459,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 if (errorData != null)
                 {
                     var errorLine = lineDatas.ToList().IndexOf(errorData) + 1;
-                    await PopupService.ToastErrorAsync(T("Line:{errorLine}, key value must separate by '='").Replace("{errorLine}", errorLine + ""));
+                    await PopupService.AlertAsync(T("Line:{errorLine}, key value must separate by '='").Replace("{errorLine}", errorLine + ""), AlertTypes.Error);
                 }
                 else
                 {
@@ -470,7 +471,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         var key = keyValues[0].TrimEnd();
                         if (editorPropertyContents.Any(property => property.Key == key))
                         {
-                            await PopupService.ToastErrorAsync(T("Key: {key} already exists").Replace("{key}", key));
+                            await PopupService.AlertAsync(T("Key: {key} already exists").Replace("{key}", key), AlertTypes.Error);
                             return;
                         }
                         else
@@ -478,7 +479,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                             editorPropertyContents.Add(new ConfigObjectPropertyModel
                             {
                                 Key = keyValues[0].TrimEnd(),
-                                Value = keyValues[1].TrimStart()
+                                Value = keyValues[1].TrimStart(),
+                                Modifier = UserContext.UserName ?? ""
                             });
                         }
                     }
@@ -496,17 +498,21 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task HandleTextConvertPropertyAsync(List<ConfigObjectPropertyModel> editorPropertyContents, int configObjectId)
         {
             DateTime now = DateTime.Now;
-            TypeAdapterConfig<ConfigObjectPropertyModel, ConfigObjectPropertyContentDto>.NewConfig()
+            var config = new TypeAdapterConfig();
+            config.NewConfig<ConfigObjectPropertyModel, ConfigObjectPropertyContentDto>()
                 .Map(dest => dest.ModificationTime, src => now);
+
             var added = editorPropertyContents.ExceptBy(
                     _selectConfigObjectAllProperties.Select(content => content.Key),
                     content => content.Key)
-                .Adapt<List<ConfigObjectPropertyContentDto>>();
+                .BuildAdapter(config)
+                .AdaptToType<List<ConfigObjectPropertyContentDto>>();
 
             var deleted = _selectConfigObjectAllProperties.ExceptBy(
                     editorPropertyContents.Select(content => content.Key),
                     content => content.Key)
-                .Adapt<List<ConfigObjectPropertyContentDto>>();
+                .BuildAdapter(config)
+                .AdaptToType<List<ConfigObjectPropertyContentDto>>();
 
             var normalOrEdited = editorPropertyContents.ExceptBy(
                     added.Select(content => content.Key),
@@ -514,7 +520,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 .ExceptBy(
                     deleted.Select(content => content.Key),
                     content => content.Key
-                ).Adapt<List<ConfigObjectPropertyContentDto>>();
+                );
 
             var allPropertiesIntersect = _selectConfigObjectAllProperties.IntersectBy(
                 normalOrEdited.Select(content => content.Key), content => content.Key);
@@ -522,7 +528,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             var edit = normalOrEdited.ExceptBy(
                     allPropertiesIntersect.Select(content => content.Value),
                     content => content.Value)
-                .Adapt<List<ConfigObjectPropertyContentDto>>();
+                .BuildAdapter(config)
+                .AdaptToType<List<ConfigObjectPropertyContentDto>>();
 
             await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
             {
@@ -534,7 +541,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             });
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-            await PopupService.ToastSuccessAsync("修改成功，若要生效请发布");
+            await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect"), AlertTypes.Success);
             HandleTabIndexChanged(T("Table"), _configObjects.First(c => c.Id == configObjectId));
         }
 
@@ -561,6 +568,27 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
+        private void CancelEditConfigContent(ConfigObjectModel configObject)
+        {
+            if (configObject.FormatLabelCode.ToLower() == "properties")
+            {
+                StringBuilder stringBuilder = new();
+                foreach (var property in configObject.ConfigObjectPropertyContents)
+                {
+                    if (!property.IsDeleted)
+                    {
+                        stringBuilder.AppendLine($"{property.Key} = {property.Value}");
+                    }
+                }
+                configObject.ElevationTabPropertyContent.Content = stringBuilder.ToString();
+            }
+            else
+            {
+                configObject.Content = _tempContent;
+                configObject.IsEditing = !configObject.IsEditing;
+            }
+        }
+
         private async Task UpdateJsonConfigAsync(ConfigObjectModel configObject)
         {
             if (string.IsNullOrWhiteSpace(configObject.Content))
@@ -578,7 +606,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch
                     {
-                        await PopupService.ToastErrorAsync(T("Wrong format"));
+                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
 
@@ -590,13 +618,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch
                     {
-                        await PopupService.ToastErrorAsync(T("Wrong format"));
+                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
 
                     break;
                 default:
-                    await PopupService.ToastErrorAsync(T("Wrong format"));
+                    await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
                     return;
             }
 
@@ -612,10 +640,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 configObject.RelationConfigObjectId = 0;
 
-                await PopupService.ToastSuccessAsync(T("Modification succeeded. Please publish to take effect!"));
+                await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
             }
             else
             {
+                _tempContent = configObject.Content;
                 var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
                 configObjects.ForEach(config =>
                 {
@@ -642,7 +671,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch (Exception)
                     {
-                        await PopupService.ToastErrorAsync(T("Wrong format"));
+                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
                 }
@@ -654,10 +683,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Content = configObject.Content
                 });
 
-                await PopupService.ToastSuccessAsync(T("Modification succeeded. Please publish to take effect!"));
+                await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
             }
             else
             {
+                _tempContent = configObject.Content;
                 configObject.IsEditing = !configObject.IsEditing;
                 var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
                 configObjects.ForEach(config =>
@@ -674,20 +704,24 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task DeleteConfigObjectPropertyContentAsync(ConfigObjectPropertyModel model, int configObjectId)
         {
-            await PopupService.ConfirmAsync("删除配置项", $"您确定要删除Key：{model.Key}，Value：{model.Value}的配置项吗？", async args =>
-            {
-                var content = JsonSerializer.Serialize(model);
-                await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+            await PopupService.ConfirmAsync(T("Delete config object item"),
+                T("Are you sure delete config object item \"Key:{key},Value:{value}\"吗?")
+                .Replace("{key}", model.Key).Replace("{value}", model.Value),
+                AlertTypes.Error,
+                async args =>
                 {
-                    ConfigObjectId = configObjectId,
-                    Content = content,
-                    FormatLabelCode = "Properties",
-                    DeleteConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto>() { model }
-                });
+                    var content = JsonSerializer.Serialize(model);
+                    await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                    {
+                        ConfigObjectId = configObjectId,
+                        Content = content,
+                        FormatLabelCode = "Properties",
+                        DeleteConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto>() { model }
+                    });
 
-                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.ToastSuccessAsync("删除成功，若要生效请发布！");
-            });
+                    await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+                    await PopupService.AlertAsync(T("Deletion succeeded. Please publish to take effect"), AlertTypes.Success);
+                });
         }
 
         private void ShowPropertyModal(ConfigObjectModel configObject, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
@@ -749,7 +783,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
                     {
-                        await PopupService.ToastErrorAsync(T("Key: {key} already exists".Replace("{key}", _propertyConfigModal.Data.Key)));
+                        await PopupService.AlertAsync(T("Key: {key} already exists").Replace("{key}", _propertyConfigModal.Data.Key), AlertTypes.Error);
                         return;
                     }
                     else
@@ -765,32 +799,36 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                 _propertyConfigModal.Hide();
-                await PopupService.ToastSuccessAsync("操作成功");
+                await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
             }
         }
 
         private async Task RemoveAsync(ConfigObjectModel configObject)
         {
-            await PopupService.ConfirmAsync("删除配置对象", $"删除配置对象“{configObject.Name}”将导致实例获取不到此配置对象的配置，确定要删除吗？", async args =>
-            {
-                await ConfigObjectCaller.RemoveAsync(new RemoveConfigObjectDto
+            await PopupService.ConfirmAsync(T("Delete config object"),
+                T("Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?")
+                .Replace("{name}", configObject.Name),
+                AlertTypes.Error,
+                async args =>
                 {
-                    ConfigObjectId = configObject.Id,
-                    EnvironmentName = _selectCluster.EnvironmentName,
-                    ClusterName = _selectCluster.ClusterName,
-                    AppId = _appDetail.Identity
-                });
-                _configObjects.Remove(configObject);
+                    await ConfigObjectCaller.RemoveAsync(new RemoveConfigObjectDto
+                    {
+                        ConfigObjectId = configObject.Id,
+                        EnvironmentName = _selectCluster.EnvironmentName,
+                        ClusterName = _selectCluster.ClusterName,
+                        AppId = _appDetail.Identity
+                    });
+                    _configObjects.Remove(configObject);
 
-                await PopupService.ToastSuccessAsync("删除成功");
-            });
+                    await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                });
         }
 
         private async Task ShowReleaseModalAsync(ConfigObjectModel model)
         {
             if (model.Content == model.TempContent)
             {
-                await PopupService.ToastErrorAsync("配置对象内容没有变化");
+                await PopupService.AlertAsync(T("Config object content has not changed"), AlertTypes.Error);
                 return;
             }
 
@@ -809,13 +847,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RevokeAsync(ConfigObjectModel configObject)
         {
-            await PopupService.ConfirmAsync("撤销配置", $"配置对象“{configObject.Name}”下已修改但尚未发布的配置将被撤销，您确定要撤销吗？", async args =>
-            {
-                await ConfigObjectCaller.RevokeAsync(configObject.Id);
+            await PopupService.ConfirmAsync(T("Revoke config"),
+                T("The modified but unpublished configuration under the configuration object \"{name}\" will be revoked. Are you sure you want to revoke it?")
+                .Replace("{name}", configObject.Name),
+                AlertTypes.Error,
+                async args =>
+                {
+                    await ConfigObjectCaller.RevokeAsync(configObject.Id);
 
-                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.ToastSuccessAsync("撤销成功");
-            });
+                    await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+                    await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                });
         }
 
         private async Task ShowRollbackModalAsync(ConfigObjectModel configObject)
@@ -827,7 +869,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (_releaseHistory.ConfigObjectReleases.Count <= 1
                 || _releaseHistory.ConfigObjectReleases.First().Version == _releaseHistory.ConfigObjectReleases.Last().Version)
             {
-                await PopupService.ToastErrorAsync("没有可以回滚的发布历史");
+                await PopupService.AlertAsync(T("No publishing history can be rolled back"), AlertTypes.Error);
                 return;
             }
 
@@ -868,7 +910,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
             _showRollbackModal = false;
-            await PopupService.ToastSuccessAsync("回滚成功");
+            await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
         }
 
         private async Task ShowReleaseHistoryAsync(ConfigObjectModel configObject)
@@ -897,7 +939,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             if (_configObjectReleases.Count < 1)
             {
-                await PopupService.ToastErrorAsync("暂无发布历史");
+                await PopupService.AlertAsync(T("No publishing history"), AlertTypes.Error);
             }
             else
             {
@@ -982,12 +1024,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             var current = _configObjectReleases.First();
             if (_selectReleaseHistory.IsInvalid)
             {
-                await PopupService.ToastErrorAsync(T("This version is obsolete and cannot be rolled back"));
+                await PopupService.AlertAsync(T("This version is obsolete and cannot be rolled back"), AlertTypes.Error);
                 return;
             }
             if (current.ToReleaseId == _selectReleaseHistory.Id || _selectReleaseHistory.Id == current.Id || current.Version == _selectReleaseHistory.Version)
             {
-                await PopupService.ToastErrorAsync(T("This version is the same as the current version and cannot be rolled back"));
+                await PopupService.AlertAsync(T("This version is the same as the current version and cannot be rolled back"), AlertTypes.Error);
                 return;
             }
 

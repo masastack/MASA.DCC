@@ -32,6 +32,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public AppCaller AppCaller { get; set; } = default!;
 
+        [Inject]
+        public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
+
         private int _internalEnvironmentClusterId;
         private Guid _internalTeamId;
         public List<ProjectModel> _projects = new();
@@ -95,7 +98,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             var result = from app in apps
                          join appPin in appPins on app.Id equals appPin.AppId into appGroup
-                         from newApp in appGroup.DefaultIfEmpty<AppPinDto>()
+                         from newApp in appGroup.DefaultIfEmpty()
                          select new Model.AppModel
                          {
                              ProjectId = app.ProjectId,
@@ -132,6 +135,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 model.ProjectIdentity = _projects.Find(project => project.Id == model.ProjectId)?.Identity ?? "";
                 await OnAppCardClick.InvokeAsync(model);
+
+                //init biz config
+                var bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{model.ProjectIdentity}-$biz");
+                if (bizConfig.Id == 0)
+                {
+                    bizConfig = await ConfigObjectCaller.AddBizConfigAsync(new AddObjectConfigDto
+                    {
+                        Name = "Biz",
+                        Identity = $"{model.ProjectIdentity}-$biz"
+                    });
+                }
             }
         }
 

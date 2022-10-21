@@ -827,4 +827,4 @@
             OnSubmitAfter="async ()=>{ await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType); }">
 </CloneModal>
 
-<RelationModal @ref="_relation" AppDetail="_appDetail" OnSubmitAfter="()=>GetConfigObjectsAsync(EnvironmentClusterId,ConfigObjectType)" />
+<RelationModal @ref="_relation" AppDetail="_appDetail" OnSubmitAfter="()=>GetConfigObjectsAsync(_selectCluster.Id,ConfigObjectType)" />

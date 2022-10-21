@@ -799,7 +799,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                 _propertyConfigModal.Hide();
-                await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                await PopupService.AlertAsync(T("Add succeeded"), AlertTypes.Success);
             }
         }
 
@@ -820,7 +820,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     });
                     _configObjects.Remove(configObject);
 
-                    await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                    await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
                 });
         }
 
@@ -856,7 +856,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     await ConfigObjectCaller.RevokeAsync(configObject.Id);
 
                     await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                    await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                    await PopupService.AlertAsync(T("Revoke succeeded"), AlertTypes.Success);
                 });
         }
 
@@ -910,7 +910,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
             _showRollbackModal = false;
-            await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+            await PopupService.AlertAsync(T("Rollback succeeded"), AlertTypes.Success);
         }
 
         private async Task ShowReleaseHistoryAsync(ConfigObjectModel configObject)

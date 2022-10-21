@@ -134,7 +134,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     await LabelCaller.AddAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
                 }
 
-                await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                await PopupService.AlertAsync(T("Add succeeded"), AlertTypes.Success);
                 _labels = await GetListAsync();
                 LabelModalValueChanged(false);
             }
@@ -157,7 +157,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await LabelCaller.RemoveAsync(typeCode);
 
-                await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
 
                 LabelModalValueChanged(false);
                 _labels = await GetListAsync();

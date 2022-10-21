@@ -80,7 +80,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 {
                     await OnSubmitAfter.InvokeAsync();
                 }
-                await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                await PopupService.AlertAsync(T("Publish succeeded"), AlertTypes.Success);
                 _configObjectReleaseModal.Hide();
                 await ValueChanged.InvokeAsync(false);
             }

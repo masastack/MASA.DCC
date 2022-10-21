@@ -73,7 +73,7 @@
                     <div class="regular3--text body2 text-overflow mt-1">@_bizDetail.Identity</div>
                 </MCardSubtitle>
                 <MCardActions Class="pa-0 mx-4" Style="position: absolute; bottom: 16px; right: 0; left: 0;">
-                    <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                    <MChipGroup @key="_projectEnvClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
                         @foreach (var item in _projectEnvClusters)
                         {
                             <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, item.Id, ConfigObjectType.Biz, ProjectId))"
@@ -101,7 +101,7 @@
                     {
                         <MCol Lg="4" Md="6" Sm="12">
                             <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
                                     @foreach (var item in app.EnvironmentClusters)
                                     {
                                         <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"

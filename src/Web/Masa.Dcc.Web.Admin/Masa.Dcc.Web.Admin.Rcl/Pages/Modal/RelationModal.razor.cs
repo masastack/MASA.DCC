@@ -50,7 +50,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             var publicConfig = await ConfigObjectCaller.GetPublicConfigAsync();
             if (!publicConfig.Any())
             {
-                await PopupService.ToastErrorAsync("请先添加公共配置");
+                await PopupService.AlertAsync(T("Please add public configuration first"), AlertTypes.Error);
             }
             else
             {
@@ -102,11 +102,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             if (!_selectToEnvClusterIds.Any())
             {
-                await PopupService.ToastErrorAsync("请选择要关联的集群环境");
+                await PopupService.AlertAsync(T("Please select the cluster environment to associate"), AlertTypes.Error);
             }
             else if (_selectPublicConfigObjectId == 0)
             {
-                await PopupService.ToastErrorAsync("请选择要关联的公共配置");
+                await PopupService.AlertAsync(T("Please select the public configuration to be associated"), AlertTypes.Error);
             }
             else
             {
@@ -117,7 +117,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                     if (relationed)
                     {
                         var envCluster = _allEnvClusters.First(c => c.Id == envClusterId.AsT1);
-                        await PopupService.ToastErrorAsync($"该公共配置对象已在 {envCluster.EnvironmentClusterName} 中关联，请勿重复关联");
+                        await PopupService.AlertAsync(T("The public configuration object has been associated in \"{environmentClusterName}\", please do not repeat the association").Replace("{environmentClusterName}", envCluster.EnvironmentClusterName), AlertTypes.Error);
                         return;
                     }
                 }
@@ -200,7 +200,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 {
                     await OnSubmitAfter.InvokeAsync();
                 }
-                await PopupService.ToastSuccessAsync("操作成功");
+                await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
                 SheetDialogValueChanged(false);
             }
         }

@@ -59,7 +59,7 @@
                             {
                                 <MCol Lg="4" Md="6" Sm="12">
                                     <AppCard OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" OnPinClick="()=>HandleAppPinClick(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                        <MChipGroup Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                        <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
                                             @foreach (var item in app.EnvironmentClusters)
                                             {
                                                 <EnvClusterChip OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, app.ProjectId))"

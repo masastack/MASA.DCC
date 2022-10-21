@@ -13,8 +13,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private List<LabelDto> _labels = new();
         private string _typeName = "";
-        private DataModal<UpdateLabelDto> _labelModal = new();
-        private List<LabelValueModel> _labelValues = new();
+        private readonly DataModal<UpdateLabelModel> _labelModal = new();
         private Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required";
         private Func<string, StringBoolean> _counterRule = value => (value.Length <= 50 && value.Length >= 2) ? true : "length range is [2-50]";
         private Func<string, StringBoolean> _strRule = value =>
@@ -57,7 +56,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 label.ModifierName = users.FirstOrDefault(user => user.Id == label.Modifier)?.Name ?? "";
             }
 
-            return labels;
+            return labels.OrderByDescending(label => label.ModificationTime).ToList();
         }
 
         private async Task SearchAsync(KeyboardEventArgs args)
@@ -79,7 +78,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (labelDto == null)
             {
-                _labelValues = new() { new(0) };
+                _labelModal.Data.LabelValues = new() { new(0) };
                 _labelModal.Show();
             }
             else
@@ -88,84 +87,54 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 for (int i = 0; i < labels.Count; i++)
                 {
                     var label = labels[i];
-                    _labelValues.Add(new LabelValueModel(label.Name, label.Code, i));
+                    _labelModal.Data.LabelValues.Add(new LabelValueModel(label.Name, label.Code, i));
                 }
-                _labelModal.Show(labelDto.Adapt<UpdateLabelDto>());
+                _labelModal.Show(new UpdateLabelModel
+                {
+                    TypeCode = labelDto.TypeCode,
+                    TypeName = labelDto.TypeName,
+                    Description = labelDto.Description,
+                    LabelValues = _labelModal.Data.LabelValues
+                });
             }
         }
 
         private void AddLabelValue(int index)
         {
-            var label = _labelValues.FirstOrDefault(e => e.Index == index);
+            var label = _labelModal.Data.LabelValues.FirstOrDefault(e => e.Index == index);
             if (label != null)
             {
-                var newIndex = _labelValues.IndexOf(label) + 1;
-                _labelValues.Insert(newIndex, new LabelValueModel(_labelValues.Count));
+                var newIndex = _labelModal.Data.LabelValues.IndexOf(label) + 1;
+                _labelModal.Data.LabelValues.Insert(newIndex, new LabelValueModel(_labelModal.Data.LabelValues.Count));
             }
         }
 
         private void RemoveLabelValue(int index)
         {
-            if (_labelValues.Count > 1)
+            if (_labelModal.Data.LabelValues.Count > 1)
             {
-                var label = _labelValues.FirstOrDefault(e => e.Index == index);
+                var label = _labelModal.Data.LabelValues.FirstOrDefault(e => e.Index == index);
                 if (label != null)
                 {
-                    _labelValues.Remove(label);
+                    _labelModal.Data.LabelValues.Remove(label);
                 }
             }
         }
 
         private async Task SubmitLabelAsync(FormContext context)
         {
-            _labelModal.Data.LabelValues = _labelValues
-                .Where(l => !string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.Code))
-                .Select(l => new LabelValueDto { Code = l.Code, Name = l.Name })
-                .ToList();
-
-            foreach (var labelValue in _labelModal.Data.LabelValues)
-            {
-                foreach (var rule in LabelValueRules)
-                {
-                    var nameRule = rule.Invoke(labelValue.Name).Value;
-                    if (nameRule is string)
-                    {
-                        return;
-                    }
-
-                    var codeRule = rule.Invoke(labelValue.Code).Value;
-                    if (codeRule is string)
-                    {
-                        return;
-                    }
-                }
-
-                if (_labelModal.Data.LabelValues.Count(l => l.Code == labelValue.Code) > 1
-                    || _labelModal.Data.LabelValues.Count(l => l.Name == labelValue.Name) > 1)
-                {
-                    await PopupService.ToastErrorAsync(T("Lable code and label name cannot be repeated"));
-                    return;
-                }
-            }
-
             if (context.Validate())
             {
-                if (!_labelModal.Data.LabelValues.Any())
-                {
-                    await PopupService.ToastErrorAsync(T("Label value cannot be empty"));
-                    return;
-                }
-
                 if (_labelModal.HasValue)
                 {
-                    await LabelCaller.UpdateAsync(_labelModal.Data);
+                    await LabelCaller.UpdateAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
                 }
                 else
                 {
-                    await LabelCaller.AddAsync(_labelModal.Data);
+                    await LabelCaller.AddAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
                 }
 
-                await PopupService.ToastSuccessAsync("操作成功");
+                await PopupService.AlertAsync(T("Add succeeded"), AlertTypes.Success);
                 _labels = await GetListAsync();
                 LabelModalValueChanged(false);
             }
@@ -177,17 +146,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (!value)
             {
                 _labelModal.Hide();
-                _labelValues.Clear();
+                _labelModal.Data.LabelValues.Clear();
             }
         }
 
         private async Task RemoveLabelAsync(string typeCode)
         {
-            await PopupService.ConfirmAsync("删除标签", $"您确定要删除{typeCode}标签吗？", async args =>
+            await PopupService.ConfirmAsync(T("Delete label"), T("Are you sure you want to delete the label \"{typeCode}\"?"
+                .Replace("{typeCode}", typeCode)), async args =>
             {
                 await LabelCaller.RemoveAsync(typeCode);
 
-                await PopupService.ToastSuccessAsync("操作成功");
+                await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
 
                 LabelModalValueChanged(false);
                 _labels = await GetListAsync();

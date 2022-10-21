@@ -90,6 +90,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             {
                 var project = _allProjects.Find(project => project.Id == projectId) ?? new();
                 BizConfigDto bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{project.Identity}-$biz");
+                if (bizConfig.Id == 0)
+                {
+                    bizConfig = await ConfigObjectCaller.AddBizConfigAsync(new AddObjectConfigDto
+                    {
+                        Name = "Biz",
+                        Identity = $"{project.Identity}-$biz"
+                    });
+                }
                 _cloneApps = new List<AppDetailModel>
                 {
                     new AppDetailModel
@@ -313,14 +321,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             if (!_selectEnvClusterIds.Any())
             {
-                await PopupService.ToastErrorAsync("请选择环境/集群");
+                await PopupService.AlertAsync(T("Please select environment/cluster"), AlertTypes.Error);
                 return;
             }
 
             var configObjects = ConfigObjects.Where(c => c.IsChecked);
             if (!configObjects.Any())
             {
-                await PopupService.ToastErrorAsync("请选要克隆的配置");
+                await PopupService.AlertAsync(T("Please select the configuration to clone"), AlertTypes.Error);
                 return;
             }
 

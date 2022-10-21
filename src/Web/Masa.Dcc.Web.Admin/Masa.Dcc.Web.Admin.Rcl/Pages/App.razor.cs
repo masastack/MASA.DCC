@@ -120,7 +120,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
                 _bizConfigName = _bizDetail.Name;
                 _bizDetail = bizConfigDto.Adapt<BizModel>();
-                await PopupService.ToastSuccessAsync("修改成功");
+                await PopupService.AlertAsync(T("Edit succeeded"), AlertTypes.Success);
             }
         }
 

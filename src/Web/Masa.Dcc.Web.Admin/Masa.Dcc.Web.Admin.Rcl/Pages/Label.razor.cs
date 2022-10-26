@@ -123,6 +123,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task SubmitLabelAsync(FormContext context)
         {
+            if (_labelModal.Data.LabelValues.GroupBy(l => l.Code).Any(l => l.Count() > 1) || _labelModal.Data.LabelValues.GroupBy(l => l.Name).Any(l => l.Count() > 1))
+            {
+                await PopupService.AlertAsync(T("The label value Code and label value Name cannot be duplicate"), AlertTypes.Error);
+                return;
+            }
+
             if (context.Validate())
             {
                 if (_labelModal.HasValue)

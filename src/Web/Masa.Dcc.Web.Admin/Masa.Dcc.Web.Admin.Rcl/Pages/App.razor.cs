@@ -124,6 +124,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
+        private void CancelEditBizName()
+        {
+            _bizDetail.Name = _bizConfigName;
+            _isEditBiz = !_isEditBiz;
+        }
+
         private async Task NavigateToConfigAsync(ConfigComponentModel model)
         {
             model.ProjectIdentity = _projectDetail.Identity;

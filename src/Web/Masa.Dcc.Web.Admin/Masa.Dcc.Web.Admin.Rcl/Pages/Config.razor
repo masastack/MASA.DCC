@@ -467,16 +467,18 @@
                                                             <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
                                                         </MButton>
                                                     }
-                                                    <MButton StopPropagation Icon Class="mr-4 mb-2">
-                                                        @if (!configObject.ElevationTabPropertyContent.Disabled)
-                                                        {
-                                                            <SIcon Tooltip="@(T("Edit"))" Class="hover-pointer" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }" Color="#323D6F">mdi-pencil</SIcon>
-                                                        }
-                                                        else
-                                                        {
-                                                            <SIcon Tooltip="@(T("Save"))" OnClick="()=>TextConvertPropertyAsync(configObject.Id)" Color="success">mdi-check</SIcon>
-                                                        }
-                                                    </MButton>
+                                                    @if (!configObject.ElevationTabPropertyContent.Disabled)
+                                                    {
+                                                        <MButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }">
+                                                            <SIcon Tooltip="@(T("Edit"))" Class="hover-pointer" Color="#323D6F">mdi-pencil</SIcon>
+                                                        </MButton>
+                                                    }
+                                                    else
+                                                    {
+                                                        <MButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>TextConvertPropertyAsync(configObject.Id)">
+                                                            <SIcon Tooltip="@(T("Save"))" Color="success">mdi-check</SIcon>
+                                                        </MButton>
+                                                    }
                                                 </div>
                                                 <Editor Disabled="!configObject.ElevationTabPropertyContent.Disabled" @bind-Value="@configObject.ElevationTabPropertyContent.Content"></Editor>
                                             </SElevationTabItem>

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
+
 var builder = WebApplication.CreateBuilder(args);
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
@@ -15,6 +17,7 @@ builder.Services.AddMasaConfiguration(option => option.UseDcc());
 builder.Services.AddDaprClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddScoped<TokenProvider>();
 
 builder.Services.AddMasaOpenIdConnect(builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic());
 builder.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);

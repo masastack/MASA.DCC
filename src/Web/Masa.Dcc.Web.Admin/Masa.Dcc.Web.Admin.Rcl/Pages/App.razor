@@ -2,9 +2,9 @@
 @inherits MasaCompontentBase;
 
 <div class="d-flex">
-    <MNavigationDrawer Right Permanent Class="rounded-4 py-6" Width="300" Style="height: calc(100vh - 192px);">
+    <MNavigationDrawer Right Permanent Class="rounded-4 py-6 overflow-hidden" Width="300" Style="height: calc(100vh - 192px); overflow-y: hidden;">
         <div style="min-width:300px; padding:0 24px; display:flex; flex-direction:column; align-items:center;">
-            <div style="width:100%; overflow-x: hidden;" class="regular--text">
+            <div style="width:100%; overflow-x: hidden; overflow-y: hidden;" class="regular--text">
                 <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
                     <div class="emphasis--text h6 text-overflow2">@_projectDetail.Name</div>
                 </MRow>
@@ -45,7 +45,7 @@
             <MCard Ripple=false Class="mt-6 rounded-5" Height="163"
                    OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, _projectEnvClusters[0].Id, ConfigObjectType.Biz, ProjectId))">
                 <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
-                    <div class="emphasis2--text h7 text-overflow">
+                    <div class="emphasis2--text h7 text-overflow" @onclick:stopPropagation>
                         @if (!_isEditBiz)
                         {
                             @_bizDetail.Name
@@ -58,6 +58,12 @@
                     <div class="mx-4" style="color:#E2E7F4">|</div>
                     <div class="emphasis2--text h7 text-overflow">Biz</div>
                     <MSpacer />
+                    @if (_isEditBiz)
+                    {
+                        <MButton Class="mr-4" StopPropagation Icon OnClick="CancelEditBizName">
+                            <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
+                        </MButton>
+                    }
                     <MButton Icon OnClick="UpdateBizAsync" StopPropagation>
                         @if (!_isEditBiz)
                         {

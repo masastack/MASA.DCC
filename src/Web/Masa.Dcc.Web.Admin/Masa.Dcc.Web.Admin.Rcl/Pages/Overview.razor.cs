@@ -31,7 +31,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<EnvironmentModel> _environments = new();
         private List<ClusterModel> _clusters = new();
         private ConfigComponentModel _configModel = new();
-        private AppComponentModel _appModel = new();
+        private int _selectProjectId;
         private App? _app;
         private Config? _config;
         private ProjectList? _projectList;
@@ -104,17 +104,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else if (_curTab == 2 && _config != null)
             {
-                await _config.InitDataAsync();
+                await _config.InitDataAsync(_configModel);
             }
         }
 
         private async Task NavigateToAppAsync(int projectId)
         {
-            if (projectId != _appModel.ProjectId)
+            if (projectId != _selectProjectId)
                 _configDisabled = true;
 
             _teamDetailDisabled = false;
-            _appModel = new(projectId);
+            _selectProjectId = projectId;
 
             await TabValueChangedAsync(1);
         }
@@ -133,7 +133,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _teamDetailDisabled = false;
             _configDisabled = false;
 
-            _appModel = new(model.ProjectId);
+            _selectProjectId = model.ProjectId;
             _configModel = model;
 
             await TabValueChangedAsync(2);

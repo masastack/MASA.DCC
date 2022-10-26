@@ -1,4 +1,4 @@
-﻿@using System.Reflection
+﻿@inject TokenProvider TokenProvider
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly" 
@@ -14,3 +14,16 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
+@code {
+    [Parameter]
+    public TokenProvider InitialState { get; set; } = null!;
+
+    protected override Task OnInitializedAsync()
+    {
+        TokenProvider.AccessToken = InitialState.AccessToken;
+        TokenProvider.RefreshToken = InitialState.RefreshToken;
+        TokenProvider.IdToken = InitialState.IdToken;
+        return base.OnInitializedAsync();
+    }
+}

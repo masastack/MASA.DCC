@@ -160,10 +160,21 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             return base.SetParametersAsync(parameters);
         }
 
-        public async Task InitDataAsync()
+        public async Task InitDataAsync(ConfigComponentModel? configModel = null)
         {
+            if (configModel != null)
+            {
+                ProjectId = configModel.ProjectId;
+                ProjectIdentity = configModel.ProjectIdentity;
+                AppId = configModel.AppId;
+                EnvironmentClusterId = configModel.EnvironmentClusterId;
+                ConfigObjectType = configModel.ConfigObjectType;
+            }
+
             if (ProjectId != 0)
+            {
                 _projectDetail = await ProjectCaller.GetAsync(ProjectId);
+            }
 
             switch (ConfigObjectType)
             {
@@ -229,22 +240,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             _configObjects.ForEach(config =>
             {
-                if (config.Encryption)
-                {
-                    config.Content = DecryptContent(config.Content);
-                    config.TempContent = DecryptContent(config.TempContent);
-                }
-
                 if (config.RelationConfigObjectId != 0)
                 {
                     publicConfigObjects.ForEach(publicConfig =>
                     {
-                        if (publicConfig.Encryption)
-                        {
-                            publicConfig.Content = DecryptContent(publicConfig.Content);
-                            publicConfig.TempContent = DecryptContent(publicConfig.TempContent);
-                        }
-
                         if (config.RelationConfigObjectId == publicConfig.Id)
                         {
                             if (config.FormatLabelCode.Trim().ToLower() == "properties")
@@ -398,27 +397,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             _backupConfigObjects = new List<ConfigObjectModel>(_configObjects.ToArray());
             StateHasChanged();
-        }
-
-        private string DecryptContent(string content)
-        {
-            if (!string.IsNullOrEmpty(content) && content != "{}" && content != "[]")
-            {
-                string secret = "";
-                Task.Run(async () =>
-                {
-                    var config = await DaprClient.GetSecretAsync("localsecretstore", "dcc-config");
-                    secret = config["dcc-config-secret"];
-                }).Wait();
-
-                string encryptContent = AesUtils.Decrypt(content, secret, FillType.Left);
-
-                return encryptContent;
-            }
-            else
-            {
-                return content;
-            }
         }
 
         private void ConvertPropertyAsync(List<ConfigObjectPropertyModel> configObjectProperties, ConfigObjectModel config)
@@ -581,6 +559,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                 }
                 configObject.ElevationTabPropertyContent.Content = stringBuilder.ToString();
+                configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled;
             }
             else
             {
@@ -889,14 +868,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             _releaseHistory.ConfigObjectReleases = _releaseHistory.ConfigObjectReleases.Take(2).ToList();
 
-            if (configObject.Encryption)
-            {
-                _releaseHistory.ConfigObjectReleases.ForEach(config =>
-                {
-                    config.Content = DecryptContent(config.Content);
-                });
-            }
-
             _showRollbackModal = true;
         }
 
@@ -920,14 +891,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _configObjectReleases = _releaseHistory.ConfigObjectReleases
                 .OrderByDescending(release => release.Id)
                 .Adapt<List<ConfigObjectReleaseModel>>();
-
-            if (configObject.Encryption)
-            {
-                _configObjectReleases.ForEach(release =>
-                {
-                    release.Content = DecryptContent(release.Content);
-                });
-            }
 
             if (configObject.FormatLabelCode.Trim().ToLower() == "properties")
             {

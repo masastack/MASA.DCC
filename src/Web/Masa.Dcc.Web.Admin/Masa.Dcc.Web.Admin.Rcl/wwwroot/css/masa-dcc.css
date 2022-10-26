@@ -775,3 +775,8 @@ textarea:disabled {
     border-bottom-left-radius: 0 !important;
     border-top-left-radius: 0 !important;
 }
+
+.overflow-hidden .m-navigation-drawer__content {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}

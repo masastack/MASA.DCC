@@ -100,7 +100,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else if (_curTab == 2 && _config != null)
             {
-                await _config.InitDataAsync();
+                await _config.InitDataAsync(_configModel);
             }
         }
 

@@ -1,8 +1,21 @@
 ﻿@page "/"
 @namespace Masa.Dcc.Web.Admin.Server.Pages
+@using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
 }
 
-<component type="typeof(Masa.Dcc.Web.Admin.Rcl.App)" render-mode="ServerPrerendered" />
+
+@{
+    var tokens = new TokenProvider
+    {
+        AccessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken),
+        RefreshToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.RefreshToken),
+        IdToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.IdToken)
+    };
+}
+
+<component type="typeof(Masa.Dcc.Web.Admin.Rcl.App)" render-mode="ServerPrerendered" param-InitialState="tokens" />

@@ -15,6 +15,7 @@ builder.Services.AddMasaConfiguration(option => option.UseDcc());
 builder.Services.AddDaprClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddScoped<TokenProvider>();
 
 builder.Services.AddMasaOpenIdConnect(builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic());
 builder.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);

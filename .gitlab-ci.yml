@@ -41,7 +41,7 @@ docker-build-dev:
     - docker rmi $NEW_IMAGE_DCC_DEV   
     - docker rmi $NEW_IMAGE_DCC_UI_DEV
   
-deploy-dev:
+deploy-dev-ali:
   stage: deploy-dev
   tags:
     - linux-shell
@@ -56,7 +56,39 @@ deploy-dev:
     - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_DEV
   retry: 2
 
+
+deploy-dev:
+  stage: deploy-dev
+  tags:
+    - linux-shell
+  before_script:
+    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  only:
+    - main  
+  script:
+    - echo $KUBE_CONFIG_DEV_YDY | base64 -d > ./config
+    - echo $CI_PIPELINE_ID     
+    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n dcc-dev
+    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n dcc-dev
+  retry: 2
+
 deploy-test:
+  stage: deploy-test
+  tags:
+    - linux-shell
+  before_script:
+    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  only:
+    - main  
+  script:
+    - echo $KUBE_CONFIG_DEV_YDY | base64 -d > ./config
+    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n dcc-staging
+    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n dcc-staging
+  retry: 2
+  when: manual
+
+
+deploy-test-ali:
   stage: deploy-test
   tags:
     - linux-shell

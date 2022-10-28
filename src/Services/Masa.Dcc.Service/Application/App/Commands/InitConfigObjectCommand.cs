@@ -3,7 +3,8 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
-    public record InitConfigObjectCommand(string Environment, string Cluster, string AppId, Dictionary<string, string> ConfigObjects) : Command
+    public record InitConfigObjectCommand(string Environment, string Cluster, string AppId,
+        Dictionary<string, string> ConfigObjects, bool isEncryption) : Command
     {
     }
 }

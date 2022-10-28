@@ -50,13 +50,14 @@ if (builder.Environment.IsDevelopment())
     });
 }
 
-var redisOptions = builder.Configuration.GetSection("redis").Get<RedisConfigurationOptions>();
-builder.Services.AddMasaRedisCache(redisOptions)
-                .AddMasaMemoryCache(options =>
-                {
-                    options.SubscribeKeyType = SubscribeKeyTypes.SpecificPrefix;
-                    options.SubscribeKeyPrefix = "masa.dcc:";
-                });
+builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache();
+}, new MultilevelCacheOptions
+{
+    SubscribeKeyPrefix = "masa.dcc:",
+    SubscribeKeyType = SubscribeKeyType.SpecificPrefix
+});
 
 builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));
 

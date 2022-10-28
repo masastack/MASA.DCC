@@ -11,7 +11,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
         private readonly IBizConfigObjectRepository _bizConfigObjectRepository;
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
-        private readonly IMemoryCacheClient _memoryCacheClient;
+        private readonly IMultilevelCacheClient _memoryCacheClient;
         private readonly IPmClient _pmClient;
         private readonly DaprClient _daprClient;
 
@@ -23,7 +23,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IAppConfigObjectRepository appConfigObjectRepository,
             IBizConfigObjectRepository bizConfigObjectRepository,
             IPublicConfigObjectRepository publicConfigObjectRepository,
-            IMemoryCacheClient memoryCacheClient,
+            IMultilevelCacheClient memoryCacheClient,
             IPmClient pmClient,
             DaprClient daprClient) : base(eventBus)
         {
@@ -374,7 +374,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await AddConfigObjectReleaseAsync(releaseModel);
         }
 
-        public async Task InitConfigObjectAsync(string environmentName, string clusterName, string appId, Dictionary<string, string> configObjects)
+        public async Task InitConfigObjectAsync(string environmentName, string clusterName, string appId,
+            Dictionary<string, string> configObjects,
+            bool isEncryption)
         {
             var envs = await _pmClient.EnvironmentService.GetListAsync();
             var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower());
@@ -390,12 +392,18 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
             foreach (var configObject in configObjects)
             {
+                string content = configObject.Value;
+                if (isEncryption)
+                    content = await EncryptContentAsync(content);
+
+
                 var newConfigObject = new ConfigObject(
                     configObject.Key,
                     "Json",
                     ConfigObjectType.App,
-                    configObject.Value,
-                    "{}");
+                    content,
+                    "{}",
+                    encryption: isEncryption);
 
                 newConfigObject.SetAppConfigObject(app.Id, cluster.EnvironmentClusterId);
 

@@ -13,13 +13,6 @@ public abstract class DccHttpClientCallerBase : HttpClientCallerBase
 
     protected override IHttpClientBuilder UseHttpClient()
     {
-        return base.CallerOptions.UseHttpClient(delegate (MasaHttpClientBuilder opt)
-        {
-            opt.Name = Name;
-            opt.Configure = delegate (HttpClient client)
-            {
-                client.BaseAddress = new Uri(BaseAddress);
-            };
-        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        return base.UseHttpClient().AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
     }
 }

@@ -21,7 +21,6 @@ global using Masa.Dcc.Contracts.Admin.App.Enums;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;
 global using Masa.Dcc.Web.Admin.Rcl.Model;
 global using Masa.Dcc.Web.Admin.Rcl.Pages.Modal;
-global using Masa.Utils.Security.Cryptography;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Routing;
 global using Microsoft.AspNetCore.Components.Web;

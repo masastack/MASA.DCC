@@ -25,6 +25,7 @@ global using Masa.BuildingBlocks.StackSdks.Dcc.Model;
 global using Masa.BuildingBlocks.StackSdks.Pm;
 global using Masa.BuildingBlocks.StackSdks.Pm.Enum;
 global using Masa.BuildingBlocks.StackSdks.Pm.Model;
+global using Masa.Contrib.Caching.MultilevelCache;
 global using Masa.Contrib.Data.UoW.EFCore;
 global using Masa.Contrib.Ddd.Domain;
 global using Masa.Contrib.Ddd.Domain.Repository.EFCore;

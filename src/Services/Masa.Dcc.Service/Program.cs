@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Caching.MultilevelCache;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMasaIdentity(options =>
@@ -50,13 +52,14 @@ if (builder.Environment.IsDevelopment())
     });
 }
 
-var redisOptions = builder.Configuration.GetSection("redis").Get<RedisConfigurationOptions>();
-builder.Services.AddMasaRedisCache(redisOptions)
-                .AddMasaMemoryCache(options =>
-                {
-                    options.SubscribeKeyType = SubscribeKeyTypes.SpecificPrefix;
-                    options.SubscribeKeyPrefix = "masa.dcc:";
-                });
+builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>
+{
+    distributedCacheOptions.UseStackExchangeRedisCache();
+}, new MultilevelCacheOptions
+{
+    SubscribeKeyPrefix = "masa.dcc:",
+    SubscribeKeyType = SubscribeKeyType.SpecificPrefix
+});
 
 builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));
 

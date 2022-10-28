@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Utils.Caching.Core.Interfaces;
-
 namespace Masa.Dcc.Service.Admin.Domain.Label.Services
 {
     public class LabelDomainService : DomainService
@@ -12,10 +10,10 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
 
         public LabelDomainService(IDomainEventBus eventBus,
             ILabelRepository labelRepository,
-            IDistributedCacheClient memoryCacheClient) : base(eventBus)
+            IDistributedCacheClient distributedCacheClient) : base(eventBus)
         {
             _labelRepository = labelRepository;
-            _distributedCacheClient = memoryCacheClient;
+            _distributedCacheClient = distributedCacheClient;
         }
 
         public async Task AddLabelAsync(UpdateLabelDto labelDto)
@@ -37,7 +35,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
                 }
 
                 await _labelRepository.AddRangeAsync(labels);
-                await _distributedCacheClient.SetAsync(labelDto.TypeCode, labels.Adapt<List<LabelDto>>());
+                await _distributedCacheClient.SetAsync(labelDto.TypeCode, labels.Adapt<List<LabelModel>>());
             }
         }
 
@@ -62,7 +60,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
                 }
 
                 await _labelRepository.AddRangeAsync(labels);
-                await _distributedCacheClient.SetAsync(labelDto.TypeCode, labels.Adapt<List<LabelDto>>());
+                await _distributedCacheClient.SetAsync(labelDto.TypeCode, labels.Adapt<List<LabelModel>>());
             }
         }
 
@@ -71,7 +69,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
             var labels = await _labelRepository.GetListAsync(label => label.TypeCode == typeCode) ?? throw new UserFriendlyException("Label does not exist");
             await _labelRepository.RemoveRangeAsync(labels);
 
-            await _distributedCacheClient.RemoveAsync<List<LabelDto>>(typeCode);
+            await _distributedCacheClient.RemoveAsync<List<LabelModel>>(typeCode);
         }
     }
 }

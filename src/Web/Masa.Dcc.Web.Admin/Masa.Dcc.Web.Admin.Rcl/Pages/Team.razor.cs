@@ -1,6 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
 using Masa.Stack.Components.Configs;
 
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
@@ -34,6 +35,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public GlobalConfig GlobalConfig { get; set; } = default!;
 
+        [Inject]
+        public MasaUser MasaUser { get; set; } = default!;
+
         private int _projectCount;
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
@@ -57,7 +61,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (firstRender)
             {
-                HandleCurrentTeamChanged(GlobalConfig.CurrentTeamId);
+                HandleCurrentTeamChanged(MasaUser.CurrentTeamId);
             }
         }
 

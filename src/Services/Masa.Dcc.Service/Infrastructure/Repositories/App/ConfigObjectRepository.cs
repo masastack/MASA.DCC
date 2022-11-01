@@ -28,5 +28,40 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
 
             return configObjects;
         }
+
+        public async Task<List<(ConfigObject ConfigObject, int AppId, int EnvironmentClusterId)>> GetNewestConfigObjectReleaseWithAppInfo()
+        {
+            var result = await Context.Set<ConfigObject>()
+                .Join(
+                    Context.Set<ConfigObjectRelease>(),
+                    configObject => configObject.Id,
+                    configObjectRelease => configObjectRelease.ConfigObjectId,
+                    (configObject, configObjectRelease) => new
+                    {
+                        ConfigObject = configObject,
+                        ConfigObjectReleaseId = configObjectRelease.Id,
+                    }
+                )
+                .Join(
+                    Context.Set<AppConfigObject>(),
+                    configObjectGroup => configObjectGroup.ConfigObject.Id,
+                    appConfigObject => appConfigObject.ConfigObjectId,
+                    (configObjectGroup, appConfigObject) => new
+                    {
+                        configObjectGroup.ConfigObject,
+                        configObjectGroup.ConfigObjectReleaseId,
+                        appConfigObject.AppId,
+                        appConfigObject.EnvironmentClusterId
+                    }
+                )
+                .GroupBy(config => config.ConfigObject.Id)
+                .Select(config => config.OrderByDescending(c => c.ConfigObjectReleaseId).First())
+                .ToListAsync();
+
+            return result
+                .Select(config =>
+                new ValueTuple<ConfigObject, int, int>(config.ConfigObject, config.AppId, config.EnvironmentClusterId))
+                .ToList();
+        }
     }
 }

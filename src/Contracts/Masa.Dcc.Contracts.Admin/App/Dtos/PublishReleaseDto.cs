@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
-    public class PublishReleaseDto
+    public class PublishRelease
     {
         public string Content { get; set; } = "";
 

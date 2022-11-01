@@ -10,4 +10,8 @@
     <PackageReference Include="Masa.Utils.Data.DataAnnotations" Version="0.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="App\Model\" />
+  </ItemGroup>
+
 </Project>

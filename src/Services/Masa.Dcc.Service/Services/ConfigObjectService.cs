@@ -17,6 +17,7 @@ public class ConfigObjectService : ServiceBase
         App.MapPut("api/v1/configObject/rollback", RollbackAsync);
         App.MapPost("api/v1/configObject/clone", CloneConfigObjectAsync);
         App.MapGet("api/v1/configObject/release/history/{configObejctId}", GetConfigObjectReleaseHistoryAsync);
+        App.MapGet("api/v1/configObject/refresh", RefreshConfigObjectToRedisAsync);
     }
 
     public async Task AddAsync(IEventBus eventBus, List<AddConfigObjectDto> dtos)
@@ -60,6 +61,14 @@ public class ConfigObjectService : ServiceBase
     public async Task CloneConfigObjectAsync(IEventBus eventBus, CloneConfigObjectDto dto)
     {
         await eventBus.PublishAsync(new CloneConfigObjectCommand(dto));
+    }
+
+    public async Task<string> RefreshConfigObjectToRedisAsync(IEventBus eventBus)
+    {
+        var query = new RefreshConfigObjectToRedisQuery();
+        await eventBus.PublishAsync(query);
+
+        return query.Result;
     }
 
     #region ConfigObjectRelease

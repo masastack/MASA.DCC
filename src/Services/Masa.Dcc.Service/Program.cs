@@ -88,7 +88,23 @@ var app = builder.AddServices(options =>
     options.DisableAutoMapRoute = true; // todo :remove it before v1.0
 });
 
-app.UseMasaExceptionHandler();
+if (app.Environment.IsDevelopment())
+{
+    app.UseMasaExceptionHandler(options =>
+    {
+        options.ExceptionHandler = context =>
+        {
+            if (context.Exception is not UserFriendlyException)
+            {
+                context.ToResult(context.Exception.Message);
+            }
+        };
+    });
+}
+else
+{
+    app.UseMasaExceptionHandler();
+}
 
 //seed data
 await app.SeedDataAsync();

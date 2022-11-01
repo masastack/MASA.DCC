@@ -246,7 +246,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         var appRelease = relationConfigObject.ConfigObjectRelease.OrderByDescending(c => c.Id).FirstOrDefault();
                         if (appRelease == null)
                         {
-                            await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                            await _memoryCacheClient.SetAsync<PublishRelease>(key.ToLower(), new PublishRelease
                             {
                                 ConfigObjectType = configObject.Type,
                                 Content = dto.Content,
@@ -262,7 +262,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                             var exceptContent = publicContents.ExceptBy(appContents.Select(c => c.Key), content => content.Key).ToList();
                             var content = appContents.Union(exceptContent).ToList();
 
-                            var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
+                            var releaseContent = JsonSerializer.Serialize(new PublishRelease
                             {
                                 ConfigObjectType = configObject.Type,
                                 Content = JsonSerializer.Serialize(content),
@@ -273,7 +273,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     }
                     else
                     {
-                        var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
+                        var releaseContent = JsonSerializer.Serialize(new PublishRelease
                         {
                             ConfigObjectType = configObject.Type,
                             Content = dto.Content,
@@ -292,7 +292,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 {
                     dto.Content = await EncryptContentAsync(dto.Content);
                 }
-                var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
+                var releaseContent = JsonSerializer.Serialize(new PublishRelease
                 {
                     ConfigObjectType = configObject.Type,
                     Content = dto.Content,
@@ -423,6 +423,37 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                 await AddConfigObjectReleaseAsync(releaseModel);
             }
+        }
+
+        public async Task<string> RefreshConfigObjectToRedisAsync()
+        {
+            var configObjectInfo = await _configObjectRepository.GetNewestConfigObjectReleaseWithAppInfo();
+            var apps = await _pmClient.AppService.GetListAsync();
+
+            configObjectInfo.ForEach(config =>
+            {
+                apps.ForEach(app =>
+                {
+                    if (config.AppId == app.Id)
+                    {
+                        app.EnvironmentClusters.ForEach(async envCluster =>
+                        {
+                            if (envCluster.Id == config.EnvironmentClusterId)
+                            {
+                                var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{config.ConfigObject.Name}";
+                                await _memoryCacheClient.SetAsync(key.ToLower(), new PublishRelease
+                                {
+                                    ConfigObjectType = config.ConfigObject.Type,
+                                    Content = config.ConfigObject.Content,
+                                    FormatLabelCode = config.ConfigObject.FormatLabelCode
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            return "success";
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Dcc.Contracts.Admin.App.Model;
+
 namespace Masa.Dcc.Service.Admin.Domain.App.Services
 {
     public class ConfigObjectDomainService : DomainService
@@ -80,7 +82,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await _configObjectRepository.RemoveAsync(configObjectEntity);
 
             var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.AppId}-{configObjectEntity.Name}";
-            await _memoryCacheClient.RemoveAsync<string>(key.ToLower());
+            await _memoryCacheClient.RemoveAsync<PublishReleaseModel>(key.ToLower());
         }
 
         public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)
@@ -246,7 +248,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         var appRelease = relationConfigObject.ConfigObjectRelease.OrderByDescending(c => c.Id).FirstOrDefault();
                         if (appRelease == null)
                         {
-                            await _memoryCacheClient.SetAsync<PublishReleaseDto>(key.ToLower(), new PublishReleaseDto
+                            await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
                             {
                                 ConfigObjectType = configObject.Type,
                                 Content = dto.Content,
@@ -262,24 +264,24 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                             var exceptContent = publicContents.ExceptBy(appContents.Select(c => c.Key), content => content.Key).ToList();
                             var content = appContents.Union(exceptContent).ToList();
 
-                            var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
+                            var releaseContent = new PublishReleaseModel
                             {
                                 ConfigObjectType = configObject.Type,
                                 Content = JsonSerializer.Serialize(content),
                                 FormatLabelCode = configObject.FormatLabelCode
-                            });
-                            await _memoryCacheClient.SetAsync<string>(key.ToLower(), releaseContent);
+                            };
+                            await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
                         }
                     }
                     else
                     {
-                        var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
+                        var releaseContent = new PublishReleaseModel
                         {
                             ConfigObjectType = configObject.Type,
                             Content = dto.Content,
                             FormatLabelCode = configObject.FormatLabelCode
-                        });
-                        await _memoryCacheClient.SetAsync<string>(key.ToLower(), releaseContent);
+                        };
+                        await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
                     }
                 }
             }
@@ -292,14 +294,14 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 {
                     dto.Content = await EncryptContentAsync(dto.Content);
                 }
-                var releaseContent = JsonSerializer.Serialize(new PublishReleaseDto
+                var releaseContent = new PublishReleaseModel
                 {
                     ConfigObjectType = configObject.Type,
                     Content = dto.Content,
                     FormatLabelCode = configObject.FormatLabelCode,
                     Encryption = configObject.Encryption
-                });
-                await _memoryCacheClient.SetAsync<string>(key.ToLower(), releaseContent);
+                };
+                await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
             }
         }
 
@@ -423,6 +425,34 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                 await AddConfigObjectReleaseAsync(releaseModel);
             }
+        }
+
+        public async Task<string> RefreshConfigObjectToRedisAsync()
+        {
+            var configObjectInfo = await _configObjectRepository.GetNewestConfigObjectReleaseWithAppInfo();
+            var apps = await _pmClient.AppService.GetListAsync();
+
+            configObjectInfo.ForEach(config =>
+            {
+                apps.Where(app => app.Id == config.AppId).ToList().ForEach(app =>
+                {
+                    app.EnvironmentClusters.ForEach(async envCluster =>
+                    {
+                        if (envCluster.Id == config.EnvironmentClusterId)
+                        {
+                            var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{config.ConfigObject.Name}";
+                            await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
+                            {
+                                ConfigObjectType = config.ConfigObject.Type,
+                                Content = config.ConfigObject.Content,
+                                FormatLabelCode = config.ConfigObject.FormatLabelCode
+                            });
+                        }
+                    });
+                });
+            });
+
+            return "success";
         }
     }
 }

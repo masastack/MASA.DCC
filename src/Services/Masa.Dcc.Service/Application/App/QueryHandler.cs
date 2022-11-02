@@ -14,6 +14,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IBizConfigObjectRepository _bizConfigObjectRepository;
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
         private readonly DaprClient _daprClient;
+        private readonly ConfigObjectDomainService _configObjectDomainService;
 
         public QueryHandler(
             IPublicConfigRepository publicConfigRepository,
@@ -24,7 +25,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
             IBizConfigRepository bizConfigRepository,
             IBizConfigObjectRepository bizConfigObjectRepository,
             IAppConfigObjectRepository appConfigObjectRepository,
-            DaprClient daprClient)
+            DaprClient daprClient,
+            ConfigObjectDomainService configObjectDomainService)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
@@ -35,6 +37,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             _bizConfigObjectRepository = bizConfigObjectRepository;
             _appConfigObjectRepository = appConfigObjectRepository;
             _daprClient = daprClient;
+            _configObjectDomainService = configObjectDomainService;
         }
 
         [EventHandler]
@@ -181,6 +184,12 @@ namespace Masa.Dcc.Service.Admin.Application.App
             var configObject = await _publicConfigObjectRepository.GetByConfigObjectIdAsync(query.ConfigObjectId);
 
             query.Result = configObject.Adapt<PublicConfigObjectDto>();
+        }
+
+        [EventHandler]
+        public async Task RefreshConfigObjectToRedisAsync(RefreshConfigObjectToRedisQuery query)
+        {
+            query.Result = await _configObjectDomainService.RefreshConfigObjectToRedisAsync();
         }
     }
 }

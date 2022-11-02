@@ -35,6 +35,7 @@ global using Masa.Contrib.Dispatcher.IntegrationEvents.Dapr;
 global using Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
+global using Masa.Dcc.Contracts.Admin.App.Model;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;
 global using Masa.Dcc.Service.Admin.Application.App.Commands;
 global using Masa.Dcc.Service.Admin.Application.App.Queries;

@@ -29,9 +29,9 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
             return configObjects;
         }
 
-        public async Task<List<(ConfigObject ConfigObject, int AppId, int EnvironmentClusterId)>> GetNewestConfigObjectReleaseWithAppInfo()
+        public async Task<List<(ConfigObject ConfigObject, int ObjectId, int EnvironmentClusterId)>> GetNewestConfigObjectReleaseWithAppInfo()
         {
-            var result = await Context.Set<ConfigObject>()
+            var configObjectReleaseQuery = Context.Set<ConfigObject>()
                 .Join(
                     Context.Set<ConfigObjectRelease>(),
                     configObject => configObject.Id,
@@ -41,7 +41,9 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
                         ConfigObject = configObject,
                         ConfigObjectReleaseId = configObjectRelease.Id,
                     }
-                )
+                );
+
+            var result = await configObjectReleaseQuery
                 .Join(
                     Context.Set<AppConfigObject>(),
                     configObjectGroup => configObjectGroup.ConfigObject.Id,
@@ -50,8 +52,27 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
                     {
                         configObjectGroup.ConfigObject,
                         configObjectGroup.ConfigObjectReleaseId,
+                        configObjectGroup.ConfigObject.Type,
                         appConfigObject.AppId,
                         appConfigObject.EnvironmentClusterId
+                    }
+                )
+                .GroupBy(config => config.ConfigObject.Id)
+                .Select(config => config.OrderByDescending(c => c.ConfigObjectReleaseId).First())
+                .ToListAsync();
+
+            var publicResult = await configObjectReleaseQuery
+                .Join(
+                    Context.Set<PublicConfigObject>(),
+                    configObjectGroup => configObjectGroup.ConfigObject.Id,
+                    publicConfigObject => publicConfigObject.ConfigObjectId,
+                    (configObjectGroup, publicConfigObject) => new
+                    {
+                        configObjectGroup.ConfigObject,
+                        configObjectGroup.ConfigObjectReleaseId,
+                        configObjectGroup.ConfigObject.Type,
+                        publicConfigObject.PublicConfigId,
+                        publicConfigObject.EnvironmentClusterId
                     }
                 )
                 .GroupBy(config => config.ConfigObject.Id)
@@ -61,6 +82,8 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
             return result
                 .Select(config =>
                 new ValueTuple<ConfigObject, int, int>(config.ConfigObject, config.AppId, config.EnvironmentClusterId))
+                .Union(publicResult.Select(config =>
+                new ValueTuple<ConfigObject, int, int>(config.ConfigObject, config.PublicConfigId, config.EnvironmentClusterId)))
                 .ToList();
         }
     }

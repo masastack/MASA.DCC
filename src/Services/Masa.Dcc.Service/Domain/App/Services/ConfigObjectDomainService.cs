@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Dcc.Contracts.Admin.App.Model;
-
 namespace Masa.Dcc.Service.Admin.Domain.App.Services
 {
     public class ConfigObjectDomainService : DomainService
@@ -13,6 +11,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
         private readonly IBizConfigObjectRepository _bizConfigObjectRepository;
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
+        private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IMultilevelCacheClient _memoryCacheClient;
         private readonly IPmClient _pmClient;
         private readonly DaprClient _daprClient;
@@ -25,6 +24,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IAppConfigObjectRepository appConfigObjectRepository,
             IBizConfigObjectRepository bizConfigObjectRepository,
             IPublicConfigObjectRepository publicConfigObjectRepository,
+            IPublicConfigRepository publicConfigRepository,
             IMultilevelCacheClient memoryCacheClient,
             IPmClient pmClient,
             DaprClient daprClient) : base(eventBus)
@@ -35,6 +35,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _appConfigObjectRepository = appConfigObjectRepository;
             _bizConfigObjectRepository = bizConfigObjectRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
+            _publicConfigRepository = publicConfigRepository;
             _memoryCacheClient = memoryCacheClient;
             _pmClient = pmClient;
             _daprClient = daprClient;
@@ -431,25 +432,44 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         {
             var configObjectInfo = await _configObjectRepository.GetNewestConfigObjectReleaseWithAppInfo();
             var apps = await _pmClient.AppService.GetListAsync();
+            var envClusters = await _pmClient.ClusterService.GetEnvironmentClustersAsync();
+            var publicConfig = (await _publicConfigRepository.GetListAsync()).FirstOrDefault()
+                ?? throw new UserFriendlyException("PublicConfig is null");
 
             configObjectInfo.ForEach(config =>
             {
-                apps.Where(app => app.Id == config.AppId).ToList().ForEach(app =>
+                if (config.ConfigObject.Type == ConfigObjectType.App)
                 {
-                    app.EnvironmentClusters.ForEach(async envCluster =>
+                    apps.Where(app => app.Id == config.ObjectId).ToList().ForEach(app =>
                     {
-                        if (envCluster.Id == config.EnvironmentClusterId)
+                        app.EnvironmentClusters.ForEach(async envCluster =>
                         {
-                            var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{config.ConfigObject.Name}";
-                            await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
+                            if (envCluster.Id == config.EnvironmentClusterId)
                             {
-                                ConfigObjectType = config.ConfigObject.Type,
-                                Content = config.ConfigObject.Content,
-                                FormatLabelCode = config.ConfigObject.FormatLabelCode
-                            });
-                        }
+                                var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{config.ConfigObject.Name}";
+                                await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
+                                {
+                                    ConfigObjectType = config.ConfigObject.Type,
+                                    Content = config.ConfigObject.Content,
+                                    FormatLabelCode = config.ConfigObject.FormatLabelCode
+                                });
+                            }
+                        });
                     });
-                });
+                }
+                else if (config.ConfigObject.Type == ConfigObjectType.Public)
+                {
+                    envClusters.Where(ec => ec.Id == config.EnvironmentClusterId).ToList().ForEach(async envCluster =>
+                    {
+                        var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{publicConfig.Identity}-{config.ConfigObject.Name}";
+                        await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
+                        {
+                            ConfigObjectType = config.ConfigObject.Type,
+                            Content = config.ConfigObject.Content,
+                            FormatLabelCode = config.ConfigObject.FormatLabelCode
+                        });
+                    });
+                }
             });
 
             return "success";

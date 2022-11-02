@@ -9,6 +9,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
 
         Task<List<ConfigObject>> GetRelationConfigObjectWithReleaseHistoriesAsync(int Id);
 
-        Task<List<(ConfigObject ConfigObject, int AppId, int EnvironmentClusterId)>> GetNewestConfigObjectReleaseWithAppInfo();
+        Task<List<(ConfigObject ConfigObject, int ObjectId, int EnvironmentClusterId)>> GetNewestConfigObjectReleaseWithAppInfo();
     }
 }

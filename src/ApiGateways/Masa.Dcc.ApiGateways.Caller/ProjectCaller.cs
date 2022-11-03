@@ -16,35 +16,35 @@ namespace Masa.Dcc.Caller
 
         public async Task<List<ProjectModel>> GetListByTeamIdAsync(IEnumerable<Guid> teamIds)
         {
-            var result = await CallerProvider.PostAsync<List<ProjectModel>>($"{_prefix}/teamsProject", teamIds);
+            var result = await Caller.PostAsync<List<ProjectModel>>($"{_prefix}/teamsProject", teamIds);
 
             return result ?? new();
         }
 
         public async Task<List<ProjectModel>> GetListByEnvIdAsync(int envClusterId)
         {
-            var result = await CallerProvider.GetAsync<List<ProjectModel>>($"/api/v1/{envClusterId}/project");
+            var result = await Caller.GetAsync<List<ProjectModel>>($"/api/v1/{envClusterId}/project");
 
             return result ?? new();
         }
 
         public async Task<ProjectDetailModel> GetAsync(int Id)
         {
-            var result = await CallerProvider.GetAsync<ProjectDetailModel>($"{_prefix}/{Id}");
+            var result = await Caller.GetAsync<ProjectDetailModel>($"{_prefix}/{Id}");
 
             return result ?? new();
         }
 
         public async Task<List<ProjectTypeModel>> GetProjectTypesAsync()
         {
-            var result = await CallerProvider.GetAsync<List<ProjectTypeModel>>($"{_prefix}/projectType");
+            var result = await Caller.GetAsync<List<ProjectTypeModel>>($"{_prefix}/projectType");
 
             return result ?? new();
         }
 
         public async Task<List<ProjectModel>> GetProjectsAsync()
         {
-            var result = await CallerProvider.GetAsync<List<ProjectModel>>($"{AppSettings.Get("PmClientAddress").TrimEnd('/')}/api/v1/projects");
+            var result = await Caller.GetAsync<List<ProjectModel>>($"{AppSettings.Get("PmClientAddress").TrimEnd('/')}/api/v1/projects");
 
             return result ?? new();
         }

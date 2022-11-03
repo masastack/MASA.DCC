@@ -14,14 +14,14 @@ namespace Masa.Dcc.Caller
 
         public async Task<EnvironmentDetailModel> GetAsync(int Id)
         {
-            var result = await CallerProvider.GetAsync<EnvironmentDetailModel>($"{_prefix}/{Id}");
+            var result = await Caller.GetAsync<EnvironmentDetailModel>($"{_prefix}/{Id}");
 
             return result ?? new();
         }
 
         public async Task<List<EnvironmentModel>> GetListAsync()
         {
-            var result = await CallerProvider.GetAsync<List<EnvironmentModel>>($"{_prefix}");
+            var result = await Caller.GetAsync<List<EnvironmentModel>>($"{_prefix}");
 
             return result ?? new();
         }

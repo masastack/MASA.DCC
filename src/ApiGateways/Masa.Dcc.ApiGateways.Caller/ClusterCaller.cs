@@ -14,28 +14,28 @@ namespace Masa.Dcc.Caller
 
         public async Task<List<ClusterModel>> GetListByEnvIdAsync(int envId)
         {
-            var result = await CallerProvider.GetAsync<List<ClusterModel>>($"/api/v1/{envId}/cluster");
+            var result = await Caller.GetAsync<List<ClusterModel>>($"/api/v1/{envId}/cluster");
 
             return result ?? new();
         }
 
         public async Task<List<ClusterModel>> GetListAsync()
         {
-            var result = await CallerProvider.GetAsync<List<ClusterModel>>($"/api/v1/cluster");
+            var result = await Caller.GetAsync<List<ClusterModel>>($"/api/v1/cluster");
 
             return result ?? new();
         }
 
         public async Task<ClusterDetailModel> GetAsync(int Id)
         {
-            var result = await CallerProvider.GetAsync<ClusterDetailModel>($"{_prefix}/{Id}");
+            var result = await Caller.GetAsync<ClusterDetailModel>($"{_prefix}/{Id}");
 
             return result ?? new();
         }
 
         public async Task<List<EnvironmentClusterModel>> GetEnvironmentClustersAsync()
         {
-            var result = await CallerProvider.GetAsync<List<EnvironmentClusterModel>>("/api/v1/envClusters");
+            var result = await Caller.GetAsync<List<EnvironmentClusterModel>>("/api/v1/envClusters");
 
             return result ?? new();
         }

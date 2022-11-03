@@ -53,10 +53,10 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>
 {
     distributedCacheOptions.UseStackExchangeRedisCache();
-}, new MultilevelCacheOptions
+}, options =>
 {
-    SubscribeKeyPrefix = "masa.dcc:",
-    SubscribeKeyType = SubscribeKeyType.SpecificPrefix
+    options.SubscribeKeyPrefix = "masa.dcc:";
+    options.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
 });
 
 builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));

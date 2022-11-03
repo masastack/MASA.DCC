@@ -17,21 +17,21 @@ namespace Masa.Dcc.Caller
 
         public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int Id)
         {
-            var result = await CallerProvider.GetAsync<AppDetailModel>($"api/v1/appWithEnvCluster/{Id}");
+            var result = await Caller.GetAsync<AppDetailModel>($"api/v1/appWithEnvCluster/{Id}");
 
             return result ?? new();
         }
 
         public async Task<List<AppDetailModel>> GetListAsync()
         {
-            var result = await CallerProvider.GetAsync<List<AppDetailModel>>(_prefix);
+            var result = await Caller.GetAsync<List<AppDetailModel>>(_prefix);
 
             return result ?? new();
         }
 
         public async Task<List<AppDetailModel>> GetListByProjectIdsAsync(List<int> projectIds)
         {
-            var result = await CallerProvider.PostAsync<List<int>, List<AppDetailModel>>("/api/v1/projects/app", projectIds);
+            var result = await Caller.PostAsync<List<int>, List<AppDetailModel>>("/api/v1/projects/app", projectIds);
 
             return result ?? new();
         }
@@ -40,19 +40,19 @@ namespace Masa.Dcc.Caller
         {
             HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{_prefix}/pin");
             httpRequest.Content = new StringContent(JsonSerializer.Serialize(appIds), Encoding.UTF8, "application/json");
-            var result = await CallerProvider.SendAsync<List<AppPinDto>>(httpRequest);
+            var result = await Caller.SendAsync<List<AppPinDto>>(httpRequest);
 
             return result ?? new();
         }
 
         public async Task AddAppPinAsync(int appId)
         {
-            await CallerProvider.PostAsync($"{_prefix}/pin/{appId}", null);
+            await Caller.PostAsync($"{_prefix}/pin/{appId}", null);
         }
 
         public async Task RemoveAppPinAsync(int appId)
         {
-            await CallerProvider.DeleteAsync($"{_prefix}/pin/{appId}", null);
+            await Caller.DeleteAsync($"{_prefix}/pin/{appId}", null);
         }
     }
 }

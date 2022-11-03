@@ -251,9 +251,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         {
                             await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
                             {
-                                ConfigObjectType = configObject.Type,
                                 Content = dto.Content,
-                                FormatLabelCode = configObject.FormatLabelCode
+                                FormatLabelCode = configObject.FormatLabelCode,
+                                Encryption = configObject.Encryption
                             });
                         }
                         else
@@ -267,9 +267,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                             var releaseContent = new PublishReleaseModel
                             {
-                                ConfigObjectType = configObject.Type,
                                 Content = JsonSerializer.Serialize(content),
-                                FormatLabelCode = configObject.FormatLabelCode
+                                FormatLabelCode = configObject.FormatLabelCode,
+                                Encryption = configObject.Encryption
                             };
                             await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
                         }
@@ -278,9 +278,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     {
                         var releaseContent = new PublishReleaseModel
                         {
-                            ConfigObjectType = configObject.Type,
                             Content = dto.Content,
-                            FormatLabelCode = configObject.FormatLabelCode
+                            FormatLabelCode = configObject.FormatLabelCode,
+                            Encryption = configObject.Encryption
                         };
                         await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
                     }
@@ -297,7 +297,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 }
                 var releaseContent = new PublishReleaseModel
                 {
-                    ConfigObjectType = configObject.Type,
                     Content = dto.Content,
                     FormatLabelCode = configObject.FormatLabelCode,
                     Encryption = configObject.Encryption
@@ -449,9 +448,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                                 var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{config.ConfigObject.Name}";
                                 await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
                                 {
-                                    ConfigObjectType = config.ConfigObject.Type,
                                     Content = config.ConfigObject.Content,
-                                    FormatLabelCode = config.ConfigObject.FormatLabelCode
+                                    FormatLabelCode = config.ConfigObject.FormatLabelCode,
+                                    Encryption = config.ConfigObject.Encryption
                                 });
                             }
                         });
@@ -464,9 +463,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{publicConfig.Identity}-{config.ConfigObject.Name}";
                         await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
                         {
-                            ConfigObjectType = config.ConfigObject.Type,
                             Content = config.ConfigObject.Content,
-                            FormatLabelCode = config.ConfigObject.FormatLabelCode
+                            FormatLabelCode = config.ConfigObject.FormatLabelCode,
+                            Encryption = config.ConfigObject.Encryption
                         });
                     });
                 }

@@ -13,6 +13,11 @@ namespace Masa.Dcc.Service.Admin.Migrations
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<DccDbContext>();
 
+            if (context.Database.GetPendingMigrations().Any())
+            {
+                context.Database.Migrate();
+            }
+
             if (context.Set<Label>().Any())
             {
                 return;

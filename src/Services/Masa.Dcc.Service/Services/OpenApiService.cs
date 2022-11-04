@@ -8,7 +8,7 @@ namespace Masa.Dcc.Service.Admin.Services
         public OpenApiService()
         {
             App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
-            App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync);
+            App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}/{configObjectType}", AddConfigObjectAsync);
         }
 
         public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,
@@ -19,10 +19,12 @@ namespace Masa.Dcc.Service.Admin.Services
         }
 
         public async Task AddConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId,
-            [FromBody] Dictionary<string, string> configObjects, bool isEncryption = false)
+            [FromBody] Dictionary<string, string> configObjects,
+            bool isEncryption = false,
+            ConfigObjectType configObjectType = ConfigObjectType.App)
         {
             await eventBus.PublishAsync(
-                new InitConfigObjectCommand(environment, cluster, appId, configObjects, isEncryption));
+                new InitConfigObjectCommand(environment, cluster, appId, configObjects, isEncryption, configObjectType));
         }
     }
 }

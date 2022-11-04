@@ -10,6 +10,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly IConfigObjectRepository _configObjectRepository;
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
         private readonly IBizConfigObjectRepository _bizConfigObjectRepository;
+        private readonly IBizConfigRepository _bizConfigRepository;
         private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IMultilevelCacheClient _memoryCacheClient;
@@ -23,6 +24,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IConfigObjectRepository configObjectRepository,
             IAppConfigObjectRepository appConfigObjectRepository,
             IBizConfigObjectRepository bizConfigObjectRepository,
+            IBizConfigRepository bizConfigRepository,
             IPublicConfigObjectRepository publicConfigObjectRepository,
             IPublicConfigRepository publicConfigRepository,
             IMultilevelCacheClient memoryCacheClient,
@@ -34,6 +36,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _configObjectRepository = configObjectRepository;
             _appConfigObjectRepository = appConfigObjectRepository;
             _bizConfigObjectRepository = bizConfigObjectRepository;
+            _bizConfigRepository = bizConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
             _publicConfigRepository = publicConfigRepository;
             _memoryCacheClient = memoryCacheClient;
@@ -377,6 +380,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         }
 
         public async Task InitConfigObjectAsync(string environmentName, string clusterName, string appId,
+            ConfigObjectType configObjectType,
             Dictionary<string, string> configObjects,
             bool isEncryption)
         {
@@ -390,14 +394,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             if (cluster == null)
                 throw new UserFriendlyException("Cluster does not exist");
 
-            var app = await _pmClient.AppService.GetByIdentityAsync(appId);
-
             foreach (var configObject in configObjects)
             {
                 string content = configObject.Value;
                 if (isEncryption)
                     content = await EncryptContentAsync(content);
-
 
                 var newConfigObject = new ConfigObject(
                     configObject.Key,
@@ -405,9 +406,24 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     ConfigObjectType.App,
                     content,
                     "{}",
-                    encryption: isEncryption);
+                encryption: isEncryption);
 
-                newConfigObject.SetAppConfigObject(app.Id, cluster.EnvironmentClusterId);
+                if (configObjectType == ConfigObjectType.Public)
+                {
+                    var publicConfig = await _publicConfigRepository.FindAsync(publicConfig => publicConfig.Identity == appId)
+                        ?? throw new UserFriendlyException("PublicConfig does not exist");
+                    newConfigObject.SetPublicConfigObject(publicConfig.Id, cluster.EnvironmentClusterId);
+                }
+                else if (configObjectType == ConfigObjectType.App)
+                {
+                    var app = await _pmClient.AppService.GetByIdentityAsync(appId);
+                    newConfigObject.SetAppConfigObject(app.Id, cluster.EnvironmentClusterId);
+                }
+                else if (configObjectType == ConfigObjectType.Biz)
+                {
+                    var bizConfig = await _bizConfigRepository.FindAsync(bizConfig => bizConfig.Identity == appId);
+                    newConfigObject.SetBizConfigObject(bizConfig.Id, cluster.EnvironmentClusterId);
+                }
 
                 await _configObjectRepository.AddAsync(newConfigObject);
                 await _configObjectRepository.UnitOfWork.SaveChangesAsync();

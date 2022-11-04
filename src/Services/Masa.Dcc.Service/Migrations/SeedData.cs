@@ -15,7 +15,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
 
             if (context.Database.GetPendingMigrations().Any())
             {
-                context.Database.Migrate();
+                //context.Database.Migrate();
             }
 
             if (context.Set<Label>().Any())

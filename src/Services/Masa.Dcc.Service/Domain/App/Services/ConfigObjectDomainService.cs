@@ -380,7 +380,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         }
 
         public async Task InitConfigObjectAsync(string environmentName, string clusterName, string appId,
-            ConfigObjectType configObjectType,
             Dictionary<string, string> configObjects,
             bool isEncryption)
         {
@@ -396,33 +395,50 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
             foreach (var configObject in configObjects)
             {
+                var configObjectName = configObject.Key;
+                var key = $"{environmentName}-{clusterName}-{appId}-{configObjectName}".ToLower();
+                var redisData = await _memoryCacheClient.GetAsync<PublishReleaseModel?>(key);
+                if (redisData != null)
+                {
+                    continue;
+                }
+
                 string content = configObject.Value;
                 if (isEncryption)
                     content = await EncryptContentAsync(content);
 
                 var newConfigObject = new ConfigObject(
-                    configObject.Key,
+                    configObjectName,
                     "Json",
                     ConfigObjectType.App,
                     content,
                     "{}",
                 encryption: isEncryption);
 
-                if (configObjectType == ConfigObjectType.Public)
+                var publicConfig = await _publicConfigRepository.FindAsync(publicConfig => publicConfig.Identity == appId);
+                if (publicConfig != null)
                 {
-                    var publicConfig = await _publicConfigRepository.FindAsync(publicConfig => publicConfig.Identity == appId)
-                        ?? throw new UserFriendlyException("PublicConfig does not exist");
                     newConfigObject.SetPublicConfigObject(publicConfig.Id, cluster.EnvironmentClusterId);
                 }
-                else if (configObjectType == ConfigObjectType.App)
-                {
-                    var app = await _pmClient.AppService.GetByIdentityAsync(appId);
-                    newConfigObject.SetAppConfigObject(app.Id, cluster.EnvironmentClusterId);
-                }
-                else if (configObjectType == ConfigObjectType.Biz)
+                else
                 {
                     var bizConfig = await _bizConfigRepository.FindAsync(bizConfig => bizConfig.Identity == appId);
-                    newConfigObject.SetBizConfigObject(bizConfig.Id, cluster.EnvironmentClusterId);
+                    if (bizConfig != null)
+                    {
+                        newConfigObject.SetBizConfigObject(bizConfig.Id, cluster.EnvironmentClusterId);
+                    }
+                    else
+                    {
+                        var app = await _pmClient.AppService.GetByIdentityAsync(appId);
+                        if (app != null)
+                        {
+                            newConfigObject.SetAppConfigObject(app.Id, cluster.EnvironmentClusterId);
+                        }
+                        else
+                        {
+                            throw new UserFriendlyException("AppId Error");
+                        }
+                    }
                 }
 
                 await _configObjectRepository.AddAsync(newConfigObject);

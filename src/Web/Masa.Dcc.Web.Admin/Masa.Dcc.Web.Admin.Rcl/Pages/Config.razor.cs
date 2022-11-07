@@ -134,7 +134,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (firstRender)
             {
-                _userInfo = await AuthClient.UserService.GetCurrentUserAsync();
+                _userInfo = await AuthClient.UserService.GetCurrentUserAsync() ?? new();
                 await InitDataAsync();
             }
         }
@@ -683,24 +683,25 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task DeleteConfigObjectPropertyContentAsync(ConfigObjectPropertyModel model, int configObjectId)
         {
-            await PopupService.ConfirmAsync(T("Delete config object item"),
+            var result = await PopupService.ConfirmAsync(T("Delete config object item"),
                 T("Are you sure delete config object item \"Key:{key},Value:{value}\"吗?")
                 .Replace("{key}", model.Key).Replace("{value}", model.Value),
-                AlertTypes.Error,
-                async args =>
-                {
-                    var content = JsonSerializer.Serialize(model);
-                    await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
-                    {
-                        ConfigObjectId = configObjectId,
-                        Content = content,
-                        FormatLabelCode = "Properties",
-                        DeleteConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto>() { model }
-                    });
+                AlertTypes.Error);
 
-                    await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                    await PopupService.AlertAsync(T("Deletion succeeded. Please publish to take effect"), AlertTypes.Success);
+            if (result)
+            {
+                var content = JsonSerializer.Serialize(model);
+                await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
+                {
+                    ConfigObjectId = configObjectId,
+                    Content = content,
+                    FormatLabelCode = "Properties",
+                    DeleteConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto>() { model }
                 });
+
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+                await PopupService.AlertAsync(T("Deletion succeeded. Please publish to take effect"), AlertTypes.Success);
+            }
         }
 
         private void ShowPropertyModal(ConfigObjectModel configObject, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
@@ -784,23 +785,24 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RemoveAsync(ConfigObjectModel configObject)
         {
-            await PopupService.ConfirmAsync(T("Delete config object"),
-                T("Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?")
-                .Replace("{name}", configObject.Name),
-                AlertTypes.Error,
-                async args =>
-                {
-                    await ConfigObjectCaller.RemoveAsync(new RemoveConfigObjectDto
-                    {
-                        ConfigObjectId = configObject.Id,
-                        EnvironmentName = _selectCluster.EnvironmentName,
-                        ClusterName = _selectCluster.ClusterName,
-                        AppId = _appDetail.Identity
-                    });
-                    _configObjects.Remove(configObject);
+            var result = await PopupService.ConfirmAsync(T("Delete config object"),
+                 T("Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?")
+                 .Replace("{name}", configObject.Name),
+                 AlertTypes.Error);
 
-                    await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
+            if (result)
+            {
+                await ConfigObjectCaller.RemoveAsync(new RemoveConfigObjectDto
+                {
+                    ConfigObjectId = configObject.Id,
+                    EnvironmentName = _selectCluster.EnvironmentName,
+                    ClusterName = _selectCluster.ClusterName,
+                    AppId = _appDetail.Identity
                 });
+                _configObjects.Remove(configObject);
+
+                await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
+            }
         }
 
         private async Task ShowReleaseModalAsync(ConfigObjectModel model)
@@ -826,17 +828,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RevokeAsync(ConfigObjectModel configObject)
         {
-            await PopupService.ConfirmAsync(T("Revoke config"),
-                T("The modified but unpublished configuration under the configuration object \"{name}\" will be revoked. Are you sure you want to revoke it?")
-                .Replace("{name}", configObject.Name),
-                AlertTypes.Error,
-                async args =>
-                {
-                    await ConfigObjectCaller.RevokeAsync(configObject.Id);
+            var result = await PopupService.ConfirmAsync(T("Revoke config"),
+                 T("The modified but unpublished configuration under the configuration object \"{name}\" will be revoked. Are you sure you want to revoke it?")
+                 .Replace("{name}", configObject.Name),
+                 AlertTypes.Error);
 
-                    await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                    await PopupService.AlertAsync(T("Revoke succeeded"), AlertTypes.Success);
-                });
+            if (result)
+            {
+                await ConfigObjectCaller.RevokeAsync(configObject.Id);
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+                await PopupService.AlertAsync(T("Revoke succeeded"), AlertTypes.Success);
+            }
         }
 
         private async Task ShowRollbackModalAsync(ConfigObjectModel configObject)
@@ -916,7 +918,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _selectReleaseHistory = configObjectRelease;
 
             var creatorInfo = await GetUserAsync(_selectReleaseHistory.Creator);
-            _selectReleaseHistory.CreatorName = creatorInfo.Name;
+            _selectReleaseHistory.CreatorName = creatorInfo.StaffDislpayName;
 
             int index = _configObjectReleases.IndexOf(configObjectRelease);
             _prevReleaseHistory = _configObjectReleases.Skip(index + 1).FirstOrDefault() ?? new();

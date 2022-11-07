@@ -28,11 +28,11 @@ public abstract class MasaCompontentBase : ComponentBase
         return I18n.T(key);
     }
 
-    public async Task<UserPortraitModel> GetUserAsync(Guid userId)
+    public async Task<UserModel> GetUserAsync(Guid userId)
     {
-        var users = await AuthClient.UserService.GetUserPortraitsAsync(userId);
+        var user = await AuthClient.UserService.FindByIdAsync(userId);
 
-        return users.Any() ? users[0] : new();
+        return user ?? new();
     }
 }
 

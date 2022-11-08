@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.BuildingBlocks.StackSdks.Dcc.Contracts" Version="0.7.0-preview.4" />
-    <PackageReference Include="Masa.Utils.Data.DataAnnotations" Version="0.7.0-preview.4" />
+    <PackageReference Include="Masa.BuildingBlocks.StackSdks.Dcc.Contracts" Version="0.7.0-preview.5" />
+    <PackageReference Include="Masa.Utils.Data.DataAnnotations" Version="0.7.0-preview.5" />
   </ItemGroup>
 
 </Project>

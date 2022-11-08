@@ -50,10 +50,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             var labels = await LabelCaller.GetListAsync();
 
-            var users = await AuthClient.UserService.GetUserPortraitsAsync(labels.Select(l => l.Modifier).ToArray());
             foreach (var label in labels)
             {
-                label.ModifierName = users.FirstOrDefault(user => user.Id == label.Modifier)?.Name ?? "";
+                var user = await AuthClient.UserService.FindByIdAsync(label.Modifier) ?? new();
+                label.ModifierName = user.StaffDislpayName;
             }
 
             return labels.OrderByDescending(label => label.ModificationTime).ToList();
@@ -158,16 +158,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RemoveLabelAsync(string typeCode)
         {
-            await PopupService.ConfirmAsync(T("Delete label"), T("Are you sure you want to delete the label \"{typeCode}\"?"
-                .Replace("{typeCode}", typeCode)), async args =>
+            var result = await PopupService.ConfirmAsync(T("Delete label"), T("Are you sure you want to delete the label \"{typeCode}\"?"
+                 .Replace("{typeCode}", typeCode)));
+
+            if (result)
             {
                 await LabelCaller.RemoveAsync(typeCode);
-
                 await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
-
                 LabelModalValueChanged(false);
                 _labels = await GetListAsync();
-            });
+            }
         }
     }
 }

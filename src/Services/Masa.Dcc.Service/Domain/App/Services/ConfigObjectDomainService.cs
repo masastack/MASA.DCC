@@ -361,6 +361,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             if (configObject == null)
                 throw new UserFriendlyException("ConfigObject does not exist");
 
+            if (configObject.Encryption)
+            {
+                value = await EncryptContentAsync(value);
+            }
+
             configObject.UpdateContent(value);
 
             await _configObjectRepository.UpdateAsync(configObject);

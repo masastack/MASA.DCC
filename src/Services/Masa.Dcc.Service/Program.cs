@@ -83,6 +83,9 @@ builder.Services
                .UseRepository<DccDbContext>();
     });
 
+//seed data
+await builder.SeedDataAsync();
+
 var app = builder.AddServices(options =>
 {
     options.DisableAutoMapRoute = true; // todo :remove it before v1.0
@@ -105,9 +108,6 @@ else
 {
     app.UseMasaExceptionHandler();
 }
-
-//seed data
-await app.SeedDataAsync();
 
 // Configure the HTTP request pipeline.
 

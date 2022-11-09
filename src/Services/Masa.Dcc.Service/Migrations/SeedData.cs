@@ -10,16 +10,20 @@ namespace Masa.Dcc.Service.Admin.Migrations
             var services = builder.Services.BuildServiceProvider();
             var context = services.GetRequiredService<DccDbContext>();
 
-            await InitDccLabelDataAsync(context);
+            await MigrateAsync(context);
+            await InitDccDataAsync(context);
         }
 
-        public static async Task InitDccLabelDataAsync(DccDbContext context)
+        private static async Task MigrateAsync(DccDbContext context)
         {
             if (context.Database.GetPendingMigrations().Any())
             {
-                context.Database.Migrate();
+                await context.Database.MigrateAsync();
             }
+        }
 
+        private static async Task InitDccDataAsync(DccDbContext context)
+        {
             if (context.Set<Label>().Any())
             {
                 return;
@@ -39,7 +43,10 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 new Label("Yaml", "Yaml", "ConfigObjectFormat", "配置对象类型"),
             };
 
+            var publicConfig = new PublicConfig("Public", "public-$Config", "Public config");
+
             await context.Set<Label>().AddRangeAsync(projectTypes);
+            await context.Set<PublicConfig>().AddAsync(publicConfig);
             await context.SaveChangesAsync();
         }
     }

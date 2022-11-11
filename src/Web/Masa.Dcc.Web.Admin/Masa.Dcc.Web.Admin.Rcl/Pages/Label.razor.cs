@@ -14,27 +14,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<LabelDto> _labels = new();
         private string _typeName = "";
         private readonly DataModal<UpdateLabelModel> _labelModal = new();
-        private Func<string, StringBoolean> _requiredRule = value => !string.IsNullOrEmpty(value) ? true : "Required";
-        private Func<string, StringBoolean> _counterRule = value => (value.Length <= 50 && value.Length >= 2) ? true : "length range is [2-50]";
-        private Func<string, StringBoolean> _strRule = value =>
-        {
-            Regex regex = new Regex(@"^[\u4E00-\u9FA5A-Za-z0-9_.-]+$");
-            if (!regex.IsMatch(value))
-            {
-                return "Special symbols are not allowed";
-            }
-            else
-            {
-                return true;
-            }
-        };
-
-        private IEnumerable<Func<string, StringBoolean>> LabelValueRules => new List<Func<string, StringBoolean>>
-        {
-            _requiredRule,
-            _counterRule,
-            _strRule
-        };
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {

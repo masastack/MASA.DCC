@@ -22,7 +22,7 @@ namespace Masa.Dcc.Service.Admin.Application.Label
             else
                 labels = await _labelRepository.GetListAsync(label => label.TypeCode == labelsQuery.TypeCode);
 
-            labelsQuery.Result = labels.Adapt<List<LabelModel>>();
+            labelsQuery.Result = labels.Adapt<List<LabelDto>>();
         }
     }
 }

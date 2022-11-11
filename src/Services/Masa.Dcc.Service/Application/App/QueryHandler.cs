@@ -163,11 +163,14 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 .Map(dest => dest.Content, src => src.Encryption ? DecryptContentAsync(configObjectReleases.Content).Result : src.Content)
                 .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContentAsync(configObjectReleases.TempContent).Result : src.TempContent);
 
-            query.Result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
-            query.Result.ConfigObjectReleases.ForEach(async config =>
+            var result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
+            result.ConfigObjectReleases.ForEach(config =>
             {
-                config.Content = query.Result.Encryption ? await DecryptContentAsync(config.Content) : config.Content;
+                var content = result.Encryption ? DecryptContentAsync(config.Content).ConfigureAwait(false).GetAwaiter().GetResult() : config.Content;
+                config.Content = content;
             });
+
+            query.Result = result;
         }
 
         [EventHandler]

@@ -9,13 +9,13 @@ namespace Masa.Dcc.Service.Admin.Migrations
         {
             var services = builder.Services.BuildServiceProvider();
             var context = services.GetRequiredService<DccDbContext>();
-            var configObjectDomainService = services.GetRequiredService<ConfigObjectDomainService>();
+            var eventBus = services.GetRequiredService<IEventBus>();
             var env = services.GetRequiredService<IWebHostEnvironment>();
             var contentRootPath = env.ContentRootPath;
 
             await MigrateAsync(context);
             await InitDccDataAsync(context);
-            await InitPublicConfigAsync(contentRootPath, builder.Environment.EnvironmentName, configObjectDomainService);
+            await InitPublicConfigAsync(contentRootPath, builder.Environment.EnvironmentName, eventBus);
         }
 
         private static async Task MigrateAsync(DccDbContext context)
@@ -57,7 +57,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
         }
 
         public static async Task InitPublicConfigAsync(string contentRootPath, string environment,
-            ConfigObjectDomainService configObjectDomainService)
+            IEventBus eventBus)
         {
             var publicConfigs = new Dictionary<string, string>
             {
@@ -72,11 +72,8 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 { "$public.Clients",GetClient(contentRootPath,environment) }
             };
 
-            await configObjectDomainService.InitConfigObjectAsync(environment,
-                "default",
-                "public-$Config",
-                publicConfigs,
-                false);
+            await eventBus.PublishAsync(
+                new InitConfigObjectCommand(environment, "default", "public-$Config", publicConfigs, false));
         }
 
 

@@ -3,8 +3,8 @@
 
 namespace Masa.Dcc.Service.Admin.Application.Label.Queries
 {
-    public record LabelsQuery(string TypeCode = "") : Query<List<LabelModel>>
+    public record LabelsQuery(string TypeCode = "") : Query<List<LabelDto>>
     {
-        public override List<LabelModel> Result { get; set; } = new();
+        public override List<LabelDto> Result { get; set; } = new();
     }
 }

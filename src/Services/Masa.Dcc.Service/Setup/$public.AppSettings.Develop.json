@@ -1,9 +1,9 @@
 {
   "PmClient": {
-    "Url": "https://pm-service-develop.masastack.com"
+    "Url": "https://pm-service-develop.masastack.com/"
   },
   "SchedulerClient": {
-    "Url": "https://scheduler-service-server-develop.masastack.com/"
+    "Url": "https://scheduler-server-develop.masastack.com/"
   },
   "AuthClient": {
     "Url": "https://auth-service-develop.masastack.com/"

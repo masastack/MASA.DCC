@@ -2,5 +2,5 @@
   "Authority": "https://sso-staging.masastack.com/",
   "ClientId": "masa.stack.web-staging",
   "ClientSecret": "",
-  "Scopes": []
+  "Scopes": [ "offline_access" ]
 }

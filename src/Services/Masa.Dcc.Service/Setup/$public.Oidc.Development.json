@@ -2,5 +2,5 @@
   "Authority": "https://sso-develop.masastack.com",
   "ClientId": "masa.stack.web-development",
   "ClientSecret": "",
-  "Scopes": []
+  "Scopes": [ "offline_access" ]
 }

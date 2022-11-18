@@ -14,7 +14,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
             var contentRootPath = env.ContentRootPath;
 
             await MigrateAsync(context);
-            await InitDccDataAsync(context);
+            await InitDccDataAsync(context, eventBus);
             await InitPublicConfigAsync(contentRootPath, builder.Environment.EnvironmentName, eventBus);
         }
 
@@ -26,26 +26,81 @@ namespace Masa.Dcc.Service.Admin.Migrations
             }
         }
 
-        private static async Task InitDccDataAsync(DccDbContext context)
+        private static async Task InitDccDataAsync(DccDbContext context, IEventBus eventBus)
         {
             if (!context.Set<Label>().Any())
             {
-                var projectTypes = new List<Label>
+                var labels = new List<UpdateLabelDto>
                 {
-                    new Label("BasicAbility", "BasicAbility", "ProjectType", "项目类型"),
-                    new Label("DataFactory", "DataFactory", "ProjectType", "项目类型"),
-                    new Label("Operator", "Operator", "ProjectType", "项目类型"),
-                    new Label("Other", "其他", "ProjectType", "项目类型"),
-
-                    new Label("Json", "Json", "ConfigObjectFormat", "配置对象类型"),
-                    new Label("Properties", "Properties", "ConfigObjectFormat", "配置对象类型"),
-                    new Label("Raw", "Raw", "ConfigObjectFormat", "配置对象类型"),
-                    new Label("Xml", "Xml", "ConfigObjectFormat", "配置对象类型"),
-                    new Label("Yaml", "Yaml", "ConfigObjectFormat", "配置对象类型"),
+                    new UpdateLabelDto
+                    {
+                        TypeName = "项目类型",
+                        TypeCode = "ProjectType",
+                        Description = "项目类型",
+                        LabelValues = new List<LabelValueDto>
+                        {
+                            new LabelValueDto
+                            {
+                                Name ="BasicAbility",
+                                Code ="BasicAbility"
+                            },
+                            new LabelValueDto
+                            {
+                                Name ="DataFactory",
+                                Code ="DataFactory"
+                            },
+                            new LabelValueDto
+                            {
+                                Name ="Operator",
+                                Code ="Operator"
+                            },
+                            new LabelValueDto
+                            {
+                                Name ="其他",
+                                Code ="Other"
+                            }
+                        }
+                    },
+                    new UpdateLabelDto
+                    {
+                        TypeName = "配置对象类型",
+                        TypeCode = "ConfigObjectFormat",
+                        Description = "配置对象类型",
+                        LabelValues = new List<LabelValueDto>
+                        {
+                            new LabelValueDto
+                            {
+                                Name ="Json",
+                                Code ="Json"
+                            },
+                            new LabelValueDto
+                            {
+                                Name ="Properties",
+                                Code ="Properties"
+                            },
+                            new LabelValueDto
+                            {
+                                Name ="Raw",
+                                Code ="Raw"
+                            },
+                            new LabelValueDto
+                            {
+                                Name ="Xml",
+                                Code ="Xml"
+                            },
+                            new LabelValueDto
+                            {
+                                Name ="Yaml",
+                                Code ="Yaml"
+                            }
+                        }
+                    }
                 };
 
-                await context.Set<Label>().AddRangeAsync(projectTypes);
-                await context.SaveChangesAsync();
+                foreach (var label in labels)
+                {
+                    await eventBus.PublishAsync(new AddLabelCommand(label));
+                }
             }
 
             if (!context.Set<PublicConfig>().Any())

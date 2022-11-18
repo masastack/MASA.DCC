@@ -162,8 +162,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 ConfigObjects.Add(_selectConfigObject);
             }
 
-            _step = 2;
-
             if (_cloneAppSelect)
             {
                 if (ConfigObjectType == ConfigObjectType.Biz)
@@ -192,7 +190,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 _afterAllCloneConfigObjects.AddRange(configObjects);
             }
 
-            CloneEnvClusterValueChanged(_cloneSelectApp.EnvironmentClusters.Select(ec => (StringNumber)ec.Id).ToList());
+            var envClusterIds = _cloneSelectApp.EnvironmentClusters.Select(ec => (StringNumber)ec.Id).ToList();
+            if (!envClusterIds.Any())
+            {
+                await PopupService.AlertAsync(T("There is no environment cluster to clone under the current application"), AlertTypes.Error);
+                return;
+            }
+
+            _step = 2;
+
+            CloneEnvClusterValueChanged(envClusterIds);
         }
 
         private void ClonePrevClick()

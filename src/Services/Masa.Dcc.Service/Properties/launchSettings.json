@@ -15,7 +15,9 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:6196",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DAPR_GRPC_PORT": "3601",
+        "DAPR_HTTP_PORT": "3600"
       }
     },
     "IIS Express": {

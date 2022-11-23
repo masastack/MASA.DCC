@@ -168,5 +168,6 @@
   "Please select the public configuration to be associated": "请选择要关联的公共配置",
   "The public configuration object has been associated in \"{environmentClusterName}\", please do not repeat the association": "该公共配置对象已在“{environmentClusterName}”中关联，请勿重复关联",
   "The label value Code or label value Name cannot be duplicate": "标签值Code或标签值Name不允许重复",
-  "Modification succeeded. Please publish to take effect!": "修改成功，若要生效请发布！"
+  "Modification succeeded. Please publish to take effect!": "修改成功，若要生效请发布！",
+  "There is no environment cluster to clone under the current application": "当前应用下没有需要克隆的环境集群"
 }

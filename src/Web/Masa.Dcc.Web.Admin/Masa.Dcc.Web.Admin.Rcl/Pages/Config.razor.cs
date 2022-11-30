@@ -961,7 +961,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         .ToList();
                     var deleted = prev.ExceptBy(current.Select(content => content.Key), content => content.Key)
                         .Select(content => new ConfigObjectPropertyModel
-                        { IsDeleted = true, Key = content.Key, Value = content.Value })
+                        { IsDeleted = true, Key = content.Key, TempValue = content.Value })
                         .ToList();
                     var intersectAndEdited = current.IntersectBy(prev.Select(content => content.Key), content => content.Key)
                         .ToList();

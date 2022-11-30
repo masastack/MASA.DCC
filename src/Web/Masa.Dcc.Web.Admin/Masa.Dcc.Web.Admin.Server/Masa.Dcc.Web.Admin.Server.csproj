@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="0.7.0-preview.12" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Masa.Dcc.Web.Admin.Rcl\Masa.Dcc.Web.Admin.Rcl.csproj" />
   </ItemGroup>
 

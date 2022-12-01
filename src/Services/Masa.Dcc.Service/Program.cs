@@ -65,6 +65,8 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
 
 builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));
 
+var connStr = builder.Configuration.GetValue<string>("ConnectionStrings:DefaultConnection");
+Console.WriteLine($"================={connStr}=====================");
 builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()

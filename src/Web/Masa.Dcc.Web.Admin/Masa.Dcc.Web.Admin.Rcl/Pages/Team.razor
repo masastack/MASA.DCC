@@ -42,7 +42,7 @@
                         <div class="mt-6" style="height: calc(100vh - 256px); overflow: hidden; position: relative;">
                             <ProjectList @ref="_projectListComponent"
                                          FetchProjectCount="ProjectCountHandler"
-                                         TeamId="_userTeam.Id"
+                                         TeamId="_teamId"
                                          OnNameClick="NavigateToAppAsync"
                                          OnAppCardClick="NavigateToConfigAsync"
                                          OnAppPinClick="AppPinAsync" />

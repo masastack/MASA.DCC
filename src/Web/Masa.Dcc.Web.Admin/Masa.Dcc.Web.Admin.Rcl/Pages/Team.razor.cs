@@ -3,6 +3,7 @@
 
 using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
 using Masa.Stack.Components.Configs;
+using Microsoft.AspNetCore.Http;
 
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
@@ -38,6 +39,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public MasaUser MasaUser { get; set; } = default!;
 
+        [Inject]
+        public HttpContextAccessor HttpContextAccessor { get; set; }
+
         private int _projectCount;
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
@@ -50,6 +54,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private Config? _config;
         private ProjectList? _projectListComponent;
         private TeamDetailModel _userTeam = new();
+        private Guid _teamId;
 
         protected override Task OnInitializedAsync()
         {
@@ -69,11 +74,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (teamId != _userTeam.Id)
             {
+                _teamId = teamId;
                 await TabValueChangedAsync(0);
                 _userTeam = await AuthClient.TeamService.GetDetailAsync(teamId) ?? new();
             }
 
-            await InvokeAsync(StateHasChanged);
+            StateHasChanged();
         }
 
         private void ProjectCountHandler(int projectCount)

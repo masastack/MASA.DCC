@@ -1,46 +1,18 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
-using Masa.Stack.Components.Configs;
-using Microsoft.AspNetCore.Http;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Team : IDisposable
     {
         [Inject]
-        public IPopupService PopupService { get; set; } = default!;
-
-        [Inject]
-        public EnvironmentCaller EnvironmentCaller { get; set; } = default!;
-
-        [Inject]
-        public ClusterCaller ClusterCaller { get; set; } = default!;
-
-        [Inject]
-        public ProjectCaller ProjectCaller { get; set; } = default!;
-
-        [Inject]
         public AppCaller AppCaller { get; set; } = default!;
-
-        [Inject]
-        public ConfigObjectCaller ConfigObjecCaller { get; set; } = default!;
-
-        [Inject]
-        public LabelCaller LabelCaller { get; set; } = default!;
-
-        [Inject]
-        public NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject]
         public GlobalConfig GlobalConfig { get; set; } = default!;
 
         [Inject]
         public MasaUser MasaUser { get; set; } = default!;
-
-        [Inject]
-        public HttpContextAccessor HttpContextAccessor { get; set; }
 
         private int _projectCount;
         private StringNumber _curTab = 0;
@@ -66,7 +38,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (firstRender)
             {
-                HandleCurrentTeamChanged(MasaUser.CurrentTeamId);
+                var teamId = GlobalConfig.CurrentTeamId == Guid.Empty ? MasaUser.CurrentTeamId : GlobalConfig.CurrentTeamId;
+                HandleCurrentTeamChanged(teamId);
             }
         }
 

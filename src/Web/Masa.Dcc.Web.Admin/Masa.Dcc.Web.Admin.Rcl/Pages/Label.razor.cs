@@ -137,8 +137,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RemoveLabelAsync(string typeCode)
         {
-            var result = await PopupService.ConfirmAsync(T("Delete label"), T("Are you sure you want to delete the label \"{typeCode}\"?"
-                 .Replace("{typeCode}", typeCode)));
+            var result = await PopupService.ConfirmAsync(
+                T("Delete label"),
+                T("Are you sure you want to delete the label \"{typeCode}\"?".Replace("{typeCode}", typeCode)),
+                AlertTypes.Error);
 
             if (result)
             {

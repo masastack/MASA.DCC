@@ -140,7 +140,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             var result = await PopupService.ConfirmAsync(
                 T("Delete label"),
-                T("Are you sure you want to delete the label \"{typeCode}\"?".Replace("{typeCode}", typeCode)),
+                T("Are you sure you want to delete the label \"{typeCode}\"?").Replace("{typeCode}", typeCode),
                 AlertTypes.Error);
 
             if (result)

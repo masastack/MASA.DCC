@@ -113,13 +113,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 if (_labelModal.HasValue)
                 {
                     await LabelCaller.UpdateAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
+                    await PopupService.AlertAsync(T("Edit succeeded"), AlertTypes.Success);
                 }
                 else
                 {
                     await LabelCaller.AddAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
+                    await PopupService.AlertAsync(T("Add succeeded"), AlertTypes.Success);
                 }
 
-                await PopupService.AlertAsync(T("Add succeeded"), AlertTypes.Success);
                 _labels = await GetListAsync();
                 LabelModalValueChanged(false);
             }

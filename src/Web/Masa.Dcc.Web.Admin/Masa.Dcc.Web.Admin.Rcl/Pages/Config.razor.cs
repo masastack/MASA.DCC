@@ -945,8 +945,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     _changedProperties = _selectReleaseHistory.ConfigObjectProperties.Select(release => new ConfigObjectPropertyModel
                     {
                         Key = release.Key,
-                        Value = "",
-                        TempValue = release.Value,
+                        Value = release.Value,
+                        TempValue = "",
                         IsAdded = true
                     }).ToList();
                 }

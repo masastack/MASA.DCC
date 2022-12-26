@@ -104,34 +104,34 @@ deploy-test-ali:
   retry: 2
   when: manual
 
-# docker-build-prd:
-#   stage: docker-prd
-#   tags:
-#     - linux-shell
-#   before_script:
-#     - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
-#   only:
-#     - tags  
-#   script:
-#     - docker build -f $DOCKER_PM_PATH -t $NEW_IMAGE_DCC.
-#     - docker push $NEW_IMAGE_DCC
-#     - docker build -f $DOCKER_DCC_UI_PATH -t $NEW_IMAGE_DCC_UI .
-#     - docker push $NEW_IMAGE_DCC_UI
-#   after_script:
-#     - docker rmi $NEW_IMAGE_DCC  
-#     - docker rmi $NEW_IMAGE_DCC_UI
+docker-build-prd:
+  stage: docker-prd
+  tags:
+    - linux-shell
+  before_script:
+    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  only:
+    - tags  
+  script:
+    - docker build -f $NEW_IMAGE_DCC -t $NEW_IMAGE_DCC.
+    - docker push $NEW_IMAGE_DCC
+    - docker build -f $DOCKER_DCC_UI_PATH -t $NEW_IMAGE_DCC_UI .
+    - docker push $NEW_IMAGE_DCC_UI
+  after_script:
+    - docker rmi $NEW_IMAGE_DCC  
+    - docker rmi $NEW_IMAGE_DCC_UI
   
-# deploy-prd:
-#   stage: deploy-prd
-#   tags:
-#     - linux-shell
-#   before_script:
-#     - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
-#   only:
-#     - tags
-#   script:
-#     - echo $KUBE_CONFIG_BLAZOR_PRD | base64 -d > ./config
-#     - kubectl --kubeconfig ./config set image deployment/masa-pm-service-admin masa-pm-service-admin=$NEW_IMAGE_DCC -n masa-pm
-#     - kubectl --kubeconfig ./config set image deployment/masa-pm-ui-admin masa-pm-ui-admin=$NEW_IMAGE_DCC_UI -n masa-pm
-#   retry: 2
-#   when: manual
+deploy-prd:
+  stage: deploy-prd
+  tags:
+    - linux-shell
+  before_script:
+    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  only:
+    - tags
+  script:
+    - echo $KUBE_CONFIG_IOT  | base64 -d > ./config
+    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC -n  loncloud
+    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI -n  loncloud
+  retry: 2
+  when: manual

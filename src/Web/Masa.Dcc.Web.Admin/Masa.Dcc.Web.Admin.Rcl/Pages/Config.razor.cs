@@ -47,9 +47,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public ClusterCaller ClusterCaller { get; set; } = default!;
 
         [Inject]
-        public IUserContext UserContext { get; set; } = default!;
-
-        [Inject]
         public IJSRuntime Js { get; set; } = default!;
 
         [Inject]
@@ -458,7 +455,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                             {
                                 Key = keyValues[0].TrimEnd(),
                                 Value = keyValues[1].TrimStart(),
-                                Modifier = UserContext.UserName ?? ""
+                                Modifier = _userInfo.DisplayName
                             });
                         }
                     }
@@ -707,7 +704,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private void ShowPropertyModal(ConfigObjectModel configObject, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
         {
             _selectConfigObject = configObject;
-            _propertyConfigModal.Data.Modifier = UserContext.UserName ?? "";
+            _propertyConfigModal.Data.Modifier = _userInfo.DisplayName;
             _propertyConfigModal.Data.ModificationTime = DateTime.Now;
             if (models != null)
             {

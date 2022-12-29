@@ -61,4 +61,8 @@
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Folder Include="Domain\App\Events\" />
+	</ItemGroup>
 </Project>

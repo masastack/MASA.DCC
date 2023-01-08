@@ -111,6 +111,7 @@
                         <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Select config object")</p>
                         <MCheckbox Value="CloneConfigObjectAllChecked"
                                    ValueChanged="CloneConfigObjectAllCheckedChanged"
+                                   TValue="bool"
                                    HideDetails="true"
                                    Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
                                    Color="primary"></MCheckbox>
@@ -133,10 +134,11 @@
                                                             </MButton>
                                                         }
                                                         <MCheckbox Value="configObject.IsChecked"
-                                                           ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
-                                                           HideDetails="true"
-                                                           Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
-                                                           Color="primary"></MCheckbox>
+                                                                   TValue="bool"
+                                                                   ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
+                                                                   HideDetails="true"
+                                                                   Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
+                                                                   Color="primary"></MCheckbox>
                                                         <STextField HideDetails="true"
                                                             Style="max-width: 270px;"
                                                             Label="@T("Name")"
@@ -192,10 +194,11 @@
                                                             </MButton>
                                                         }
                                                         <MCheckbox Value="configObject.IsChecked"
-                                                           ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
-                                                           HideDetails="true"
-                                                           Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
-                                                           Color="primary"></MCheckbox>
+                                                                   TValue="bool"
+                                                                   ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
+                                                                   HideDetails="true"
+                                                                   Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
+                                                                   Color="primary"></MCheckbox>
                                                         <STextField Dense
                                                             Style="max-width: 270px;"
                                                             Label="@T("Name")"

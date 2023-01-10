@@ -50,7 +50,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             Name = name;
             Comment = comment;
             Content = content;
-            Version = version ?? DateTime.Now.ToString("yyyyMMddHHmmss");
+            Version = version ?? DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             FromReleaseId = fromReleaseId;
             Type = type;
         }

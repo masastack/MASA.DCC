@@ -65,8 +65,6 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
 
 builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));
 
-var connStr = builder.Configuration.GetValue<string>("ConnectionStrings:DefaultConnection");
-Console.WriteLine($"================={connStr}=====================");
 builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
@@ -89,13 +87,13 @@ builder.Services
                .UseRepository<DccDbContext>();
     });
 
-//seed data
-await builder.SeedDataAsync();
-
 var app = builder.AddServices(options =>
 {
     options.DisableAutoMapRoute = true; // todo :remove it before v1.0
 });
+
+//seed data
+await builder.SeedDataAsync();
 
 if (app.Environment.IsDevelopment())
 {

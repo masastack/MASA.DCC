@@ -162,6 +162,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 ConfigObjects.Add(_selectConfigObject);
             }
 
+            _step = 2;
+
             if (_cloneAppSelect)
             {
                 if (ConfigObjectType == ConfigObjectType.Biz)
@@ -183,13 +185,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 _cloneSelectApp.EnvironmentClusters.RemoveAll(e => e.Id == SelectCluster.Id);
             }
 
-            _afterAllCloneConfigObjects.Clear();
-            foreach (var item in _cloneSelectApp.EnvironmentClusters)
-            {
-                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
-                _afterAllCloneConfigObjects.AddRange(configObjects);
-            }
-
             var envClusterIds = _cloneSelectApp.EnvironmentClusters.Select(ec => (StringNumber)ec.Id).ToList();
             if (!envClusterIds.Any())
             {
@@ -197,9 +192,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 return;
             }
 
-            _step = 2;
-
+            _selectEnvClusterIds = envClusterIds;
             CloneEnvClusterValueChanged(envClusterIds);
+
+            _afterAllCloneConfigObjects.Clear();
+            foreach (var item in _cloneSelectApp.EnvironmentClusters)
+            {
+                var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
+                _afterAllCloneConfigObjects.AddRange(configObjects);
+            }
         }
 
         private void ClonePrevClick()

@@ -41,6 +41,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Inject]
         public IPopupService PopupService { get; set; } = default!;
 
+        [Inject]
+        public MasaUser MasaUser { get; set; } = default!;
+
         #region clone
         private ConfigObjectModel _selectConfigObject = new();
         private List<StringNumber> _selectEnvClusterIds = new();
@@ -130,6 +133,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             else
             {
                 _isCloneAll = true;
+            }
+
+            if (!MasaUser.IsSuperAdmin)
+            {
+                ConfigObjects.RemoveAll(config => config.Encryption);
             }
 
             Value = true;
@@ -380,6 +388,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                             EnvironmentClusterId = envClusterId.AsT1,
                             Content = content,
                             TempContent = initialContent,
+                            Encryption = configObject.Encryption
                         });
                     }
                     else
@@ -393,6 +402,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                             EnvironmentClusterId = envClusterId.AsT1,
                             Content = content,
                             TempContent = initialContent,
+                            Encryption = configObject.Encryption
                         });
                     }
                 }

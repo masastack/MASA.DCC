@@ -199,7 +199,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     configObjectDto.FormatLabelCode,
                     configObjectDto.Type,
                     configObjectDto.Content,
-                    configObjectDto.TempContent);
+                    configObjectDto.TempContent,
+                    encryption: configObjectDto.Encryption);
                 cloneConfigObjects.Add(configObject);
 
                 if (configObjectDto.Type == ConfigObjectType.Public)
@@ -213,6 +214,12 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 else if (configObjectDto.Type == ConfigObjectType.Biz)
                 {
                     configObject.SetBizConfigObject(appId, configObjectDto.EnvironmentClusterId);
+                }
+
+                if (configObject.Encryption)
+                {
+                    var encryptConten = await EncryptContentAsync(configObject.Content);
+                    configObject.UpdateContent(encryptConten);
                 }
             }
             await _configObjectRepository.AddRangeAsync(cloneConfigObjects);

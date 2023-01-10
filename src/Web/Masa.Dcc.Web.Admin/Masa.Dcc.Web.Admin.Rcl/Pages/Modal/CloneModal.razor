@@ -109,12 +109,17 @@
                             }
                         </MChipGroup>
                         <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Select config object")</p>
-                        <MCheckbox Value="CloneConfigObjectAllChecked"
-                                   ValueChanged="CloneConfigObjectAllCheckedChanged"
-                                   TValue="bool"
-                                   HideDetails="true"
-                                   Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
-                                   Color="primary"></MCheckbox>
+                        
+                        @if (ConfigObjects.Any())
+                        {
+                            <MCheckbox Value="CloneConfigObjectAllChecked"
+                                       ValueChanged="CloneConfigObjectAllCheckedChanged"
+                                       TValue="bool"
+                                       HideDetails="true"
+                                       Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
+                                       Color="primary"></MCheckbox>
+                        }
+                        
                         <MExpansionPanels Flat Accordion>
                             @foreach (var configObject in ConfigObjects.Where(c => !c.FromRelation))
                             {

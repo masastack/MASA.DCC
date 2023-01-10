@@ -16,11 +16,11 @@
                     <p class="neutral--text" style="font-size:14px; font-weight:700;">@T("Changed configuration")</p>
                     <div style="border-radius:8px; border:1px solid #E2E7F4;" class="py-3 mt-4">
                         <MDataTable Headers="ReleaseHeaders"
-                                DisableSort
-                                TItem="ConfigObjectPropertyModel"
-                                Items="@SelectConfigObjectAllProperties"
-                                Class="table-border-none"
-                                HideDefaultFooter>
+                                    DisableSort
+                                    TItem="ConfigObjectPropertyModel"
+                                    Items="@SelectConfigObjectAllProperties"
+                                    Class="table-border-none"
+                                    HideDefaultFooter>
                             <HeaderColContent Context="header">
                                 @if (!string.IsNullOrWhiteSpace(header.Value))
                                 {
@@ -35,7 +35,7 @@
                                         {
                                             <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus-circle</MIcon>
                                         }
-                                        else if (context.Item.IsEdited)
+                                        else if (context.Item.IsEdited || (SelectConfigObject.FromRelation && !context.Item.IsRelationed))
                                         {
                                             <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-pencil</MIcon>
                                         }

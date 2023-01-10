@@ -95,7 +95,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 var headers = new List<DataTableHeader<ConfigObjectPropertyModel>>()
                 {
-                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished), Width = 100 },
+                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished), Width = 110 },
                     new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key), Width = 120 },
                     new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value), Width = 120  },
                     new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
@@ -331,58 +331,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         var contents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.Content) ?? new();
                         var tempContents = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(config.TempContent) ?? new();
 
-                        var deleted = tempContents.ExceptBy(contents.Select(content => content.Key), content => content.Key)
-                            .Select(deletedContent => new ConfigObjectPropertyModel
-                            {
-                                Key = deletedContent.Key,
-                                Value = deletedContent.Value,
-                                Description = deletedContent.Description,
-                                Modifier = deletedContent.Modifier,
-                                ModificationTime = deletedContent.ModificationTime,
-                                IsDeleted = true
-                            })
-                            .ToList();
-
-                        var added = contents.ExceptBy(tempContents.Select(content => content.Key), content => content.Key)
-                            .Select(addedContent => new ConfigObjectPropertyModel
-                            {
-                                Key = addedContent.Key,
-                                Value = addedContent.Value,
-                                Description = addedContent.Description,
-                                Modifier = addedContent.Modifier,
-                                ModificationTime = addedContent.ModificationTime,
-                                IsAdded = true
-                            }).ToList();
-
-                        var published = contents
-                            .IntersectBy(tempContents.Select(content => new { content.Key, content.Value }),
-                                content => new { content.Key, content.Value })
-                            .Select(publishedContent => new ConfigObjectPropertyModel
-                            {
-                                Key = publishedContent.Key,
-                                Value = publishedContent.Value,
-                                Description = publishedContent.Description,
-                                Modifier = publishedContent.Modifier,
-                                ModificationTime = publishedContent.ModificationTime,
-                                IsPublished = true
-                            }).ToList();
-
-                        var publishedWithEdited = contents
-                            .IntersectBy(tempContents.Select(content => content.Key), content => content.Key).ToList();
-                        publishedWithEdited.RemoveAll(c => published.Select(d => d.Key).Contains(c.Key));
-                        var edited = publishedWithEdited.Select(editedContent => new ConfigObjectPropertyModel
-                        {
-                            Key = editedContent.Key,
-                            Value = editedContent.Value,
-                            Description = editedContent.Description,
-                            ModificationTime = editedContent.ModificationTime,
-                            Modifier = editedContent.Modifier,
-                            IsEdited = true,
-                            TempValue = tempContents.First(content => content.Key == editedContent.Key).Value
-                        }).ToList();
-
-                        config.ConfigObjectPropertyContents = published.Union(deleted).Union(added).Union(edited)
-                        .ToList();
+                        config.ConfigObjectPropertyContents = ResolvePropertyConfigObjects(contents, tempContents);
 
                         ConvertPropertyAsync(config.ConfigObjectPropertyContents, config);
                     }
@@ -391,6 +340,63 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             _backupConfigObjects = new List<ConfigObjectModel>(_configObjects.ToArray());
             StateHasChanged();
+        }
+
+        private List<ConfigObjectPropertyModel> ResolvePropertyConfigObjects(
+            List<ConfigObjectPropertyModel> contents,
+            List<ConfigObjectPropertyModel> tempContents)
+        {
+            var deleted = tempContents.ExceptBy(contents.Select(content => content.Key), content => content.Key)
+                .Select(deletedContent => new ConfigObjectPropertyModel
+                {
+                    Key = deletedContent.Key,
+                    Value = deletedContent.Value,
+                    Description = deletedContent.Description,
+                    Modifier = deletedContent.Modifier,
+                    ModificationTime = deletedContent.ModificationTime,
+                    IsDeleted = true
+                })
+                .ToList();
+
+            var added = contents.ExceptBy(tempContents.Select(content => content.Key), content => content.Key)
+                .Select(addedContent => new ConfigObjectPropertyModel
+                {
+                    Key = addedContent.Key,
+                    Value = addedContent.Value,
+                    Description = addedContent.Description,
+                    Modifier = addedContent.Modifier,
+                    ModificationTime = addedContent.ModificationTime,
+                    IsAdded = true
+                }).ToList();
+
+            var published = contents
+                .IntersectBy(tempContents.Select(content => new { content.Key, content.Value }),
+                    content => new { content.Key, content.Value })
+                .Select(publishedContent => new ConfigObjectPropertyModel
+                {
+                    Key = publishedContent.Key,
+                    Value = publishedContent.Value,
+                    Description = publishedContent.Description,
+                    Modifier = publishedContent.Modifier,
+                    ModificationTime = publishedContent.ModificationTime,
+                    IsPublished = true
+                }).ToList();
+
+            var publishedWithEdited = contents
+                .IntersectBy(tempContents.Select(content => content.Key), content => content.Key).ToList();
+            publishedWithEdited.RemoveAll(c => published.Select(d => d.Key).Contains(c.Key));
+            var edited = publishedWithEdited.Select(editedContent => new ConfigObjectPropertyModel
+            {
+                Key = editedContent.Key,
+                Value = editedContent.Value,
+                Description = editedContent.Description,
+                ModificationTime = editedContent.ModificationTime,
+                Modifier = editedContent.Modifier,
+                IsEdited = true,
+                TempValue = tempContents.First(content => content.Key == editedContent.Key).Value
+            }).ToList();
+
+            return published.Union(deleted).Union(added).Union(edited).ToList();
         }
 
         private void ConvertPropertyAsync(List<ConfigObjectPropertyModel> configObjectProperties, ConfigObjectModel config)

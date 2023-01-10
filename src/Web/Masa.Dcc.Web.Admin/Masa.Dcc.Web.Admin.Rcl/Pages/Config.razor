@@ -382,7 +382,9 @@
                                                             <span style="color: @color;">@text</span>
                                                             break;
                                                         case "Operation":
-                                                            <SIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-link-variant-off</SIcon>
+                                                            <SIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">
+                                                                mdi-pencil
+                                                            </SIcon>
                                                             break;
                                                         case nameof(ConfigObjectPropertyModel.ModificationTime):
                                                             <DateTimeZone Value="@context.Item.ModificationTime" />
@@ -653,7 +655,7 @@
                 <MTextarea Class="mt-6" Label="@T("Description")" Dense Outlined @bind-Value="_propertyConfigModal.Data.Description"></MTextarea>
             </div>
             <div class="d-flex justify-end align-end" style="width:100%; height:100%;">
-                <SButton Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@(_propertyConfigModal.HasValue ? T("Save") : T("Submit"))</SButton>
+                <SButton Small Color="primary" Width="100" OnClick="()=>SubmitPropertyConfigAsync(formContext)">@(_propertyConfigModal.HasValue ? T("Save") : T("Submit"))</SButton>
                 </div>
             </div>
         </MForm>

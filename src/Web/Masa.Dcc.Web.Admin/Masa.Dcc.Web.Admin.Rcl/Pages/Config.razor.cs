@@ -49,12 +49,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public IJSRuntime Js { get; set; } = default!;
 
-        [Inject]
-        public DaprClient DaprClient { get; set; } = default!;
-
-        [Inject]
-        public I18n I18n { get; set; } = default!;
-
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();
         private List<EnvironmentClusterModel> _appClusters = new();

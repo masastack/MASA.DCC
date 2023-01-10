@@ -773,3 +773,8 @@ textarea:disabled {
     overflow-x: hidden;
     overflow-y: hidden;
 }
+
+
+.m-expansion-panel-header.m-expansion-panel--disabled.m-btn--disabled .m-btn .m-icon {
+    color: rgba(0,0,0,.26) !important;
+}

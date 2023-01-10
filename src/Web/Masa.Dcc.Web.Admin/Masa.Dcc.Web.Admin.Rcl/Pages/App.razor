@@ -44,8 +44,8 @@
             <h6 class="emphasis2--text h6">@T("Business configuration")</h6>
             <MCard Ripple=false Class="mt-6 rounded-5" Height="163"
                    OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, _projectEnvClusters[0].Id, ConfigObjectType.Biz, ProjectId))">
-                <MCardTitle Style="font-size: medium; flex-wrap:nowrap;">
-                    <div class="emphasis2--text h7 text-overflow" @onclick:stopPropagation>
+                <MCardTitle Class="pb-0" Style="font-size: medium; flex-wrap:nowrap;">
+                    <div class="emphasis2--text h7" @onclick:stopPropagation>
                         @if (!_isEditBiz)
                         {
                             @_bizDetail.Name

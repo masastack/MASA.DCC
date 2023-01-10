@@ -10,7 +10,9 @@
             <MTimelineItem Color="primary" Small Right>
                 <OppositeContent>
                     <div>
-                        <div style="font-size:14px; font-weight: 500; color: #1B2559;">@CurrentConfigObjectRelease.CreationTime.ToString("MM.dd").TrimStart('0')</div>
+                        <div style="font-size:14px; font-weight: 500; color: #1B2559;">
+                            <DateTimeZone Value="CurrentConfigObjectRelease.CreationTime" Format="@(d=>d.ToString("MM.dd").TrimStart('0'))" />
+                        </div>
                         <div style="font-size:10px; font-weight: 400; color: #A3AED0;">@T("Current")</div>
                     </div>
                 </OppositeContent>
@@ -81,6 +83,6 @@
         }
     </ChildContent>
     <SaveContent Context="save">
-        <MButton Height="40" OnClick="save.Click" Width="100" Class="rounded-pill" Color="primary" Style="float:right;">@T("Rollback")</MButton>
+        <SButton Small OnClick="save.Click" Style="float:right;">@T("Rollback")</SButton>
     </SaveContent>
 </SModal>

@@ -85,5 +85,19 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 await ValueChanged.InvokeAsync(false);
             }
         }
+
+        private async Task SheetDialogValueChangedAsync(bool value)
+        {
+            Value = value;
+            if (!value)
+            {
+                _configObjectReleaseModal.Hide();
+            }
+
+            if (ValueChanged.HasDelegate)
+            {
+                await ValueChanged.InvokeAsync();
+            }
+        }
     }
 }

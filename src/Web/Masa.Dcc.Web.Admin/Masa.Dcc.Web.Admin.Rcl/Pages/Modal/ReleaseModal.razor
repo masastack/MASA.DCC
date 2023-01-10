@@ -1,6 +1,6 @@
 ﻿@inherits MasaCompontentBase
 
-<SSheetDialog @key="@($"configObjectReleaseModal-{Value}")" Value="Value" ValueChanged="ValueChanged" Title="@T("Release")" Icon="mdi-circle" IconColor="success">
+<SSheetDialog @key="@($"configObjectReleaseModal-{Value}")" Value="Value" ValueChanged="SheetDialogValueChangedAsync" Title="@T("Release")" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_configObjectReleaseModal.Data">
         <div class="d-flex flex-column" style="width:100%; height: 100%; padding: 48px 228px">
             <div class="full-height" style="overflow-y: auto;">
@@ -61,7 +61,7 @@
                                         }
                                         break;
                                     case nameof(ConfigObjectPropertyModel.ModificationTime):
-                                        <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
+                                        <DateTimeZone Value="context.Item.ModificationTime" />
                                         break;
                                     default:
                                         @context.Value
@@ -78,7 +78,7 @@
                 }
             </div>
             <div class="d-flex justify-end align-end" style="width:100%;">
-                <MButton Height="40" Class="rounded-pill" Color="primary" Width="100" OnClick="()=>ReleaseAsync(formContext)">@T("Release")</MButton>
+                <SButton Small OnClick="()=>ReleaseAsync(formContext)">@T("Release")</SButton>
             </div>
         </div>
     </MForm>

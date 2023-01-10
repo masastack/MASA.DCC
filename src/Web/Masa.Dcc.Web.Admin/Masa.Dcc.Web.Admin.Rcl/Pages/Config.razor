@@ -111,10 +111,11 @@
                 <MExpansionPanels @bind-Values="_selectPanels" Flat Accordion>
                     @foreach (var configObject in _configObjects)
                     {
+                        bool _disablePanel = _userInfo.Account.ToLower() != "admin" && configObject.Encryption;
                         var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                         if (formatLabelCode == "json")
                         {
-                            <MExpansionPanel Disabled="@(_userInfo.Account.ToLower() != "admin" && configObject.Encryption)" Value="configObject.Id" Class="rounded-5 my-3">
+                            <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
                                 <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                     <ChildContent>
                                         <div class="emphasis--text h6 d-flex align-center">
@@ -251,7 +252,7 @@
                         }
                         else if (formatLabelCode == "properties")
                         {
-                            <MExpansionPanel Disabled="@(_userInfo.Account.ToLower() != "admin" && configObject.Encryption)" Value="configObject.Id" Class="rounded-5 my-3">
+                            <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
                                 <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                     <ChildContent>
                                         <div class="emphasis--text h6 d-flex align-center">
@@ -384,7 +385,7 @@
                                                             <SIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-link-variant-off</SIcon>
                                                             break;
                                                         case nameof(ConfigObjectPropertyModel.ModificationTime):
-                                                            <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
+                                                            <DateTimeZone Value="@context.Item.ModificationTime" />
                                                             break;
                                                         default:
                                                             @context.Value
@@ -449,7 +450,7 @@
                                                                     }
                                                                     break;
                                                                 case nameof(ConfigObjectPropertyModel.ModificationTime):
-                                                                    <span>@context.Item.ModificationTime.ToString(T("$DateTimeFormat"))</span>
+                                                                    <DateTimeZone Value="@context.Item.ModificationTime" />
                                                                     break;
                                                                 default:
                                                                     @context.Value
@@ -490,7 +491,7 @@
                         }
                         else
                         {
-                            <MExpansionPanel Disabled="@(_userInfo.Account.ToLower() != "admin" && configObject.Encryption)" Value="configObject.Id" Class="rounded-5 my-3">
+                            <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
                                 <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                     <ChildContent>
                                         <div class="emphasis--text h6 d-flex align-center">
@@ -698,7 +699,7 @@
                                 <OppositeContent>
                                     <div>
                                         <div style="@(release.IsActive ? "font-size:14px; font-weight: 600; color: #1B2559;" : "font-size:12px; font-weight: 500; color: #485585;")">
-                                            @release.CreationTime.ToString("MM-dd").TrimStart('0')
+                                            <DateTimeZone Value="release.CreationTime" Format=@(d=>d.ToString("MM-dd").TrimStart('0')) />
                                         </div>
                                         @if (index == 0)
                                         {
@@ -730,7 +731,7 @@
                         @_selectReleaseHistory.Name
                     </div>
                     <MSpacer></MSpacer>
-                    <span style="color: #A3AED0; font-size:12px;">@T("Release time")：@_selectReleaseHistory.CreationTime.ToString(T("$DateTimeFormat"))</span>
+                    <span style="color: #A3AED0; font-size:12px;">@T("Release time")：<DateTimeZone Value="@_selectReleaseHistory.CreationTime" /></span>
                     <span class="mx-2">|</span>
                     <span style="color: #323D6F; font-size:12px;">@_selectReleaseHistory.CreatorName</span>
                 </div>
@@ -815,7 +816,7 @@
             </div>
         </div>
         <div class="d-flex justify-end align-end" style="width:100%;">
-            <MButton Height="40" Class="rounded-pill mt-6" Color="primary" OnClick="RollbackToAsync">@T("Rollback to this version")</MButton>
+            <SButton Small Class="mt-6" Color="primary" OnClick="RollbackToAsync">@T("Rollback to this version")</SButton>
         </div>
     </div>
 </SSheetDialog>

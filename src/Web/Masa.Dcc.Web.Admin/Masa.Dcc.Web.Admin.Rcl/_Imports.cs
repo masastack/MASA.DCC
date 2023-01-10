@@ -10,7 +10,6 @@ global using Dapr.Client;
 global using FluentValidation;
 global using Mapster;
 global using Masa.Blazor;
-global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.StackSdks.Auth;
 global using Masa.BuildingBlocks.StackSdks.Auth.Contracts;
 global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;

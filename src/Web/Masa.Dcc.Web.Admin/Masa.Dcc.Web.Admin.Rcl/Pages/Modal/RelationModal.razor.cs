@@ -41,6 +41,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 _selectToEnvClusterIds = new();
                 _selectPublicConfigObjectId = 0;
                 _selectConfigObject = new();
+                _isRelation = true;
             }
         }
 

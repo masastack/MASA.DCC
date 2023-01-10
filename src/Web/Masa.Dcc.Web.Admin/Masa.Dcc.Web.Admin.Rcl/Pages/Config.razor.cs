@@ -52,6 +52,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public DaprClient DaprClient { get; set; } = default!;
 
+        [Inject]
+        public I18n I18n { get; set; } = default!;
+
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();
         private List<EnvironmentClusterModel> _appClusters = new();
@@ -472,7 +475,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task HandleTextConvertPropertyAsync(List<ConfigObjectPropertyModel> editorPropertyContents, int configObjectId)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             var config = new TypeAdapterConfig();
             config.NewConfig<ConfigObjectPropertyModel, ConfigObjectPropertyContentDto>()
                 .Map(dest => dest.ModificationTime, src => now);
@@ -705,7 +708,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _selectConfigObject = configObject;
             _propertyConfigModal.Data.Modifier = _userInfo.DisplayName;
-            _propertyConfigModal.Data.ModificationTime = DateTime.Now;
+            _propertyConfigModal.Data.ModificationTime = DateTime.UtcNow;
             if (models != null)
             {
                 //add

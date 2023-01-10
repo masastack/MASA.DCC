@@ -452,7 +452,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                             {
                                 Key = keyValues[0].TrimEnd(),
                                 Value = keyValues[1].TrimStart(),
-                                Modifier = _userInfo.DisplayName
+                                Modifier = _userInfo.StaffDislpayName ?? _userInfo.DisplayName
                             });
                         }
                     }
@@ -701,7 +701,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private void ShowPropertyModal(ConfigObjectModel configObject, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
         {
             _selectConfigObject = configObject;
-            _propertyConfigModal.Data.Modifier = _userInfo.DisplayName;
+            _propertyConfigModal.Data.Modifier = _userInfo.StaffDislpayName ?? _userInfo.DisplayName;
             _propertyConfigModal.Data.ModificationTime = DateTime.UtcNow;
             if (models != null)
             {

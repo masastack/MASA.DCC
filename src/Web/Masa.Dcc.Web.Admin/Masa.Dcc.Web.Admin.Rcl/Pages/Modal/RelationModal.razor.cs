@@ -23,6 +23,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Inject]
         public ClusterCaller ClusterCaller { get; set; } = null!;
 
+        [Inject]
+        public MasaUser MasaUser { get; set; } = default!;
+
         private List<StringNumber> _selectToEnvClusterIds = new();
         private List<ConfigObjectDto> _publicConfigObjects = new();
         private List<EnvironmentClusterModel> _allEnvClusters = new();
@@ -65,6 +68,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             _selectFromEnvClusterId = envClusterId;
             _selectPublicConfigObjectId = 0;
             _publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsAsync(_selectFromEnvClusterId, _publicConfig.Id, ConfigObjectType.Public);
+
+            if (!MasaUser.IsSuperAdmin)
+            {
+                _publicConfigObjects.RemoveAll(config => config.Encryption);
+            }
         }
 
         private void SelectConfigObjectValueChanged(int configObjectId)
@@ -161,7 +169,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                             FromRelation = true,
                             EnvironmentClusterId = envClusterId.AsT1,
                             Type = ConfigObjectType.App,
-                            ObjectId = AppDetail.Id
+                            ObjectId = AppDetail.Id,
+                            Encryption = _selectConfigObject.Encryption
                         });
                     }
                 }
@@ -191,7 +200,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                             FromRelation = true,
                             EnvironmentClusterId = envClusterId.AsT1,
                             Type = ConfigObjectType.App,
-                            ObjectId = AppDetail.Id
+                            ObjectId = AppDetail.Id,
+                            Encryption = _selectConfigObject.Encryption
                         });
                     }
                 }

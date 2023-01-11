@@ -11,5 +11,6 @@
   "McClient": {
     "Url": "https://mc-service-develop.masastack.com"
   },
-  "IdentityServerUrl": "https://sso-develop.masastack.com"
+  "IdentityServerUrl": "https://sso-develop.masastack.com",
+  "OtlpUrl": "http://otel-dev-opentelemetry-collector-agent.opentelemetry:4317"
 }

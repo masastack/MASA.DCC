@@ -75,18 +75,16 @@
                         }
                     </MButton>
                 </MCardTitle>
-                <MCardSubtitle Class="pb-0">
-                    <div class="regular3--text body2 text-overflow mt-1">@_bizDetail.Identity</div>
-                </MCardSubtitle>
+                <div class="regular3--text pl-4 body2 text-overflow">@_bizDetail.Identity</div>
                 <MCardActions Class="pa-0 mx-4" Style="position: absolute; bottom: 16px; right: 0; left: 0;">
                     <MChipGroup @key="_projectEnvClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
                         @foreach (var item in _projectEnvClusters)
                         {
                             <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, item.Id, ConfigObjectType.Biz, ProjectId))"
-                                        Style="margin:0 6px;"
-                                        EnvironmentName="@item.EnvironmentName"
-                                        EnvironmentColor="@item.EnvironmentColor"
-                                        ClusterName="@item.ClusterName" />
+                                            Style="margin:0 6px;"
+                                            EnvironmentName="@item.EnvironmentName"
+                                            EnvironmentColor="@item.EnvironmentColor"
+                                            ClusterName="@item.ClusterName" />
                         }
                     </MChipGroup>
                 </MCardActions>
@@ -111,10 +109,10 @@
                                     @foreach (var item in app.EnvironmentClusters)
                                     {
                                         <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"
-                                                Style="margin:0 12px 1px 0;"
-                                                EnvironmentName="@item.EnvironmentName"
-                                                EnvironmentColor="@item.EnvironmentColor"
-                                                ClusterName="@item.ClusterName" />
+                                                        Style="margin:0 12px 1px 0;"
+                                                        EnvironmentName="@item.EnvironmentName"
+                                                        EnvironmentColor="@item.EnvironmentColor"
+                                                        ClusterName="@item.ClusterName" />
                                     }
                                 </MChipGroup>
                             </AppCard>

@@ -1,0 +1,11 @@
+{
+  "WhiteListOptions": {
+    "IpWhiteList": [
+      "*"
+    ],
+    "UrlWhiteList": [
+      "/api/website-message*",
+      "/signalr-hubs/notifications*"
+    ]
+  }
+}

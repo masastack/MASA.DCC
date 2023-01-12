@@ -1,6 +1,8 @@
 ﻿@page "/Label"
 @inherits MasaCompontentBase
 
+<PageTitle>@T("LabelManagement")</PageTitle>
+
 <MRow NoGutters>
     <MTextField @bind-Value="_typeName" HideDetails="true" Dense OnKeyDown="SearchAsync" Class="rounded-2" Height="40" Flat Solo Placeholder="@T("Search")">
         <PrependInnerContent>

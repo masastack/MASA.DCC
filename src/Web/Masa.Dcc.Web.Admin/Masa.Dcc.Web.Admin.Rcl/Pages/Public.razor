@@ -1,4 +1,7 @@
 ﻿@page "/Public"
+@inherits MasaCompontentBase
+
+<PageTitle>@T("PublicConfig")</PageTitle>
 
 <Config ConfigObjectType="@_configModel.ConfigObjectType"
         EnvironmentClusterId="@_configModel.EnvironmentClusterId"

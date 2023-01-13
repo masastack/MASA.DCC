@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Contrib.Service.Caller.HttpClient" Version="0.7.0-preview.14" />
-    <PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="0.7.0-preview.14" />
-    <PackageReference Include="Masa.Utils.Configuration.Json" Version="0.7.0-preview.14" />
+    <PackageReference Include="Masa.Contrib.Service.Caller.HttpClient" Version="0.7.0-preview.22" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="0.7.0-preview.22" />
+    <PackageReference Include="Masa.Utils.Configuration.Json" Version="0.7.0-preview.22" />
   </ItemGroup>
 
   <ItemGroup>

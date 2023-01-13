@@ -71,13 +71,13 @@ builder.Services
     .AddTransient(typeof(IMiddleware<>), typeof(ValidatorMiddleware<>))
     .AddDomainEventBus(options =>
     {
-        options.UseIntegrationEventBus<IntegrationEventLogService>(options => options.UseDapr().UseEventLog<DccDbContext>())
+        options.UseIntegrationEventBus(options => options.UseDapr()
+               .UseEventLog<DccDbContext>())
                .UseEventBus(eventBusBuilder =>
                {
                    eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
                })
                .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
-               .UseEventLog<DccDbContext>()
                .UseRepository<DccDbContext>();
     });
 

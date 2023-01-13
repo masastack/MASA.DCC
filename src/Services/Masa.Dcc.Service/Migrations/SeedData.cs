@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.StackSdks.Config;
+
 namespace Masa.Dcc.Service.Admin.Migrations
 {
     public static class IHostExtensions
@@ -9,13 +11,15 @@ namespace Masa.Dcc.Service.Admin.Migrations
         {
             var services = builder.Services.BuildServiceProvider();
             var context = services.GetRequiredService<DccDbContext>();
-            var eventBus = services.GetRequiredService<IEventBus>();
+            var labelDomainService = services.GetRequiredService<LabelDomainService>();
+            var configObjectDomainService = services.GetRequiredService<ConfigObjectDomainService>();
             var env = services.GetRequiredService<IWebHostEnvironment>();
             var contentRootPath = env.ContentRootPath;
+            var masaConfig = builder.Services.GetMasaStackConfig();
 
             await MigrateAsync(context);
-            await InitDccDataAsync(context, eventBus);
-            await InitPublicConfigAsync(contentRootPath, builder.Environment.EnvironmentName, eventBus);
+            await InitDccDataAsync(context, labelDomainService);
+            await InitPublicConfigAsync(context, contentRootPath, masaConfig, configObjectDomainService);
         }
 
         private static async Task MigrateAsync(DccDbContext context)
@@ -26,7 +30,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
             }
         }
 
-        private static async Task InitDccDataAsync(DccDbContext context, IEventBus eventBus)
+        private static async Task InitDccDataAsync(DccDbContext context, LabelDomainService labelDomainService)
         {
             if (!context.Set<Label>().Any())
             {
@@ -99,7 +103,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
 
                 foreach (var label in labels)
                 {
-                    await eventBus.PublishAsync(new AddLabelCommand(label));
+                    await labelDomainService.AddLabelAsync(label);
                 }
             }
 
@@ -107,32 +111,30 @@ namespace Masa.Dcc.Service.Admin.Migrations
             {
                 var publicConfig = new PublicConfig("Public", "public-$Config", "Public config");
                 await context.Set<PublicConfig>().AddAsync(publicConfig);
-                await context.SaveChangesAsync();
             }
+
+            await context.SaveChangesAsync();
         }
 
-        public static async Task InitPublicConfigAsync(string contentRootPath, string environment,
-            IEventBus eventBus)
+        public static async Task InitPublicConfigAsync(
+            DccDbContext context,
+            string contentRootPath,
+            IMasaStackConfig masaConfig,
+            ConfigObjectDomainService configObjectDomainService)
         {
             var publicConfigs = new Dictionary<string, string>
             {
-                { "$public.RedisConfig",GetRedisConfig(contentRootPath,environment) },
-                { "$public.Oss",GetOss(contentRootPath,environment) },
-                { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,environment) },
-                { "$public.Email",GetEmail(contentRootPath,environment) },
-                { "$public.Sms",GetSms(contentRootPath,environment) }
+                { "$public.Oss",GetOss(contentRootPath, masaConfig.Environment) },
+                { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,masaConfig.Environment) },
+                { "$public.Email",GetEmail(contentRootPath,masaConfig.Environment) },
+                { "$public.Sms",GetSms(contentRootPath,masaConfig.Environment) }
             };
 
-            await eventBus.PublishAsync(
-                new InitConfigObjectCommand(environment, "default", "public-$Config", publicConfigs, false));
+            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false);
+
+            await context.SaveChangesAsync();
         }
 
-
-        private static string GetRedisConfig(string contentRootPath, string environment)
-        {
-            var filePath = CombineFilePath(contentRootPath, "$public.RedisConfig.json", environment);
-            return File.ReadAllText(filePath);
-        }
 
         private static string GetOss(string contentRootPath, string environment)
         {

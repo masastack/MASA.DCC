@@ -80,7 +80,8 @@ builder.Services
                {
                    eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
                })
-               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
+               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("dcc_dev"))
+                    .UseFilter())
                .UseRepository<DccDbContext>();
     });
 

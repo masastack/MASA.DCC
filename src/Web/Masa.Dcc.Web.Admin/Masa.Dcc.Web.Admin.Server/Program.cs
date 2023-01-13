@@ -2,6 +2,9 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddMasaStackConfig();
+var masaStackConfig = builder.Services.GetMasaStackConfig();
+
 if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddObservable(builder.Logging, builder.Configuration, true);
@@ -31,8 +34,16 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<TokenProvider>();
 
-builder.Services.AddMasaOpenIdConnect(builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic());
-builder.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
+MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
+{
+    Authority = masaStackConfig.GetSsoDomain(),
+    ClientId = masaStackConfig.GetServiceId("auth", "ui"),
+    Scopes = new List<string> { "offline_access" }
+};
+IdentityModelEventSource.ShowPII = true;
+builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
+
+builder.AddMasaStackComponentsForServer("wwwroot/i18n");
 
 builder.Services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
 builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));

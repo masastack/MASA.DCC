@@ -2,6 +2,9 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddMasaStackConfig();
+var masaStackConfig = builder.Services.GetMasaStackConfig();
+
 if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddObservable(builder.Logging, builder.Configuration, false);
@@ -33,7 +36,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer("Bearer", options =>
 {
-    options.Authority = AppSettings.Get("IdentityServerUrl");
+    options.Authority = masaStackConfig.GetSsoDomain();
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters.ValidateAudience = false;
     options.MapInboundClaims = false;
@@ -57,7 +60,7 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
     options.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
 });
 
-builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));
+builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
 
 builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

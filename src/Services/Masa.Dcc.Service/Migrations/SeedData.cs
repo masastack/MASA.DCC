@@ -9,7 +9,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
     {
         public static async Task SeedDataAsync(this WebApplicationBuilder builder)
         {
-            var services = builder.Services.BuildServiceProvider();
+            var services = builder.Services.BuildServiceProvider().CreateScope().ServiceProvider;
             var context = services.GetRequiredService<DccDbContext>();
             var labelDomainService = services.GetRequiredService<LabelDomainService>();
             var configObjectDomainService = services.GetRequiredService<ConfigObjectDomainService>();
@@ -114,6 +114,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
             }
 
             await context.SaveChangesAsync();
+            await context.Database.CommitTransactionAsync();
         }
 
         public static async Task InitPublicConfigAsync(

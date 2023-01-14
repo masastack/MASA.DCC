@@ -1,7 +1,9 @@
-﻿@inherits LayoutComponentBase
+﻿
+@inherits LayoutComponentBase
+@inject IMasaStackConfig MasaStackConfig
 
 <SLayout OnErrorAsync="OnError"
-         AppId="masa-dcc-web-admin"
+         AppId="@MasaStackConfig.GetUiId("dcc")"
          TeamRouteFormat="team"
          Logo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo-h-en.png"
          MiniLogo="https://cdn.masastack.com/stack/images/logo/MASAStack/logo.png">

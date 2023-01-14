@@ -1,9 +1,24 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMasaStackConfig();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
+
+var redisOption = new RedisConfigurationOptions
+{
+    Servers = new List<RedisServerOptions> {
+        new RedisServerOptions()
+        {
+            Host= masaStackConfig.RedisModel.RedisHost,
+            Port=   masaStackConfig.RedisModel.RedisPort
+        }
+    },
+    DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
+    Password = masaStackConfig.RedisModel.RedisPassword
+};
 
 if (!builder.Environment.IsDevelopment())
 {
@@ -64,7 +79,7 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>
 {
-    distributedCacheOptions.UseStackExchangeRedisCache();
+    distributedCacheOptions.UseStackExchangeRedisCache(redisOption);
 }, options =>
 {
     options.SubscribeKeyPrefix = "masa.dcc:";
@@ -96,13 +111,14 @@ builder.Services
                .UseRepository<DccDbContext>();
     });
 
+//seed data
+await builder.SeedDataAsync();
+
 var app = builder.AddServices(options =>
 {
     options.DisableAutoMapRoute = true; // todo :remove it before v1.0
 });
 
-//seed data
-await builder.SeedDataAsync();
 
 if (app.Environment.IsDevelopment())
 {

@@ -5,6 +5,7 @@ global using System.Reflection;
 global using System.Security.Cryptography.X509Certificates;
 global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using Masa.Contrib.StackSdks.Config;
+global using Masa.Contrib.StackSdks.Tsc;
 global using Masa.Dcc.ApiGateways.Caller;
 global using Masa.Stack.Components;
 global using Masa.Stack.Components.Extensions.OpenIdConnect;

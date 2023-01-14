@@ -7,7 +7,18 @@ var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (!builder.Environment.IsDevelopment())
 {
-    builder.Services.AddObservable(builder.Logging, builder.Configuration, false);
+    builder.Services.AddObservable(builder.Logging, () =>
+    {
+        return new MasaObservableOptions
+        {
+            ServiceNameSpace = builder.Environment.EnvironmentName,
+            ServiceVersion = masaStackConfig.Version,
+            ServiceName = masaStackConfig.GetServerId("dcc")
+        };
+    }, () =>
+    {
+        return masaStackConfig.OtlpUrl;
+    }, true);
 }
 
 builder.Services.AddMasaIdentity(options =>
@@ -80,7 +91,7 @@ builder.Services
                {
                    eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
                })
-               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("dcc_dev"))
+               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("dcc"))
                     .UseFilter())
                .UseRepository<DccDbContext>();
     });

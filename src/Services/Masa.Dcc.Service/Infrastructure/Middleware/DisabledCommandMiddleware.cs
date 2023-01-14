@@ -20,7 +20,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Middleware
             var isDemo = _configuration.GetValue<bool>("IsDemo");
             var user = _userContext.GetUser<MasaUser>();
 
-            if (isDemo && user?.Account == "Guest" && @event is ICommand)
+            if (isDemo && user?.Account == "guest" && @event is ICommand)
             {
                 throw new UserFriendlyException("演示账号禁止操作");
             }

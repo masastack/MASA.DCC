@@ -38,7 +38,7 @@ builder.WebHost.UseKestrel(option =>
     });
 });
 
-builder.Services.AddMasaConfiguration(option => option.UseDcc());
+builder.Services.AddMasaConfiguration(option => option.UseDcc(masaStackConfig.GetDccMiniOptions<DccOptions>()));
 
 builder.Services.AddDaprClient();
 builder.Services.AddRazorPages();

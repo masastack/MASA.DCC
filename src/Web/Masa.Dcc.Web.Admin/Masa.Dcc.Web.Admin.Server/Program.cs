@@ -13,7 +13,7 @@ if (!builder.Environment.IsDevelopment())
         {
             ServiceNameSpace = builder.Environment.EnvironmentName,
             ServiceVersion = masaStackConfig.Version,
-            ServiceName = masaStackConfig.GetUiId("dcc")
+            ServiceName = masaStackConfig.GetWebId(MasaStackConstant.DCC)
         };
     }, () =>
     {
@@ -48,7 +48,7 @@ builder.Services.AddScoped<TokenProvider>();
 MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
 {
     Authority = masaStackConfig.GetSsoDomain(),
-    ClientId = masaStackConfig.GetUiId("dcc"),
+    ClientId = masaStackConfig.GetWebId(MasaStackConstant.DCC),
     Scopes = new List<string> { "offline_access" }
 };
 IdentityModelEventSource.ShowPII = true;

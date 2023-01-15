@@ -3,6 +3,7 @@
 
 global using System.Reflection;
 global using System.Security.Cryptography.X509Certificates;
+global using Masa.BuildingBlocks.StackSdks.Config;
 global using Masa.Contrib.Service.Caller.Authentication.OpenIdConnect;
 global using Masa.Contrib.StackSdks.Config;
 global using Masa.Contrib.StackSdks.Tsc;

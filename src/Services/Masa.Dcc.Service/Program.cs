@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMasaStackConfig();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
@@ -28,7 +26,7 @@ if (!builder.Environment.IsDevelopment())
         {
             ServiceNameSpace = builder.Environment.EnvironmentName,
             ServiceVersion = masaStackConfig.Version,
-            ServiceName = masaStackConfig.GetServerId("dcc")
+            ServiceName = masaStackConfig.GetServerId(MasaStackConstant.DCC)
         };
     }, () =>
     {

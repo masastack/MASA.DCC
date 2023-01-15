@@ -126,17 +126,29 @@ namespace Masa.Dcc.Service.Admin.Migrations
         {
             var publicConfigs = new Dictionary<string, string>
             {
-                { "$public.Oss",GetOss(contentRootPath, masaConfig.Environment) },
                 { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,masaConfig.Environment) },
                 { "$public.Email",GetEmail(contentRootPath,masaConfig.Environment) },
-                { "$public.Sms",GetSms(contentRootPath,masaConfig.Environment) }
+                { "$public.Sms",GetSms(contentRootPath,masaConfig.Environment) },
+                { "$public.Cdn",GetCdn(contentRootPath,masaConfig.Environment) },
+                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) },
+                { "$public.Oss",GetOss(contentRootPath, masaConfig.Environment) }
             };
 
             await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false);
-
             await context.SaveChangesAsync();
         }
 
+        private static string GetCdn(string contentRootPath, string environment)
+        {
+            var filePath = CombineFilePath(contentRootPath, "$public.Cdn.json", environment);
+            return File.ReadAllText(filePath);
+        }
+
+        private static string GetWhiteListOptions(string contentRootPath, string environment)
+        {
+            var filePath = CombineFilePath(contentRootPath, "$public.WhiteListOptions.json", environment);
+            return File.ReadAllText(filePath);
+        }
 
         private static string GetOss(string contentRootPath, string environment)
         {

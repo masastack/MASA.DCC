@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.StackSdks.Config;
-
 namespace Masa.Dcc.Service.Admin.Migrations
 {
     public static class IHostExtensions
@@ -13,11 +11,15 @@ namespace Masa.Dcc.Service.Admin.Migrations
             var context = services.GetRequiredService<DccDbContext>();
             var labelDomainService = services.GetRequiredService<LabelDomainService>();
             var configObjectDomainService = services.GetRequiredService<ConfigObjectDomainService>();
+            var unitOfWork = services.GetRequiredService<IUnitOfWork>();
             var env = services.GetRequiredService<IWebHostEnvironment>();
             var contentRootPath = env.ContentRootPath;
             var masaConfig = builder.Services.GetMasaStackConfig();
 
             await MigrateAsync(context);
+
+            unitOfWork.UseTransaction = false;
+
             await InitDccDataAsync(context, labelDomainService);
             await InitPublicConfigAsync(context, contentRootPath, masaConfig, configObjectDomainService);
         }
@@ -114,7 +116,6 @@ namespace Masa.Dcc.Service.Admin.Migrations
             }
 
             await context.SaveChangesAsync();
-            await context.Database.CommitTransactionAsync();
         }
 
         public static async Task InitPublicConfigAsync(

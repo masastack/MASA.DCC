@@ -130,11 +130,17 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 { "$public.Email",GetEmail(contentRootPath,masaConfig.Environment) },
                 { "$public.Sms",GetSms(contentRootPath,masaConfig.Environment) },
                 { "$public.Cdn",GetCdn(contentRootPath,masaConfig.Environment) },
-                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) },
-                { "$public.Oss",GetOss(contentRootPath, masaConfig.Environment) }
+                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) }
             };
 
             await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false);
+
+            var encryptionPublicConfigs = new Dictionary<string, string>
+            {
+                { "$public.Oss",GetOss(contentRootPath, masaConfig.Environment) }
+            };
+            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true);
+
             await context.SaveChangesAsync();
         }
 

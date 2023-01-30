@@ -117,14 +117,13 @@ namespace Masa.Dcc.Service.Admin.Migrations
             var publicConfigs = new Dictionary<string, string>
             {
                 { "$public.RedisConfig",GetRedisConfig(contentRootPath,environment) },
-                { "$public.AppSettings",GetAppSettings(contentRootPath,environment) },
-                { "$public.Oidc",GetOidc(contentRootPath,environment) },
+                { "$public.Cdn",GetCdn(contentRootPath,environment) },
                 { "$public.Oss",GetOss(contentRootPath,environment) },
                 { "$public.ES.UserAutoComplete",GetESUserAutoComplete(contentRootPath,environment) },
                 { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,environment) },
                 { "$public.Email",GetEmail(contentRootPath,environment) },
                 { "$public.Sms",GetSms(contentRootPath,environment) },
-                { "$public.Clients",GetClient(contentRootPath,environment) }
+                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,environment) }
             };
 
             await eventBus.PublishAsync(
@@ -138,15 +137,9 @@ namespace Masa.Dcc.Service.Admin.Migrations
             return File.ReadAllText(filePath);
         }
 
-        private static string GetAppSettings(string contentRootPath, string environment)
+        private static string GetCdn(string contentRootPath, string environment)
         {
-            var filePath = CombineFilePath(contentRootPath, "$public.AppSettings.json", environment);
-            return File.ReadAllText(filePath);
-        }
-
-        private static string GetOidc(string contentRootPath, string environment)
-        {
-            var filePath = CombineFilePath(contentRootPath, "$public.Oidc.json", environment);
+            var filePath = CombineFilePath(contentRootPath, "$public.Cdn.json", environment);
             return File.ReadAllText(filePath);
         }
 
@@ -156,9 +149,9 @@ namespace Masa.Dcc.Service.Admin.Migrations
             return File.ReadAllText(filePath);
         }
 
-        private static string GetClient(string contentRootPath, string environment)
+        private static string GetWhiteListOptions(string contentRootPath, string environment)
         {
-            var filePath = CombineFilePath(contentRootPath, "$public.Clients.json", environment);
+            var filePath = CombineFilePath(contentRootPath, "$public.WhiteListOptions.json", environment);
             return File.ReadAllText(filePath);
         }
 

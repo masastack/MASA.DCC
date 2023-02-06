@@ -69,8 +69,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                     return;
                 }
 
+                string configName = _addConfigObjectModal.Data.Name;
+                if (ConfigObjectType == ConfigObjectType.Public)
+                {
+                    configName = _namePrefix + _addConfigObjectModal.Data.Name;
+                }
+
                 var selectConfigObject = _configObjects.Where(c => _selectEnvClusterIds.Contains(c.EnvironmentClusterId));
-                if (selectConfigObject.Any(c => c.Name.Equals(_addConfigObjectModal.Data.Name)))
+                if (selectConfigObject.Any(c => c.Name.ToLower().Equals(configName.ToLower())))
                 {
                     await PopupService.AlertAsync(T("Config object already exists"), AlertTypes.Error);
                     return;
@@ -83,17 +89,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                     _ => "",
                 };
 
-                if (ConfigObjectType == ConfigObjectType.Public)
-                {
-                    _addConfigObjectModal.Data.Name = _namePrefix + _addConfigObjectModal.Data.Name;
-                }
-
                 List<AddConfigObjectDto> configObjectDtos = new();
                 for (int i = 0; i < _selectEnvClusterIds.Count; i++)
                 {
                     configObjectDtos.Add(new AddConfigObjectDto
                     {
-                        Name = _addConfigObjectModal.Data.Name,
+                        Name = configName,
                         FormatLabelCode = _addConfigObjectModal.Data.FormatLabelCode,
                         Type = _addConfigObjectModal.Data.Type,
                         Encryption = _addConfigObjectModal.Data.Encryption,

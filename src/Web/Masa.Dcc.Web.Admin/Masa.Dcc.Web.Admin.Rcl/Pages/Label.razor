@@ -85,11 +85,11 @@
             <div class="d-flex" style="width:100%;">
                 @if (_labelModal.HasValue)
                 {
-                    <SButton Text Color="error" Small OnClick="()=>RemoveLabelAsync(_labelModal.Data.TypeCode)">@T("Delete")</SButton>
+                    <SButton Text Color="error" Small OnClick="()=>RemoveLabelAsync(_labelModal.Data)">@T("Delete")</SButton>
                 }
                 <MSpacer />
                 <SButton Small OnClick="()=>SubmitLabelAsync(formContext)">@(_labelModal.HasValue ? T("Save") : T("Submit"))</SButton>
-                </div>
             </div>
-        </MForm>
-    </SSheetDialog>
+        </div>
+    </MForm>
+</SSheetDialog>

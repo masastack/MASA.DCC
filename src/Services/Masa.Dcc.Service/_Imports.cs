@@ -45,6 +45,7 @@ global using Masa.Dcc.Service.Admin.Domain.App.Services;
 global using Masa.Dcc.Service.Admin.Domain.Label.Aggregates;
 global using Masa.Dcc.Service.Admin.Domain.Label.Repositories;
 global using Masa.Dcc.Service.Admin.Domain.Label.Services;
+global using Masa.Dcc.Service.Admin.Infrastructure;
 global using Masa.Dcc.Service.Admin.Infrastructure.Middleware;
 global using Masa.Dcc.Service.Admin.Migrations;
 global using Masa.Dcc.Service.Infrastructure;

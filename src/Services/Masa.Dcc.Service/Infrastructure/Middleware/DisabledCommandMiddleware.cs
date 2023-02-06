@@ -18,11 +18,13 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Middleware
         public override async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
         {
             var user = _userContext.GetUser<MasaUser>();
+            var attribute = Attribute.GetCustomAttribute(typeof(TEvent), typeof(ByPassDisabledCommandAttribute));
 
-            if (_masaStackConfig.IsDemo && user?.Account == "guest" && @event is ICommand)
+            if (_masaStackConfig.IsDemo && attribute == null && user?.Account == "admin" && @event is ICommand)
             {
                 throw new UserFriendlyException("演示账号禁止操作");
             }
+
             await next();
         }
     }

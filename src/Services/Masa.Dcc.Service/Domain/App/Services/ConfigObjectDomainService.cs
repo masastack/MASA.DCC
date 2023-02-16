@@ -365,18 +365,18 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
         public async Task UpdateConfigObjectAsync(string environmentName, string clusterName, string appId,
             string configObjectName,
-            string value)
+            object value)
         {
-            var configObject = await _configObjectRepository.FindAsync(config => config.Name == configObjectName);
-            if (configObject == null)
-                throw new UserFriendlyException("ConfigObject does not exist");
+            var configObject = await _configObjectRepository.FindAsync(config => config.Name == configObjectName) ?? throw new UserFriendlyException("ConfigObject does not exist");
+
+            string newValue = JsonSerializer.Serialize(value);
 
             if (configObject.Encryption)
             {
-                value = await EncryptContentAsync(value);
+                newValue = await EncryptContentAsync(newValue);
             }
 
-            configObject.UpdateContent(value);
+            configObject.UpdateContent(newValue);
 
             await _configObjectRepository.UpdateAsync(configObject);
 
@@ -388,7 +388,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 EnvironmentName = environmentName,
                 ClusterName = clusterName,
                 Identity = appId,
-                Content = value
+                Content = newValue
             };
 
             await AddConfigObjectReleaseAsync(releaseModel);

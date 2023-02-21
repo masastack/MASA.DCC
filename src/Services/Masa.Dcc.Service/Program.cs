@@ -41,11 +41,7 @@ builder.Services.AddAuthentication(options =>
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDaprStarter(opt =>
-    {
-        opt.DaprHttpPort = 3600;
-        opt.DaprGrpcPort = 3601;
-    });
+    builder.Services.AddDaprStarter();
 }
 
 builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>

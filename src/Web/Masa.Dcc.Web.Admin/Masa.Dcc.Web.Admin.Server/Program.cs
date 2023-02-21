@@ -39,11 +39,7 @@ builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDaprStarter(opt =>
-    {
-        opt.DaprHttpPort = 3700;
-        opt.DaprGrpcPort = 3701;
-    });
+    builder.Services.AddDaprStarter();
 }
 
 var app = builder.Build();

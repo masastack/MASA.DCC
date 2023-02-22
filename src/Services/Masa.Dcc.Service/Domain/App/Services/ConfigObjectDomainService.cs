@@ -191,6 +191,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
         private async Task CloneConfigObjectsAsync(List<AddConfigObjectDto> configObjects, int appId)
         {
+            await CheckConfigObjectDuplication(configObjects, appId);
+
             List<ConfigObject> cloneConfigObjects = new();
             foreach (var configObjectDto in configObjects)
             {
@@ -223,6 +225,63 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 }
             }
             await _configObjectRepository.AddRangeAsync(cloneConfigObjects);
+        }
+
+        /// <summary>
+        /// cloning, check config object whether already exists.
+        /// </summary>
+        /// <param name="configObjects"></param>
+        /// <param name="appId">the 'appId' argument may be is 'application id' or 'public config Id' or 'biz config id'</param>
+        /// <returns></returns>
+        /// <exception cref="UserFriendlyException"></exception>
+        private async Task CheckConfigObjectDuplication(List<AddConfigObjectDto> configObjects, int appId)
+        {
+            if (configObjects != null && configObjects.Count > 0)
+
+            {
+                var configType = configObjects.First().Type;
+                var configObjectNames = configObjects.Select(e => e.Name);
+                switch (configType)
+                {
+                    case ConfigObjectType.Public:
+                        var allPublicConfigs = await _publicConfigObjectRepository.GetListByPublicConfigIdAsync(appId);
+                        foreach (var item in configObjects)
+                        {
+                            if (allPublicConfigs.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId
+                                                                    && e.ConfigObject.Name == item.Name))
+                            {
+
+                                throw new UserFriendlyException($"Configuration Name '{item.Name}' already exist in the environment cluster '{item.EnvironmentClusterId}'.");
+                            }
+                        }
+                        break;
+                    case ConfigObjectType.Biz:
+                        var bizConfigObjects = await _bizConfigObjectRepository.GetListByBizConfigIdAsync(appId);
+                        foreach (var item in configObjects)
+                        {
+                            if (bizConfigObjects.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId
+                                                                    && e.ConfigObject.Name == item.Name))
+                            {
+
+                                throw new UserFriendlyException($"Configuration Name '{item.Name}' already exist in the environment cluster '{item.EnvironmentClusterId}'.");
+                            }
+                        }
+                        break;
+                    case ConfigObjectType.App:
+                        var allAppConfigObjects = await _appConfigObjectRepository.GetListByAppIdAsync(appId);
+                        foreach (var item in configObjects)
+                        {
+                            if (allAppConfigObjects.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId
+                                                                    && e.ConfigObject.Name == item.Name))
+                            {
+
+                                throw new UserFriendlyException($"Configuration Name '{item.Name}' already exist for environment cluster's '{item.EnvironmentClusterId}'.  ");
+                            }
+                        }
+                        break;
+                }
+
+            }
         }
 
         public async Task AddConfigObjectReleaseAsync(AddConfigObjectReleaseDto dto)

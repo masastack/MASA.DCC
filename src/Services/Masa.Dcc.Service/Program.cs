@@ -59,12 +59,10 @@ builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddTransient(typeof(IMiddleware<>), typeof(LogMiddleware<>))
     .AddFluentValidation(options =>
     {
         options.RegisterValidatorsFromAssemblyContaining<Program>();
     })
-    .AddTransient(typeof(IMiddleware<>), typeof(ValidatorMiddleware<>))
     .AddDomainEventBus(options =>
     {
         options.UseIntegrationEventBus(options => options.UseDapr()

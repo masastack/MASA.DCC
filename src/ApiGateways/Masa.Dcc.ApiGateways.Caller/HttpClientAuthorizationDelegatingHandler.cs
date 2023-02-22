@@ -11,15 +11,5 @@ namespace Masa.Dcc.ApiGateways.Caller
         {
             _httpContextAccessor = httpContextAccessor;
         }
-
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                var token = await _httpContextAccessor.HttpContext.GetTokenAsync("access_token");
-                request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            }
-            return await base.SendAsync(request, cancellationToken);
-        }
     }
 }

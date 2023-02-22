@@ -34,8 +34,7 @@ builder.Services.AddScoped<TokenProvider>();
 builder.Services.AddMasaOpenIdConnect(builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic());
 builder.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
 
-builder.Services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
-builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
+builder.Services.AddAutoRegistrationCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
 
 if (builder.Environment.IsDevelopment())
 {

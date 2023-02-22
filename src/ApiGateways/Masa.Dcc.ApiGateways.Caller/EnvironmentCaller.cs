@@ -9,7 +9,6 @@ namespace Masa.Dcc.Caller
 
         public EnvironmentCaller(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Name = nameof(EnvironmentCaller);
         }
 
         public async Task<EnvironmentDetailModel> GetAsync(int Id)

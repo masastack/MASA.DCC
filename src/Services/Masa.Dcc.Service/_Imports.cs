@@ -44,7 +44,6 @@ global using Masa.Dcc.Service.Admin.Domain.Label.Services;
 global using Masa.Dcc.Service.Admin.Infrastructure.Middleware;
 global using Masa.Dcc.Service.Admin.Migrations;
 global using Masa.Dcc.Service.Infrastructure;
-global using Masa.Dcc.Service.Infrastructure.Middleware;
 global using Masa.Utils.Configuration.Json;
 global using Masa.Utils.Security.Cryptography;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;

@@ -9,7 +9,6 @@ namespace Masa.Dcc.Caller
 
         public ClusterCaller(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Name = nameof(ClusterCaller);
         }
 
         public async Task<List<ClusterModel>> GetListByEnvIdAsync(int envId)

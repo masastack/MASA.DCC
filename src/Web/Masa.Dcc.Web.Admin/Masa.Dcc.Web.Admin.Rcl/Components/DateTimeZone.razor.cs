@@ -22,6 +22,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Components
         [Inject]
         private I18n I18n { get; set; } = default!;
 
+        [Inject]
+        private JsInitVariables JsInitVariables { get; set; } = default!;
+
         private string TransformDateTime()
         {
             var dateTime = Value.Add(JsInitVariables.TimezoneOffset);

@@ -9,7 +9,6 @@ namespace Masa.Dcc.ApiGateways.Caller
 
         public LabelCaller(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Name = nameof(LabelCaller);
         }
 
         protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");

@@ -9,7 +9,6 @@ namespace Masa.Dcc.ApiGateways.Caller
 
         public ConfigObjectCaller(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Name = nameof(ConfigObjectCaller);
         }
 
         public async Task<BizConfigDto> GetBizConfigAsync(string identity)

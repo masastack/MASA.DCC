@@ -9,7 +9,6 @@ namespace Masa.Dcc.Caller
 
         public ProjectCaller(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            Name = nameof(ProjectCaller);
         }
 
         protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");

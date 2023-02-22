@@ -10,9 +10,4 @@ public abstract class DccHttpClientCallerBase : HttpClientCallerBase
     }
 
     protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
-
-    protected override IHttpClientBuilder UseHttpClient()
-    {
-        return base.UseHttpClient().AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
-    }
 }

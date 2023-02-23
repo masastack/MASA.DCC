@@ -227,17 +227,9 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await _configObjectRepository.AddRangeAsync(cloneConfigObjects);
         }
 
-        /// <summary>
-        /// cloning, check config object whether already exists.
-        /// </summary>
-        /// <param name="configObjects"></param>
-        /// <param name="appId">the 'appId' argument may be is 'application id' or 'public config Id' or 'biz config id'</param>
-        /// <returns></returns>
-        /// <exception cref="UserFriendlyException"></exception>
         private async Task CheckConfigObjectDuplication(List<AddConfigObjectDto> configObjects, int appId)
         {
-            if (configObjects != null && configObjects.Count > 0)
-
+            if (configObjects?.Count > 0)
             {
                 var configType = configObjects.First().Type;
                 var configObjectNames = configObjects.Select(e => e.Name);
@@ -247,8 +239,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         var allPublicConfigs = await _publicConfigObjectRepository.GetListByPublicConfigIdAsync(appId);
                         foreach (var item in configObjects)
                         {
-                            if (allPublicConfigs.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId
-                                                                    && e.ConfigObject.Name == item.Name))
+                            if (allPublicConfigs.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId && e.ConfigObject.Name == item.Name))
                             {
 
                                 throw new UserFriendlyException($"Configuration Name '{item.Name}' already exist in the environment cluster '{item.EnvironmentClusterId}'.");
@@ -259,8 +250,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         var bizConfigObjects = await _bizConfigObjectRepository.GetListByBizConfigIdAsync(appId);
                         foreach (var item in configObjects)
                         {
-                            if (bizConfigObjects.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId
-                                                                    && e.ConfigObject.Name == item.Name))
+                            if (bizConfigObjects.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId && e.ConfigObject.Name == item.Name))
                             {
 
                                 throw new UserFriendlyException($"Configuration Name '{item.Name}' already exist in the environment cluster '{item.EnvironmentClusterId}'.");
@@ -271,8 +261,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         var allAppConfigObjects = await _appConfigObjectRepository.GetListByAppIdAsync(appId);
                         foreach (var item in configObjects)
                         {
-                            if (allAppConfigObjects.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId
-                                                                    && e.ConfigObject.Name == item.Name))
+                            if (allAppConfigObjects.Any(e => e.EnvironmentClusterId == item.EnvironmentClusterId && e.ConfigObject.Name == item.Name))
                             {
 
                                 throw new UserFriendlyException($"Configuration Name '{item.Name}' already exist for environment cluster's '{item.EnvironmentClusterId}'.  ");
@@ -280,7 +269,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         }
                         break;
                 }
-
             }
         }
 

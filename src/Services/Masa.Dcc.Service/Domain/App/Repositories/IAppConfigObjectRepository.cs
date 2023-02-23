@@ -6,6 +6,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
     public interface IAppConfigObjectRepository : IRepository<AppConfigObject>
     {
         Task<List<AppConfigObject>> GetListByAppIdAsync(int appId);
+
         Task<List<AppConfigObject>> GetListByEnvClusterIdAsync(int envClusterId, int appId);
     }
 }

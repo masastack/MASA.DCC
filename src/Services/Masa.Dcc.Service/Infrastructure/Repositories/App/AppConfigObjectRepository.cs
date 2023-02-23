@@ -18,6 +18,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
 
             return configData;
         }
+
         public async Task<List<AppConfigObject>> GetListByAppIdAsync(int appId)
         {
             var configData = await Context.Set<AppConfigObject>()

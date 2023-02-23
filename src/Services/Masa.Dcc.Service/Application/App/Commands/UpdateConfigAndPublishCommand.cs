@@ -5,7 +5,7 @@ namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
     public record UpdateConfigAndPublishCommand(string Environment, string Cluster, string AppId,
         string ConfigObject,
-        string Value) : Command
+        object Value) : Command
     {
     }
 }

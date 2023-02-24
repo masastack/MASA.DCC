@@ -161,7 +161,7 @@
   "Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?": "删除配置对象“{name}”将导致实例获取不到此配置对象的配置，确定要删除吗？",
   "No publishing history": "暂无发布历史",
   "Delete label": "删除标签",
-  "Are you sure you want to delete the label \"{typeCode}\"?": "确定要删除标签“{typeCode}”吗？",
+  "Are you sure you want to delete the label \"{typeName}\"?": "确定要删除标签“{typeName}”吗？",
   "Please select the configuration to clone": "请选要克隆的配置",
   "Please add public configuration first": "请先添加公共配置",
   "Please select the cluster environment to associate": "请选择要关联的集群环境",

@@ -7,7 +7,9 @@ namespace Masa.Dcc.ApiGateways.Caller
     {
         private readonly string _prefix = "/api/v1/labels";
 
-        public LabelCaller(IServiceProvider serviceProvider) : base(serviceProvider)
+        public LabelCaller(
+            IServiceProvider serviceProvider,
+            DccApiGatewayOptions options) : base(serviceProvider, options)
         {
         }
 

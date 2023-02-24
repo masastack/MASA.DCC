@@ -2,9 +2,25 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
+
+DccOptions dccOptions = builder.Configuration.GetSection("DccOptions").Get<DccOptions>();
+await builder.Services.AddMasaStackConfigAsync(dccOptions);
+var masaStackConfig = builder.Services.GetMasaStackConfig();
+
 if (!builder.Environment.IsDevelopment())
 {
-    builder.Services.AddObservable(builder.Logging, builder.Configuration, true);
+    builder.Services.AddObservable(builder.Logging, () =>
+    {
+        return new MasaObservableOptions
+        {
+            ServiceNameSpace = builder.Environment.EnvironmentName,
+            ServiceVersion = masaStackConfig.Version,
+            ServiceName = masaStackConfig.GetWebId(MasaStackConstant.DCC)
+        };
+    }, () =>
+    {
+        return masaStackConfig.OtlpUrl;
+    }, true);
 }
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
@@ -24,17 +40,23 @@ builder.WebHost.UseKestrel(option =>
     });
 });
 
-builder.Services.AddMasaConfiguration(option => option.UseDcc());
-
 builder.Services.AddDaprClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<TokenProvider>();
 
-builder.Services.AddMasaOpenIdConnect(builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic());
-builder.AddMasaStackComponentsForServer("wwwroot/i18n", builder.Configuration["AuthServiceBaseAddress"], builder.Configuration["McServiceBaseAddress"]);
+MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
+{
+    Authority = masaStackConfig.GetSsoDomain(),
+    ClientId = masaStackConfig.GetWebId(MasaStackConstant.DCC),
+    Scopes = new List<string> { "offline_access" }
+};
+IdentityModelEventSource.ShowPII = true;
+builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
 
-builder.Services.AddAutoRegistrationCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
+builder.AddMasaStackComponentsForServer("wwwroot/i18n");
+
+builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
 
 if (builder.Environment.IsDevelopment())
 {

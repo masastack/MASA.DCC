@@ -1,6 +1,6 @@
 ﻿@inherits MasaComponentBase
 
-<SModal @key="@($"rollbackModal-{Value}")" Width="684" Title="@T("Rollback")" Value="Value" ValueChanged="ValueChanged" HideCancelAction OnSave="HandOnClickAsync">
+<SModal Width="684" Title="@T("Rollback")" Value="Value" ValueChanged="ValueChanged" HideCancelAction OnSave="HandOnClickAsync">
     <ChildContent>
         <MAlert Dense
                 Type="AlertTypes.Warning">

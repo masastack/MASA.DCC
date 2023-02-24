@@ -16,6 +16,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly IMultilevelCacheClient _memoryCacheClient;
         private readonly IPmClient _pmClient;
         private readonly DaprClient _daprClient;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ConfigObjectDomainService(
             IDomainEventBus eventBus,
@@ -29,7 +30,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IPublicConfigRepository publicConfigRepository,
             IMultilevelCacheClient memoryCacheClient,
             IPmClient pmClient,
-            DaprClient daprClient) : base(eventBus)
+            DaprClient daprClient,
+            IUnitOfWork unitOfWork) : base(eventBus)
         {
             _context = context;
             _configObjectReleaseRepository = configObjectReleaseRepository;
@@ -42,6 +44,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _memoryCacheClient = memoryCacheClient;
             _pmClient = pmClient;
             _daprClient = daprClient;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task AddConfigObjectAsync(List<AddConfigObjectDto> configObjectDtos)
@@ -443,12 +446,10 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower());
             if (env == null)
                 throw new UserFriendlyException("Environment does not exist");
-
             var clusters = await _pmClient.ClusterService.GetListByEnvIdAsync(env.Id);
             var cluster = clusters.FirstOrDefault(c => c.Name.ToLower() == clusterName.ToLower());
             if (cluster == null)
                 throw new UserFriendlyException("Cluster does not exist");
-
             foreach (var configObject in configObjects)
             {
                 var configObjectName = configObject.Key;
@@ -462,7 +463,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 string content = configObject.Value;
                 if (isEncryption)
                     content = await EncryptContentAsync(content);
-
                 var newConfigObject = new ConfigObject(
                     configObjectName,
                     "Json",
@@ -496,9 +496,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                         }
                     }
                 }
-
                 await _configObjectRepository.AddAsync(newConfigObject);
-                await _configObjectRepository.UnitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 var releaseModel = new AddConfigObjectReleaseDto
                 {
@@ -510,7 +509,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     Identity = appId,
                     Content = configObject.Value,
                 };
-
                 await AddConfigObjectReleaseAsync(releaseModel);
             }
         }

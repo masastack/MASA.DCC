@@ -2,9 +2,25 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
+
+DccOptions dccOptions = builder.Configuration.GetSection("DccOptions").Get<DccOptions>();
+await builder.Services.AddMasaStackConfigAsync(dccOptions);
+var masaStackConfig = builder.Services.GetMasaStackConfig();
+
 if (!builder.Environment.IsDevelopment())
 {
-    builder.Services.AddObservable(builder.Logging, builder.Configuration, false);
+    builder.Services.AddObservable(builder.Logging, () =>
+    {
+        return new MasaObservableOptions
+        {
+            ServiceNameSpace = builder.Environment.EnvironmentName,
+            ServiceVersion = masaStackConfig.Version,
+            ServiceName = masaStackConfig.GetServerId(MasaStackConstant.DCC)
+        };
+    }, () =>
+    {
+        return masaStackConfig.OtlpUrl;
+    }, true);
 }
 
 builder.Services.AddMasaIdentity(options =>
@@ -33,7 +49,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer("Bearer", options =>
 {
-    options.Authority = AppSettings.Get("IdentityServerUrl");
+    options.Authority = masaStackConfig.GetSsoDomain();
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters.ValidateAudience = false;
     options.MapInboundClaims = false;
@@ -44,16 +60,29 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddDaprStarter();
 }
 
+var redisOption = new RedisConfigurationOptions
+{
+    Servers = new List<RedisServerOptions> {
+        new RedisServerOptions()
+        {
+            Host= masaStackConfig.RedisModel.RedisHost,
+            Port=   masaStackConfig.RedisModel.RedisPort
+        }
+    },
+    DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
+    Password = masaStackConfig.RedisModel.RedisPassword
+};
+
 builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>
 {
-    distributedCacheOptions.UseStackExchangeRedisCache();
+    distributedCacheOptions.UseStackExchangeRedisCache(redisOption);
 }, options =>
 {
     options.SubscribeKeyPrefix = "masa.dcc:";
     options.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
 });
 
-builder.Services.AddPmClient(AppSettings.Get("PmClientAddress"));
+builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
 
 builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -71,17 +100,19 @@ builder.Services
                {
                    eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
                })
-               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer().UseFilter())
+               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("dcc_dev"))
+                    .UseFilter())
                .UseRepository<DccDbContext>();
     });
+
+//seed data
+await builder.SeedDataAsync();
 
 var app = builder.AddServices(options =>
 {
     options.DisableAutoMapRoute = true; // todo :remove it before v1.0
 });
 
-//seed data
-await builder.SeedDataAsync();
 
 if (app.Environment.IsDevelopment())
 {

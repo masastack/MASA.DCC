@@ -7,15 +7,21 @@ namespace Masa.Dcc.Service.Admin.Migrations
     {
         public static async Task SeedDataAsync(this WebApplicationBuilder builder)
         {
-            var services = builder.Services.BuildServiceProvider();
+            var services = builder.Services.BuildServiceProvider().CreateScope().ServiceProvider;
             var context = services.GetRequiredService<DccDbContext>();
-            var eventBus = services.GetRequiredService<IEventBus>();
+            var labelDomainService = services.GetRequiredService<LabelDomainService>();
+            var configObjectDomainService = services.GetRequiredService<ConfigObjectDomainService>();
+            var unitOfWork = services.GetRequiredService<IUnitOfWork>();
             var env = services.GetRequiredService<IWebHostEnvironment>();
             var contentRootPath = env.ContentRootPath;
+            var masaConfig = builder.Services.GetMasaStackConfig();
 
             await MigrateAsync(context);
-            await InitDccDataAsync(context, eventBus);
-            await InitPublicConfigAsync(contentRootPath, builder.Environment.EnvironmentName, eventBus);
+
+            unitOfWork.UseTransaction = false;
+
+            await InitDccDataAsync(context, labelDomainService);
+            await InitPublicConfigAsync(context, contentRootPath, masaConfig, configObjectDomainService);
         }
 
         private static async Task MigrateAsync(DccDbContext context)
@@ -26,7 +32,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
             }
         }
 
-        private static async Task InitDccDataAsync(DccDbContext context, IEventBus eventBus)
+        private static async Task InitDccDataAsync(DccDbContext context, LabelDomainService labelDomainService)
         {
             if (!context.Set<Label>().Any())
             {
@@ -99,7 +105,7 @@ namespace Masa.Dcc.Service.Admin.Migrations
 
                 foreach (var label in labels)
                 {
-                    await eventBus.PublishAsync(new AddLabelCommand(label));
+                    await labelDomainService.AddLabelAsync(label);
                 }
             }
 
@@ -107,45 +113,40 @@ namespace Masa.Dcc.Service.Admin.Migrations
             {
                 var publicConfig = new PublicConfig("Public", "public-$Config", "Public config");
                 await context.Set<PublicConfig>().AddAsync(publicConfig);
-                await context.SaveChangesAsync();
             }
+
+            await context.SaveChangesAsync();
         }
 
-        public static async Task InitPublicConfigAsync(string contentRootPath, string environment,
-            IEventBus eventBus)
+        public static async Task InitPublicConfigAsync(
+            DccDbContext context,
+            string contentRootPath,
+            IMasaStackConfig masaConfig,
+            ConfigObjectDomainService configObjectDomainService)
         {
             var publicConfigs = new Dictionary<string, string>
             {
-                { "$public.RedisConfig",GetRedisConfig(contentRootPath,environment) },
-                { "$public.Cdn",GetCdn(contentRootPath,environment) },
-                { "$public.Oss",GetOss(contentRootPath,environment) },
-                { "$public.ES.UserAutoComplete",GetESUserAutoComplete(contentRootPath,environment) },
-                { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,environment) },
-                { "$public.Email",GetEmail(contentRootPath,environment) },
-                { "$public.Sms",GetSms(contentRootPath,environment) },
-                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,environment) }
+                { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,masaConfig.Environment) },
+                { "$public.Email",GetEmail(contentRootPath,masaConfig.Environment) },
+                { "$public.Sms",GetSms(contentRootPath,masaConfig.Environment) },
+                { "$public.Cdn",GetCdn(contentRootPath,masaConfig.Environment) },
+                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) }
             };
 
-            await eventBus.PublishAsync(
-                new InitConfigObjectCommand(environment, "default", "public-$Config", publicConfigs, false));
-        }
+            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false);
 
+            var encryptionPublicConfigs = new Dictionary<string, string>
+            {
+                { "$public.Oss",GetOss(contentRootPath, masaConfig.Environment) }
+            };
+            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true);
 
-        private static string GetRedisConfig(string contentRootPath, string environment)
-        {
-            var filePath = CombineFilePath(contentRootPath, "$public.RedisConfig.json", environment);
-            return File.ReadAllText(filePath);
+            await context.SaveChangesAsync();
         }
 
         private static string GetCdn(string contentRootPath, string environment)
         {
             var filePath = CombineFilePath(contentRootPath, "$public.Cdn.json", environment);
-            return File.ReadAllText(filePath);
-        }
-
-        private static string GetOss(string contentRootPath, string environment)
-        {
-            var filePath = CombineFilePath(contentRootPath, "$public.Oss.json", environment);
             return File.ReadAllText(filePath);
         }
 
@@ -155,9 +156,9 @@ namespace Masa.Dcc.Service.Admin.Migrations
             return File.ReadAllText(filePath);
         }
 
-        private static string GetESUserAutoComplete(string contentRootPath, string environment)
+        private static string GetOss(string contentRootPath, string environment)
         {
-            var filePath = CombineFilePath(contentRootPath, "$public.ES.UserAutoComplete.json", environment);
+            var filePath = CombineFilePath(contentRootPath, "$public.Oss.json", environment);
             return File.ReadAllText(filePath);
         }
 

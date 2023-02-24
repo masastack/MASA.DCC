@@ -7,9 +7,10 @@ namespace Masa.Dcc.Caller
     {
         private readonly string _prefix = "/api/v1/env";
 
-        public EnvironmentCaller(IServiceProvider serviceProvider) : base(serviceProvider)
+        public EnvironmentCaller(
+            IServiceProvider serviceProvider,
+            DccApiGatewayOptions options) : base(serviceProvider, options)
         {
-            Name = nameof(EnvironmentCaller);
         }
 
         public async Task<EnvironmentDetailModel> GetAsync(int Id)

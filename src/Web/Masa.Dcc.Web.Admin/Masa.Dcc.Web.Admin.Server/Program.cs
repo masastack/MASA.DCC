@@ -2,7 +2,9 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMasaStackConfig();
+
+DccOptions dccOptions = builder.Configuration.GetSection("DccOptions").Get<DccOptions>();
+await builder.Services.AddMasaStackConfigAsync(dccOptions);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (!builder.Environment.IsDevelopment())
@@ -38,8 +40,6 @@ builder.WebHost.UseKestrel(option =>
     });
 });
 
-builder.Services.AddMasaConfiguration(option => option.UseDcc(masaStackConfig.GetDccMiniOptions<DccOptions>()));
-
 builder.Services.AddDaprClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
@@ -56,16 +56,11 @@ builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
 
 builder.AddMasaStackComponentsForServer("wwwroot/i18n");
 
-builder.Services.AddScoped<HttpClientAuthorizationDelegatingHandler>();
-builder.Services.AddCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
+builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDaprStarter(opt =>
-    {
-        opt.DaprHttpPort = 3700;
-        opt.DaprGrpcPort = 3701;
-    });
+    builder.Services.AddDaprStarter();
 }
 
 var app = builder.Build();

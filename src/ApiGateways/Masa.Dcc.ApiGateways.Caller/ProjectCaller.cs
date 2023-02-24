@@ -7,9 +7,10 @@ namespace Masa.Dcc.Caller
     {
         private readonly string _prefix = "/api/v1/project";
 
-        public ProjectCaller(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ProjectCaller(
+            IServiceProvider serviceProvider,
+            DccApiGatewayOptions options) : base(serviceProvider, options)
         {
-            Name = nameof(ProjectCaller);
         }
 
         protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");

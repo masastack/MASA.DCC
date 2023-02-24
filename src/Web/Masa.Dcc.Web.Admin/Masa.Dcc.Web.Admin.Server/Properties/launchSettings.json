@@ -14,7 +14,9 @@
       "launchBrowser": true,
       "applicationUrl": "http://localhost:7216",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DAPR_GRPC_PORT": "3901",
+        "DAPR_HTTP_PORT": "3900"
       }
     },
     "IIS Express": {

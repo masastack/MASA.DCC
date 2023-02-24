@@ -2,21 +2,10 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddMasaStackConfig();
-var masaStackConfig = builder.Services.GetMasaStackConfig();
 
-var redisOption = new RedisConfigurationOptions
-{
-    Servers = new List<RedisServerOptions> {
-        new RedisServerOptions()
-        {
-            Host= masaStackConfig.RedisModel.RedisHost,
-            Port=   masaStackConfig.RedisModel.RedisPort
-        }
-    },
-    DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
-    Password = masaStackConfig.RedisModel.RedisPassword
-};
+DccOptions dccOptions = builder.Configuration.GetSection("DccOptions").Get<DccOptions>();
+await builder.Services.AddMasaStackConfigAsync(dccOptions);
+var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (!builder.Environment.IsDevelopment())
 {
@@ -68,12 +57,21 @@ builder.Services.AddAuthentication(options =>
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddDaprStarter(opt =>
-    {
-        opt.DaprHttpPort = 3600;
-        opt.DaprGrpcPort = 3601;
-    });
+    builder.Services.AddDaprStarter();
 }
+
+var redisOption = new RedisConfigurationOptions
+{
+    Servers = new List<RedisServerOptions> {
+        new RedisServerOptions()
+        {
+            Host= masaStackConfig.RedisModel.RedisHost,
+            Port=   masaStackConfig.RedisModel.RedisPort
+        }
+    },
+    DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
+    Password = masaStackConfig.RedisModel.RedisPassword
+};
 
 builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>
 {
@@ -90,12 +88,10 @@ builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
-    .AddTransient(typeof(IMiddleware<>), typeof(LogMiddleware<>))
     .AddFluentValidation(options =>
     {
         options.RegisterValidatorsFromAssemblyContaining<Program>();
     })
-    .AddTransient(typeof(IMiddleware<>), typeof(ValidatorMiddleware<>))
     .AddDomainEventBus(options =>
     {
         options.UseIntegrationEventBus(options => options.UseDapr()
@@ -104,7 +100,7 @@ builder.Services
                {
                    eventBusBuilder.UseMiddleware(typeof(DisabledCommandMiddleware<>));
                })
-               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("dcc"))
+               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString("dcc_dev"))
                     .UseFilter())
                .UseRepository<DccDbContext>();
     });

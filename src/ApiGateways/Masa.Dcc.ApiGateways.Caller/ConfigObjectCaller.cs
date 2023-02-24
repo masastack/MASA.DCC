@@ -7,9 +7,10 @@ namespace Masa.Dcc.ApiGateways.Caller
     {
         private readonly string _prefix = "/api/v1";
 
-        public ConfigObjectCaller(IServiceProvider serviceProvider) : base(serviceProvider)
+        public ConfigObjectCaller(
+            IServiceProvider serviceProvider,
+            DccApiGatewayOptions options) : base(serviceProvider, options)
         {
-            Name = nameof(ConfigObjectCaller);
         }
 
         public async Task<BizConfigDto> GetBizConfigAsync(string identity)

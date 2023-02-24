@@ -18,5 +18,15 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
 
             return configData;
         }
+
+        public async Task<List<BizConfigObject>> GetListByBizConfigIdAsync(int bizConfigId)
+        {
+            var bizConfigObjects = await Context.Set<BizConfigObject>()
+                .Include(bizConfigObject => bizConfigObject.ConfigObject)
+                .Where(bizConfigObject => bizConfigObject.BizConfigId == bizConfigId)
+                .ToListAsync();
+
+            return bizConfigObjects;
+        }
     }
 }

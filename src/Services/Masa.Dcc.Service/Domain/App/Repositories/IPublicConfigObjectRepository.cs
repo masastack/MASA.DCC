@@ -8,5 +8,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
         Task<List<PublicConfigObject>> GetListByEnvClusterIdAsync(int? envClusterId, int publicConfigId);
 
         Task<PublicConfigObject> GetByConfigObjectIdAsync(int configObjectId);
+
+        Task<List<PublicConfigObject>> GetListByPublicConfigIdAsync(int publicConfigId);
     }
 }

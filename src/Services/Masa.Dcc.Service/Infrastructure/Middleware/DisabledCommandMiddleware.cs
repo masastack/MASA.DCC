@@ -7,23 +7,24 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Middleware
         where TEvent : notnull, IEvent
     {
         readonly IUserContext _userContext;
-        readonly IConfiguration _configuration;
+        readonly IMasaStackConfig _masaStackConfig;
 
-        public DisabledCommandMiddleware(IUserContext userContext, IConfiguration configuration)
+        public DisabledCommandMiddleware(IUserContext userContext, IMasaStackConfig masaStackConfig)
         {
             _userContext = userContext;
-            _configuration = configuration;
+            _masaStackConfig = masaStackConfig;
         }
 
         public override async Task HandleAsync(TEvent @event, EventHandlerDelegate next)
         {
-            var isDemo = _configuration.GetValue<bool>("IsDemo");
             var user = _userContext.GetUser<MasaUser>();
+            var attribute = Attribute.GetCustomAttribute(typeof(TEvent), typeof(ByPassDisabledCommandAttribute));
 
-            if (isDemo && user?.Account == "Guest" && @event is ICommand)
+            if (_masaStackConfig.IsDemo && attribute == null && user?.Account == "admin" && @event is ICommand)
             {
                 throw new UserFriendlyException("演示账号禁止操作");
             }
+
             await next();
         }
     }

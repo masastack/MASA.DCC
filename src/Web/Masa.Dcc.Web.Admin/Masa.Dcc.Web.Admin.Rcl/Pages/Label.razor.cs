@@ -136,16 +136,16 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private async Task RemoveLabelAsync(string typeCode)
+        private async Task RemoveLabelAsync(UpdateLabelModel label)
         {
             var result = await PopupService.ConfirmAsync(
                 T("Delete label"),
-                T("Are you sure you want to delete the label \"{typeCode}\"?").Replace("{typeCode}", typeCode),
+                T("Are you sure you want to delete the label \"{typeName}\"?").Replace("{typeName}", label.TypeName),
                 AlertTypes.Error);
 
             if (result)
             {
-                await LabelCaller.RemoveAsync(typeCode);
+                await LabelCaller.RemoveAsync(label.TypeCode);
                 await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
                 LabelModalValueChanged(false);
                 _labels = await GetListAsync();

@@ -5,9 +5,12 @@ namespace Masa.Dcc.Caller;
 
 public abstract class DccHttpClientCallerBase : HttpClientCallerBase
 {
-    protected DccHttpClientCallerBase(IServiceProvider serviceProvider) : base(serviceProvider)
+    protected DccHttpClientCallerBase(
+        IServiceProvider serviceProvider,
+        DccApiGatewayOptions options) : base(serviceProvider)
     {
+        BaseAddress = options.DccServiceAddress;
     }
 
-    protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
+    protected override string BaseAddress { get; set; }
 }

@@ -45,7 +45,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
 
         [Parameter]
         public EventCallback<bool> ValueChanged { get; set; }
-
+        
+        [Parameter]
+        public string ModalKey { get; set; }
+        
         [Parameter]
         public EventCallback OnClick { get; set; }
 
@@ -69,6 +72,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             new (){ Text= "回滚前的值", Value= nameof(ConfigObjectPropertyModel.Value)},
             new (){ Text= "回滚后的值", Value= nameof(ConfigObjectPropertyModel.TempValue)}
         };
+
+        public RollbackModal()
+        {
+            ModalKey = $"rollbackModal-{this._show}";
+        }
 
         private async Task HandOnClickAsync()
         {

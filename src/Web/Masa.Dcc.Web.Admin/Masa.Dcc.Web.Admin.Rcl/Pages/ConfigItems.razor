@@ -1,0 +1,121 @@
+@inherits MasaComponentBase
+<div class="emphasis--text h6 d-flex align-center">
+    @if (ConfigObject.FromRelation)
+    {
+        <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
+    }
+    @{
+        var content = ConfigObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
+        var tempContent = ConfigObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
+        if (ConfigObject.RelationConfigObjectId == 0 && !ConfigObject.IsPublished && content != tempContent && !ConfigObject.IsEditing)
+        {
+            <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
+                @T("Modified")
+            </div>
+        }
+    }
+    @if (ConfigObject.Encryption)
+    {
+        <SIcon Style="pointer-events: auto !important;" Color="#323D6F" Tooltip="@T("Encrypted config object")" Size="20" Class="mr-1">mdi-lock</SIcon>
+    }
+    <MHover Context="hContext">
+        <div @attributes="hContext.Attrs" class="hover-pointer d-flex align-center">
+            <span class="mr-2">@ConfigObject.Name</span>
+            <div @onclick="() => Copy(ConfigObject.Name)" @onclick:stopPropagation>
+                <SIcon Tooltip="@T("Copy name")"
+                       Color="@(_configNameCopyClicked ? "success" : "gray")"
+                       Style="@(hContext.Hover ? "width: 18px; height: 18px; margin-right: 12px; transition: 0.5s;" : "opacity:0; width: 18px; height: 0px; margin-left: -24px; transition: 0.4s;")">
+                    @(_configNameCopyClicked ? _checkSvg : _copySvg)
+                </SIcon>
+            </div>
+        </div>
+    </MHover>
+    <div class="regular3--text btn d-flex">
+        <span>|</span>
+        <sapn class="ml-2">@ConfigObject.FormatName</sapn>
+    </div>
+    <MSpacer></MSpacer>
+    @if (FormatLabelCode == "properties")
+    {
+        if (!ConfigObject.FromRelation)
+        {
+            <MButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
+                <SIcon Tooltip="@(T("Add config item"))" Color="#323D6F">mdi-plus-circle</SIcon>
+            </MButton>
+        }
+    }
+    else
+    {
+        if (ConfigObject.IsEditing)
+        {
+            <MButton Class="mr-4" StopPropagation Icon OnClick="CancelEditConfig">
+                <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
+            </MButton>
+        }
+        
+        <MButton StopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
+            @if (!ConfigObject.IsEditing)
+            {
+                var relation = ConfigObject.RelationConfigObjectId != 0;
+                <SIcon Tooltip="@(relation ? T("UnConnected") : T("Edit"))" Color="#323D6F">@(relation ? "mdi-link-variant-off" : "mdi-pencil")</SIcon>
+            }
+            else
+            {
+                <SIcon Tooltip="@(T("Save"))" Color="success">mdi-check</SIcon>
+            }
+        </MButton>
+    }
+    @if (ConfigObjectType != ConfigObjectType.Public && ConfigObject.FromRelation == false)
+    {
+        <MButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="CloneConfig">
+            <SIcon Tooltip="@T("Clone")" Size="20" Color="#323D6F">fas fa-copy</SIcon>
+        </MButton>
+    }
+    <MButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="ReleaseConfig">
+        <SIcon Tooltip="@T("Publish")" Color="#323D6F">mdi-send</SIcon>
+    </MButton>
+    <MMenu OffsetY>
+        <ActivatorContent>
+            <MButton Disabled="DisabledButton" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+                <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
+            </MButton>
+        </ActivatorContent>
+        <ChildContent>
+            <MList>
+                <MListItem OnClick="ReleaseHistory">
+                    <MIcon Class="mr-4">mdi-history</MIcon>
+                    <MListItemContent>
+                        <MListItemTitle>@T("Release history")</MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem OnClick="Rollback">
+                    <MIcon Class="mr-4">mdi-repeat</MIcon>
+                    <MListItemContent>
+                        <MListItemTitle>
+                            @T("Rollback")
+                        </MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MListItem OnClick="RevokeAsync">
+                    <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
+                    <MListItemContent>
+                        <MListItemTitle>
+                            @T("Revoke")
+                        </MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+                <MDivider></MDivider>
+                <MListItem OnClick="RemoveAsync">
+                    <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
+                    <MListItemContent>
+                        <MListItemTitle Class="error--text">
+                            @T("Delete")
+                        </MListItemTitle>
+                    </MListItemContent>
+                </MListItem>
+            </MList>
+        </ChildContent>
+    </MMenu>
+
+    <span class="mr-6 regular3--text btn">|</span>
+</div>

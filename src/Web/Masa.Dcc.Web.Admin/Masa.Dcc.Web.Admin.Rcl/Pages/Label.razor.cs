@@ -31,7 +31,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             foreach (var label in labels)
             {
-                var user = await AuthClient.UserService.FindByIdAsync(label.Modifier) ?? new();
+                var user = await AuthClient.UserService.GetByIdAsync(label.Modifier) ?? new();
                 label.ModifierName = user.StaffDislpayName;
             }
 

@@ -3,8 +3,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-DccOptions dccOptions = builder.Configuration.GetSection("DccOptions").Get<DccOptions>();
-await builder.Services.AddMasaStackConfigAsync(dccOptions);
+await builder.Services.AddMasaStackConfigAsync();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (!builder.Environment.IsDevelopment())

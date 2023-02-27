@@ -61,6 +61,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Parameter]
         public ConfigObjectReleaseDto RollbackConfigObjectRelease { get; set; } = null!;
 
+        [Parameter]
+        public string ModalKey { get; set; }
+
         private List<ConfigObjectPropertyModel> _properties = new();
         private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _headers = new()
         {
@@ -69,6 +72,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             new (){ Text= "回滚前的值", Value= nameof(ConfigObjectPropertyModel.Value)},
             new (){ Text= "回滚后的值", Value= nameof(ConfigObjectPropertyModel.TempValue)}
         };
+
+        public RollbackModal()
+        {
+            ModalKey = $"rollbackModal-{this._show}";
+        }
 
         private async Task HandOnClickAsync()
         {

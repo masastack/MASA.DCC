@@ -13,8 +13,6 @@ namespace Masa.Dcc.Caller
         {
         }
 
-        protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
-
         public async Task<List<ProjectModel>> GetListByTeamIdAsync(IEnumerable<Guid> teamIds)
         {
             var result = await Caller.PostAsync<List<ProjectModel>>($"{_prefix}/teamsProject", teamIds);
@@ -45,7 +43,7 @@ namespace Masa.Dcc.Caller
 
         public async Task<List<ProjectModel>> GetProjectsAsync()
         {
-            var result = await Caller.GetAsync<List<ProjectModel>>($"{AppSettings.Get("PmClientAddress").TrimEnd('/')}/api/v1/projects");
+            var result = await Caller.GetAsync<List<ProjectModel>>(_prefix);
 
             return result ?? new();
         }

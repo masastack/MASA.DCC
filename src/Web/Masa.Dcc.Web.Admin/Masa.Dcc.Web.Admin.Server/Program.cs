@@ -39,7 +39,6 @@ builder.WebHost.UseKestrel(option =>
     });
 });
 
-builder.Services.AddDaprClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<TokenProvider>();
@@ -56,11 +55,6 @@ builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
 builder.AddMasaStackComponentsForServer("wwwroot/i18n");
 
 builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddDaprStarter();
-}
 
 var app = builder.Build();
 

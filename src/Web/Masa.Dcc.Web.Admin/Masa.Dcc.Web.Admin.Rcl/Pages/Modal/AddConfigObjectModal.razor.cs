@@ -65,7 +65,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             {
                 if (!_selectEnvClusterIds.Any())
                 {
-                    await PopupService.AlertAsync("Please select environment/cluster", AlertTypes.Error);
+                    await PopupService.AlertAsync(T("Please select environment/cluster"), AlertTypes.Error);
                     return;
                 }
 

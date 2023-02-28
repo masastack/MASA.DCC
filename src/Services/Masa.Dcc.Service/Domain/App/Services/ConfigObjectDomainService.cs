@@ -411,18 +411,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             string configObjectName,
             object value)
         {
-            Console.WriteLine("=================================================");
-            Console.WriteLine("configObjectName:" + configObjectName);
-            Console.WriteLine("=================================================");
-
-            var aa = await _configObjectRepository.FindAsync(config => config.Name == configObjectName);
-
-            Console.WriteLine("=================================================");
-            Console.WriteLine("configObject:" + aa?.Name);
-            Console.WriteLine("=================================================");
-
             var configObject = await _configObjectRepository.FindAsync(config => config.Name == configObjectName) ?? throw new UserFriendlyException("ConfigObject does not exist");
-            Console.WriteLine("=====================OK============================");
 
             string newValue = JsonSerializer.Serialize(value);
 

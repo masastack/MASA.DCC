@@ -20,7 +20,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Middleware
             var user = _userContext.GetUser<MasaUser>();
             var attribute = Attribute.GetCustomAttribute(typeof(TEvent), typeof(ByPassDisabledCommandAttribute));
 
-            if (_masaStackConfig.IsDemo && attribute == null && user?.Account == "admin" && @event is ICommand)
+            if (_masaStackConfig.IsDemo && attribute == null && user?.Account?.ToLower() == "guest" && @event is ICommand)
             {
                 throw new UserFriendlyException("演示账号禁止操作");
             }

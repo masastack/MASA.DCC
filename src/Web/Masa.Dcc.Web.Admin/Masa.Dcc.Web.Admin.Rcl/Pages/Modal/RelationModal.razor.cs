@@ -55,7 +55,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             var publicConfig = await ConfigObjectCaller.GetPublicConfigAsync();
             if (!publicConfig.Any())
             {
-                await PopupService.AlertAsync(T("Please add public configuration first"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Please add public configuration first"), AlertTypes.Error);
             }
             else
             {
@@ -112,11 +112,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             if (!_selectToEnvClusterIds.Any())
             {
-                await PopupService.AlertAsync(T("Please select the cluster environment to associate"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Please select the cluster environment to associate"), AlertTypes.Error);
             }
             else if (_selectPublicConfigObjectId == 0)
             {
-                await PopupService.AlertAsync(T("Please select the public configuration to be associated"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Please select the public configuration to be associated"), AlertTypes.Error);
             }
             else
             {
@@ -127,7 +127,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                     if (relationed)
                     {
                         var envCluster = _allEnvClusters.First(c => c.Id == envClusterId.AsT1);
-                        await PopupService.AlertAsync(T("The public configuration object has been associated in \"{environmentClusterName}\", please do not repeat the association").Replace("{environmentClusterName}", envCluster.EnvironmentClusterName), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("The public configuration object has been associated in \"{environmentClusterName}\", please do not repeat the association").Replace("{environmentClusterName}", envCluster.EnvironmentClusterName), AlertTypes.Error);
                         return;
                     }
                 }
@@ -212,7 +212,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 {
                     await OnSubmitAfter.InvokeAsync();
                 }
-                await PopupService.AlertAsync(T("Operation succeeded"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Operation succeeded"), AlertTypes.Success);
                 SheetDialogValueChanged(false);
             }
         }

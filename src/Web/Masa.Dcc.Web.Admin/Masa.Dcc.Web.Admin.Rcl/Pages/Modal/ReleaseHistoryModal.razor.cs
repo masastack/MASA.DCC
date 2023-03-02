@@ -84,7 +84,7 @@ public partial class ReleaseHistoryModal
 
         if (_configObjectReleases.Count < 1)
         {
-            await PopupService.AlertAsync(T("No publishing history"), AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(T("No publishing history"), AlertTypes.Error);
         }
         else
         {
@@ -173,14 +173,14 @@ public partial class ReleaseHistoryModal
         var current = _configObjectReleases.First();
         if (_selectReleaseHistory.IsInvalid)
         {
-            await PopupService.AlertAsync(T("This version is obsolete and cannot be rolled back"), AlertTypes.Error);
+            await PopupService.EnqueueSnackbarAsync(T("This version is obsolete and cannot be rolled back"), AlertTypes.Error);
             return;
         }
 
         if (current.ToReleaseId == _selectReleaseHistory.Id || _selectReleaseHistory.Id == current.Id ||
             current.Version == _selectReleaseHistory.Version)
         {
-            await PopupService.AlertAsync(
+            await PopupService.EnqueueSnackbarAsync(
                 T("This version is the same as the current version and cannot be rolled back"), AlertTypes.Error);
             return;
         }
@@ -224,6 +224,6 @@ public partial class ReleaseHistoryModal
             ConfigObjectId = releaseHistory.Id, RollbackToReleaseId = releaseHistory.ConfigObjectReleases.Last().Id
         });
         _showRollbackModal = false;
-        await PopupService.AlertAsync(T("Rollback succeeded"), AlertTypes.Success);
+        await PopupService.EnqueueSnackbarAsync(T("Rollback succeeded"), AlertTypes.Success);
     }
 }

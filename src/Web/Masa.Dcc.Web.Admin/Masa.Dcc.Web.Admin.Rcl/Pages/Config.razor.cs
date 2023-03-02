@@ -95,7 +95,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 return headers;
             }
         }
-        
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -409,7 +409,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 if (errorData != null)
                 {
                     var errorLine = lineDatas.ToList().IndexOf(errorData) + 1;
-                    await PopupService.AlertAsync(T("Line:{errorLine}, key value must separate by '='").Replace("{errorLine}", errorLine + ""), AlertTypes.Error);
+                    await PopupService.EnqueueSnackbarAsync(T("Line:{errorLine}, key value must separate by '='").Replace("{errorLine}", errorLine + ""), AlertTypes.Error);
                 }
                 else
                 {
@@ -420,7 +420,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         var key = keyValues[0].TrimEnd();
                         if (editorPropertyContents.Any(property => property.Key == key))
                         {
-                            await PopupService.AlertAsync(T("Key: {key} already exists").Replace("{key}", key), AlertTypes.Error);
+                            await PopupService.EnqueueSnackbarAsync(T("Key: {key} already exists").Replace("{key}", key), AlertTypes.Error);
                             return;
                         }
                         else
@@ -490,7 +490,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             });
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-            await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect"), AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect"), AlertTypes.Success);
             HandleTabIndexChanged(T("Table"), _configObjects.First(c => c.Id == configObjectId));
         }
 
@@ -557,7 +557,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch
                     {
-                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
 
@@ -569,13 +569,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch
                     {
-                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
 
                     break;
                 default:
-                    await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
+                    await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                     return;
             }
 
@@ -591,7 +591,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 configObject.RelationConfigObjectId = 0;
 
-                await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
             }
             else
             {
@@ -622,7 +622,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch (Exception)
                     {
-                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
                 }
@@ -634,7 +634,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Content = configObject.Content
                 });
 
-                await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
             }
             else
             {
@@ -672,7 +672,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.AlertAsync(T("Deletion succeeded. Please publish to take effect"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Deletion succeeded. Please publish to take effect"), AlertTypes.Success);
             }
         }
 
@@ -735,7 +735,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
                     {
-                        await PopupService.AlertAsync(T("Key: {key} already exists").Replace("{key}", _propertyConfigModal.Data.Key), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("Key: {key} already exists").Replace("{key}", _propertyConfigModal.Data.Key), AlertTypes.Error);
                         return;
                     }
                     else
@@ -751,7 +751,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                 _propertyConfigModal.Hide();
-                await PopupService.AlertAsync(T("Add succeeded"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
             }
         }
 
@@ -773,7 +773,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
                 _configObjects.Remove(configObject);
 
-                await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Delete succeeded"), AlertTypes.Success);
             }
         }
 
@@ -781,7 +781,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (model.Content == model.TempContent)
             {
-                await PopupService.AlertAsync(T("Config object content has not changed"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Config object content has not changed"), AlertTypes.Error);
                 return;
             }
 
@@ -809,7 +809,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await ConfigObjectCaller.RevokeAsync(configObject.Id);
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.AlertAsync(T("Revoke succeeded"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Revoke succeeded"), AlertTypes.Success);
             }
         }
 
@@ -821,7 +821,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (_releaseHistory.ConfigObjectReleases.Count <= 1
                 || _releaseHistory.ConfigObjectReleases.First().Version == _releaseHistory.ConfigObjectReleases.Last().Version)
             {
-                await PopupService.AlertAsync(T("No publishing history can be rolled back"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("No publishing history can be rolled back"), AlertTypes.Error);
                 return;
             }
             var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.First();
@@ -852,9 +852,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
             _showRollbackModal = false;
-            await PopupService.AlertAsync(T("Rollback succeeded"), AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync(T("Rollback succeeded"), AlertTypes.Success);
         }
-        
+
         private async Task ShowCloneModalAsync(ConfigObjectModel? configObject = null)
         {
             if (_cloneModal != null)

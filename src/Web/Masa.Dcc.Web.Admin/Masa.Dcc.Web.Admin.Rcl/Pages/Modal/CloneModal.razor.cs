@@ -196,7 +196,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             var envClusterIds = _cloneSelectApp.EnvironmentClusters.Select(ec => (StringNumber)ec.Id).ToList();
             if (!envClusterIds.Any())
             {
-                await PopupService.AlertAsync(T("There is no environment cluster to clone under the current application"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("There is no environment cluster to clone under the current application"), AlertTypes.Error);
                 return;
             }
 
@@ -338,14 +338,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             if (!_selectEnvClusterIds.Any())
             {
-                await PopupService.AlertAsync(T("Please select environment/cluster"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Please select environment/cluster"), AlertTypes.Error);
                 return;
             }
 
             var configObjects = ConfigObjects.Where(c => c.IsChecked);
             if (!configObjects.Any())
             {
-                await PopupService.AlertAsync(T("Please select the configuration to clone"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Please select the configuration to clone"), AlertTypes.Error);
                 return;
             }
 

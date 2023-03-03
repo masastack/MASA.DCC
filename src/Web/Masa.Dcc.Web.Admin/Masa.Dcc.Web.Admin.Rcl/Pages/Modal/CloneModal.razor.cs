@@ -208,15 +208,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 return;
             }
 
-            _selectEnvClusterIds = envClusterIds;
-            CloneEnvClusterValueChanged(envClusterIds);
-
             _afterAllCloneConfigObjects.Clear();
             foreach (var item in _cloneSelectApp.EnvironmentClusters)
             {
                 var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
                 _afterAllCloneConfigObjects.AddRange(configObjects);
             }
+
+            _selectEnvClusterIds = envClusterIds;
+            CloneEnvClusterValueChanged(envClusterIds);
         }
 
         private void ClonePrevClick()

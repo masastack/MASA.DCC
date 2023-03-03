@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using System.Text;
-using System.Text.Json;
-
 namespace Masa.Dcc.Caller
 {
     public class AppCaller : DccHttpClientCallerBase
@@ -12,7 +9,8 @@ namespace Masa.Dcc.Caller
 
         public AppCaller(
             IServiceProvider serviceProvider,
-            DccApiGatewayOptions options) : base(serviceProvider, options)
+            TokenProvider tokenProvider,
+            DccApiGatewayOptions options) : base(serviceProvider, tokenProvider, options)
         {
         }
 

@@ -778,3 +778,7 @@ textarea:disabled {
 .m-expansion-panel-header.m-expansion-panel--disabled.m-btn--disabled .m-btn .m-icon {
     color: rgba(0,0,0,.26) !important;
 }
+
+.masa-stack-components .m-data-table-header tr .m-icon {
+    color: #A3AED0 !important;
+}

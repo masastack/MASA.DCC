@@ -1,7 +1,7 @@
 ﻿@page "/{ProjectId:int}/App"
 @inherits MasaCompontentBase;
 
-<MRow style="">
+<MRow>
     <MCol Cols="2">
         <MNavigationDrawer Right Permanent Class="rounded-4 py-6 overflow-hidden" Style="height: calc(100vh - 192px); overflow-y: hidden;width:100%;">
             <div style="padding:0 24px; display:flex; flex-direction:column; align-items:center;">
@@ -42,87 +42,85 @@
         </MNavigationDrawer>
     </MCol>
     <MCol Cols="10">
-        <div>
-            <div class="bizCard">
-                <h6 class="emphasis2--text h6">@T("Business configuration")</h6>
-                <MCard Ripple=false Class="mt-6 rounded-5" Height="163"
-                       OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, _projectEnvClusters[0].Id, ConfigObjectType.Biz, ProjectId))">
-                    <MCardTitle Class="pb-0" Style="font-size: medium; flex-wrap:nowrap;">
-                        <div class="emphasis2--text h7" @onclick:stopPropagation>
-                            @if (!_isEditBiz)
-                            {
-                                @_bizDetail.Name
-                            }
-                            else
-                            {
-                                <STextField Rules="BizNameRules" Dense Outlined @bind-Value="@_bizDetail.Name"></STextField>
-                            }
-                        </div>
-                        <div class="mx-4" style="color:#E2E7F4">|</div>
-                        <div class="emphasis2--text h7 text-overflow">Biz</div>
-                        <MSpacer />
-                        @if (_isEditBiz)
+        <div class="bizCard">
+            <h6 class="emphasis2--text h6">@T("Business configuration")</h6>
+            <MCard Ripple=false Class="mt-6 rounded-5" Height="163"
+                    OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, _projectEnvClusters[0].Id, ConfigObjectType.Biz, ProjectId))">
+                <MCardTitle Class="pb-0" Style="font-size: medium; flex-wrap:nowrap;">
+                    <div class="emphasis2--text h7" @onclick:stopPropagation>
+                        @if (!_isEditBiz)
                         {
-                            <MButton Class="mr-4" StopPropagation Icon OnClick="CancelEditBizName">
-                            <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
-                            </MButton>
+                            @_bizDetail.Name
                         }
-                        <MButton Icon OnClick="UpdateBizAsync" StopPropagation>
-                            @if (!_isEditBiz)
-                            {
-                                <MIcon Color="#323D6F" Size="20">mdi-pencil</MIcon>
-                            }
-                            else
-                            {
-                                <MIcon Color="success">mdi-check</MIcon>
-                            }
+                        else
+                        {
+                            <STextField Rules="BizNameRules" Dense Outlined @bind-Value="@_bizDetail.Name"></STextField>
+                        }
+                    </div>
+                    <div class="mx-4" style="color:#E2E7F4">|</div>
+                    <div class="emphasis2--text h7 text-overflow">Biz</div>
+                    <MSpacer />
+                    @if (_isEditBiz)
+                    {
+                        <MButton Class="mr-4" StopPropagation Icon OnClick="CancelEditBizName">
+                        <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
                         </MButton>
-                    </MCardTitle>
-                    <div class="regular3--text pl-4 body2 text-overflow">@_bizDetail.Identity</div>
-                    <MCardActions Class="pa-0 mx-4" Style="position: absolute; bottom: 16px; right: 0; left: 0;">
-                        <MChipGroup @key="_projectEnvClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
-                            @foreach (var item in _projectEnvClusters)
-                            {
-                                <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, item.Id, ConfigObjectType.Biz, ProjectId))"
-                                            Style="margin:0 6px;"
-                                            EnvironmentName="@item.EnvironmentName"
-                                            EnvironmentColor="@item.EnvironmentColor"
-                                            ClusterName="@item.ClusterName" />
-                            }
-                        </MChipGroup>
-                    </MCardActions>
-                </MCard>
-            </div>
-            <div class="appCard mt-6">
-                <div class="d-flex justify-space-between align-end">
-                    <h6 class="emphasis2--text h6">@T("App")</h6>
-                    <MTextField @bind-Value="_appName" OnKeyDown="SearchApp" Style="max-width:300px;" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
-                        <PrependInnerContent>
-                            <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
-                        </PrependInnerContent>
-                    </MTextField>
-                </div>
-                <div class="mt-6" style="width:100%; height: calc(100vh - 497px);overflow-y:auto; overflow-x:hidden;">
-                    <MRow>
-                        @foreach (var app in _apps)
+                    }
+                    <MButton Icon OnClick="UpdateBizAsync" StopPropagation>
+                        @if (!_isEditBiz)
                         {
-                            <MCol Lg="4" Md="6" Sm="12">
-                                <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                    <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
-                                        @foreach (var item in app.EnvironmentClusters)
-                                        {
-                                            <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"
-                                                    Style="margin:0 12px 1px 0;"
-                                                    EnvironmentName="@item.EnvironmentName"
-                                                    EnvironmentColor="@item.EnvironmentColor"
-                                                    ClusterName="@item.ClusterName" />
-                                        }
-                                    </MChipGroup>
-                                </AppCard>
-                            </MCol>
+                            <MIcon Color="#323D6F" Size="20">mdi-pencil</MIcon>
                         }
-                    </MRow>
-                </div>
+                        else
+                        {
+                            <MIcon Color="success">mdi-check</MIcon>
+                        }
+                    </MButton>
+                </MCardTitle>
+                <div class="regular3--text pl-4 body2 text-overflow">@_bizDetail.Identity</div>
+                <MCardActions Class="pa-0 mx-4" Style="position: absolute; bottom: 16px; right: 0; left: 0;">
+                    <MChipGroup @key="_projectEnvClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
+                        @foreach (var item in _projectEnvClusters)
+                        {
+                            <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, item.Id, ConfigObjectType.Biz, ProjectId))"
+                                        Style="margin:0 6px;"
+                                        EnvironmentName="@item.EnvironmentName"
+                                        EnvironmentColor="@item.EnvironmentColor"
+                                        ClusterName="@item.ClusterName" />
+                        }
+                    </MChipGroup>
+                </MCardActions>
+            </MCard>
+        </div>
+        <div class="appCard mt-6">
+            <div class="d-flex justify-space-between align-end">
+                <h6 class="emphasis2--text h6">@T("App")</h6>
+                <MTextField @bind-Value="_appName" OnKeyDown="SearchApp" Style="max-width:300px;" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
+                    <PrependInnerContent>
+                        <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
+                    </PrependInnerContent>
+                </MTextField>
+            </div>
+            <div class="mt-6" style="width:100%; height: calc(100vh - 497px);overflow-y:auto; overflow-x:hidden;">
+                <MRow>
+                    @foreach (var app in _apps)
+                    {
+                        <MCol Lg="4" Md="6" Sm="12">
+                            <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                    @foreach (var item in app.EnvironmentClusters)
+                                    {
+                                        <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"
+                                                Style="margin:0 12px 1px 0;"
+                                                EnvironmentName="@item.EnvironmentName"
+                                                EnvironmentColor="@item.EnvironmentColor"
+                                                ClusterName="@item.ClusterName" />
+                                    }
+                                </MChipGroup>
+                            </AppCard>
+                        </MCol>
+                    }
+                </MRow>
             </div>
         </div>
     </MCol>

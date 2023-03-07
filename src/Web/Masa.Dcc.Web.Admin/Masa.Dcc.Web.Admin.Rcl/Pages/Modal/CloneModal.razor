@@ -1,6 +1,6 @@
 ﻿@inherits MasaCompontentBase
 
-<SSheetDialog EnableDomReload Value="Value" Title="@T("Clone config object")" Icon="mdi-circle" IconColor="success" ValueChanged="CloneDialogValueChangedAsync">
+<SSheetDialog EnableDomReload Value="Value" ValueChanged="CloneDialogValueChangedAsync" Title="@T("Clone config object")" Icon="mdi-circle" IconColor="success">
 <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px;">
     @if (ConfigObjectType == ConfigObjectType.Public)
     {

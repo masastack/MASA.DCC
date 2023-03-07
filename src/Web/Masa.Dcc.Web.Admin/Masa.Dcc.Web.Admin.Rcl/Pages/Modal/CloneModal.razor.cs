@@ -44,9 +44,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Inject]
         public MasaUser MasaUser { get; set; } = default!;
 
-        [Parameter]
-        public EventCallback<bool> ValueChanged { get; set; }
-
         #region clone
         private ConfigObjectModel _selectConfigObject = new();
         private List<StringNumber> _selectEnvClusterIds = new();
@@ -440,8 +437,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 }
                 _step = 1;
             }
-
-            await ValueChanged.InvokeAsync(value);
         }
     }
 }

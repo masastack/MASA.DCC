@@ -54,7 +54,7 @@ builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
 
 builder.AddMasaStackComponentsForServer("wwwroot/i18n");
 
-builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
+builder.Services.AddDccApiGateways(c => c.DccServiceAddress = "http://localhost:6196");
 
 var app = builder.Build();
 

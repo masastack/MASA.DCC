@@ -18,33 +18,33 @@
 	
 	<ItemGroup>
 		<PackageReference Include="Mapster" Version="7.3.0" />
-		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.BuildingBlocks.StackSdks.Auth" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Authentication.Identity" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Caching.Distributed.StackExchangeRedis" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Caching.MultilevelCache" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Data.Contracts" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Data.EFCore.SqlServer" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Development.DaprStarter" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Development.DaprStarter.AspNetCore" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore" Version="1.0.0-preview.14" />
+		<PackageReference Include="Masa.BuildingBlocks.Dispatcher.Events" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.BuildingBlocks.StackSdks.Auth" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Authentication.Identity" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Caching.Distributed.StackExchangeRedis" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Caching.MultilevelCache" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Data.Contracts" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Data.EFCore.SqlServer" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Development.DaprStarter" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Development.DaprStarter.AspNetCore" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.EventLogs.EFCore" Version="1.0.0-preview.15" />
 		<PackageReference Include="FluentValidation" Version="10.4.0" />
 		<PackageReference Include="FluentValidation.AspNetCore" Version="10.4.0" />
 		<PackageReference Include="Dapr.AspNetCore" Version="1.8.0" />
-		<PackageReference Include="Masa.BuildingBlocks.Ddd.Domain" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Ddd.Domain" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Exceptions" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.StackSdks.Config" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Utils.Extensions.Expressions" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Utils.Security.Cryptography" Version="1.0.0-preview.14" />
+		<PackageReference Include="Masa.BuildingBlocks.Ddd.Domain" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Ddd.Domain" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Ddd.Domain.Repository.EFCore" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Exceptions" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Config" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Utils.Extensions.Expressions" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Utils.Security.Cryptography" Version="1.0.0-preview.15" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
-		<PackageReference Include="Masa.Contrib.Data.UoW.EFCore" Version="1.0.0-preview.14" />
-		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="1.0.0-preview.14" />
+		<PackageReference Include="Masa.Contrib.Data.UoW.EFCore" Version="1.0.0-preview.15" />
+		<PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="1.0.0-preview.15" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.4">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

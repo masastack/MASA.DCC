@@ -1,45 +1,47 @@
 ﻿@page "/{ProjectId:int}/App"
 @inherits MasaCompontentBase;
 
-<div class="d-flex">
-    <MNavigationDrawer Right Permanent Class="rounded-4 py-6 overflow-hidden" Width="300" Style="height: calc(100vh - 192px); overflow-y: hidden;">
-        <div style="min-width:300px; padding:0 24px; display:flex; flex-direction:column; align-items:center;">
-            <div style="width:100%; overflow-x: hidden; overflow-y: hidden;" class="regular--text">
-                <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
-                    <div class="emphasis--text h6 text-overflow2">@_projectDetail.Name</div>
-                </MRow>
-                <MRow NoGutters Class="body2">
-                    @_projectDetail.Identity
-                </MRow>
-                <MRow NoGutters Class="mt-2 body2">
-                    @T("AppCount")：<span class="subtitle2">@_apps.Count</span>
-                </MRow>
-                <div style="height: calc(100vh - 320px); overflow-y: auto; overflow-x: hidden;">
-                    <MRow NoGutters Class="mt-4 body2" Style="word-break: break-all;">
-                        @_projectDetail.Description
+<MRow>
+    <MCol Cols="2">
+        <MNavigationDrawer Right Permanent Class="rounded-4 py-6 overflow-hidden" Style="height: calc(100vh - 192px); overflow-y: hidden;width:100%;">
+            <div style="padding:0 24px; display:flex; flex-direction:column; align-items:center;">
+                <div style="width:100%; overflow-x: hidden; overflow-y: hidden;" class="regular--text">
+                    <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
+                        <div class="emphasis--text h6 text-overflow2">@_projectDetail.Name</div>
                     </MRow>
-                    <MRow NoGutters Class="regular3--text body2 mt-6">@T("Participate team")</MRow>
-                    <MRow NoGutters Class="mt-4">
-                        <MAvatar Height="24" Width="24" MinHeight="24" MinWidth="24" Class="mr-3">
-                            <MImage Height="24" Width="24" Src="@_projectTeamDetail.Avatar"></MImage>
-                        </MAvatar>
-                        @_projectTeamDetail.Name
+                    <MRow NoGutters Class="body2">
+                        @_projectDetail.Identity
                     </MRow>
-                    <MRow NoGutters Class="regular3--text body2 mt-6">@T("Environment/Cluster")</MRow>
-                    <div style="display:flex; flex-direction:column;align-items:start">
-                        @{
-                            var envCluster = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id));
-                            foreach (var item in envCluster)
-                            {
-                                <EnvClusterChip Class="mt-4" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                    <MRow NoGutters Class="mt-2 body2">
+                        @T("AppCount")：<span class="subtitle2">@_apps.Count</span>
+                    </MRow>
+                    <div style="height: calc(100vh - 320px); overflow-y: auto; overflow-x: hidden;">
+                        <MRow NoGutters Class="mt-4 body2" Style="word-break: break-all;">
+                            @_projectDetail.Description
+                        </MRow>
+                        <MRow NoGutters Class="regular3--text body2 mt-6">@T("Participate team")</MRow>
+                        <MRow NoGutters Class="mt-4">
+                            <MAvatar Height="24" Width="24" MinHeight="24" MinWidth="24" Class="mr-3">
+                                <MImage Height="24" Width="24" Src="@_projectTeamDetail.Avatar"></MImage>
+                            </MAvatar>
+                            @_projectTeamDetail.Name
+                        </MRow>
+                        <MRow NoGutters Class="regular3--text body2 mt-6">@T("Environment/Cluster")</MRow>
+                        <div style="display:flex; flex-direction:column;align-items:start">
+                            @{
+                                var envCluster = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id));
+                                foreach (var item in envCluster)
+                                {
+                                    <EnvClusterChip Class="mt-4" EnvironmentName="@item.EnvironmentName" EnvironmentColor="@item.EnvironmentColor" ClusterName="@item.ClusterName" />
+                                }
                             }
-                        }
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </MNavigationDrawer>
-    <div class="pl-6" style="width: calc(100% - 300px);">
+        </MNavigationDrawer>
+    </MCol>
+    <MCol Cols="10">
         <div class="bizCard">
             <h6 class="emphasis2--text h6">@T("Business configuration")</h6>
             <MCard Ripple=false Class="mt-4 rounded-5" Height="163"
@@ -61,7 +63,7 @@
                     @if (_isEditBiz)
                     {
                         <MButton Class="mr-4" StopPropagation Icon OnClick="CancelEditBizName">
-                            <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
+                        <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
                         </MButton>
                     }
                     <MButton Icon OnClick="UpdateBizAsync" StopPropagation>
@@ -81,10 +83,10 @@
                         @foreach (var item in _projectEnvClusters)
                         {
                             <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, item.Id, ConfigObjectType.Biz, ProjectId))"
-                                            Style="margin:0 6px;"
-                                            EnvironmentName="@item.EnvironmentName"
-                                            EnvironmentColor="@item.EnvironmentColor"
-                                            ClusterName="@item.ClusterName" />
+                                        Style="margin:0 6px;"
+                                        EnvironmentName="@item.EnvironmentName"
+                                        EnvironmentColor="@item.EnvironmentColor"
+                                        ClusterName="@item.ClusterName" />
                         }
                     </MChipGroup>
                 </MCardActions>
@@ -133,6 +135,5 @@
                 }
             </div>
         </div>
-    </div>
-</div>
-
+    </MCol>
+</MRow>

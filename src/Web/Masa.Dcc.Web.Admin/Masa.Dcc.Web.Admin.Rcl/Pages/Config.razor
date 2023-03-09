@@ -9,29 +9,23 @@
                         <div class="full-width d-flex">
                             <div class="emphasis--text h6 text-overflow2">@_appDetail.Name</div>
                             <MSpacer></MSpacer>
-                            @if (ConfigObjectType != ConfigObjectType.Public)
-                            {
-                                <MMenu OffsetY>
-                                <ActivatorContent>
-                                    <MButton Icon @attributes="@context.Attrs">
-                                            <MIcon Color="black">mdi-dots-horizontal</MIcon>
-                                        </MButton>
-                                    </ActivatorContent>
-                                    <ChildContent>
-                                        @if (ConfigObjectType != ConfigObjectType.Public)
-                                        {
-                                            <MList Dense>
-                                            <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
-                                                <MIcon Color="#323D6F" Size="20" Class="mr-4">far fa-copy</MIcon>
-                                                <MListItemContent>
-                                                <MListItemTitle>@T("Clone config")</MListItemTitle>
-                                                </MListItemContent>
-                                                </MListItem>
-                                                </MList>
-                                        }
-                                    </ChildContent>
-                                </MMenu>
-                            }
+                            <MMenu OffsetY>
+                            <ActivatorContent>
+                                <MButton Icon @attributes="@context.Attrs">
+                                    <MIcon Color="black">mdi-dots-horizontal</MIcon>
+                                </MButton>
+                                </ActivatorContent>
+                                <ChildContent>
+                                    <MList Dense>
+                                    <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
+                                    <MIcon Color="#323D6F" Size="20" Class="mr-4">far fa-copy</MIcon>
+                                    <MListItemContent>
+                                    <MListItemTitle>@T("Clone config")</MListItemTitle>
+                                    </MListItemContent>
+                                    </MListItem>
+                                    </MList>
+                                </ChildContent>
+                            </MMenu>
                         </div>
                     </MRow>
                     <div class="regular3--text body2 text-overflow">

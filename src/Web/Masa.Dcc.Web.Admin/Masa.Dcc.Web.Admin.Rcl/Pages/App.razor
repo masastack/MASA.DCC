@@ -100,7 +100,7 @@
                 </MTextField>
             </div>
             <div class="mt-6" style="width:100%; height: calc(100vh - 497px);overflow-y:auto; overflow-x:hidden;">
-                @if(_apps == null || _apps.Count == 0)
+                @if(_apps?.Any() == false)
                 {
                     <MCard Class="rounded-5 full-height full-width pl-3 pr-3 fill">
                         <MCardText Class="d-flex align-center justify-center flex-column">

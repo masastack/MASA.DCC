@@ -2,7 +2,7 @@
 @inherits MasaCompontentBase
 
 
-@if (_projects == null || _projects.Count == 0)
+@if (_projects?.Any() == false)
 {
     <MCard Class="rounded-5 full-height full-width pl-3 pr-3 fill">
         <MCardText Class="d-flex align-center justify-center flex-column">

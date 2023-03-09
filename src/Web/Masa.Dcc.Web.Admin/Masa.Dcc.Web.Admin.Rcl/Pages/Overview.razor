@@ -30,19 +30,17 @@
 
     <MTabsItems Style="background-color: transparent !important;" Value="_curTab" class="pt-6">
         <MTabItem>
-            <div class="d-flex">
-                <MNavigationDrawer Permanent Class="rounded-4" Width="242" Style="height:calc(100vh - 192px );">
-                    <div style="min-width:242px; display:flex; flex-direction:column; align-items:center; overflow: auto; height:calc(100vh - 200px );">
-                        <MList Width="194">
-                            <MListItemGroup Class="rounded-2"
-                                            @bind-Value="_selectedEnvId"
-                                            Mandatory
-                                            Color="#A3AED0">
-                                @foreach (var env in _environments)
-                                {
-                                    <MTooltip Left>
+            <MRow>
+                <MCol Cols="2">
+                    <MNavigationDrawer Permanent Class="rounded-4" Style="height:calc(100vh - 192px );width:100%">
+                        <div class="ml-6" style="display:flex; flex-direction:column; overflow: auto; height:calc(100vh - 200px );">
+                            <MList>
+                                <MListItemGroup Class="rounded-2" @bind-Value="_selectedEnvId" Mandatory Color="#A3AED0">
+                                    @foreach (var env in _environments)
+                                    {
+                                        <MTooltip Left Class="ml-1">
                                         <ActivatorContent>
-                                            <MListItem @attributes="@context.Attrs" Context="_" Style="height: 40px !important; min-height: 40px !important;" Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
+                                            <MListItem @attributes="@context.Attrs" Context="_" Style="height: 48px !important; min-height: 48px !important;margin:18px 24px -32px 0px !important" Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
                                                 <ItemContent>
                                                     <MListItemIcon Class="d-flex align-center mr-0">
                                                         <MIcon Color="@env.Color" Size="12">mdi-circle</MIcon>
@@ -51,27 +49,29 @@
                                                         <MListItemTitle>@env.Name</MListItemTitle>
                                                     </MListItemContent>
                                                 </ItemContent>
-                                            </MListItem>
-                                        </ActivatorContent>
-                                        <ChildContent>
-                                            <span>@env.Name</span>
-                                        </ChildContent>
-                                    </MTooltip>
-                                }
-                            </MListItemGroup>
-                        </MList>
-                    </div>
-                </MNavigationDrawer>
-                <div class="pl-6" style="width: calc(100% - 242px); overflow: hidden; display:block;">
-                    <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:88px; background:#fff;padding:0 12px;">
-                        <MCard>
-                            <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
-                                @foreach (var cluster in _clusters)
-                                {
-                                    StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
-                                    <MTooltip Top>
+                                                </MListItem>
+                                            </ActivatorContent>
+                                            <ChildContent>
+                                                <span>@env.Name</span>
+                                            </ChildContent>
+                                            </MTooltip>
+                                    }
+                                </MListItemGroup>
+                            </MList>
+                        </div>
+                    </MNavigationDrawer>
+                </MCol>
+                <MCol Cols="10">
+                    <div style="overflow: hidden; display:block;">
+                        <MRow NoGutters Align="AlignTypes.Center" Class="env-toolbar rounded-5" Style="height:96px; background:#fff;padding:0 12px;">
+                            <MCard>
+                                <MTabs @bind-Value="_selectEnvClusterId" Class="cluster-tabs mt-2" Style="height:52px;margin-top:-3px;" BackgroundColor="#fff" ShowArrows="@(true)" ActiveClass="cluster-tab-active" HideSlider>
+                                    @foreach (var cluster in _clusters)
+                                    {
+                                        StringNumber envClusterId = (StringNumber)cluster.EnvironmentClusterId;
+                                        <MTooltip Top>
                                         <ActivatorContent>
-                                            <MTab @attributes="@context.Attrs" Style="height: 40px; max-width: 150px;" Value="envClusterId">
+                                            <MTab @attributes="@context.Attrs" Style="height: 48px; max-width: 150px;" Value="envClusterId">
                                                 <div class="text-overflow">@cluster.Name</div>
                                             </MTab>
                                         </ActivatorContent>
@@ -79,34 +79,35 @@
                                             <span>@cluster.Name</span>
                                         </ChildContent>
                                     </MTooltip>
-                                }
-                            </MTabs>
-                        </MCard>
-                    </MRow>
-                    <div class="mt-6" style="height:calc(100vh - 304px ); display:flex; flex-direction:column; justify-content:space-between; overflow: hidden; position: relative;">
-                        <ProjectList @ref="_projectList"
-                                     LandscapePage
-                                     EnvironmentClusterId="_selectEnvClusterId.AsT1"
-                                     OnNameClick="NavigateToAppAsync"
-                                     OnAppCardClick="NavigateToConfigAsync"
-                                     OnAppPinClick="AppPin" />
+                                    }
+                                </MTabs>
+                            </MCard>
+                        </MRow>
+                        <div class="mt-6" style="height:calc(100vh - 304px ); display:flex; flex-direction:column; justify-content:space-between; overflow: hidden; position: relative;">
+                            <ProjectList @ref="_projectList"
+                                                  LandscapePage
+                                         EnvironmentClusterId="_selectEnvClusterId.AsT1"
+                                         OnNameClick="NavigateToAppAsync"
+                                         OnAppCardClick="NavigateToConfigAsync"
+                                         OnAppPinClick="AppPin" />
+                        </div>
                     </div>
-                </div>
-            </div>
-        </MTabItem>
-        <MTabItem>
-            <Masa.Dcc.Web.Admin.Rcl.Pages.App ProjectId="_selectProjectId"
+                    </MCol>
+            </MRow>
+                    </MTabItem>
+                    <MTabItem>
+                    <Masa.Dcc.Web.Admin.Rcl.Pages.App ProjectId="_selectProjectId"
                                               @ref="_app">
-            </Masa.Dcc.Web.Admin.Rcl.Pages.App>
-        </MTabItem>
-        <MTabItem>
-            <Config AppId="@_configModel.AppId"
+                    </Masa.Dcc.Web.Admin.Rcl.Pages.App>
+                    </MTabItem>
+                    <MTabItem>
+                    <Config AppId="@_configModel.AppId"
                     ConfigObjectType="@_configModel.ConfigObjectType"
                     EnvironmentClusterId="@_configModel.EnvironmentClusterId"
                     ProjectId="@_configModel.ProjectId"
                     ProjectIdentity="@_configModel.ProjectIdentity"
                     @ref="_config">
-            </Config>
-        </MTabItem>
-    </MTabsItems>
-</CascadingValue>
+                    </Config>
+                    </MTabItem>
+                    </MTabsItems>
+                    </CascadingValue>

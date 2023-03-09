@@ -6,7 +6,7 @@
         @foreach (var project in _projects)
         {
             var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
-            <MExpansionPanel Class="rounded-5 mb-6">
+            <MExpansionPanel Class="rounded-5 mb-4">
                 <MExpansionPanelHeader Style="height: 56px;" Class="my-6">
                     <ChildContent>
                         <span style="display:flex;align-items:center; margin-right:10px;">

@@ -146,6 +146,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             {
                 _allProjects.RemoveAll(project => project.Id == ProjectDetail.Id);
             }
+            if (ConfigObjectType == ConfigObjectType.Public)
+            {
+                SelectOtherEnv();
+                await CloneNextClick();
+            }
         }
 
         private void SelectOtherApp()

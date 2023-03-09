@@ -3,8 +3,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-DccOptions dccOptions = builder.Configuration.GetSection("DccOptions").Get<DccOptions>();
-await builder.Services.AddMasaStackConfigAsync(dccOptions);
+await builder.Services.AddMasaStackConfigAsync();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (!builder.Environment.IsDevelopment())
@@ -21,6 +20,12 @@ if (!builder.Environment.IsDevelopment())
     {
         return masaStackConfig.OtlpUrl;
     }, true);
+
+    builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
+}
+else
+{
+    builder.Services.AddDccApiGateways(c => c.DccServiceAddress = "http://localhost:6196");
 }
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
@@ -40,7 +45,6 @@ builder.WebHost.UseKestrel(option =>
     });
 });
 
-builder.Services.AddDaprClient();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<TokenProvider>();
@@ -55,13 +59,6 @@ IdentityModelEventSource.ShowPII = true;
 builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
 
 builder.AddMasaStackComponentsForServer("wwwroot/i18n");
-
-builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
-
-if (builder.Environment.IsDevelopment())
-{
-    builder.Services.AddDaprStarter();
-}
 
 var app = builder.Build();
 

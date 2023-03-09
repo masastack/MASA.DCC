@@ -9,11 +9,10 @@ namespace Masa.Dcc.Caller
 
         public ProjectCaller(
             IServiceProvider serviceProvider,
-            DccApiGatewayOptions options) : base(serviceProvider, options)
+            TokenProvider tokenProvider,
+            DccApiGatewayOptions options) : base(serviceProvider, tokenProvider, options)
         {
         }
-
-        protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
 
         public async Task<List<ProjectModel>> GetListByTeamIdAsync(IEnumerable<Guid> teamIds)
         {
@@ -45,7 +44,7 @@ namespace Masa.Dcc.Caller
 
         public async Task<List<ProjectModel>> GetProjectsAsync()
         {
-            var result = await Caller.GetAsync<List<ProjectModel>>($"{AppSettings.Get("PmClientAddress").TrimEnd('/')}/api/v1/projects");
+            var result = await Caller.GetAsync<List<ProjectModel>>(_prefix);
 
             return result ?? new();
         }

@@ -12,7 +12,7 @@
                 <STextField Class="mt-12" Dense Label="@T("Name")" Outlined Prefix="@(ConfigObjectType==ConfigObjectType.Public ? _namePrefix : "")" @bind-Value="_addConfigObjectModal.Data.Name"></STextField>
                 <SSelect @bind-Value="_addConfigObjectModal.Data.FormatLabelCode"
                          Class="pt-6"
-                         Label="格式"
+                         Label="@T("Format")"
                          MenuProps="props => props.OffsetY = true"
                          Outlined
                          Dense
@@ -20,18 +20,19 @@
                          ItemText="l=>l.Name"
                          ItemValue="l=>l.Code">
                 </SSelect>
-                <p class="neutral--text pt-6" style="font-size:14px; font-weight:700;">是否开启加密</p>
-                <MSwitch Class="ml-3 mt-0" Style="display: inline-block;" @bind-Value="_addConfigObjectModal.Data.Encryption"
+                <p class="emphasis--text pt-6" style="font-size:14px; font-weight:700;">@T("Enable encryption")</p>
+                <MSwitch Class="ml-3 mt-0 enable-encryption" Style="display: inline-block;" @bind-Value="_addConfigObjectModal.Data.Encryption"
                          Label="@(_addConfigObjectModal.Data.Encryption ? T("ON") : T("OFF"))"
                          Inset>
                 </MSwitch>
-                <p class="neutral--text pt-6" style="font-size:14px; font-weight:700;">选择集群</p>
+                <p class="emphasis--text pt-6" style="font-size:14px; font-weight:700;">@T("Please select cluster")</p>
                 <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="EnvClusterValueChanged">
                     @foreach (var item in AppDetail.EnvironmentClusters)
                     {
-                        <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
-                            <div style="@($"color: {item.EnvironmentColor} !important")">@item.EnvironmentName</div>&nbsp;&nbsp;
-                            <div style="color:#05CD99">@item.ClusterName</div>
+                        <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6 m-chip--envcluster" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")" Style=@($"border-color:{item.EnvironmentColor};color:{item.EnvironmentColor}")>
+                            <div>@item.EnvironmentName</div>
+                            <span class="split--text">&nbsp; | &nbsp;</span>
+                            <div class="emphasis2--text">@item.ClusterName</div>
                         </MChip>
                     }
                 </MChipGroup>

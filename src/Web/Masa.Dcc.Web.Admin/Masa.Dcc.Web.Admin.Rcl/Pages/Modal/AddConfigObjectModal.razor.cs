@@ -65,7 +65,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             {
                 if (!_selectEnvClusterIds.Any())
                 {
-                    await PopupService.AlertAsync("Please select environment/cluster", AlertTypes.Error);
+                    await PopupService.EnqueueSnackbarAsync(T("Please select environment/cluster"), AlertTypes.Error);
                     return;
                 }
 
@@ -78,7 +78,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 var selectConfigObject = _configObjects.Where(c => _selectEnvClusterIds.Contains(c.EnvironmentClusterId));
                 if (selectConfigObject.Any(c => c.Name.ToLower().Equals(configName.ToLower())))
                 {
-                    await PopupService.AlertAsync(T("Config object already exists"), AlertTypes.Error);
+                    await PopupService.EnqueueSnackbarAsync(T("Config object already exists"), AlertTypes.Error);
                     return;
                 }
 

@@ -31,7 +31,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             foreach (var label in labels)
             {
-                var user = await AuthClient.UserService.FindByIdAsync(label.Modifier) ?? new();
+                var user = await AuthClient.UserService.GetByIdAsync(label.Modifier) ?? new();
                 label.ModifierName = user.StaffDislpayName;
             }
 
@@ -104,7 +104,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (_labelModal.Data.LabelValues.GroupBy(l => l.Code).Any(l => l.Count() > 1) || _labelModal.Data.LabelValues.GroupBy(l => l.Name).Any(l => l.Count() > 1))
             {
-                await PopupService.AlertAsync(T("The label value Code and label value Name cannot be duplicate"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("The label value Code and label value Name cannot be duplicate"), AlertTypes.Error);
                 return;
             }
 
@@ -113,12 +113,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 if (_labelModal.HasValue)
                 {
                     await LabelCaller.UpdateAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
-                    await PopupService.AlertAsync(T("Edit succeeded"), AlertTypes.Success);
+                    await PopupService.EnqueueSnackbarAsync(T("Edit succeeded"), AlertTypes.Success);
                 }
                 else
                 {
                     await LabelCaller.AddAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
-                    await PopupService.AlertAsync(T("Add succeeded"), AlertTypes.Success);
+                    await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
                 }
 
                 _labels = await GetListAsync();
@@ -146,7 +146,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (result)
             {
                 await LabelCaller.RemoveAsync(label.TypeCode);
-                await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Delete succeeded"), AlertTypes.Success);
                 LabelModalValueChanged(false);
                 _labels = await GetListAsync();
             }

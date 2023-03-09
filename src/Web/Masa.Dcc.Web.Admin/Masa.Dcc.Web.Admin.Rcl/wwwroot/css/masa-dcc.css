@@ -778,3 +778,20 @@ textarea:disabled {
 .m-expansion-panel-header.m-expansion-panel--disabled.m-btn--disabled .m-btn .m-icon {
     color: rgba(0,0,0,.26) !important;
 }
+
+.masa-stack-components .m-data-table-header tr .m-icon {
+    color: #A3AED0 !important;
+}
+.enable-encryption .m-input--switch__track {
+    color: #E9EDF7 !important;
+}
+.m-chip--envcluster:not(.m-chip--active) {
+    border-color: #E4E8F3 !important;
+}
+.m-chip--envcluster:not(.m-chip--active) .emphasis2--text
+{
+    color: #7681AB  !important;
+}
+.m-chip--envcluster .split--text {
+    color: #E4E8F3;
+}

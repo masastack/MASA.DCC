@@ -9,7 +9,8 @@ namespace Masa.Dcc.Caller
 
         public EnvironmentCaller(
             IServiceProvider serviceProvider,
-            DccApiGatewayOptions options) : base(serviceProvider, options)
+            TokenProvider tokenProvider,
+            DccApiGatewayOptions options) : base(serviceProvider, tokenProvider, options)
         {
         }
 

@@ -66,25 +66,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
         private List<ConfigObjectReleaseModel> _configObjectReleases = new();
         private bool _showRollbackModal;
-        private bool _showReleaseHistory;
         private bool _showReleaseModal;
         private string _configObjectReleaseContent = "";
-        private ConfigObjectReleaseModel _selectReleaseHistory = new();
-        private ConfigObjectReleaseModel _prevReleaseHistory = new();
-        private List<ConfigObjectPropertyModel> _changedProperties = new();
         private string _releaseTabText = "All configuration";
-        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _allConfigheaders = new()
-        {
-            new() { Text = "Key", Value = nameof(ConfigObjectPropertyModel.Key) },
-            new() { Text = "Value", Value = nameof(ConfigObjectPropertyModel.Value) }
-        };
-        private Action _handleRollbackOnClickAfter = () => { };
         private string? _cultureName;
-        private bool _configNameCopyClicked;
-        private readonly string _checkSvg = "M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z";
-        private readonly string _copySvg = "M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z";
         private CloneModal? _cloneModal;
         private RelationModal? _relation;
+        private ReleaseHistoryModal? _releaseHistoryModal;
         private AddConfigObjectModal? _addConfigObjectModal;
         private UserModel _userInfo = new();
         private string _tempContent = "";
@@ -102,22 +90,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier), Width = 98  },
                     new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime), Width = 114 },
                     new() { Text = T("Operation"), Value="Operation", Sortable = false, Width = 88 }
-                };
-
-                return headers;
-            }
-        }
-
-        private List<DataTableHeader<ConfigObjectPropertyModel>> ChangedConfigheaders
-        {
-            get
-            {
-                List<DataTableHeader<ConfigObjectPropertyModel>> headers = new List<DataTableHeader<ConfigObjectPropertyModel>>
-                {
-                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished) },
-                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
-                    new() { Text = T("New value"), Value = nameof(ConfigObjectPropertyModel.Value) },
-                    new() { Text = T("Old value"), Value = nameof(ConfigObjectPropertyModel.TempValue) }
                 };
 
                 return headers;
@@ -296,7 +268,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                                         IsRelationed = true,
                                         IsPublished = true
                                     }).ToList();
-                                relationConfigObjects.RemoveAll(c => relationConfigObjectsPublished.Select(c => c.Key).Contains(c.Key));
+                                relationConfigObjects.RemoveAll(c => relationConfigObjectsPublished.Select(rc => rc.Key).Contains(c.Key));
                                 var relationConfigObjectsNotPublished = relationConfigObjects.Select(content => new ConfigObjectPropertyModel
                                 {
                                     Key = content.Key,
@@ -437,19 +409,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 if (errorData != null)
                 {
                     var errorLine = lineDatas.ToList().IndexOf(errorData) + 1;
-                    await PopupService.AlertAsync(T("Line:{errorLine}, key value must separate by '='").Replace("{errorLine}", errorLine + ""), AlertTypes.Error);
+                    await PopupService.EnqueueSnackbarAsync(T("Line:{errorLine}, key value must separate by '='").Replace("{errorLine}", errorLine + ""), AlertTypes.Error);
                 }
                 else
                 {
                     List<ConfigObjectPropertyModel> editorPropertyContents = new();
-                    Dictionary<string, ConfigObjectPropertyModel> propertyContents = new();
                     foreach (var lineData in lineDatas)
                     {
                         string[] keyValues = lineData.Trim().Split('=');
                         var key = keyValues[0].TrimEnd();
                         if (editorPropertyContents.Any(property => property.Key == key))
                         {
-                            await PopupService.AlertAsync(T("Key: {key} already exists").Replace("{key}", key), AlertTypes.Error);
+                            await PopupService.EnqueueSnackbarAsync(T("Key: {key} already exists").Replace("{key}", key), AlertTypes.Error);
                             return;
                         }
                         else
@@ -519,7 +490,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             });
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-            await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect"), AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect"), AlertTypes.Success);
             HandleTabIndexChanged(T("Table"), _configObjects.First(c => c.Id == configObjectId));
         }
 
@@ -566,6 +537,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 configObject.Content = _tempContent;
                 configObject.IsEditing = !configObject.IsEditing;
             }
+            _selectPanels.Clear();
         }
 
         private async Task UpdateJsonConfigAsync(ConfigObjectModel configObject)
@@ -585,7 +557,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch
                     {
-                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
 
@@ -597,13 +569,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch
                     {
-                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
 
                     break;
                 default:
-                    await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
+                    await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                     return;
             }
 
@@ -619,7 +591,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 configObject.RelationConfigObjectId = 0;
 
-                await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
             }
             else
             {
@@ -630,7 +602,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     config.IsEditing = false;
                 });
 
-                if (!_selectPanels.Any(id => id == configObject.Id))
+                if (_selectPanels.All(id => id != configObject.Id))
                 {
                     _selectPanels.Add(configObject.Id);
                 }
@@ -650,7 +622,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                     catch (Exception)
                     {
-                        await PopupService.AlertAsync(T("Wrong format"), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                     }
                 }
@@ -662,7 +634,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Content = configObject.Content
                 });
 
-                await PopupService.AlertAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
             }
             else
             {
@@ -674,7 +646,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     config.IsEditing = false;
                 });
 
-                if (!_selectPanels.Any(id => id == configObject.Id))
+                if (_selectPanels.All(id => id != configObject.Id))
                 {
                     _selectPanels.Add(configObject.Id);
                 }
@@ -700,7 +672,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.AlertAsync(T("Deletion succeeded. Please publish to take effect"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Deletion succeeded. Please publish to take effect"), AlertTypes.Success);
             }
         }
 
@@ -763,7 +735,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 {
                     if (_selectConfigObjectAllProperties.Any(prop => prop.Key.ToLower() == _propertyConfigModal.Data.Key.ToLower()))
                     {
-                        await PopupService.AlertAsync(T("Key: {key} already exists").Replace("{key}", _propertyConfigModal.Data.Key), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("Key: {key} already exists").Replace("{key}", _propertyConfigModal.Data.Key), AlertTypes.Error);
                         return;
                     }
                     else
@@ -779,7 +751,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                 _propertyConfigModal.Hide();
-                await PopupService.AlertAsync(T("Add succeeded"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
             }
         }
 
@@ -801,7 +773,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
                 _configObjects.Remove(configObject);
 
-                await PopupService.AlertAsync(T("Delete succeeded"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Delete succeeded"), AlertTypes.Success);
             }
         }
 
@@ -809,7 +781,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (model.Content == model.TempContent)
             {
-                await PopupService.AlertAsync(T("Config object content has not changed"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Config object content has not changed"), AlertTypes.Error);
                 return;
             }
 
@@ -837,7 +809,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await ConfigObjectCaller.RevokeAsync(configObject.Id);
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.AlertAsync(T("Revoke succeeded"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("Revoke succeeded"), AlertTypes.Success);
             }
         }
 
@@ -849,7 +821,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (_releaseHistory.ConfigObjectReleases.Count <= 1
                 || _releaseHistory.ConfigObjectReleases.First().Version == _releaseHistory.ConfigObjectReleases.Last().Version)
             {
-                await PopupService.AlertAsync(T("No publishing history can be rolled back"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("No publishing history can be rolled back"), AlertTypes.Error);
                 return;
             }
             var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.First();
@@ -880,138 +852,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
             _showRollbackModal = false;
-            await PopupService.AlertAsync(T("Rollback succeeded"), AlertTypes.Success);
-        }
-
-        private async Task ShowReleaseHistoryAsync(ConfigObjectModel configObject)
-        {
-            _selectConfigObject = configObject;
-            _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
-            _configObjectReleases = _releaseHistory.ConfigObjectReleases
-                .OrderByDescending(release => release.Id)
-                .Adapt<List<ConfigObjectReleaseModel>>();
-
-            if (configObject.FormatLabelCode.Trim().ToLower() == "properties")
-            {
-                _configObjectReleases.ForEach(release =>
-                {
-                    release.ConfigObjectProperties = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(release.Content) ?? new();
-                });
-            }
-
-            if (_configObjectReleases.Count < 1)
-            {
-                await PopupService.AlertAsync(T("No publishing history"), AlertTypes.Error);
-            }
-            else
-            {
-                await OnTimelineItemClickAsync(_configObjectReleases.First());
-                _showReleaseHistory = true;
-            }
-        }
-
-        private async Task OnTimelineItemClickAsync(ConfigObjectReleaseModel configObjectRelease)
-        {
-            _selectReleaseHistory = configObjectRelease;
-
-            var creatorInfo = await GetUserAsync(_selectReleaseHistory.Creator);
-            _selectReleaseHistory.CreatorName = creatorInfo.StaffDislpayName;
-
-            int index = _configObjectReleases.IndexOf(configObjectRelease);
-            _prevReleaseHistory = _configObjectReleases.Skip(index + 1).FirstOrDefault() ?? new();
-            configObjectRelease.IsActive = true;
-            _configObjectReleases.ForEach(release =>
-            {
-                if (release.Id != configObjectRelease.Id)
-                {
-                    release.IsActive = false;
-                }
-            });
-
-            _releaseTabText = "All configuration";
-            ReleaseHistoryTabIndexChanged(_releaseTabText);
-        }
-
-        private void ReleaseHistoryTabIndexChanged(string tabText)
-        {
-            _releaseTabText = tabText;
-            if (_releaseTabText == T("Changed configuration"))
-            {
-                if (_prevReleaseHistory.ConfigObjectProperties.Count == 0)
-                {
-                    _changedProperties = _selectReleaseHistory.ConfigObjectProperties.Select(release => new ConfigObjectPropertyModel
-                    {
-                        Key = release.Key,
-                        Value = release.Value,
-                        TempValue = "",
-                        IsAdded = true
-                    }).ToList();
-                }
-                else
-                {
-                    var current = _selectReleaseHistory.ConfigObjectProperties;
-                    var prev = _prevReleaseHistory.ConfigObjectProperties;
-
-                    var added = current.ExceptBy(prev.Select(content => content.Key), content => content.Key)
-                        .Select(content => new ConfigObjectPropertyModel
-                        { IsAdded = true, Key = content.Key, Value = content.Value })
-                        .ToList();
-                    var deleted = prev.ExceptBy(current.Select(content => content.Key), content => content.Key)
-                        .Select(content => new ConfigObjectPropertyModel
-                        { IsDeleted = true, Key = content.Key, TempValue = content.Value })
-                        .ToList();
-                    var intersectAndEdited = current.IntersectBy(prev.Select(content => content.Key), content => content.Key)
-                        .ToList();
-                    var intersect = current.IntersectBy(
-                        prev.Select(content => new { content.Key, content.Value }), content => new { content.Key, content.Value });
-                    intersectAndEdited.RemoveAll(content => intersect.Select(content => content.Key).Contains(content.Key));
-                    var edited = intersectAndEdited
-                        .Select(content => new ConfigObjectPropertyModel
-                        {
-                            IsEdited = true,
-                            Key = content.Key,
-                            Value = current.FirstOrDefault(current => current.Key == content.Key)?.Value ?? "",
-                            TempValue = prev.FirstOrDefault(rollback => rollback.Key == content.Key)?.Value ?? ""
-                        }).ToList();
-
-                    _changedProperties = added
-                        .UnionBy(deleted, prop => prop.Key)
-                        .UnionBy(edited, prop => prop.Key).ToList();
-                }
-            }
-        }
-
-        private async Task RollbackToAsync()
-        {
-            var current = _configObjectReleases.First();
-            if (_selectReleaseHistory.IsInvalid)
-            {
-                await PopupService.AlertAsync(T("This version is obsolete and cannot be rolled back"), AlertTypes.Error);
-                return;
-            }
-            if (current.ToReleaseId == _selectReleaseHistory.Id || _selectReleaseHistory.Id == current.Id || current.Version == _selectReleaseHistory.Version)
-            {
-                await PopupService.AlertAsync(T("This version is the same as the current version and cannot be rolled back"), AlertTypes.Error);
-                return;
-            }
-
-            _releaseHistory.ConfigObjectReleases.Clear();
-            _releaseHistory.ConfigObjectReleases.Add(current);
-            _releaseHistory.ConfigObjectReleases.Add(_selectReleaseHistory);
-            _showRollbackModal = true;
-            _handleRollbackOnClickAfter = async () =>
-            {
-                _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(current.ConfigObjectId);
-                _configObjectReleases = _releaseHistory.ConfigObjectReleases.OrderByDescending(release => release.Id).Adapt<List<ConfigObjectReleaseModel>>();
-                if (_releaseHistory.FormatLabelCode.Trim().ToLower() == "properties")
-                {
-                    _configObjectReleases.ForEach(release =>
-                    {
-                        release.ConfigObjectProperties = JsonSerializer.Deserialize<List<ConfigObjectPropertyModel>>(release.Content) ?? new();
-                    });
-                }
-                StateHasChanged();
-            };
+            await PopupService.EnqueueSnackbarAsync(T("Rollback succeeded"), AlertTypes.Success);
         }
 
         private async Task ShowCloneModalAsync(ConfigObjectModel? configObject = null)
@@ -1028,15 +869,19 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 await _relation.InitDataAsync();
         }
 
-        private async Task Copy(string value)
+        private async Task ShowReleaseHistoryAsync(ConfigObjectModel configObject)
         {
-            _configNameCopyClicked = true;
+            if (_releaseHistoryModal != null)
+                await _releaseHistoryModal.InitDataAsync(configObject);
+        }
 
-            await Js.InvokeVoidAsync(JsInteropConstants.Copy, value);
-
-            await Task.Delay(500);
-
-            _configNameCopyClicked = false;
+        private async Task ConfigValueChanged(bool configValue)
+        {
+            if (configValue)
+            {
+                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
+                StateHasChanged();
+            }
         }
     }
 }

@@ -9,11 +9,10 @@ namespace Masa.Dcc.ApiGateways.Caller
 
         public LabelCaller(
             IServiceProvider serviceProvider,
-            DccApiGatewayOptions options) : base(serviceProvider, options)
+            TokenProvider tokenProvider,
+            DccApiGatewayOptions options) : base(serviceProvider, tokenProvider, options)
         {
         }
-
-        protected override string BaseAddress { get; set; } = AppSettings.Get("ServiceBaseUrl");
 
         public async Task<List<LabelDto>> GetListAsync()
         {

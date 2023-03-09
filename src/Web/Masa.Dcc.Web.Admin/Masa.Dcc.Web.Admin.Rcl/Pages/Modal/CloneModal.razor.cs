@@ -146,6 +146,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             {
                 _allProjects.RemoveAll(project => project.Id == ProjectDetail.Id);
             }
+            if (ConfigObjectType == ConfigObjectType.Public)
+            {
+                SelectOtherEnv();
+                await CloneNextClick();
+            }
         }
 
         private void SelectOtherApp()
@@ -196,12 +201,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             var envClusterIds = _cloneSelectApp.EnvironmentClusters.Select(ec => (StringNumber)ec.Id).ToList();
             if (!envClusterIds.Any())
             {
-                await PopupService.AlertAsync(T("There is no environment cluster to clone under the current application"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("There is no environment cluster to clone under the current application"), AlertTypes.Error);
                 return;
             }
-
-            _selectEnvClusterIds = envClusterIds;
-            CloneEnvClusterValueChanged(envClusterIds);
 
             _afterAllCloneConfigObjects.Clear();
             foreach (var item in _cloneSelectApp.EnvironmentClusters)
@@ -209,6 +211,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(item.Id, _cloneSelectApp.Id, ConfigObjectType);
                 _afterAllCloneConfigObjects.AddRange(configObjects);
             }
+
+            _selectEnvClusterIds = envClusterIds;
+            CloneEnvClusterValueChanged(envClusterIds);
         }
 
         private void ClonePrevClick()
@@ -338,14 +343,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             if (!_selectEnvClusterIds.Any())
             {
-                await PopupService.AlertAsync(T("Please select environment/cluster"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Please select environment/cluster"), AlertTypes.Error);
                 return;
             }
 
             var configObjects = ConfigObjects.Where(c => c.IsChecked);
             if (!configObjects.Any())
             {
-                await PopupService.AlertAsync(T("Please select the configuration to clone"), AlertTypes.Error);
+                await PopupService.EnqueueSnackbarAsync(T("Please select the configuration to clone"), AlertTypes.Error);
                 return;
             }
 

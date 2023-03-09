@@ -256,22 +256,22 @@
                                                                     case nameof(ConfigObjectPropertyModel.IsPublished):
                                                                         if (context.Item.IsPublished)
                                                                         {
-                                                                            <MIcon Class="green--text" Style="margin-bottom:2px;" Size="16">mdi-link-variant</MIcon>
+                                                                            <MIcon Style="margin-bottom:2px;color: #05CD99 !important;" Size="16">mdi-link-variant</MIcon>
                                                                             <span class="green--text">@T("Released")</span>
                                                                         }
                                                                         else
                                                                         {
                                                                             if (context.Item.IsAdded)
                                                                             {
-                                                                                <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>
+                                                                                <MIcon Class="mr-1" Style="margin-bottom:2px;color:#A3AED0 !important;" Size="16">mdi-plus</MIcon>
                                                                             }
                                                                             else if (context.Item.IsEdited)
                                                                             {
-                                                                                <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-pencil</MIcon>
+                                                                                <MIcon Class="mr-1" Style="margin-bottom:2px;color:#A3AED0 !important;" Size="16">mdi-pencil</MIcon>
                                                                             }
                                                                             else if (context.Item.IsDeleted)
                                                                             {
-                                                                                <MIcon Class="mr-1" Color="error" Style="margin-bottom:2px;" Size="16">mdi-delete</MIcon>
+                                                                                <MIcon Class="mr-1" Style="margin-bottom:2px;color: #A3AED0 !important;" Size="16">mdi-delete</MIcon>
                                                                             }
                                                                             <span>@T("UnReleased")</span>
                                                                         }

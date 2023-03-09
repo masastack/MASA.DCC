@@ -1,10 +1,9 @@
 {
-    "$Text": "English",
-    "$DateTimeFormat": "MM/dd/yyyy HH:mm:ss",
-    "The configuration object name conflicts, and the same configuration object name will overwrite the configuration information. If you need to clone, please modify the configuration object name": "The configuration object name conflicts, and the same configuration object name will overwrite the configuration information. If you need to clone, please modify the configuration object name",
-    "Modification succeeded. Please publish to take effect": "Modification succeeded. Please publish to take effect",
-    "Deletion succeeded. Please publish to take effect": "Deletion succeeded. Please publish to take effect",
-    "The modified but unpublished configuration under the configuration object \"{name}\" will be revoked. Are you sure you want to revoke it?": "The modified but unpublished configuration under the configuration object \"{name}\" will be revoked. Are you sure you want to revoke it?",
-    "Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?": "Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?",
-    "Modification succeeded. Please publish to take effect!": "Modification succeeded. Please publish to take effect!"
+  "$Text": "English",
+  "$DateTimeFormat": "MM/dd/yyyy HH:mm:ss",
+  "ConfigurationObjectNameConflicts": "The configuration object name conflicts, and the same configuration object name will overwrite the configuration information. If you need to clone, please modify the configuration object name",
+  "ModificationSucceededPublish": "Modification succeeded. Please publish to take effect!",
+  "DeletionSucceededPublish": "Deletion succeeded. Please publish to take effect",
+  "AreYouSureToRevoke": "The modified but unpublished configuration under the configuration object \"{name}\" will be revoked. Are you sure you want to revoke it?",
+  "AreYouSureToDeleteConfigObject": "Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?"
 }

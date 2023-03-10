@@ -795,3 +795,6 @@ textarea:disabled {
 .m-chip--envcluster .split--text {
     color: #E4E8F3;
 }
+.m-timeline::before {
+    background: #E4E8F3 !important;
+}

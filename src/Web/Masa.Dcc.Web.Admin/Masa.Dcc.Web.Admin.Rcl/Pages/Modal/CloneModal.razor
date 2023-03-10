@@ -1,158 +1,158 @@
-@inherits MasaCompontentBase
+﻿@inherits MasaCompontentBase
 
 <SSheetDialog EnableDomReload Value="Value" ValueChanged="CloneDialogValueChangedAsync" Title="@T("Clone config object")" Icon="mdi-circle" IconColor="success">
-<div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px;">
-    @if (ConfigObjectType == ConfigObjectType.Public)
-    {
-        <div class="d-flex flex-column justify-center align-center" style="color: #A3AED0;">
-            <div>
-                @T("Clone")&nbsp;
-				<span style="font-size: 20px; font-weight: bold; color: #323D6F;">
-					"@ProjectDetail.Name"-"@AppDetail.Name"-"<span style="@($"color: {SelectCluster.EnvironmentColor} !important")">@SelectCluster.EnvironmentName</span>"-"@SelectCluster.ClusterName"
-				</span>
-				@if (_isCloneAll)
-				{
-					<text>&nbsp; @T("All configuration to")</text>
-				}
-				else
-				{
-					<text>&nbsp; @T("`Config object")"@_selectConfigObject.Name"@T("To")</text>
-                }
+    <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px;">
+        @if (ConfigObjectType == ConfigObjectType.Public)
+        {
+            <div class="d-flex flex-column justify-center align-center" style="color: #A3AED0;">
+                <div>
+                    @T("Clone")&nbsp;
+                    <span style="font-size: 20px; font-weight: bold; color: #323D6F;">
+                        "@ProjectDetail.Name"-"@AppDetail.Name"-"<span style="@($"color: {SelectCluster.EnvironmentColor} !important")">@SelectCluster.EnvironmentName</span>"-"@SelectCluster.ClusterName"
+                    </span>
+                    @if (_isCloneAll)
+                    {
+                        <text>&nbsp; @T("All configuration to")</text>
+                    }
+                    else
+                    {
+                        <text>&nbsp; @T("`Config object")"@_selectConfigObject.Name"@T("To")</text>
+                    }
+                </div>
             </div>
-		</div>
-        <div class="m-stepper__wrapper active full-height">
-            <div style="overflow-y: auto; height: calc(100% - @(IsNeedRebase ? "80px" :"48px"));">
-			    <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Clusters requiring cloning")</p>
-			    <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="CloneEnvClusterValueChanged">
-			    @foreach (var item in _cloneSelectApp.EnvironmentClusters)
-			    {
-				    <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
-				    <div style="@($"color: {item.EnvironmentColor} !important")">@item.EnvironmentName</div>&nbsp;&nbsp;
-				    <div style="color:#05CD99">@item.ClusterName</div>
-				    </MChip>
-			    }
-			    </MChipGroup>
-			    <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Select config object")</p>
+            <div class="m-stepper__wrapper active full-height">
+                <div style="overflow-y: auto; height: calc(100% - @(IsNeedRebase ? "80px" :"48px"));">
+                    <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Clusters requiring cloning")</p>
+                    <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="CloneEnvClusterValueChanged">
+                    @foreach (var item in _cloneSelectApp.EnvironmentClusters)
+                        {
+                            <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
+                            <div style="@($"color: {item.EnvironmentColor} !important")">@item.EnvironmentName</div>&nbsp;&nbsp;
+                            <div style="color:#05CD99">@item.ClusterName</div>
+                            </MChip>
+                        }
+                    </MChipGroup>
+                    <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Select config object")</p>
 
-			    @if (ConfigObjects.Any())
-			    {
-				    <MCheckbox Value="CloneConfigObjectAllChecked"
-					    ValueChanged="CloneConfigObjectAllCheckedChanged"
-					    TValue="bool"
-					    HideDetails="true"
-					    Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
-					    Color="primary"></MCheckbox>
-			    }
+                    @if (ConfigObjects.Any())
+                    {
+                        <MCheckbox Value="CloneConfigObjectAllChecked"
+                           ValueChanged="CloneConfigObjectAllCheckedChanged"
+                           TValue="bool"
+                           HideDetails="true"
+                           Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
+                           Color="primary"></MCheckbox>
+                    }
 
-			    <MExpansionPanels Flat Accordion>
-				@foreach (var configObject in ConfigObjects.Where(c => !c.FromRelation))
-				{
-					var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
-					if (formatLabelCode == "properties")
-					{
-						<MExpansionPanel Style="margin-bottom: 12px;">
-							<MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
-								<ChildContent>
-									<div class="d-flex align-center">
-										<div class="d-flex align-center" @onclick:stopPropagation>
-											@if (configObject.IsNeedRebase)
-											{
-												<MButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
-													<MIcon>mdi-alert-outline</MIcon>
-													@T("Conflict resolution")
-												</MButton>
-											}
-											<MCheckbox Value="configObject.IsChecked"
-											    TValue="bool"
-											    ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
-											    HideDetails="true"
-											    Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
-											    Color="primary"></MCheckbox>
-											<STextField HideDetails="true"
-												Style="max-width: 270px;"
-												Label="@T("Name")"
-												Outlined
-												Value="configObject.Name"
-												TValue="string"
-												ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></STextField>
-										</div>
-										<span class="ml-3 regular3--text btn">|</span>
-										<sapn class="ml-2 regular3--text btn">Properties</sapn>
-									</div>
-								</ChildContent>
-								<ActionsContent>
-									<MIcon Color="#485585">mdi-chevron-down</MIcon>
-								</ActionsContent>
-								</MExpansionPanelHeader>
-								<MExpansionPanelContent Style="padding-left: 8px;">
-								<div style="border-radius: 8px; border: 1px solid #E2E7F4; padding:12px 24px;">
-									<MRow Style="color: #A3AED0; font-size: 14px;" NoGutters>
-										<span style="width: 47.5%">Key</span>
-										<span style="width: 47.5%">Value</span>
-										<span class="d-flex justify-center" style="width: 5%">@T("Operation")</span>
-									</MRow>
-									<MDivider Class="mt-3 mx-n6"></MDivider>
-									@foreach (var item in configObject.ConfigObjectPropertyContents)
-									{
-										<MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
-											<STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
-											<STextField Outlined @bind-Value="item.Value"></STextField>
-											<div class="d-flex justify-end align-center ml-6">
-												<MIcon Color="error" OnClick="()=> RemoveProperty(item.Key,configObject)" Class="hover-pointer mr-3">mdi-delete-outline</MIcon>
-											</div>
-										</MRow>
-									}
-								</div>
-							</MExpansionPanelContent>
-						</MExpansionPanel>
-					}
-					else
-					{
-						<MExpansionPanel Style="margin-bottom: 12px;" @key="configObject">
-							<MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
-								<ChildContent>
-									<div class="d-flex align-center">
-										<div class="d-flex align-center" @onclick:stopPropagation>
-											@if (configObject.IsNeedRebase)
-											{
-												<MButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
-													<MIcon>mdi-alert-outline</MIcon>
-													@T("Conflict resolution")
-												</MButton>
-											}
-											<MCheckbox Value="configObject.IsChecked"
-											    TValue="bool"
-											    ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
-											    HideDetails="true"
-											    Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
-											    Color="primary"></MCheckbox>
-											<STextField Dense
-												Style="max-width: 270px;"
-												Label="@T("Name")"
-												Outlined
-												Value="configObject.Name"
-												TValue="string"
-												ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></STextField>
-										</div>
-										<span class="ml-3 regular3--text btn">|</span>
-										<sapn class="ml-2 regular3--text btn">@configObject.FormatName</sapn>
-									</div>
-								</ChildContent>
-								<ActionsContent>
-									<MIcon Color="#485585">mdi-chevron-down</MIcon>
-								</ActionsContent>
-							</MExpansionPanelHeader>
-							<MExpansionPanelContent Style="padding-left: 8px;">
-								<MTextarea Outlined @bind-Value="configObject.Content"></MTextarea>
-							</MExpansionPanelContent>
-						</MExpansionPanel>
-					}
-				}
-                </MExpansionPanels>
-                @if (IsNeedRebase)
-                {
-                    <div style="width: calc(100% - 48px); position: absolute; bottom: 0; right: 24px">
-                        <MAlert Prominent
+                    <MExpansionPanels Flat Accordion>
+                    @foreach (var configObject in ConfigObjects.Where(c => !c.FromRelation))
+                        {
+                            var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
+                            if (formatLabelCode == "properties")
+                            {
+                                <MExpansionPanel Style="margin-bottom: 12px;">
+                                    <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
+                                        <ChildContent>
+                                            <div class="d-flex align-center">
+                                                <div class="d-flex align-center" @onclick:stopPropagation>
+                                                    @if (configObject.IsNeedRebase)
+                                                    {
+                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
+                                                        <MIcon>mdi-alert-outline</MIcon>
+                                                        @T("Conflict resolution")
+                                                        </MButton>
+                                                    }
+                                                    <MCheckbox Value="configObject.IsChecked"
+                                                   TValue="bool"
+                                                   ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
+                                                   HideDetails="true"
+                                                   Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
+                                                   Color="primary"></MCheckbox>
+                                                    <STextField HideDetails="true"
+                                                    Style="max-width: 270px;"
+                                                    Label="@T("Name")"
+                                                                                        Outlined
+                                                    Value="configObject.Name"
+                                                    TValue="string"
+                                                    ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></STextField>
+                                                </div>
+                                                <span class="ml-3 regular3--text btn">|</span>
+                                                <sapn class="ml-2 regular3--text btn">Properties</sapn>
+                                            </div>
+                                        </ChildContent>
+                                        <ActionsContent>
+                                            <MIcon Color="#485585">mdi-chevron-down</MIcon>
+                                        </ActionsContent>
+                                        </MExpansionPanelHeader>
+                                        <MExpansionPanelContent Style="padding-left: 8px;">
+                                        <div style="border-radius: 8px; border: 1px solid #E2E7F4; padding:12px 24px;">
+                                            <MRow Style="color: #A3AED0; font-size: 14px;" NoGutters>
+                                            <span style="width: 47.5%">Key</span>
+                                            <span style="width: 47.5%">Value</span>
+                                            <span class="d-flex justify-center" style="width: 5%">@T("Operation")</span>
+                                        </MRow>
+                                        <MDivider Class="mt-3 mx-n6"></MDivider>
+                                        @foreach (var item in configObject.ConfigObjectPropertyContents)
+                                            {
+                                                <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
+                                                <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
+                                                    <STextField Outlined @bind-Value="item.Value"></STextField>
+                                                    <div class="d-flex justify-end align-center ml-6">
+                                                        <MIcon Color="error" OnClick="()=> RemoveProperty(item.Key,configObject)" Class="hover-pointer mr-3">mdi-delete-outline</MIcon>
+                                                    </div>
+                                                </MRow>
+                                            }
+                                        </div>
+                                    </MExpansionPanelContent>
+                                </MExpansionPanel>
+                            }
+                            else
+                            {
+                                <MExpansionPanel Style="margin-bottom: 12px;" @key="configObject">
+                                    <MExpansionPanelHeader Style="padding-left: 0 !important;" Context="_">
+                                        <ChildContent>
+                                            <div class="d-flex align-center">
+                                                <div class="d-flex align-center" @onclick:stopPropagation>
+                                                    @if (configObject.IsNeedRebase)
+                                                    {
+                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
+                                                        <MIcon>mdi-alert-outline</MIcon>
+                                                        @T("Conflict resolution")
+                                                        </MButton>
+                                                    }
+                                                    <MCheckbox Value="configObject.IsChecked"
+                                                   TValue="bool"
+                                                   ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
+                                                   HideDetails="true"
+                                                   Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
+                                                   Color="primary"></MCheckbox>
+                                                    <STextField Dense
+                                                    Style="max-width: 270px;"
+                                                    Label="@T("Name")"
+                                                                                        Outlined
+                                                    Value="configObject.Name"
+                                                    TValue="string"
+                                                    ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></STextField>
+                                                </div>
+                                                <span class="ml-3 regular3--text btn">|</span>
+                                                <sapn class="ml-2 regular3--text btn">@configObject.FormatName</sapn>
+                                            </div>
+                                        </ChildContent>
+                                        <ActionsContent>
+                                            <MIcon Color="#485585">mdi-chevron-down</MIcon>
+                                        </ActionsContent>
+                                        </MExpansionPanelHeader>
+                                        <MExpansionPanelContent Style="padding-left: 8px;">
+                                        <MTextarea Outlined @bind-Value="configObject.Content"></MTextarea>
+                                    </MExpansionPanelContent>
+                                </MExpansionPanel>
+                            }
+                        }
+                    </MExpansionPanels>
+                    @if (IsNeedRebase)
+                    {
+                        <div style="width: calc(100% - 48px); position: absolute; bottom: 0; right: 24px">
+                            <MAlert Prominent
                             Type="AlertTypes.Warning">
                             @T("ConfigurationObjectNameConflicts")
                         </MAlert>

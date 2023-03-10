@@ -54,7 +54,7 @@
                                                              ValueChanged="projectId=>ProjectValueChangedAsync(projectId)"
                                                              Label="@T("Project")"
                                                              MenuProps="props => props.OffsetY = true"
-                                                                          Outlined
+                                                             Outlined
                                                              TItem="ProjectModel"
                                                              TItemValue="int"
                                                              HideSelected="false"
@@ -67,7 +67,7 @@
                                                              Label="@T("App")"
                                                              Class="mt-6"
                                                              MenuProps="props => props.OffsetY = true"
-                                                                          Outlined
+                                                             Outlined
                                                              HideDetails="true"
                                                              HideSelected="false"
                                                              Items="_cloneApps"
@@ -240,7 +240,7 @@
                             <div style="width: calc(100% - 48px); position: absolute; bottom: 0;">
                                 <MAlert Prominent
                                     Type="AlertTypes.Warning">
-                                @T("The configuration object name conflicts, and the same configuration object name will overwrite the configuration information. If you need to clone, please modify the configuration object name")
+                                    @T("The configuration object name conflicts, and the same configuration object name will overwrite the configuration information. If you need to clone, please modify the configuration object name")
                                 </MAlert>
                             </div>
                         }

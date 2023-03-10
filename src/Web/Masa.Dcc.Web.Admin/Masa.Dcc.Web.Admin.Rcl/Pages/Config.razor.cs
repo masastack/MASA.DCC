@@ -193,6 +193,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task OnClusterChipClick(EnvironmentClusterModel model)
         {
             _selectCluster = model;
+            _selectPanels.Clear();
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
         }

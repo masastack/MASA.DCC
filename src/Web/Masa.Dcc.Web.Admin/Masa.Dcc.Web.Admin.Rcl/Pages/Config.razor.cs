@@ -490,7 +490,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             });
 
             await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-            await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect"), AlertTypes.Success);
+            await PopupService.EnqueueSnackbarAsync(T("ModificationSucceededPublish"), AlertTypes.Success);
             HandleTabIndexChanged(T("Table"), _configObjects.First(c => c.Id == configObjectId));
         }
 
@@ -591,7 +591,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
                 configObject.RelationConfigObjectId = 0;
 
-                await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("ModificationSucceededPublish"), AlertTypes.Success);
             }
             else
             {
@@ -634,7 +634,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     Content = configObject.Content
                 });
 
-                await PopupService.EnqueueSnackbarAsync(T("Modification succeeded. Please publish to take effect!"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("ModificationSucceededPublish"), AlertTypes.Success);
             }
             else
             {
@@ -672,7 +672,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 });
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                await PopupService.EnqueueSnackbarAsync(T("Deletion succeeded. Please publish to take effect"), AlertTypes.Success);
+                await PopupService.EnqueueSnackbarAsync(T("DeletionSucceededPublish"), AlertTypes.Success);
             }
         }
 
@@ -758,7 +758,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task RemoveAsync(ConfigObjectModel configObject)
         {
             var result = await PopupService.ConfirmAsync(T("Delete config object"),
-                 T("Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?")
+                 T("AreYouSureToDeleteConfigObject")
                  .Replace("{name}", configObject.Name),
                  AlertTypes.Error);
 
@@ -801,7 +801,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task RevokeAsync(ConfigObjectModel configObject)
         {
             var result = await PopupService.ConfirmAsync(T("Revoke config"),
-                 T("The modified but unpublished configuration under the configuration object \"{name}\" will be revoked. Are you sure you want to revoke it?")
+                 T("AreYouSureToRevoke")
                  .Replace("{name}", configObject.Name),
                  AlertTypes.Error);
 

@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
-    [ByPassDisabledCommand]
+    [AllowedEvent]
     public record AddBizConfigCommand(AddObjectConfigDto AddBizConfigDto) : Command
     {
         public BizConfigDto BizConfigDto { get; set; } = new();

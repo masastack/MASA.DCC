@@ -55,3 +55,5 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Diagnostics.HealthChecks;
+global using Newtonsoft.Json.Linq;
+global using Masa.BuildingBlocks.Globalization.I18n;

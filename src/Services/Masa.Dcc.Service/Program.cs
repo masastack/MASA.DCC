@@ -63,6 +63,7 @@ builder.Services.AddHealthChecks()
     .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
     .AddDbContextCheck<DccDbContext>();
 builder.Services.AddStackMiddleware();
+builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 
 var redisOption = new RedisConfigurationOptions
 {
@@ -139,6 +140,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseRouting();
+app.UseI18n();
 
 app.UseAuthentication();
 app.UseAuthorization();

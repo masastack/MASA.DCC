@@ -34,12 +34,16 @@
             <div class="d-flex">
                 <div class="pr-6" style="width: calc(100% - 300px); display:block;">
                     <div style="overflow: hidden;">
-                        <div class="d-flex mb-3">
-                            <MTextField @bind-Value="_projectName" OnKeyDown="SearchProject" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the project name and press enter to query")">
-                                <PrependInnerContent>
-                                    <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
-                                </PrependInnerContent>
-                            </MTextField>
+                        <div class="d-flex justify-space-between align-center">
+                            <div class="emphasis--text h6 mr-3" style="float:left;display:block;">@_userTeam.Name</div>
+                            <div style="width:300px;">
+                                <MTextField @bind-Value="_projectName" OnKeyDown="SearchProject" Class="rounded-2" Height="40"
+                                                                Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the project name and press enter to query")">
+                                    <PrependInnerContent>
+                                        <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
+                                    </PrependInnerContent>
+                                </MTextField>
+                            </div>
                         </div>
                         <div class="mt-6" style="height: calc(100vh - 256px); overflow: hidden; position: relative;">
                             <ProjectList @ref="_projectListComponent"
@@ -71,20 +75,20 @@
                         @foreach (var item in _userTeam.Admins)
                         {
                             <MRow Align="AlignTypes.Center" NoGutters Class="mt-4 regular--text body2">
-                                <MAvatar Class="mr-3">
-                                    <MImage Height="48" Width="48" Src="@item.Avatar"></MImage>
-                                </MAvatar>
-                                @item.DisplayName
+                            <MAvatar Class="mr-3">
+                                <MImage Height="48" Width="48" Src="@item.Avatar"></MImage>
+                            </MAvatar>
+                            @item.DisplayName
                             </MRow>
                         }
                         <MRow NoGutters Class="regular3--text btn mt-6">@T("Members")</MRow>
                         @foreach (var item in _userTeam.Members)
                         {
                             <MRow Align="AlignTypes.Center" NoGutters Class="mt-4 regular--text body2">
-                                <MAvatar MinHeight="40" MinWidth="40" Height="40" Width="40" Class="mr-3">
-                                    <MImage Height="40" Width="40" Src="@item.Avatar"></MImage>
-                                </MAvatar>
-                                @item.DisplayName
+                            <MAvatar MinHeight="40" MinWidth="40" Height="40" Width="40" Class="mr-3">
+                                <MImage Height="40" Width="40" Src="@item.Avatar"></MImage>
+                            </MAvatar>
+                            @item.DisplayName
                             </MRow>
                         }
                     </div>

@@ -1,83 +1,96 @@
 ﻿@page "/projectlist/{EnvironmentClusterId:int}"
 @inherits MasaCompontentBase
 
-<div class="full-height" style="overflow: auto;">
-    <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
-        @foreach (var project in _projects)
-        {
-            var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
-            <MExpansionPanel Class="rounded-5 mb-4">
-                <MExpansionPanelHeader Style="height: 56px;" Class="my-6">
-                    <ChildContent>
-                        <span style="display:flex;align-items:center; margin-right:10px;">
-                            <div class="emphasis--text h6">
-                                <MHover Context="hoverContext">
-                                    <span @onclick:stopPropagation @onclick="()=>HandleProjectNameClick(project.Id)" @attributes="hoverContext.Attrs" class="@(hoverContext.Hover ? "primary--text":"")">
-                                        @project.Name
-                                    </span>
-                                </MHover>
-                                <div class="mt-1 regul ar3--text body2 d-flex" style="padding:0">
-                                    @{
-                                        string backgroundColor;
-                                        switch (project.LabelCode.ToLower())
-                                        {
-                                            case "basicability":
-                                                backgroundColor = "#37D7AD";
-                                                break;
-                                            case "operator":
-                                                backgroundColor = "#FFB547";
-                                                break;
-                                            case "datafactory":
-                                                backgroundColor = "#5FB9FF";
-                                                break;
-                                            default:
-                                                backgroundColor = "#BDBDBD";
-                                                break;
-                                        }
-                                    }
-                                    <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px; height: fit-content;">
-                                        @project.LabelName
-                                    </div>
-                                    <span class="regular3--text body2">@project.Identity</span>
-                                    <span class="ml-2 regular3--text body2">|</span>
-                                    <sapn class="ml-2 regular3--text body2">@T("AppCount"):@apps.Count</sapn>
-                                </div>
-                            </div>
-                        </span>
-                    </ChildContent>
-                    <ActionsContent>
-                        <MIcon Color="#485585">
-                            mdi-chevron-down
-                        </MIcon>
-                    </ActionsContent>
-                </MExpansionPanelHeader>
-                <MExpansionPanelContent>
-                    <MRow>
-                        @foreach (var app in apps.Take(3))
-                        {
-                            @if (app.ProjectId == project.Id)
-                            {
-                                <MCol Lg="4" Md="6" Sm="12">
-                                    <AppCard OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" OnPinClick="()=>HandleAppPinClick(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                        <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
-                                            @foreach (var item in app.EnvironmentClusters)
+
+@if (_projects?.Any() == false)
+{
+    <MCard Class="rounded-5 full-height full-width pl-3 pr-3 fill">
+        <MCardText Class="d-flex align-center justify-center flex-column">
+            <MCard Height="300" Width="300" Class="rounded-5 fill-background"></MCard>
+            <div style="font-size:14px;" class="mt-12 pl-6 regular2--text">@T("Hey, there is no project yet~ Please contact the project administrator~")</div>
+        </MCardText>
+    </MCard>
+}
+else
+{
+
+    <div class="full-height" style="overflow: auto;">
+        <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
+            @foreach (var project in _projects)
+            {
+                var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
+                <MExpansionPanel Class="rounded-4 mb-4">
+                    <MExpansionPanelHeader Style="height: 56px;" Class="my-6">
+                        <ChildContent>
+                            <span style="display:flex;align-items:center; margin-right:10px;">
+                                <div class="emphasis--text h6">
+                                    <MHover Context="hoverContext">
+                                        <span @onclick:stopPropagation @onclick="()=>HandleProjectNameClick(project.Id)" @attributes="hoverContext.Attrs" class="@(hoverContext.Hover ? "primary--text":"")">
+                                            @project.Name
+                                        </span>
+                                    </MHover>
+                                    <div class="mt-1 regul ar3--text body2 d-flex" style="padding:0">
+                                        @{
+                                            string backgroundColor;
+                                            switch (project.LabelCode.ToLower())
                                             {
-                                                <EnvClusterChip OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, app.ProjectId))"
+                                                case "basicability":
+                                                    backgroundColor = "#37D7AD";
+                                                    break;
+                                                case "operator":
+                                                    backgroundColor = "#FFB547";
+                                                    break;
+                                                case "datafactory":
+                                                    backgroundColor = "#5FB9FF";
+                                                    break;
+                                                default:
+                                                    backgroundColor = "#BDBDBD";
+                                                    break;
+                                            }
+                                        }
+                                        <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px; height: fit-content;">
+                                            @project.LabelName
+                                        </div>
+                                        <span class="regular3--text body2">@project.Identity</span>
+                                        <span class="ml-2 regular3--text body2">|</span>
+                                        <sapn class="ml-2 regular3--text body2">@T("AppCount"):@apps.Count</sapn>
+                                    </div>
+                                </div>
+                            </span>
+                        </ChildContent>
+                        <ActionsContent>
+                            <MIcon Color="#485585">
+                                mdi-chevron-down
+                            </MIcon>
+                        </ActionsContent>
+                    </MExpansionPanelHeader>
+                    <MExpansionPanelContent>
+                        <MRow>
+                            @foreach (var app in apps.Take(3))
+                            {
+                                @if (app.ProjectId == project.Id)
+                                {
+                                    <MCol Lg="4" Md="6" Sm="12">
+                                        <AppCard OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" OnPinClick="()=>HandleAppPinClick(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                            <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                                @foreach (var item in app.EnvironmentClusters)
+                                                {
+                                                    <EnvClusterChip OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, app.ProjectId))"
                                                 Style="margin:0 12px 1px 0;"
                                                 EnvironmentName="@item.EnvironmentName"
                                                 EnvironmentColor="@item.EnvironmentColor"
                                                 ClusterName="@item.ClusterName" />
-                                            }
-                                        </MChipGroup>
-                                    </AppCard>
-                                </MCol>
+                                                }
+                                            </MChipGroup>
+                                        </AppCard>
+                                    </MCol>
+                                }
                             }
-                        }
-                    </MRow>
-                    <div class="d-flex justify-space-between align-flex-end mt-3 mb-2">
-                        @{
-                            var team = _allTeams.FirstOrDefault(team => team.Id == project.TeamId) ?? new();
-                            <MTooltip Right>
+                        </MRow>
+                        <div class="d-flex justify-space-between align-flex-end mt-3 mb-2">
+                            @{
+                                var team = _allTeams.FirstOrDefault(team => team.Id == project.TeamId) ?? new();
+                                <MTooltip Right>
                                 <ActivatorContent>
                                     <MAvatar Size="24" @attributes="@context.Attrs">
                                         <MImage Src="@team.Avatar"></MImage>
@@ -87,23 +100,25 @@
                                     <span>@team.Name</span>
                                 </ChildContent>
                             </MTooltip>
-                        }
-                        <MHover>
-                            @{
-                                var mClass = $"{(context.Hover ? "primary--text" : "regular2--text")}";
-                                <div @onclick="()=>HandleProjectNameClick(project.Id)" @attributes="context.Attrs" class="@($"hover-pointer btn {mClass}")">
-                                    @T("More")
-                                    <MIcon Class="@($"ml-1 {mClass}")" Size="18">mdi-chevron-right</MIcon>
-                                </div>
                             }
-                        </MHover>
-                    </div>
-                </MExpansionPanelContent>
-            </MExpansionPanel>
-        }
-    </MExpansionPanels>
-</div>
+                            <MHover>
+                                @{
+                                    var mClass = $"{(context.Hover ? "primary--text" : "regular2--text")}";
+                                    <div @onclick="()=>HandleProjectNameClick(project.Id)" @attributes="context.Attrs" class="@($"hover-pointer btn {mClass}")">
+                                        @T("More")
+                                        <MIcon Class="@($"ml-1 {mClass}")" Size="18">mdi-chevron-right</MIcon>
+                                    </div>
+                                }
+                            </MHover>
+                        </div>
+                    </MExpansionPanelContent>
+                </MExpansionPanel>
+            }
+        </MExpansionPanels>
+    </div>
+}
+
 
 <MOverlay Value="_showProcess" Absolute Color="#fdfdfd">
     <MProgressCircular Width="4" Indeterminate Size="48" Color="primary"></MProgressCircular>
-</MOverlay>
+    </MOverlay>

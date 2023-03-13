@@ -1,12 +1,12 @@
 ﻿@inherits MasaComponentBase
 
-<SModal @key="@ModalKey" Width="684" Title="@T("Rollback")" Value="Value" ValueChanged="ValueChanged" HideCancelAction OnSave="HandOnClickAsync">
+<SModal @key="@ModalKey" Width="684" Title="@T("Rollback")" Value="Value" ValueChanged="ValueChanged" HideCancelAction OnSave="HandOnClickAsync" BodyStyle="padding-top: 0px">
     <ChildContent>
         <MAlert Dense
                 Type="AlertTypes.Warning">
             @T("This operation will be rolled back to the previous release version, and the current version will be invalidated, but it will not affect the configuration being modified")
         </MAlert>
-        <MTimeline Style="position:relative; left:-228px;">
+        <MTimeline Style="position:relative; left:-252px;">
             <MTimelineItem Color="primary" Small Right>
                 <OppositeContent>
                     <div>
@@ -76,8 +76,8 @@
         {
             <div class="py-3">
                 <MRow NoGutters>
-                    <MTextarea Label="@(T("Before rollback"))" Class="rounded-r-0" MinHeight="300" HideDetails="true" Outlined Readonly Value="@CurrentConfigObjectRelease?.Content"></MTextarea>
-                    <MTextarea Label="@(T("After rollback"))" Class="rounded-l-0" MinHeight="300" HideDetails="true" Outlined Readonly Value="@RollbackConfigObjectRelease?.Content"></MTextarea>
+                    <MTextarea Label="@(T("Before rollback"))" Class="rounded-r-0" TextColor="emphasis2" MinHeight="300" HideDetails="true" Outlined Readonly Value="@CurrentConfigObjectRelease?.Content"></MTextarea>
+                    <MTextarea Label="@(T("After rollback"))" Class="rounded-l-0" TextColor="emphasis2" MinHeight="300" HideDetails="true" Outlined Readonly Value="@RollbackConfigObjectRelease?.Content"></MTextarea>
                 </MRow>
             </div>
         }

@@ -656,7 +656,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private async Task DeleteConfigObjectPropertyContentAsync(ConfigObjectPropertyModel model, int configObjectId)
         {
             var result = await PopupService.ConfirmAsync(T("Delete config object item"),
-                T("Are you sure delete config object item \"Key:{key},Value:{value}\"吗?")
+                T("DeleteConfigItemConfirmMessage")
                 .Replace("{key}", model.Key).Replace("{value}", model.Value),
                 AlertTypes.Error);
 

@@ -110,14 +110,21 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             if (context.Validate())
             {
+                var dto = _labelModal.Data.Adapt<UpdateLabelDto>();
                 if (_labelModal.HasValue)
                 {
-                    await LabelCaller.UpdateAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
+                    await LabelCaller.UpdateAsync(dto);
                     await PopupService.EnqueueSnackbarAsync(T("Edit succeeded"), AlertTypes.Success);
                 }
                 else
                 {
-                    await LabelCaller.AddAsync(_labelModal.Data.Adapt<UpdateLabelDto>());
+                    var labels = await LabelCaller.GetLabelsByTypeCodeAsync(dto.TypeCode);
+                    if (labels.Any())
+                    {
+                        await PopupService.EnqueueSnackbarAsync(T("Duplicate label type code"), AlertTypes.Error);
+                        return;
+                    }
+                    await LabelCaller.AddAsync(dto);
                     await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
                 }
 

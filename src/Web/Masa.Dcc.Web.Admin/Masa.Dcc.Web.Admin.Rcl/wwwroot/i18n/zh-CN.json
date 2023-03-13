@@ -143,6 +143,7 @@
   "Before rollback": "回滚前",
   "After rollback": "回滚后",
   "Lable code and label name cannot be repeated": "标签Code和标签Name不允许重复",
+  "Duplicate label type code": "标签类型代码重复",
   "Label value cannot be empty": "标签值不允许为空",
   "Wrong format": "格式有误",
   "ModificationSucceededPublish": "修改成功，若要生效请发布！",

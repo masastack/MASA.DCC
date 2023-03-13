@@ -25,7 +25,13 @@ if (!builder.Environment.IsDevelopment())
 }
 else
 {
-    builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
+    builder.Services.AddDccApiGateways(c =>
+#if DEBUG
+    c.DccServiceAddress = "http://localhost:6196"
+#else
+    c.DccServiceAddress = masaStackConfig.GetDccServiceDomain()
+#endif
+    );
 }
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);

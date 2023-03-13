@@ -74,8 +74,12 @@
                             <STextField Style="width: 46.5%" Class="pr-6" Outlined @bind-Value="item.Name" Label="Name"></STextField>
                             <STextField Style="width: 46.5%" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
                             <div class="d-flex justify-end align-start ml-6" style="width: 5%; margin-top: 14px;">
-                                <MIcon Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="hover-pointer mr-3">mdi-close</MIcon>
-                                <MIcon OnClick="()=>AddLabelValue(item.Index)" Class="hover-pointer">mdi-plus</MIcon>
+                                <MButton Icon Class="mr-3">
+                                    <MIcon Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</MIcon>
+                                </MButton>
+                                <MButton Icon>
+                                    <MIcon OnClick="()=>AddLabelValue(item.Index)" Class="remove-bg-after">mdi-plus</MIcon>
+                                </MButton>
                             </div>
                         </MRow>
                     }

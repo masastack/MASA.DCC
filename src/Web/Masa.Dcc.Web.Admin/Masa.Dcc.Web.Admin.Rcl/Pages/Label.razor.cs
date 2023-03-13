@@ -118,12 +118,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
                 else
                 {
-                    var labels = await LabelCaller.GetLabelsByTypeCodeAsync(dto.TypeCode);
-                    if (labels.Any())
-                    {
-                        await PopupService.EnqueueSnackbarAsync(T("Duplicate label type code"), AlertTypes.Error);
-                        return;
-                    }
                     await LabelCaller.AddAsync(dto);
                     await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
                 }

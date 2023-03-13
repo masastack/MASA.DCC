@@ -106,6 +106,8 @@ builder.Services
                .UseRepository<DccDbContext>();
     });
 
+builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
+
 //seed data
 await builder.SeedDataAsync();
 
@@ -152,5 +154,6 @@ app.UseEndpoints(endpoints =>
 });
 app.UseHttpsRedirection();
 
+app.UseI18n();
 
 app.Run();

@@ -1,19 +1,24 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Globalization.I18n;
+
 namespace Masa.Dcc.Service.Admin.Domain.Label.Services
 {
     public class LabelDomainService : DomainService
     {
         private readonly ILabelRepository _labelRepository;
         private readonly IDistributedCacheClient _distributedCacheClient;
+        private readonly II18n<DefaultResource> _il8n;
 
         public LabelDomainService(IDomainEventBus eventBus,
             ILabelRepository labelRepository,
-            IDistributedCacheClient distributedCacheClient) : base(eventBus)
+            IDistributedCacheClient distributedCacheClient,
+             II18n<DefaultResource> i18N) : base(eventBus)
         {
             _labelRepository = labelRepository;
             _distributedCacheClient = distributedCacheClient;
+            _il8n = i18N;
         }
 
         public async Task AddLabelAsync(UpdateLabelDto labelDto)
@@ -24,6 +29,12 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
             }
             else
             {
+                var label = await _labelRepository.FindAsync(x => x.TypeCode == labelDto.TypeCode);
+                if (label is not null)
+                {
+                    throw new UserFriendlyException(_il8n.T("Duplicate label type code"));
+                }
+
                 List<Aggregates.Label> labels = new();
                 foreach (var item in labelDto.LabelValues)
                 {

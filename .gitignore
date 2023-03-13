@@ -351,3 +351,5 @@ MigrationBackup/
 
 .idea/
 .DS_Store
+/src/Services/Masa.Dcc.Service/Assets/Fonts/SourceHanSansCN-Normal.ttf
+/.gitignore

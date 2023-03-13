@@ -796,7 +796,7 @@ textarea:disabled {
     color: #E4E8F3;
 }
 
-/* table border */
+/* table border begin */
 .table-header-border-1 table {
     border-collapse: collapse;
 }
@@ -813,4 +813,9 @@ textarea:disabled {
     border: 0px !important;
     margin-top: 0 16px !important;
     color: #485585;
+}
+/* table border end */
+
+.m-timeline::before {
+    background: #E4E8F3 !important;
 }

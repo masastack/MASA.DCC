@@ -542,46 +542,44 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task UpdateJsonConfigAsync(ConfigObjectModel configObject)
         {
-            if (string.IsNullOrWhiteSpace(configObject.Content))
+            if (configObject.IsEditing)
             {
-                configObject.Content = "{}";
-            }
+                if (string.IsNullOrWhiteSpace(configObject.Content))
+                {
+                    configObject.Content = "{}";
+                }
 
-            string indexStr = configObject.Content[..1];
-            switch (indexStr)
-            {
-                case "[":
-                    try
-                    {
-                        configObject.Content = JArray.Parse(configObject.Content).ToString();
-                    }
-                    catch
-                    {
+                string indexStr = configObject.Content[..1];
+                switch (indexStr)
+                {
+                    case "[":
+                        try
+                        {
+                            configObject.Content = JArray.Parse(configObject.Content).ToString();
+                        }
+                        catch
+                        {
+                            await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
+                            return;
+                        }
+
+                        break;
+                    case "{":
+                        try
+                        {
+                            configObject.Content = JObject.Parse(configObject.Content).ToString();
+                        }
+                        catch
+                        {
+                            await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
+                            return;
+                        }
+
+                        break;
+                    default:
                         await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                         return;
-                    }
-
-                    break;
-                case "{":
-                    try
-                    {
-                        configObject.Content = JObject.Parse(configObject.Content).ToString();
-                    }
-                    catch
-                    {
-                        await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
-                        return;
-                    }
-
-                    break;
-                default:
-                    await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
-                    return;
-            }
-
-            configObject.IsEditing = !configObject.IsEditing;
-            if (!configObject.IsEditing)
-            {
+                }
                 await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObject.Id,
@@ -589,12 +587,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     FormatLabelCode = "Json"
                 });
 
+                configObject.IsEditing = false;
                 configObject.RelationConfigObjectId = 0;
 
                 await PopupService.EnqueueSnackbarAsync(T("ModificationSucceededPublish"), AlertTypes.Success);
             }
             else
             {
+                configObject.IsEditing = true;
                 _tempContent = configObject.Content;
                 var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
                 configObjects.ForEach(config =>
@@ -627,19 +627,20 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     }
                 }
 
-                configObject.IsEditing = !configObject.IsEditing;
                 await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObject.Id,
-                    Content = configObject.Content
+                    Content = configObject.Content,
+                    FormatLabelCode = configObject.FormatLabelCode
                 });
 
+                configObject.IsEditing = false;
                 await PopupService.EnqueueSnackbarAsync(T("ModificationSucceededPublish"), AlertTypes.Success);
             }
             else
             {
+                configObject.IsEditing = true;
                 _tempContent = configObject.Content;
-                configObject.IsEditing = !configObject.IsEditing;
                 var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
                 configObjects.ForEach(config =>
                 {

@@ -51,11 +51,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Components
             }
 
             var value = args.Value?.ToString() ?? "";
+
+            if (string.IsNullOrWhiteSpace(value)) return;
+
             _lineCount = Regex.Matches(value, "\n").Count + 1;
 
             try
             {
-                var obj = JObject.Parse(value);
+                if (value.StartsWith("["))
+                    JArray.Parse(value);
+                else
+                    JObject.Parse(value);
                 _errorLine = 0;
             }
             catch (Exception ex)

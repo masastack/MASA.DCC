@@ -173,5 +173,7 @@
   "Enable encryption": "是否开启加密",
   "Format": "格式",
   "Hey, there is no project yet~ Please contact the project administrator~": "诶呦，还没有项目哦~请联系项目管理员~",
-  "Hey, there is no APP yet~ Please contact the project administrator~": "诶呦，还没有APP哦~请联系项目管理员~"
+  "Hey, there is no APP yet~ Please contact the project administrator~": "诶呦，还没有APP哦~请联系项目管理员~",
+  "Value before rollback": "回滚前的值",
+  "Value after rollback": "回滚后的值"
 }

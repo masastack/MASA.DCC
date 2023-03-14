@@ -415,7 +415,7 @@
                      SelectConfigObject="_selectConfigObject"
 />
 <CloneModal @ref="_cloneModal"
-            ConfigObjects="_configObjects"
+            ConfigObjects="_configObjects.DeepClone()"
             SelectCluster="_selectCluster"
             ConfigObjectType="ConfigObjectType"
             AppDetail="_appDetail"

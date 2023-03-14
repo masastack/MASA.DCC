@@ -87,8 +87,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key), Width = 120 },
                     new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value), Width = 120  },
                     new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
-                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier), Width = 98  },
-                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime), Width = 114 },
+                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier), Width = 120  },
+                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime), Width = 180 },
                     new() { Text = T("Operation"), Value="Operation", Sortable = false, Width = 88 }
                 };
 

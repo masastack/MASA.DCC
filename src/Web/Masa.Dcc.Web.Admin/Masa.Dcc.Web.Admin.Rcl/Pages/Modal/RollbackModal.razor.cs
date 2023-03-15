@@ -64,23 +64,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Parameter]
         public ConfigObjectReleaseDto RollbackConfigObjectRelease { get; set; } = null!;
 
-        private List<DataTableHeader<ConfigObjectPropertyModel>> _rollbackHeaders=new ()
-	{
-	    new (){ Text= T("State"), Value= nameof(ConfigObjectPropertyModel.IsPublished)},
-	    new (){ Text= T("Key"), Value= nameof(ConfigObjectPropertyModel.Key)},
-	    new (){ Text= T("UnRollback value"), Value= nameof(ConfigObjectPropertyModel.Value)},
-	    new (){ Text= T("Rollbacked value"), Value= nameof(ConfigObjectPropertyModel.TempValue)}
-	}
-
-        private List<ConfigObjectPropertyModel> _properties = new();
-=======
+	private List<ConfigObjectPropertyModel> _properties = new();
+        private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _headers = new()
+        {
             new (){ Text= "State", Value= nameof(ConfigObjectPropertyModel.IsPublished)},
             new (){ Text= "Key", Value= nameof(ConfigObjectPropertyModel.Key)},
             new (){ Text= "Value before rollback", Value= nameof(ConfigObjectPropertyModel.Value)},
             new (){ Text= "Value after rollback", Value= nameof(ConfigObjectPropertyModel.TempValue)}
         };
->>>>>>> main
-
+	
         public RollbackModal()
         {
             ModalKey = $"rollbackModal-{this._show}";

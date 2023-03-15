@@ -93,14 +93,18 @@
             </MCard>
         </div>
         <div class="appCard mt-6">
-            <div class="d-flex justify-space-between">
-                <div class="emphasis2--text h6 mt-1">@T("App")</div>
-                <MTextField @bind-Value="_appName" OnKeyDown="SearchApp" Style="max-width:32%;min-width:380px;" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
-                    <PrependInnerContent>
-                        <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
-                    </PrependInnerContent>
-                </MTextField>
-            </div>
+            <MRow Class="justify-center">
+                <MCol Lg="8" Md="8" Sm="6">
+                    <div class="emphasis2--text h6 mt-1">@T("App")</div>
+                </MCol>
+                <MCol Lg="4" Md="4" Sm="6">
+                    <MTextField @bind-Value="_appName" OnKeyDown="SearchApp" Style="width:100%" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the app name and press enter to query")">
+                        <PrependInnerContent>
+                            <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
+                        </PrependInnerContent>
+                    </MTextField>
+                    </MCol>
+                    </MRow>
             <div class="mt-6" style="width:100%; height: calc(100vh - 497px);overflow-y:auto; overflow-x:hidden;">
                 @if (_apps?.Any() == true)
                 {

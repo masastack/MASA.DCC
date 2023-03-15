@@ -37,9 +37,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private int _internalEnvironmentClusterId;
         private Guid _internalTeamId;
-        public List<ProjectModel> _projects = new();
+        private List<ProjectModel> _projects = new();
         private List<ProjectModel> _backupProjects = new();
-        public List<TeamModel> _allTeams = new();
+        private List<TeamModel> _allTeams = new();
         private List<Model.AppModel> _apps = new();
         private bool _showProcess;
 

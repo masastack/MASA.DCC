@@ -59,6 +59,8 @@
   "Text": "文本",
   "Release": "发布",
   "UnReleased": "未发布",
+  "Released value": "发布的值",
+  "Unreleased value": "未发布的值",
   "Release name": "发布名称",
   "Description": "描述",
   "Changed configuration": "变更的配置",

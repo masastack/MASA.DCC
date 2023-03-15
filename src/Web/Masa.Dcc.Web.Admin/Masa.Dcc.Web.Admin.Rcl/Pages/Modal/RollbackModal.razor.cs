@@ -72,7 +72,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             new (){ Text= "Value before rollback", Value= nameof(ConfigObjectPropertyModel.Value)},
             new (){ Text= "Value after rollback", Value= nameof(ConfigObjectPropertyModel.TempValue)}
         };
-
+        
         public RollbackModal()
         {
             ModalKey = $"rollbackModal-{this._show}";

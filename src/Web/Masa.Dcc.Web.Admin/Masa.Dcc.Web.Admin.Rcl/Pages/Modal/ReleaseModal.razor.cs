@@ -55,8 +55,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 {
                     new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished) },
                     new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
-                    new() { Text = T("Published values"), Value = nameof(ConfigObjectPropertyModel.TempValue) },
-                    new() { Text = T("Unpublished value"), Value = nameof(ConfigObjectPropertyModel.Value) },
+                    new() { Text = T("Released value"), Value = nameof(ConfigObjectPropertyModel.TempValue) },
+                    new() { Text = T("Unreleased value"), Value = nameof(ConfigObjectPropertyModel.Value) },
                     new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier) },
                     new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime) }
                 };

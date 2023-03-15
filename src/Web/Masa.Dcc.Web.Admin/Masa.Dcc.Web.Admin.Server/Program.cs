@@ -20,19 +20,8 @@ if (!builder.Environment.IsDevelopment())
     {
         return masaStackConfig.OtlpUrl;
     }, true);
-
-    builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
 }
-else
-{
-    builder.Services.AddDccApiGateways(c =>
-#if DEBUG
-    c.DccServiceAddress = "http://localhost:6196"
-#else
-    c.DccServiceAddress = masaStackConfig.GetDccServiceDomain()
-#endif
-    );
-}
+builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 builder.WebHost.UseKestrel(option =>

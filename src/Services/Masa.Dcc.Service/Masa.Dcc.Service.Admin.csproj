@@ -59,6 +59,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <Folder Include="Assets\Fonts\" />
 	  <Folder Include="Domain\App\Events\" />
 	</ItemGroup>
 </Project>

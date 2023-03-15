@@ -819,3 +819,7 @@ textarea:disabled {
 .m-timeline::before {
     background: #E4E8F3 !important;
 }
+
+.remove-bg-after::after {
+    background: none !important;
+}

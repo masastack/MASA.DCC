@@ -67,12 +67,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         private List<ConfigObjectPropertyModel> _properties = new();
         private readonly List<DataTableHeader<ConfigObjectPropertyModel>> _headers = new()
         {
-            new (){ Text= "状态", Value= nameof(ConfigObjectPropertyModel.IsPublished)},
+            new (){ Text= "State", Value= nameof(ConfigObjectPropertyModel.IsPublished)},
             new (){ Text= "Key", Value= nameof(ConfigObjectPropertyModel.Key)},
-            new (){ Text= "回滚前的值", Value= nameof(ConfigObjectPropertyModel.Value)},
-            new (){ Text= "回滚后的值", Value= nameof(ConfigObjectPropertyModel.TempValue)}
+            new (){ Text= "Value before rollback", Value= nameof(ConfigObjectPropertyModel.Value)},
+            new (){ Text= "Value after rollback", Value= nameof(ConfigObjectPropertyModel.TempValue)}
         };
-
+        
         public RollbackModal()
         {
             ModalKey = $"rollbackModal-{this._show}";

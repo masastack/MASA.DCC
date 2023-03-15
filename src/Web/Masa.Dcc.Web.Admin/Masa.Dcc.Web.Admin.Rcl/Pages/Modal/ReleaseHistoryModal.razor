@@ -149,7 +149,7 @@
 <RollbackModal @ref="_releaseHistoryRollbackModal"
                ModalKey="@($"releaseHistoryRollbackModal{_showRollbackModal}")"
                @bind-Value="_showRollbackModal"
-               FormatLabelCode="_formatLabelCode"
+               FormatLabelCode="@_formatLabelCode"
                CurrentConfigObjectRelease="_currentConfigObjectRelease"
                RollbackConfigObjectRelease="_rollbackConfigObjectRelease"
                OnClick="async ()=>{ await RollbackAsync(_releaseHistory); }"

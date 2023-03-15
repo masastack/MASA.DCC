@@ -21,14 +21,14 @@
         <MCol Cols="4">
             <MCard Class="ma-3" Outlined MinHeight="242" Style="border-radius:16px !important; border: none;">
                 <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding-bottom: 12px !important;">
-                    <div class="emphasis2--text h7 text-overflow">@label.TypeName</div>
+                    <div class="emphasis2--text h7 text-overflow"><span class="font-weight-bold">@label.TypeName</span></div>
                     <MSpacer />
                     <MButton Icon OnClick="()=>ShowLabelModal(label)">
                         <MIcon Size="20" Color="#323D6F">mdi-pencil</MIcon>
                     </MButton>
                 </MCardTitle>
                 <MCardSubtitle>
-                    <div class="text-overflow">@label.TypeCode</div>
+                    <div class="text-overflow regular2--text">@label.TypeCode</div>
                     <div class="mt-4" style="display:-webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;overflow: hidden; color: #485585">
                         @label.Description
                     </div>
@@ -37,15 +37,15 @@
                     <MChipGroup Class="env-cluster-chip-group">
                         @foreach (var item in labelGroup)
                         {
-                            <MChip Color="#F0F3FA" Style="color: #323D6F; font-weight: bold; font-size: 14px;" Class="mr-3" Small>
+                            <MChip Color="#F0F3FA" Style="color: #323D6F; font-size: 14px;" Class="mr-3 font-weight-regular" Small>
                                 @item.Name
                             </MChip>
                         }
                     </MChipGroup>
                     <div class="mx-2 d-flex justify-end regular3--text btn text-overflow" style="margin:16px 0 0 0;">
-                        <span style="font-size: 12px; color: #323D6F;">@label.ModifierName</span>
-                        <span class="mx-2" style="color:#E2E7F4">|</span>
                         <span style="font-size: 12px; color: #A3AED0;">@T("Edit in") @label.ModificationTime.Humanize(utcDate: true, culture:I18n.Culture)</span>
+                        <span class="mx-2" style="color:#E2E7F4">|</span>
+                        <span style="font-size: 12px; color: #323D6F;">@label.ModifierName</span>
                     </div>
                 </div>
             </MCard>
@@ -58,10 +58,12 @@
         <div class="d-flex flex-column" style="width:100%; height:100%; padding:  48px 228px; overflow: hidden;">
             <div class="full-height" style="overflow-y: auto;">
                 <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Label")</p>
-                <STextField Outlined @bind-Value="_labelModal.Data.TypeName" Label="TypeName"></STextField>
-                <STextField Disabled="_labelModal.HasValue" Class="mt-12" Outlined @bind-Value="_labelModal.Data.TypeCode" Label="TypeCode"></STextField>
+		<MCard class="d-flex justify-start" Flat Tile>
+                    <STextField Outlined Tile @bind-Value="_labelModal.Data.TypeName" Label="TypeName" class="mr-6"></STextField>
+                    <STextField Disabled="_labelModal.HasValue" Outlined Tile @bind-Value="_labelModal.Data.TypeCode" Label="TypeCode"></STextField>
+		</MCard>    
                 <p class="mt-12" style="font-size:14px; font-weight:700; color:#1B2559">@T("Label values")</p>
-                <div style="border-radius: 8px; border: 1px solid #E2E7F4;" class="py-3">
+                <div style="border-radius: 8px; border: 1px solid #E2E7F4;" class="pt-3 pb-4">
                     <MRow Style="color: #A3AED0; font-size: 14px;" Class="px-6" NoGutters>
                         <span style="width: 47.5%">Name</span>
                         <span style="width: 47.5%">Code</span>
@@ -70,12 +72,16 @@
                     <MDivider Class="mt-3"></MDivider>
                     @foreach (var item in _labelModal.Data.LabelValues)
                     {
-                        <MRow Class="pt-4 px-6" NoGutters Justify="JustifyTypes.SpaceBetween">
-                            <STextField Style="width: 46.5%" Class="pr-6" Outlined @bind-Value="item.Name" Label="Name"></STextField>
-                            <STextField Style="width: 46.5%" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
+                        <MRow Class="pt-4 px-4" NoGutters Justify="JustifyTypes.SpaceBetween">
+                            <STextField Style="width: 46.5%" Class="pr-6" TextColor="regular" Outlined @bind-Value="item.Name" Label="Name"></STextField>
+                            <STextField Style="width: 46.5%;" TextColor="regular" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
                             <div class="d-flex justify-end align-start ml-6" style="width: 5%; margin-top: 14px;">
-                                <MIcon Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="hover-pointer mr-3">mdi-close</MIcon>
-                                <MIcon OnClick="()=>AddLabelValue(item.Index)" Class="hover-pointer">mdi-plus</MIcon>
+                                <MButton Icon Class="mr-3">
+                                    <MIcon Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</MIcon>
+                                </MButton>
+                                <MButton Icon>
+                                    <MIcon OnClick="()=>AddLabelValue(item.Index)" Class="remove-bg-after">mdi-plus</MIcon>
+                                </MButton>
                             </div>
                         </MRow>
                     }

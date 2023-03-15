@@ -795,6 +795,31 @@ textarea:disabled {
 .m-chip--envcluster .split--text {
     color: #E4E8F3;
 }
+
+/* table border begin */
+.table-header-border-1 table {
+    border-collapse: collapse;
+}
+.table-header-border-1 thead tr{
+    border-bottom: solid 0.5px #E4E8F3;
+}
+.table-header-border-1 thead tr th{
+    height: 44px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+.table-header-border-1 tbody tr td {
+    border-radius: 0 !important;
+    border: 0px !important;
+    margin-top: 0 16px !important;
+    color: #485585;
+}
+/* table border end */
+
 .m-timeline::before {
     background: #E4E8F3 !important;
+}
+
+.remove-bg-after::after {
+    background: none !important;
 }

@@ -5,21 +5,29 @@
                 @for (int i = 0; i < _lineCount; i++)
                 {
                     var line = i + 1;
-                    var color = _errorLine == line ? "color:red;" : "";
+                    var isErrorLine = _errorLine == line;
+                    var color = isErrorLine ? "color:red;" : "";
                     <div @key="line" style="height:24px;@color">
-                        <MTooltip Right Disabled="_errorLine!=line">
-                            <ActivatorContent>
-                                @line
-                            </ActivatorContent>
-                            <ChildContent>
-                                <span>@_error</span>
-                            </ChildContent>
-                        </MTooltip>
+                        @if (!isErrorLine)
+                        {
+                            <span>@line</span>
+                        }
+                        else
+                        {
+                            <MTooltip Right>
+                                <ActivatorContent>
+                                <span @attributes="@context.Attrs">@line</span>
+                                </ActivatorContent>
+                                <ChildContent>
+                                    <span>@_error</span>
+                                </ChildContent>
+                            </MTooltip>
+                        }
                     </div>
                 }
             </div>
             <textarea style="outline:none;resize:none;width:100%;" autofocus disabled=@Disabled
-                      @oninput="OnInput" @ref="Ref" value="@Value" @onchange="HandleOnChange">
+                @oninput="OnInput" @ref="Ref" value="@Value" @onchange="HandleOnChange">
             </textarea>
         </div>
     </div>

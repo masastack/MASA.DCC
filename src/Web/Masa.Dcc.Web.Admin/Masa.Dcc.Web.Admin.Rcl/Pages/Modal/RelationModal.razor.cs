@@ -89,6 +89,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             }
 
             _originalConfigObject = _selectConfigObject.Adapt<ConfigObjectModel>();
+            _isRelation = true;
         }
 
         private void PropertyValueChanged(string value, ConfigObjectPropertyModel model)

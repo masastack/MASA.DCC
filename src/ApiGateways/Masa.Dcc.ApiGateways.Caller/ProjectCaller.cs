@@ -7,10 +7,7 @@ namespace Masa.Dcc.Caller
     {
         private readonly string _prefix = "/api/v1/project";
 
-        public ProjectCaller(
-            IServiceProvider serviceProvider,
-            TokenProvider tokenProvider,
-            DccApiGatewayOptions options) : base(serviceProvider, tokenProvider, options)
+        public ProjectCaller(DccApiGatewayOptions options) : base(options)
         {
         }
 

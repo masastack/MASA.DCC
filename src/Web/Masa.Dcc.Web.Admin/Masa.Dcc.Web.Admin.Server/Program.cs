@@ -6,6 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 await builder.Services.AddMasaStackConfigAsync();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
+MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
+{
+    Authority = masaStackConfig.GetSsoDomain(),
+    ClientId = masaStackConfig.GetWebId(MasaStackConstant.DCC),
+    Scopes = new List<string> { "offline_access" }
+};
+
+string dccServiceAddress = masaStackConfig.GetDccServiceDomain();
 if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddObservable(builder.Logging, () =>
@@ -21,12 +29,17 @@ if (!builder.Environment.IsDevelopment())
         return masaStackConfig.OtlpUrl;
     }, true);
 
-    builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
+
+    dccServiceAddress = "http://localhost:6196";
 }
-else
+
+builder.Services.AddDccApiGateways(option =>
 {
-    builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
-}
+    option.DccServiceAddress = dccServiceAddress;
+    option.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
+    option.ClientId = masaOpenIdConnectOptions.ClientId;
+    option.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
+});
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 builder.WebHost.UseKestrel(option =>
@@ -47,14 +60,7 @@ builder.WebHost.UseKestrel(option =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped<TokenProvider>();
 
-MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
-{
-    Authority = masaStackConfig.GetSsoDomain(),
-    ClientId = masaStackConfig.GetWebId(MasaStackConstant.DCC),
-    Scopes = new List<string> { "offline_access" }
-};
 IdentityModelEventSource.ShowPII = true;
 builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
 

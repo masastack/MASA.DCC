@@ -21,7 +21,11 @@ if (!builder.Environment.IsDevelopment())
         return masaStackConfig.OtlpUrl;
     }, true);
 }
+#if DEBUG
+builder.Services.AddDccApiGateways(c => c.DccServiceAddress = "http://localhost:6196");
+#else
 builder.Services.AddDccApiGateways(c => c.DccServiceAddress = masaStackConfig.GetDccServiceDomain());
+#endif
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 builder.WebHost.UseKestrel(option =>

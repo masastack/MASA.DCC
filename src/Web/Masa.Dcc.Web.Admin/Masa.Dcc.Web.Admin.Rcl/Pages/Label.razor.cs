@@ -129,11 +129,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private void LabelModalValueChanged(bool value)
         {
             _labelModal.Visible = value;
-            if (!value)
-            {
-                _labelModal.Hide();
-                _labelModal.Data.LabelValues.Clear();
-            }
+        }
+
+        private void LabelModalClosed()
+        {
+            _labelModal.Data = new UpdateLabelModel();
         }
 
         private async Task RemoveLabelAsync(UpdateLabelModel label)

@@ -9,8 +9,7 @@ namespace Masa.Dcc.Caller
 
         public ClusterCaller(
             IServiceProvider serviceProvider,
-            TokenProvider tokenProvider,
-            DccApiGatewayOptions options) : base(serviceProvider, tokenProvider, options)
+            DccApiGatewayOptions options) : base(serviceProvider, options)
         {
         }
 

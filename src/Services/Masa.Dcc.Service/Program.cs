@@ -59,9 +59,6 @@ if (builder.Environment.IsDevelopment())
     builder.Services.AddDaprStarter();
 }
 
-builder.Services.AddHealthChecks()
-    .AddCheck("self", () => HealthCheckResult.Healthy("A healthy result."))
-    .AddDbContextCheck<DccDbContext>();
 builder.Services.AddStackMiddleware();
 builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 
@@ -145,7 +142,7 @@ app.UseI18n();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseAddStackMiddleware();
+app.UseStackMiddleware();
 
 app.UseCloudEvents();
 app.UseEndpoints(endpoints =>

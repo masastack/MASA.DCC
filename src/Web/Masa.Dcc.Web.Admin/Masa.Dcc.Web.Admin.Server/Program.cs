@@ -13,7 +13,7 @@ MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
     Scopes = new List<string> { "offline_access" }
 };
 
-string dccDerviceAddress = masaStackConfig.GetDccServiceDomain();
+string dccServiceAddress = masaStackConfig.GetDccServiceDomain();
 if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddObservable(builder.Logging, () =>
@@ -30,12 +30,12 @@ if (!builder.Environment.IsDevelopment())
     }, true);
 
 
-    dccDerviceAddress = "http://localhost:6196";
+    dccServiceAddress = "http://localhost:6196";
 }
 
 builder.Services.AddDccApiGateways(option =>
 {
-    option.DccServiceAddress = dccDerviceAddress;
+    option.DccServiceAddress = dccServiceAddress;
     option.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
     option.ClientId = masaOpenIdConnectOptions.ClientId;
     option.ClientSecret = masaOpenIdConnectOptions.ClientSecret;

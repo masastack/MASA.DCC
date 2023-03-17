@@ -7,9 +7,7 @@ namespace Masa.Dcc.ApiGateways.Caller
     {
         private readonly string _prefix = "/api/v1";
 
-        public ConfigObjectCaller(
-            IServiceProvider serviceProvider,
-            DccApiGatewayOptions options) : base(serviceProvider, options)
+        public ConfigObjectCaller(DccApiGatewayOptions options) : base(options)
         {
         }
 

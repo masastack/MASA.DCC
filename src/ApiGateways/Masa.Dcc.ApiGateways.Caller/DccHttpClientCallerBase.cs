@@ -3,12 +3,10 @@
 
 namespace Masa.Dcc.Caller;
 
-public abstract class DccHttpClientCallerBase : HttpClientCallerBase
+public abstract class DccHttpClientCallerBase : StackHttpClientCaller
 {
 
-    protected DccHttpClientCallerBase(
-        IServiceProvider serviceProvider,
-        DccApiGatewayOptions options) : base(serviceProvider)
+    protected DccHttpClientCallerBase(DccApiGatewayOptions options)
     {
         BaseAddress = options.DccServiceAddress;
     }

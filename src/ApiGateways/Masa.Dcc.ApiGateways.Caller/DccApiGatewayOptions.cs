@@ -5,11 +5,12 @@ namespace Masa.Dcc.ApiGateways.Caller
 {
     public class DccApiGatewayOptions
     {
-        public string DccServiceAddress { get; set; }
+        public string DccServiceAddress { get; set; } = string.Empty;
 
-        public DccApiGatewayOptions(string url)
-        {
-            DccServiceAddress = url;
-        }
+        public string AuthorityEndpoint { get; set; } = string.Empty;
+
+        public string ClientId { get; set; } = string.Empty;
+
+        public string ClientSecret { get; set; } = string.Empty;
     }
 }

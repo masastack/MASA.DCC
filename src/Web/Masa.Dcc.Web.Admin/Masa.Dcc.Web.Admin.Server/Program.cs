@@ -13,7 +13,6 @@ MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
     Scopes = new List<string> { "offline_access" }
 };
 
-string dccServiceAddress = masaStackConfig.GetDccServiceDomain();
 if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddObservable(builder.Logging, () =>
@@ -29,15 +28,12 @@ if (!builder.Environment.IsDevelopment())
         return masaStackConfig.OtlpUrl;
     }, true);
 }
+
+string dccServiceAddress = masaStackConfig.GetDccServiceDomain();
 #if DEBUG
-builder.Services.AddDccApiGateways(option =>
-{
-    option.DccServiceAddress = "http://localhost:6196";
-    option.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
-    option.ClientId = masaOpenIdConnectOptions.ClientId;
-    option.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
-});
-#else
+dccServiceAddress = "http://localhost:6196";
+#endif
+
 builder.Services.AddDccApiGateways(option =>
 {
     option.DccServiceAddress = dccServiceAddress;
@@ -45,7 +41,6 @@ builder.Services.AddDccApiGateways(option =>
     option.ClientId = masaOpenIdConnectOptions.ClientId;
     option.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
 });
-#endif
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 builder.WebHost.UseKestrel(option =>

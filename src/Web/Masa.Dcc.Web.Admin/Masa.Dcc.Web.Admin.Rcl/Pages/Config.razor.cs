@@ -712,6 +712,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
+        private void PropertyConfigModalClosed()
+        {
+            _propertyConfigModal.Clear();
+        }
+
         private async Task ShowAddConfigObjectModalAsync()
         {
             if (_addConfigObjectModal != null)

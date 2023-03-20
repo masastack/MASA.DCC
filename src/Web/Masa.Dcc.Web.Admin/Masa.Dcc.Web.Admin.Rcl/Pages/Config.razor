@@ -376,7 +376,7 @@
                       OnSubmitAfter="()=>GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType)">
 </AddConfigObjectModal>
 
-<SSheetDialog EnableDomReload Value="_propertyConfigModal.Visible" ValueChanged="PropertyConfigModalValueChanged" Title="@(_propertyConfigModal.HasValue ? T("Modify config object item") : T("Create config object item"))" Icon="mdi-circle" IconColor="success">
+<SSheetDialog EnableDomReload Value="_propertyConfigModal.Visible" ValueChanged="PropertyConfigModalValueChanged" Title="@(_propertyConfigModal.HasValue ? T("Modify config object item") : T("Create config object item"))" Icon="mdi-circle" IconColor="success" OnClosed="PropertyConfigModalClosed">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_propertyConfigModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
             <div>

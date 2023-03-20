@@ -28,6 +28,7 @@ global using Masa.BuildingBlocks.StackSdks.Middleware;
 global using Masa.BuildingBlocks.StackSdks.Pm;
 global using Masa.BuildingBlocks.StackSdks.Pm.Enum;
 global using Masa.BuildingBlocks.StackSdks.Pm.Model;
+global using Masa.BuildingBlocks.Globalization.I18n;
 global using Masa.Contrib.Caching.Distributed.StackExchangeRedis;
 global using Masa.Contrib.Ddd.Domain.Repository.EFCore;
 global using Masa.Contrib.Dispatcher.Events;

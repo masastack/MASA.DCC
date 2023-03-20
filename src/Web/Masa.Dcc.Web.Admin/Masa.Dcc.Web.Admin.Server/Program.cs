@@ -28,11 +28,16 @@ if (!builder.Environment.IsDevelopment())
     {
         return masaStackConfig.OtlpUrl;
     }, true);
-
-
-    dccServiceAddress = "http://localhost:6196";
 }
-
+#if DEBUG
+builder.Services.AddDccApiGateways(option =>
+{
+    option.DccServiceAddress = "http://localhost:6196";
+    option.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
+    option.ClientId = masaOpenIdConnectOptions.ClientId;
+    option.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
+});
+#else
 builder.Services.AddDccApiGateways(option =>
 {
     option.DccServiceAddress = dccServiceAddress;
@@ -40,6 +45,7 @@ builder.Services.AddDccApiGateways(option =>
     option.ClientId = masaOpenIdConnectOptions.ClientId;
     option.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
 });
+#endif
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 builder.WebHost.UseKestrel(option =>

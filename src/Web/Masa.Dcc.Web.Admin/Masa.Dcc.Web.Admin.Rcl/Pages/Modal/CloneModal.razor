@@ -230,16 +230,19 @@
                                                             ItemText="l=>l.Name"
                                                             ItemValue="l=>l.Id">
                                                 </SSelect>
-                                                <SSelect @bind-Value="_cloneSelectAppId"
-                                                            Label="@T("App")"
-                                                            Class="mt-6"
-                                                            MenuProps="props => props.OffsetY = true"
-                                                            Outlined
-                                                            HideDetails="true"
-                                                            HideSelected="false"
-                                                            Items="_cloneApps"
-                                                            ItemText="l=>l.Name"
-                                                            ItemValue="l=>l.Id">
+                                                <SSelect Value="_cloneSelectAppId"
+                                                             ValueChanged="appId=>{  _cloneSelectAppId = appId;  }"
+                                                             Label="@T("App")"
+                                                             MenuProps="props => props.OffsetY = true"
+                                                             Class="mt-6"
+                                                             Outlined
+                                                             TItem="AppDetailModel"
+                                                             TItemValue="int"
+                                                             HideSelected="false"
+                                                             TValue="int"
+                                                             Items="_cloneApps"
+                                                             ItemText="l=>l.Name"
+                                                             ItemValue="l=>l.Id">
                                                 </SSelect>
                                             </div>
                                         </ShowTransitionElement>

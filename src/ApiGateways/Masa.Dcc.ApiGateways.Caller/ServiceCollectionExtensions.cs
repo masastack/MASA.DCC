@@ -7,11 +7,21 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDccApiGateways(this IServiceCollection services, Action<DccApiGatewayOptions>? configure = null)
     {
-        var options = new DccApiGatewayOptions("http://localhost:6196/");
-
+        var options = new DccApiGatewayOptions();
         configure?.Invoke(options);
         services.AddSingleton(options);
-        services.AddAutoRegistrationCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"));
+
+        services.AddStackCaller(Assembly.Load("Masa.Dcc.ApiGateways.Caller"), serviceProvider =>
+        {
+            return new TokenProvider();
+        }, jwtTokenValidatorOptions =>
+        {
+            jwtTokenValidatorOptions.AuthorityEndpoint = options.AuthorityEndpoint;
+        }, clientRefreshTokenOptions =>
+        {
+            clientRefreshTokenOptions.ClientId = options.ClientId;
+            clientRefreshTokenOptions.ClientSecret = options.ClientSecret;
+        });
 
         return services;
     }

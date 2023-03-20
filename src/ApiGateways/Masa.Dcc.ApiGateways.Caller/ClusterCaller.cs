@@ -7,10 +7,7 @@ namespace Masa.Dcc.Caller
     {
         private readonly string _prefix = "/api/v1/cluster";
 
-        public ClusterCaller(
-            IServiceProvider serviceProvider,
-            TokenProvider tokenProvider,
-            DccApiGatewayOptions options) : base(serviceProvider, tokenProvider, options)
+        public ClusterCaller(DccApiGatewayOptions options) : base(options)
         {
         }
 

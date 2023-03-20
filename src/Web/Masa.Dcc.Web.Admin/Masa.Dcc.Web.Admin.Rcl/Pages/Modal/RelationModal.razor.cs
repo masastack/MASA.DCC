@@ -89,6 +89,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             }
 
             _originalConfigObject = _selectConfigObject.Adapt<ConfigObjectModel>();
+            _isRelation = true;
         }
 
         private void PropertyValueChanged(string value, ConfigObjectPropertyModel model)
@@ -127,7 +128,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                     if (relationed)
                     {
                         var envCluster = _allEnvClusters.First(c => c.Id == envClusterId.AsT1);
-                        await PopupService.EnqueueSnackbarAsync(T("The public configuration object has been associated in \"{environmentClusterName}\", please do not repeat the association").Replace("{environmentClusterName}", envCluster.EnvironmentClusterName), AlertTypes.Error);
+                        await PopupService.EnqueueSnackbarAsync(T("DuplicatePublicConfigAssociateAlertMessage").Replace("{environmentClusterName}", envCluster.EnvironmentClusterName), AlertTypes.Error);
                         return;
                     }
                 }

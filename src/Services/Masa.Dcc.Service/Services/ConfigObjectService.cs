@@ -49,6 +49,37 @@ public class ConfigObjectService : ServiceBase
 
     public async Task UpdateConfigObjectContentAsync(IEventBus eventBus, UpdateConfigObjectContentDto dto)
     {
+        if (!string.IsNullOrWhiteSpace(dto.FormatLabelCode) && !string.IsNullOrWhiteSpace(dto.Content))
+        {
+            dto.FormatLabelCode = dto.FormatLabelCode.ToLower();
+
+            switch (dto.FormatLabelCode)
+            {
+                case "json":
+                    try {
+                        if (dto.Content.StartsWith("["))
+                            JArray.Parse(dto.Content);
+                        else
+                            JObject.Parse(dto.Content);
+                    }
+                    catch {
+                        throw new Exception(I18n.T("Wrong format"));
+                    }                    
+                    break;
+                case "xml":
+                    try {
+                        XElement.Parse(dto.Content);
+                    } 
+                    catch {
+                        throw new Exception(I18n.T("Wrong format"));
+                    }
+                    break;
+                case "yaml":
+                default:
+                    break;
+            }
+        }
+
         var command = new UpdateConfigObjectContentCommand(dto);
         await eventBus.PublishAsync(command);
     }

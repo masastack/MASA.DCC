@@ -1,3 +1,6 @@
 {
+  "$DefaultLanguage": "true",
+  "$Text": "中文简体",
+  "Wrong format": "格式有误",
   "Duplicate label type code": "标签类型代码重复"
 }

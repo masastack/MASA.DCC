@@ -2,7 +2,7 @@
 @inherits MasaCompontentBase
 <MRow style="">
     <MCol Cols="2">
-        <MNavigationDrawer Right Permanent Class="rounded-4" Style="height: 100%;top:0px;transform:translateX(0%);width: 100%;height: calc(100vh - 192px)">
+        <MNavigationDrawer Right Permanent Class="rounded-4" Style="height: 100%;top:0px;transform:translateX(0%);width: 100%;">
             <div style="padding:16px 24px; display:flex; flex-direction:column; align-items:center; overflow: hidden;">
                 <div style="width:100%;" class="regular--text body2">
                     <MRow NoGutters Align="AlignTypes.Center" Justify="JustifyTypes.SpaceBetween">
@@ -177,13 +177,13 @@
                                         @if (configObject.RelationConfigObjectId != 0)
                                         {
                                             <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4 rounded-5">
-                                                <MDataTable FixedHeader Style="max-height: 312px; overflow: auto;" Headers="Headers"
+                                                <MDataTable FixedHeader Style="max-height: 312px;" Height="312" Headers="Headers"
                                                 SortDesc="true"
                                                 SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                                 TItem="ConfigObjectPropertyModel"
                                                 Items="@configObject.ConfigObjectPropertyContents"
                                                 Class="table-border-none"
-                                                                        HideDefaultFooter>
+                                                HideDefaultFooter>
                                                 <HeaderColContent Context="header">
                                                     <span class="regular3--text btn">@header.Text</span>
                                                 </HeaderColContent>
@@ -204,7 +204,7 @@
                                                                     color = "#7681AB";
                                                                     text = @T("UnReleased");
                                                                 }
-                                                                <MIcon Style="margin-bottom:2px;" Size="20" Color="@color">@icon</MIcon>
+                                                                <MIcon Style="margin-bottom:2px;" Class="mr-1" Size="20" Color="@color">@icon</MIcon>
                                                                 <span style="color: @color;">@text</span>
                                                                 break;
                                                             case "Operation":
@@ -234,7 +234,7 @@
                                                Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                             <SElevationTabItem>
                                             <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-3 mt-4 rounded-5">
-                                            <MDataTable FixedHeader Style="max-height: 312px; overflow: auto;" Headers="Headers"
+                                            <MDataTable FixedHeader Style="max-height: 312px;" Height="312" Headers="Headers"
                                                         SortDesc="true"
                                                         SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                                         TItem="ConfigObjectPropertyModel"
@@ -248,9 +248,10 @@
                                                             @switch (@context.Header.Value)
                                                                 {
                                                                     case nameof(ConfigObjectPropertyModel.IsPublished):
-                                                                        if (context.Item.IsPublished)
+                                                                        <div class="d-inline-flex m-0 p-0">
+                                                                        @if (context.Item.IsPublished)
                                                                         {
-                                                                            <MIcon Style="margin-bottom:2px;color: #05CD99 !important;" Size="16">mdi-link-variant</MIcon>
+                                                                            <MIcon Class="mr-1" Style="margin-bottom:2px;color: #05CD99 !important;" Size="16">mdi-link-variant</MIcon>
                                                                             <span class="green--text">@T("Released")</span>
                                                                         }
                                                                         else
@@ -269,6 +270,7 @@
                                                                             }
                                                                             <span>@T("UnReleased")</span>
                                                                         }
+                                                                        </div>
                                                                         break;
                                                                     case "Operation":
                                                                         @if (!context.Item.IsDeleted)
@@ -413,7 +415,7 @@
                      SelectConfigObject="_selectConfigObject"
 />
 <CloneModal @ref="_cloneModal"
-            ConfigObjects="_configObjects"
+            ConfigObjects="_configObjects.DeepClone()"
             SelectCluster="_selectCluster"
             ConfigObjectType="ConfigObjectType"
             AppDetail="_appDetail"

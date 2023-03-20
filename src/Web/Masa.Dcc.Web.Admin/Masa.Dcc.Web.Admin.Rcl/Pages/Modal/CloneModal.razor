@@ -6,9 +6,9 @@
         {
             <div class="d-flex flex-column justify-center align-center" style="color: #A3AED0;">
                 <div>
-                    @T("Clone")&nbsp;
+                    @T("Clone")
                     <span style="font-size: 20px; font-weight: bold; color: #323D6F;">
-                        "@ProjectDetail.Name"-"@AppDetail.Name"-"<span style="@($"color: {SelectCluster.EnvironmentColor} !important")">@SelectCluster.EnvironmentName</span>"-"@SelectCluster.ClusterName"
+                        "@AppDetail.Name"-"<span style="@($"color: {SelectCluster.EnvironmentColor} !important")">@SelectCluster.EnvironmentName</span>"-"@SelectCluster.ClusterName"
                     </span>
                     @if (_isCloneAll)
                     {
@@ -230,16 +230,19 @@
                                                             ItemText="l=>l.Name"
                                                             ItemValue="l=>l.Id">
                                                 </SSelect>
-                                                <SSelect @bind-Value="_cloneSelectAppId"
-                                                            Label="@T("App")"
-                                                            Class="mt-6"
-                                                            MenuProps="props => props.OffsetY = true"
-                                                            Outlined
-                                                            HideDetails="true"
-                                                            HideSelected="false"
-                                                            Items="_cloneApps"
-                                                            ItemText="l=>l.Name"
-                                                            ItemValue="l=>l.Id">
+                                                <SSelect Value="_cloneSelectAppId"
+                                                             ValueChanged="appId=>{  _cloneSelectAppId = appId;  }"
+                                                             Label="@T("App")"
+                                                             MenuProps="props => props.OffsetY = true"
+                                                             Class="mt-6"
+                                                             Outlined
+                                                             TItem="AppDetailModel"
+                                                             TItemValue="int"
+                                                             HideSelected="false"
+                                                             TValue="int"
+                                                             Items="_cloneApps"
+                                                             ItemText="l=>l.Name"
+                                                             ItemValue="l=>l.Id">
                                                 </SSelect>
                                             </div>
                                         </ShowTransitionElement>

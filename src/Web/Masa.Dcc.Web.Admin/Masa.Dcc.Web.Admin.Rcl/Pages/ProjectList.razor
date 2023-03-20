@@ -2,21 +2,9 @@
 @inherits MasaCompontentBase
 
 
-@if (_projects?.Any() == false)
-{
-    <MCard Class="rounded-5 full-height full-width pl-3 pr-3 fill">
-        <MCardText Class="d-flex align-center justify-center flex-column">
-            <MCard Height="300" Width="300" Class="rounded-5 fill-background"></MCard>
-            <div style="font-size:14px;" class="mt-12 pl-6 regular2--text">@T("Hey, there is no project yet~ Please contact the project administrator~")</div>
-        </MCardText>
-    </MCard>
-}
-else
-{
-
-    <div class="full-height" style="overflow: auto;">
-        <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
-            @foreach (var project in _projects)
+<div class="full-height rounded-4" style="overflow: auto;">
+    <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
+        @foreach (var project in _projects)
             {
                 var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
                 <MExpansionPanel Class="rounded-4 mb-4">
@@ -114,11 +102,9 @@ else
                     </MExpansionPanelContent>
                 </MExpansionPanel>
             }
-        </MExpansionPanels>
-    </div>
-}
+    </MExpansionPanels>
+</div>
 
-
-<MOverlay Value="_showProcess" Absolute Color="#fdfdfd">
+<MOverlay Class="rounded-4" Value="_showProcess" Absolute Color="#fff" Opacity="1.0">
     <MProgressCircular Width="4" Indeterminate Size="48" Color="primary"></MProgressCircular>
-    </MOverlay>
+</MOverlay>

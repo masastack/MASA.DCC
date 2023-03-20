@@ -106,37 +106,25 @@
                     </MCol>
                     </MRow>
             <div class="mt-6" style="width:100%; height: calc(100vh - 497px);overflow-y:auto; overflow-x:hidden;">
-                @if (_apps?.Any() == true)
-                {
-                    <MRow>
-                        @foreach (var app in _apps)
-                        {
-                            <MCol Lg="4" Md="6" Sm="12">
-                                <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                    <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
-                                        @foreach (var item in app.EnvironmentClusters)
-                                        {
-                                            <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"
-                                                Style="margin:0 12px 1px 0;"
-                                                EnvironmentName="@item.EnvironmentName"
-                                                EnvironmentColor="@item.EnvironmentColor"
-                                                ClusterName="@item.ClusterName" />
-                                        }
-                                    </MChipGroup>
-                                </AppCard>
-                            </MCol>
-                        }
-                    </MRow>
-                }
-                else
-                {
-                    <MCard Class="rounded-5 full-height full-width pl-3 pr-3 fill">
-                        <MCardText Class="d-flex align-center justify-center flex-column">
-                            <MCard Height="300" Width="300" Class="rounded-5 fill-background"></MCard>
-                            <div style="font-size:14px;" class="mt-12 pl-6 regular2--text">@T("Hey, there is no APP yet~ Please contact the project administrator~")</div>
-                        </MCardText>
-                    </MCard>
-                }
+                <MRow>
+                    @foreach (var app in _apps)
+                    {
+                        <MCol Lg="4" Md="6" Sm="12">
+                            <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                    @foreach (var item in app.EnvironmentClusters)
+                                    {
+                                        <EnvClusterChip OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, ProjectId))"
+                                            Style="margin:0 12px 1px 0;"
+                                            EnvironmentName="@item.EnvironmentName"
+                                            EnvironmentColor="@item.EnvironmentColor"
+                                            ClusterName="@item.ClusterName" />
+                                    }
+                                </MChipGroup>
+                            </AppCard>
+                        </MCol>
+                    }
+                </MRow>
             </div>
         </div>
     </MCol>

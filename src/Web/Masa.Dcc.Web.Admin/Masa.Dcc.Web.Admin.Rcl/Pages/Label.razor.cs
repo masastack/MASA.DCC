@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Dcc.Web.Admin.Rcl.Model;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Label
@@ -131,6 +129,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private void LabelModalValueChanged(bool value)
         {
+            _labelModal.Visible = value;
             if (!value)
             {
                 _labelModal.Hide();

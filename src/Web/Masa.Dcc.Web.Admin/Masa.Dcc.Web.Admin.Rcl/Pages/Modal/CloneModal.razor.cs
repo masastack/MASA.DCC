@@ -76,6 +76,17 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         }
         #endregion
 
+        private List<ConfigObjectModel> loadConfigObjects()
+        {
+            if (!_isCloneAll && ConfigObjects.Count > 1)
+            {
+                ConfigObjects.Clear();
+                ConfigObjects.Add(_selectConfigObject);
+            }
+
+            return ConfigObjects;
+        }
+
         private async Task<List<ProjectModel>> GetProjectList()
         {
             return await ProjectCaller.GetProjectsAsync();

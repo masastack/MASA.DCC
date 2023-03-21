@@ -45,7 +45,7 @@
                     }
 
                     <MExpansionPanels Flat Accordion>
-                    @foreach (var configObject in ConfigObjects.Where(c => !c.FromRelation))
+                    @foreach (var configObject in loadConfigObjects().Where(c => !c.FromRelation))
                         {
                             var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                             if (formatLabelCode == "properties")

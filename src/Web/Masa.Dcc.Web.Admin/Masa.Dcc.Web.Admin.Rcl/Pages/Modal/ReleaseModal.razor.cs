@@ -99,10 +99,5 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 await ValueChanged.InvokeAsync();
             }
         }
-
-        private void SheetDialogClosed()
-        {
-            _configObjectReleaseModal.Clear();
-        }
     }
 }

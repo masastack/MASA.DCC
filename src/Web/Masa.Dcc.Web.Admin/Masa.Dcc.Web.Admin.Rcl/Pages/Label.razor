@@ -53,7 +53,7 @@
     }
 </MRow>
 
-<SSheetDialog EnableDomReload Value="_labelModal.Visible" ValueChanged="LabelModalValueChanged" Title="@(_labelModal.HasValue ? T("Edit label") : T("Add label"))" Icon="mdi-circle" IconColor="success" OnClosed="LabelModalClosed">
+<SSheetDialog EnableDomReload Value="_labelModal.Visible" ValueChanged="LabelModalValueChanged" Title="@_labelDialogTitle" Icon="mdi-circle" IconColor="success">
     <MForm Class="full-height" Context="formContext" EnableValidation Model="_labelModal.Data">
         <div class="d-flex flex-column" style="width:100%; height:100%; padding:  48px 228px; overflow: hidden;">
             <div class="full-height" style="overflow-y: auto;">
@@ -80,7 +80,7 @@
                             <STextField Style="width: 46.5%" Class="pr-6" TextColor="regular" Outlined @bind-Value="item.Name" Label="Name"></STextField>
                             <STextField Style="width: 46.5%;" TextColor="regular" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
                             <div class="d-flex justify-end align-start ml-6 pt-2" style="width: 5%;">
-                                <MButton Icon Class="mr-3">
+                                <MButton Icon Class="mr-1">
                                     <MIcon Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</MIcon>
                                 </MButton>
                                 <MButton Icon>
@@ -99,7 +99,7 @@
                 }
                 <MSpacer />
                 <SButton Small OnClick="()=>SubmitLabelAsync(formContext)">@(_labelModal.HasValue ? T("Save") : T("Submit"))</SButton>
-                </div>
             </div>
-        </MForm>
-    </SSheetDialog>
+        </div>
+    </MForm>
+</SSheetDialog>

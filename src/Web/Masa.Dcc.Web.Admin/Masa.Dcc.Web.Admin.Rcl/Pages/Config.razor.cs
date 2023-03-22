@@ -76,6 +76,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private AddConfigObjectModal? _addConfigObjectModal;
         private UserModel _userInfo = new();
         private string _tempContent = "";
+        private string _propertyConfigDialogTitle = "";
 
         private List<DataTableHeader<ConfigObjectPropertyModel>> Headers
         {
@@ -686,12 +687,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (models != null)
             {
                 //add
+                _propertyConfigDialogTitle = T("Create config object item");
                 _selectConfigObjectAllProperties = models;
                 _propertyConfigModal.Show(configObject.Id);
             }
             else if (model != null)
             {
                 //edit
+                _propertyConfigDialogTitle = T("Modify config object item");
                 var dto = new ConfigObjectPropertyContentDto
                 {
                     Key = model.Key,
@@ -706,15 +709,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private void PropertyConfigModalValueChanged(bool value)
         {
+            _propertyConfigModal.Visible = value;
             if (value == false)
             {
                 _propertyConfigModal.Hide();
             }
-        }
-
-        private void PropertyConfigModalClosed()
-        {
-            _propertyConfigModal.Clear();
         }
 
         private async Task ShowAddConfigObjectModalAsync()

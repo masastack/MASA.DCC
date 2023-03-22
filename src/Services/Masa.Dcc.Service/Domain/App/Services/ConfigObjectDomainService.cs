@@ -17,6 +17,10 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly IPmClient _pmClient;
         private readonly DaprClient _daprClient;
         private readonly IUnitOfWork _unitOfWork;
+        private JsonSerializerOptions _jsonSerializerOptions = new()
+        {
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        };
 
         public ConfigObjectDomainService(
             IDomainEventBus eventBus,
@@ -131,7 +135,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     propertyEntities.AddRange(dto.EditConfigObjectPropertyContent);
                 }
 
-                content = JsonSerializer.Serialize(propertyEntities);
+                content = JsonSerializer.Serialize(propertyEntities, _jsonSerializerOptions);
                 if (configObject.Encryption)
                 {
                     content = await EncryptContentAsync(content);
@@ -324,7 +328,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                             var releaseContent = new PublishReleaseModel
                             {
-                                Content = JsonSerializer.Serialize(content),
+                                Content = JsonSerializer.Serialize(content, _jsonSerializerOptions),
                                 FormatLabelCode = configObject.FormatLabelCode,
                                 Encryption = configObject.Encryption
                             };
@@ -413,7 +417,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         {
             var configObject = await _configObjectRepository.FindAsync(config => config.Name == configObjectName) ?? throw new UserFriendlyException("ConfigObject does not exist");
 
-            string newValue = JsonSerializer.Serialize(value);
+            string newValue = JsonSerializer.Serialize(value, _jsonSerializerOptions);
 
             if (configObject.Encryption)
             {

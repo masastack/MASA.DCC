@@ -8,5 +8,8 @@
   "AreYouSureToDeleteConfigObject": "Deleting the config object \"{name}\" will cause the instance to fail to obtain the configuration of this config object. Are you sure you want to delete it?",
   "DuplicatePublicConfigAssociateAlertMessage": "The public configuration object has been associated in \"{environmentClusterName}\", please do not repeat the association.",
   "DeleteConfigItemConfirmMessage": "Are you sure delete config object item \"Key:{key},Value:{value}\"?",
-  "RollBackAlertMessage": "This operation will be rolled back to the previous release version, and the current version will be invalidated, but it will not affect the configuration being modified."
+  "RollBackAlertMessage": "This operation will be rolled back to the previous release version, and the current version will be invalidated, but it will not affect the configuration being modified.",
+  "EmptyProject": "There are no projects in the current environment-cluster",
+  "EmptyApp": "There are no apps in the project",
+  "EmptyConfigObject": "There are no config object in the current environment-cluster"
 }

@@ -3,8 +3,10 @@
 
 
 <div class="full-height rounded-4" style="overflow: auto;">
-    <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
-        @foreach (var project in _projects)
+    @if (_projects.Any())
+    {
+        <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
+            @foreach (var project in _projects)
             {
                 var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
                 <MExpansionPanel Class="rounded-4 mb-4">
@@ -64,10 +66,10 @@
                                                 @foreach (var item in app.EnvironmentClusters)
                                                 {
                                                     <EnvClusterChip OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, app.ProjectId))"
-                                                Style="margin:0 12px 1px 0;"
-                                                EnvironmentName="@item.EnvironmentName"
-                                                EnvironmentColor="@item.EnvironmentColor"
-                                                ClusterName="@item.ClusterName" />
+                                                                    Style="margin:0 12px 1px 0;"
+                                                                    EnvironmentName="@item.EnvironmentName"
+                                                                    EnvironmentColor="@item.EnvironmentColor"
+                                                                    ClusterName="@item.ClusterName" />
                                                 }
                                             </MChipGroup>
                                         </AppCard>
@@ -79,15 +81,15 @@
                             @{
                                 var team = _allTeams.FirstOrDefault(team => team.Id == project.TeamId) ?? new();
                                 <MTooltip Right>
-                                <ActivatorContent>
-                                    <MAvatar Size="24" @attributes="@context.Attrs">
-                                        <MImage Src="@team.Avatar"></MImage>
-                                    </MAvatar>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    <span>@team.Name</span>
-                                </ChildContent>
-                            </MTooltip>
+                                    <ActivatorContent>
+                                        <MAvatar Size="24" @attributes="@context.Attrs">
+                                            <MImage Src="@team.Avatar"></MImage>
+                                        </MAvatar>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <span>@team.Name</span>
+                                    </ChildContent>
+                                </MTooltip>
                             }
                             <MHover>
                                 @{
@@ -102,7 +104,12 @@
                     </MExpansionPanelContent>
                 </MExpansionPanel>
             }
-    </MExpansionPanels>
+        </MExpansionPanels>
+    }
+    else
+    {
+        <SEmptyPlaceholder Height="100%" Width="100%" Placeholder="@(T("EmptyProject"))"></SEmptyPlaceholder>
+    }
 </div>
 
 <MOverlay Class="rounded-4" Value="_showProcess" Absolute Color="#fff" Opacity="1.0">

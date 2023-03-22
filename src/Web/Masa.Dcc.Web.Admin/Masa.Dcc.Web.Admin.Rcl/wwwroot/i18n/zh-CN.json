@@ -177,5 +177,8 @@
   "Hey, there is no project yet~ Please contact the project administrator~": "诶呦，还没有项目哦~请联系项目管理员~",
   "Hey, there is no APP yet~ Please contact the project administrator~": "诶呦，还没有APP哦~请联系项目管理员~",
   "Value before rollback": "回滚前的值",
-  "Value after rollback": "回滚后的值"
+  "Value after rollback": "回滚后的值",
+  "EmptyProject": "当前环境集群下还没有项目",
+  "EmptyApp": "当前项目下还没有应用",
+  "EmptyConfigObject": "当前环境集群下还没有配置对象"
 }

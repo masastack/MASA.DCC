@@ -58,7 +58,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (labelDto == null)
             {
-                _labelDialogTitle = T("Add label");
+                _labelDialogTitle = T("New label");
                 _labelModal.Data.LabelValues = new() { new(0) };
                 _labelModal.Show();
             }

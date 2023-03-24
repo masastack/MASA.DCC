@@ -12,7 +12,7 @@ namespace Masa.Dcc.Service.Admin.Services
         }
 
         public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,
-            [FromBody] object value)
+            [FromBody] string value)
         {
             await eventBus.PublishAsync(
                 new UpdateConfigAndPublishCommand(environment, cluster, appId, configObject, value));

@@ -1,7 +1,7 @@
 ﻿<MCard Outlined Flat Color="#F6F8FD" Style="padding:6px 6px 6px 0;">
-    <div style="width: 100%; min-height: 312px; height: 312px; overflow-y: auto; ">
-        <div style="display: flex;height:@((_lineCount+1)*24)px">
-            <div style="width:50px;text-align:center;color:rgb(46,117,182);">
+    <div style="width: 100%; min-height: 312px; height: 312px;">
+        <div style="display: flex; height: 312px">
+            <div style="width:50px;text-align:center;color:rgb(46,117,182); overflow:hidden;">
                 @for (int i = 0; i < _lineCount; i++)
                 {
                     var line = i + 1;
@@ -26,8 +26,12 @@
                     </div>
                 }
             </div>
-            <textarea style="outline:none;resize:none;width:100%;" autofocus disabled=@Disabled
-                @oninput="OnInput" @ref="Ref" value="@Value" @onchange="HandleOnChange">
+            <textarea style="outline:none; resize:none; width:100%;" 
+                      autofocus 
+                      disabled=@Disabled
+                      @oninput="OnInput" 
+                      @ref="Ref" 
+                      value="@Value" @onchange="HandleOnChange">
             </textarea>
         </div>
     </div>

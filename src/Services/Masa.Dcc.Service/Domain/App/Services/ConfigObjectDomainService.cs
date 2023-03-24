@@ -15,11 +15,12 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
         private readonly IPublicConfigRepository _publicConfigRepository;
         private readonly IMultilevelCacheClient _memoryCacheClient;
         private readonly IPmClient _pmClient;
-        private readonly DaprClient _daprClient;
+        private readonly IMasaStackConfig _masaStackConfig;
         private readonly IUnitOfWork _unitOfWork;
-        private JsonSerializerOptions _jsonSerializerOptions = new()
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
-            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            WriteIndented = true
         };
 
         public ConfigObjectDomainService(
@@ -34,7 +35,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IPublicConfigRepository publicConfigRepository,
             IMultilevelCacheClient memoryCacheClient,
             IPmClient pmClient,
-            DaprClient daprClient,
+            IMasaStackConfig masaStackConfig,
             IUnitOfWork unitOfWork) : base(eventBus)
         {
             _context = context;
@@ -47,7 +48,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _publicConfigRepository = publicConfigRepository;
             _memoryCacheClient = memoryCacheClient;
             _pmClient = pmClient;
-            _daprClient = daprClient;
+            _masaStackConfig = masaStackConfig;
             _unitOfWork = unitOfWork;
         }
 
@@ -106,7 +107,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 string content = dto.Content;
                 if (configObject.Encryption)
                 {
-                    content = await EncryptContentAsync(dto.Content);
+                    content = EncryptContent(dto.Content);
                 }
 
                 configObject.UpdateContent(content);
@@ -117,7 +118,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 string content = configObject.Content;
                 if (configObject.Encryption && configObject.Content != "[]")
                 {
-                    content = await DecryptContentAsync(configObject.Content);
+                    content = DecryptContent(configObject.Content);
                 }
 
                 var propertyEntities = JsonSerializer.Deserialize<List<ConfigObjectPropertyContentDto>>(content) ?? new();
@@ -138,7 +139,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 content = JsonSerializer.Serialize(propertyEntities, _jsonSerializerOptions);
                 if (configObject.Encryption)
                 {
-                    content = await EncryptContentAsync(content);
+                    content = EncryptContent(content);
                 }
                 configObject.UpdateContent(content);
             }
@@ -146,19 +147,17 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await _configObjectRepository.UpdateAsync(configObject);
         }
 
-        private async Task<string> EncryptContentAsync(string content)
+        private string EncryptContent(string content)
         {
-            var config = await _daprClient.GetSecretAsync("localsecretstore", "dcc-config");
-            var secret = config["dcc-config-secret"];
+            var secret = _masaStackConfig.DccSecret;
 
             var encryptContent = AesUtils.Encrypt(content, secret, FillType.Left);
             return encryptContent;
         }
 
-        private async Task<string> DecryptContentAsync(string content)
+        private string DecryptContent(string content)
         {
-            var config = await _daprClient.GetSecretAsync("localsecretstore", "dcc-config");
-            var secret = config["dcc-config-secret"];
+            var secret = _masaStackConfig.DccSecret;
 
             var encryptContent = AesUtils.Decrypt(content, secret, FillType.Left);
             return encryptContent;
@@ -227,7 +226,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                 if (configObject.Encryption)
                 {
-                    var encryptConten = await EncryptContentAsync(configObject.Content);
+                    var encryptConten = EncryptContent(configObject.Content);
                     configObject.UpdateContent(encryptConten);
                 }
             }
@@ -354,7 +353,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
                 if (configObject.Encryption)
                 {
-                    dto.Content = await EncryptContentAsync(dto.Content);
+                    dto.Content = EncryptContent(dto.Content);
                 }
                 var releaseContent = new PublishReleaseModel
                 {
@@ -411,20 +410,21 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             await _configObjectRepository.UpdateAsync(configObject);
         }
 
-        public async Task UpdateConfigObjectAsync(string environmentName, string clusterName, string appId,
+        public async Task UpdateConfigObjectAsync(
+            string environmentName,
+            string clusterName,
+            string appId,
             string configObjectName,
-            object value)
+            string value)
         {
             var configObject = await _configObjectRepository.FindAsync(config => config.Name == configObjectName) ?? throw new UserFriendlyException("ConfigObject does not exist");
 
-            string newValue = JsonSerializer.Serialize(value, _jsonSerializerOptions);
-
             if (configObject.Encryption)
             {
-                newValue = await EncryptContentAsync(newValue);
+                value = EncryptContent(value);
             }
 
-            configObject.UpdateContent(newValue);
+            configObject.UpdateContent(value);
 
             await _configObjectRepository.UpdateAsync(configObject);
 
@@ -436,24 +436,24 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 EnvironmentName = environmentName,
                 ClusterName = clusterName,
                 Identity = appId,
-                Content = newValue
+                Content = value
             };
 
             await AddConfigObjectReleaseAsync(releaseModel);
         }
 
-        public async Task InitConfigObjectAsync(string environmentName, string clusterName, string appId,
+        public async Task InitConfigObjectAsync(
+            string environmentName,
+            string clusterName,
+            string appId,
             Dictionary<string, string> configObjects,
             bool isEncryption)
         {
             var envs = await _pmClient.EnvironmentService.GetListAsync();
-            var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower());
-            if (env == null)
-                throw new UserFriendlyException("Environment does not exist");
+            var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower()) ?? throw new UserFriendlyException("Environment does not exist");
             var clusters = await _pmClient.ClusterService.GetListByEnvIdAsync(env.Id);
-            var cluster = clusters.FirstOrDefault(c => c.Name.ToLower() == clusterName.ToLower());
-            if (cluster == null)
-                throw new UserFriendlyException("Cluster does not exist");
+            var cluster = clusters.FirstOrDefault(c => c.Name.ToLower() == clusterName.ToLower()) ?? throw new UserFriendlyException("Cluster does not exist");
+
             foreach (var configObject in configObjects)
             {
                 var configObjectName = configObject.Key;
@@ -466,7 +466,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                 string content = configObject.Value;
                 if (isEncryption)
-                    content = await EncryptContentAsync(content);
+                    content = EncryptContent(content);
                 var newConfigObject = new ConfigObject(
                     configObjectName,
                     "Json",

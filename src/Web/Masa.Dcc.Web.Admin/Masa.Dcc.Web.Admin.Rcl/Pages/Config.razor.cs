@@ -687,7 +687,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (models != null)
             {
                 //add
-                _propertyConfigDialogTitle = T("New config object item");
+                _propertyConfigDialogTitle = T("Add config object item");
                 _selectConfigObjectAllProperties = models;
                 _propertyConfigModal.Show(configObject.Id);
             }

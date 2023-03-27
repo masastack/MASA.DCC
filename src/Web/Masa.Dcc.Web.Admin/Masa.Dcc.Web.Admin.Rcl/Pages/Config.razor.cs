@@ -2,6 +2,7 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 using System.Xml.Linq;
+using Masa.Stack.Components.Extensions;
 
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
@@ -657,7 +658,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task DeleteConfigObjectPropertyContentAsync(ConfigObjectPropertyModel model, int configObjectId)
         {
-            var result = await PopupService.ConfirmAsync(T("Delete config object item"),
+            var result = await PopupService.SimpleConfirmAsync(T("Delete config object item"),
                 T("DeleteConfigItemConfirmMessage")
                 .Replace("{key}", model.Key).Replace("{value}", model.Value),
                 AlertTypes.Error);
@@ -764,7 +765,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RemoveAsync(ConfigObjectModel configObject)
         {
-            var result = await PopupService.ConfirmAsync(T("Delete config object"),
+            var result = await PopupService.SimpleConfirmAsync(T("Delete config object"),
                  T("AreYouSureToDeleteConfigObject")
                  .Replace("{name}", configObject.Name),
                  AlertTypes.Error);
@@ -807,7 +808,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RevokeAsync(ConfigObjectModel configObject)
         {
-            var result = await PopupService.ConfirmAsync(T("Revoke config"),
+            var result = await PopupService.SimpleConfirmAsync(T("Revoke config"),
                  T("AreYouSureToRevoke")
                  .Replace("{name}", configObject.Name),
                  AlertTypes.Error);

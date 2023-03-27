@@ -56,6 +56,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 return true;
             }
         };
+        private bool _showProcess = true;
 
         private IEnumerable<Func<string, StringBoolean>> BizNameRules => new List<Func<string, StringBoolean>>
         {
@@ -74,10 +75,22 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         public async Task InitDataAsync()
         {
+            _showProcess = true;
+            _apps.Clear();
+
+            try
+            {
+                _apps = await GetAppByProjectIdAsync(new List<int> { ProjectId });
+            }
+            finally
+            {
+                _showProcess = false;
+            }
+
             _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
             _projectDetail = await ProjectCaller.GetAsync(ProjectId);
             _projectTeamDetail = await AuthClient.TeamService.GetDetailAsync(_projectDetail.TeamId) ?? new();
-            _apps = await GetAppByProjectIdAsync(new List<int> { ProjectId });
+
             _backupApps = new List<Model.AppModel>(_apps.ToArray());
             _projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
 

@@ -41,7 +41,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<ProjectModel> _backupProjects = new();
         private List<TeamModel> _allTeams = new();
         private List<Model.AppModel> _apps = new();
-        private bool _showProcess;
+        private bool _showProcess = true;
 
         protected override async Task OnParametersSetAsync()
         {

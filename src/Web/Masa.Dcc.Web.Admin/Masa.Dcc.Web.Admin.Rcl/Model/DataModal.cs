@@ -35,10 +35,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Model
         public virtual void Hide()
         {
             Visible = false;
-        }
-
-        public virtual void Clear()
-        {
             HasValue = false;
             Data = new T();
         }

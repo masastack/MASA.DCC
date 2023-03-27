@@ -16,6 +16,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<LabelDto> _labels = new();
         private string _typeName = "";
         private readonly DataModal<UpdateLabelModel> _labelModal = new();
+        private string _labelDialogTitle = "";
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
@@ -59,11 +60,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (labelDto == null)
             {
+                _labelDialogTitle = T("Add label");
                 _labelModal.Data.LabelValues = new() { new(0) };
                 _labelModal.Show();
             }
             else
             {
+                _labelDialogTitle = T("Edit label");
                 var labels = await LabelCaller.GetLabelsByTypeCodeAsync(labelDto.TypeCode);
                 for (int i = 0; i < labels.Count; i++)
                 {
@@ -136,11 +139,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 _labelModal.Hide();
             }
-        }
-
-        private void LabelModalClosed()
-        {
-            _labelModal.Clear();
         }
 
         private async Task RemoveLabelAsync(UpdateLabelModel label)

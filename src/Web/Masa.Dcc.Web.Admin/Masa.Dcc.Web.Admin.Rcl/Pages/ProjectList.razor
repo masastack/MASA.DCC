@@ -56,25 +56,32 @@
                     </MExpansionPanelHeader>
                     <MExpansionPanelContent>
                         <MRow>
-                            @foreach (var app in apps.Take(3))
+                            @if (apps.Any())
                             {
-                                @if (app.ProjectId == project.Id)
+                                foreach (var app in apps.Take(3))
                                 {
-                                    <MCol Lg="4" Md="6" Sm="12">
-                                        <AppCard OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" OnPinClick="()=>HandleAppPinClick(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                            <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
-                                                @foreach (var item in app.EnvironmentClusters)
-                                                {
-                                                    <EnvClusterChip OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, app.ProjectId))"
-                                                                    Style="margin:0 12px 1px 0;"
-                                                                    EnvironmentName="@item.EnvironmentName"
-                                                                    EnvironmentColor="@item.EnvironmentColor"
-                                                                    ClusterName="@item.ClusterName" />
-                                                }
-                                            </MChipGroup>
-                                        </AppCard>
-                                    </MCol>
+                                    if (app.ProjectId == project.Id)
+                                    {
+                                        <MCol Lg="4" Md="6" Sm="12">
+                                            <AppCard OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" OnPinClick="()=>HandleAppPinClick(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                                <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                                    @foreach (var item in app.EnvironmentClusters)
+                                                    {
+                                                        <EnvClusterChip OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, app.ProjectId))"
+                                                            Style="margin:0 12px 1px 0;"
+                                                            EnvironmentName="@item.EnvironmentName"
+                                                            EnvironmentColor="@item.EnvironmentColor"
+                                                            ClusterName="@item.ClusterName" />
+                                                    }
+                                                </MChipGroup>
+                                            </AppCard>
+                                        </MCol>
+                                    }
                                 }
+                            }
+                            else
+                            {
+                                <SEmptyPlaceholder />
                             }
                         </MRow>
                         <div class="d-flex justify-space-between align-flex-end mt-3 mb-2">

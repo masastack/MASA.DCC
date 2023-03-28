@@ -22,6 +22,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             WriteIndented = true
         };
+        private readonly I18n<DefaultResource> _i18N;
 
         public ConfigObjectDomainService(
             IDomainEventBus eventBus,
@@ -36,7 +37,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             IMultilevelCacheClient memoryCacheClient,
             IPmClient pmClient,
             IMasaStackConfig masaStackConfig,
-            IUnitOfWork unitOfWork) : base(eventBus)
+            IUnitOfWork unitOfWork,
+            I18n<DefaultResource> i18N) : base(eventBus)
         {
             _context = context;
             _configObjectReleaseRepository = configObjectReleaseRepository;
@@ -50,6 +52,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             _pmClient = pmClient;
             _masaStackConfig = masaStackConfig;
             _unitOfWork = unitOfWork;
+            _i18N = i18N;
         }
 
         public async Task AddConfigObjectAsync(List<AddConfigObjectDto> configObjectDtos)
@@ -377,16 +380,16 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
             if (latestConfigObjectRelease == null || rollbackToEntity == null)
             {
-                throw new Exception("要回滚的版本不存在");
+                throw new Exception(_i18N.T("The version to be rolled back does not exist"));
             }
 
             if (rollbackDto.RollbackToReleaseId == latestConfigObjectRelease.FromReleaseId)
             {
-                throw new UserFriendlyException("该版本已作废");
+                throw new UserFriendlyException(_i18N.T("This version has been invalidated"));
             }
             if (rollbackToEntity.Version == latestConfigObjectRelease.Version)
             {
-                throw new UserFriendlyException("两个版本相同");
+                throw new UserFriendlyException(_i18N.T("Both versions are the same"));
             }
 
             //rollback
@@ -432,7 +435,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             {
                 Type = ReleaseType.MainRelease,
                 ConfigObjectId = configObject.Id,
-                Name = "通过Sdk发布",
+                Name = _i18N.T("Publish via Sdk"),
                 EnvironmentName = environmentName,
                 ClusterName = clusterName,
                 Identity = appId,
@@ -507,7 +510,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 {
                     Type = ReleaseType.MainRelease,
                     ConfigObjectId = newConfigObject.Id,
-                    Name = "通过Sdk发布",
+                    Name = _i18N.T("Publish via Sdk"),
                     EnvironmentName = environmentName,
                     ClusterName = clusterName,
                     Identity = appId,

@@ -2,5 +2,11 @@
   "$DefaultLanguage": "true",
   "$Text": "中文简体",
   "Wrong format": "格式有误",
-  "Duplicate label type code": "标签类型代码重复"
+  "Duplicate label type code": "标签类型代码重复",
+  "The version to be rolled back does not exist": "要回滚的版本不存在",
+  "This version has been invalidated": "该版本已作废",
+  "Both versions are the same": "两个版本相同",
+  "Publish via Sdk": "通过Sdk发布",
+  "Demo Account Prohibited Operations": "演示账号禁止操作",
+  "Project Type": "项目类型"
 }

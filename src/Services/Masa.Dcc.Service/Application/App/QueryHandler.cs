@@ -13,7 +13,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IBizConfigRepository _bizConfigRepository;
         private readonly IBizConfigObjectRepository _bizConfigObjectRepository;
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
-        private readonly DaprClient _daprClient;
+        private readonly IMasaStackConfig _masaStackConfig;
         private readonly ConfigObjectDomainService _configObjectDomainService;
 
         public QueryHandler(
@@ -25,7 +25,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             IBizConfigRepository bizConfigRepository,
             IBizConfigObjectRepository bizConfigObjectRepository,
             IAppConfigObjectRepository appConfigObjectRepository,
-            DaprClient daprClient,
+            IMasaStackConfig masaStackConfig,
             ConfigObjectDomainService configObjectDomainService)
         {
             _publicConfigRepository = publicConfigRepository;
@@ -36,7 +36,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             _bizConfigRepository = bizConfigRepository;
             _bizConfigObjectRepository = bizConfigObjectRepository;
             _appConfigObjectRepository = appConfigObjectRepository;
-            _daprClient = daprClient;
+            _masaStackConfig = masaStackConfig;
             _configObjectDomainService = configObjectDomainService;
         }
 
@@ -108,7 +108,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                     .ToList();
             }
 
-            query.Result = objectConfigObjects.Select(async configObject => new ConfigObjectDto
+            query.Result = objectConfigObjects.Select(configObject => new ConfigObjectDto
             {
                 Id = configObject.Id,
                 Name = configObject.Name,
@@ -119,22 +119,20 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 RelationConfigObjectId = configObject.RelationConfigObjectId,
                 FromRelation = configObject.FromRelation,
                 Encryption = configObject.Encryption,
-                Content = configObject.Encryption ? await DecryptContentAsync(configObject.Content) : configObject.Content,
-                TempContent = configObject.Encryption ? await DecryptContentAsync(configObject.TempContent) : configObject.TempContent,
+                Content = configObject.Encryption ? DecryptContent(configObject.Content) : configObject.Content,
+                TempContent = configObject.Encryption ? DecryptContent(configObject.TempContent) : configObject.TempContent,
                 CreationTime = configObject.CreationTime,
                 Creator = configObject.Creator,
                 ModificationTime = configObject.ModificationTime,
                 Modifier = configObject.Modifier
-            }).Select(c => c.Result)
-            .ToList();
+            }).ToList();
         }
 
-        private async Task<string> DecryptContentAsync(string content)
+        private string DecryptContent(string content)
         {
             if (!string.IsNullOrEmpty(content) && content != "{}" && content != "[]")
             {
-                var config = await _daprClient.GetSecretAsync("localsecretstore", "dcc-config");
-                var secret = config["dcc-config-secret"];
+                var secret = _masaStackConfig.DccSecret;
                 string encryptContent = AesUtils.Decrypt(content, secret, FillType.Left);
 
                 return encryptContent;
@@ -160,13 +158,13 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
             TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease)
-                .Map(dest => dest.Content, src => src.Encryption ? DecryptContentAsync(configObjectReleases.Content).Result : src.Content)
-                .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContentAsync(configObjectReleases.TempContent).Result : src.TempContent);
+                .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(configObjectReleases.Content) : src.Content)
+                .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(configObjectReleases.TempContent) : src.TempContent);
 
             var result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
             result.ConfigObjectReleases.ForEach(config =>
             {
-                var content = result.Encryption ? DecryptContentAsync(config.Content).ConfigureAwait(false).GetAwaiter().GetResult() : config.Content;
+                var content = result.Encryption ? DecryptContent(config.Content) : config.Content;
                 config.Content = content;
             });
 

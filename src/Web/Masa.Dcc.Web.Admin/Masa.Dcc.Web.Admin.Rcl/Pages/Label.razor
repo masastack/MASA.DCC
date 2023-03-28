@@ -88,7 +88,7 @@
                     {
                         <MRow Class="pt-4 px-4" NoGutters Justify="JustifyTypes.SpaceBetween">
                             <STextField Style="width: 46.5%" Class="pr-6" TextColor="regular" Outlined @bind-Value="item.Name" Label="Name"></STextField>
-                            <STextField Style="width: 46.5%;" TextColor="regular" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
+                            <STextField Style="width: 46.5%;" TextColor="@(item.Disabled ? "" : "regular")" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
                             <div class="d-flex justify-end align-start ml-6 pt-2" style="width: 5%;">
                                 <MButton Icon Class="mr-1">
                                     <MIcon Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</MIcon>

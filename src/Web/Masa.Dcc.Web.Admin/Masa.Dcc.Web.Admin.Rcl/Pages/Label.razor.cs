@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Stack.Components.Extensions;
+
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Label
@@ -141,7 +143,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RemoveLabelAsync(UpdateLabelModel label)
         {
-            var result = await PopupService.ConfirmAsync(
+            var result = await PopupService.SimpleConfirmAsync(
                 T("Delete label"),
                 T("Are you sure you want to delete the label \"{typeName}\"?").Replace("{typeName}", label.TypeName),
                 AlertTypes.Error);

@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Contrib.StackSdks.Config" Version="1.0.0-preview.21" />
-    <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="1.0.0-preview.21" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Config" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaFrameworkPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>

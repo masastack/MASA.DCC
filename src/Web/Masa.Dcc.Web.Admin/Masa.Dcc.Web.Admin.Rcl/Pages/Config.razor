@@ -112,10 +112,11 @@
                             var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                             if (formatLabelCode == "json")
                             {
-                                <MExpansionPanel Value="configObject.Id" Class="rounded-5 my-3">
+                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
                                     <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
+                                                         Disabled="_disablePanel"
                                                          CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="UpdateJsonConfigAsync"
                                                          CloneConfigClick="ShowCloneModalAsync"
@@ -160,14 +161,15 @@
                                         <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                             <ChildContent>
                                                 <ConfigItems ConfigObject="configObject"
-                                                    CancelEditConfigClick="CancelEditConfigContent"
-                                                    UpdateConfigClick="(config) => { ShowPropertyModal(config, config.ConfigObjectPropertyContents); }"
-                                                    CloneConfigClick="ShowCloneModalAsync"
-                                                    ReleaseConfigClick="ShowReleaseModalAsync"
-                                                    ReleaseHistoryClick="ShowReleaseHistoryAsync"
-                                                    RollbackClick="ShowRollbackModalAsync"
-                                                    RemoveClick="RemoveAsync"
-                                                    RevokeClick="RevokeAsync" />
+                                                             Disabled="_disablePanel"
+                                                             CancelEditConfigClick="CancelEditConfigContent"
+                                                             UpdateConfigClick="(config) => { ShowPropertyModal(config, config.ConfigObjectPropertyContents); }"
+                                                             CloneConfigClick="ShowCloneModalAsync"
+                                                             ReleaseConfigClick="ShowReleaseModalAsync"
+                                                             ReleaseHistoryClick="ShowReleaseHistoryAsync"
+                                                             RollbackClick="ShowRollbackModalAsync"
+                                                             RemoveClick="RemoveAsync"
+                                                             RevokeClick="RevokeAsync" />
                                             </ChildContent>
                                             <ActionsContent>
                                                 <MIcon Color="#485585">
@@ -327,14 +329,15 @@
                                     <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
-                                                 CancelEditConfigClick="CancelEditConfigContent"
-                                                 UpdateConfigClick="UpdateOtherConfigObjectContentAsync"
-                                                 CloneConfigClick="ShowCloneModalAsync"
-                                                 ReleaseConfigClick="ShowReleaseModalAsync"
-                                                 ReleaseHistoryClick="ShowReleaseHistoryAsync"
-                                                 RollbackClick="ShowRollbackModalAsync"
-                                                 RemoveClick="RemoveAsync"
-                                                 RevokeClick="RevokeAsync" />
+                                                         Disabled="_disablePanel"
+                                                         CancelEditConfigClick="CancelEditConfigContent"
+                                                         UpdateConfigClick="UpdateOtherConfigObjectContentAsync"
+                                                         CloneConfigClick="ShowCloneModalAsync"
+                                                         ReleaseConfigClick="ShowReleaseModalAsync"
+                                                         ReleaseHistoryClick="ShowReleaseHistoryAsync"
+                                                         RollbackClick="ShowRollbackModalAsync"
+                                                         RemoveClick="RemoveAsync"
+                                                         RevokeClick="RevokeAsync" />
                                         </ChildContent>
                                         <ActionsContent>
                                             <MIcon Color="#485585">

@@ -15,6 +15,9 @@ public partial class ConfigItems
     public IJSRuntime Js { get; set; } = default!;
 
     [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
     public ConfigObjectType ConfigObjectType { get; set; }
 
     [Parameter]

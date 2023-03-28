@@ -1,9 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using System.Xml.Linq;
-using Masa.Stack.Components.Extensions;
-
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Config
@@ -549,6 +546,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task UpdateJsonConfigAsync(ConfigObjectModel configObject)
         {
+            if (_selectPanels.All(id => id != configObject.Id))
+            {
+                _selectPanels.Add(configObject.Id);
+            }
+
             if (configObject.IsEditing)
             {
                 if (string.IsNullOrWhiteSpace(configObject.Content))

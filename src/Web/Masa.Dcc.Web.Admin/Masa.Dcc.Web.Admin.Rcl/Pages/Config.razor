@@ -1,6 +1,7 @@
 ﻿@page "/{AppId:int}/{EnvironmentClusterId:int}/{ConfigObjectType:int}/Config"
 @inherits MasaCompontentBase
-<MRow style="">
+
+<MRow>
     <MCol Cols="2">
         <MNavigationDrawer Right Permanent Class="rounded-4" Style="height: 100%;top:0px;transform:translateX(0%);width: 100% !important;">
             <div style="padding:16px 24px; display:flex; flex-direction:column; align-items:center; overflow: hidden;">
@@ -90,71 +91,70 @@
         </MNavigationDrawer>
     </MCol>
     <MCol Cols="10">
-        <div style="display:block;">
-            <div style="overflow: hidden;">
-                <div class="d-flex mb-3">
-                    <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObject" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
+        <div style="overflow: hidden;">
+            <div class="d-flex mb-3">
+                <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObject" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
                         <PrependInnerContent>
                             <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
                         </PrependInnerContent>
                     </MTextField>
-                    <MButton Height="40" Width="100" Class="rounded-lg ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
-                        <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
-                    </MButton>
-                </div>
-                <div class="mt-3" style="overflow:auto;position: relative; @ConfigPanelStyle">
-                    @if(_configObjects.Any())
-                    {
-                        <MExpansionPanels @bind-Values="_selectPanels" Flat Accordion>
-                            @foreach (var configObject in _configObjects)
+                <MButton Height="40" Width="100" Class="rounded-lg ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
+                    <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
+                </MButton>
+            </div>
+            <div class="mt-3" style="overflow:auto;position: relative; @ConfigPanelStyle">
+                @if(_configObjects.Any())
+                {
+                    <MExpansionPanels @bind-Values="_selectPanels" Multiple Flat>
+                        @foreach (var configObject in _configObjects)
+                        {
+                            bool _disablePanel = _userInfo.Account.ToLower() != "admin" && configObject.Encryption;
+                            var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
+                            if (formatLabelCode == "json")
                             {
-                                bool _disablePanel = _userInfo.Account.ToLower() != "admin" && configObject.Encryption;
-                                var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
-                                if (formatLabelCode == "json")
-                                {
-                                    <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
-                                        <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
-                                            <ChildContent>
-                                                <ConfigItems ConfigObject="configObject"
-                                                     CancelEditConfigClick="CancelEditConfigContent"
-                                                     UpdateConfigClick="UpdateJsonConfigAsync"
-                                                     CloneConfigClick="ShowCloneModalAsync"
-                                                     ReleaseConfigClick="ShowReleaseModalAsync"
-                                                     ReleaseHistoryClick="ShowReleaseHistoryAsync"
-                                                     RollbackClick="ShowRollbackModalAsync"
-                                                     RemoveClick="RemoveAsync"
-                                                     RevokeClick="RevokeAsync" />
-                                            </ChildContent>
-                                            <ActionsContent>
-                                                <MIcon Color="#485585">
-                                                    mdi-chevron-down
-                                                </MIcon>
-                                            </ActionsContent>
-                                        </MExpansionPanelHeader>
-                                        <MExpansionPanelContent>
-                                            @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
-                                            {
-                                                <div class="mb-2">
-                                                    <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
-                                                    <span style="font-size: 14px; color: #7681AB;">
-                                                        @T("Connected")
-                                                        <span class="regular3--text btn mx-1 font-size: 6px !important;">|</span>
-                                                        @(configObject.IsPublished ? @T("Released") : @T("UnReleased"))
-                                                    </span>
-                                                </div>
-                                            }
-                                            else if (configObject.FromRelation && configObject.RelationConfigObjectId == 0)
-                                            {
-                                                <div class="mb-2">
-                                                    <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
-                                                    <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
-                                                </div>
-                                            }
-                                            <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
-                                        </MExpansionPanelContent>
-                                    </MExpansionPanel>
-                                }
-                                else if (formatLabelCode == "properties")
+                                <MExpansionPanel Value="configObject.Id" Class="rounded-5 my-3">
+                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
+                                        <ChildContent>
+                                            <ConfigItems ConfigObject="configObject"
+                                                         CancelEditConfigClick="CancelEditConfigContent"
+                                                         UpdateConfigClick="UpdateJsonConfigAsync"
+                                                         CloneConfigClick="ShowCloneModalAsync"
+                                                         ReleaseConfigClick="ShowReleaseModalAsync"
+                                                         ReleaseHistoryClick="ShowReleaseHistoryAsync"
+                                                         RollbackClick="ShowRollbackModalAsync"
+                                                         RemoveClick="RemoveAsync"
+                                                         RevokeClick="RevokeAsync" />
+                                        </ChildContent>
+                                        <ActionsContent>
+                                            <MIcon Color="#485585">
+                                                mdi-chevron-down
+                                            </MIcon>
+                                        </ActionsContent>
+                                    </MExpansionPanelHeader>
+                                    <MExpansionPanelContent>
+                                        @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
+                                        {
+                                            <div class="mb-2">
+                                                <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
+                                                <span style="font-size: 14px; color: #7681AB;">
+                                                    @T("Connected")
+                                                    <span class="regular3--text btn mx-1 font-size: 6px !important;">|</span>
+                                                    @(configObject.IsPublished ? @T("Released") : @T("UnReleased"))
+                                                </span>
+                                            </div>
+                                        }
+                                        else if (configObject.FromRelation && configObject.RelationConfigObjectId == 0)
+                                        {
+                                            <div class="mb-2">
+                                                <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
+                                                <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
+                                            </div>
+                                        }
+                                        <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
+                                    </MExpansionPanelContent>
+                                </MExpansionPanel>
+                            }
+                            else if (formatLabelCode == "properties")
                                 {
                                     <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
                                         <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
@@ -321,64 +321,63 @@
                                         <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
                                     </MExpansionPanel>
                                 }
-                                else
-                                {
-                                    <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
-                                        <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
-                                            <ChildContent>
-                                                <ConfigItems ConfigObject="configObject"
-                                                     CancelEditConfigClick="CancelEditConfigContent"
-                                                     UpdateConfigClick="UpdateOtherConfigObjectContentAsync"
-                                                     CloneConfigClick="ShowCloneModalAsync"
-                                                     ReleaseConfigClick="ShowReleaseModalAsync"
-                                                     ReleaseHistoryClick="ShowReleaseHistoryAsync"
-                                                     RollbackClick="ShowRollbackModalAsync"
-                                                     RemoveClick="RemoveAsync"
-                                                     RevokeClick="RevokeAsync" />
-                                            </ChildContent>
-                                            <ActionsContent>
-                                                <MIcon Color="#485585">
-                                                    mdi-chevron-down
-                                                </MIcon>
-                                            </ActionsContent>
-                                        </MExpansionPanelHeader>
-                                        <MExpansionPanelContent>
-                                            @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
-                                            {
-                                                <div class="mb-2">
-                                                    <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
-                                                    <span style="font-size: 14px; color: #7681AB;">
-                                                        @T("Connected")
-                                                        <span class="regular3--text btn mx-1 font-size: 6px !important;">|</span>
-                                                        @(configObject.IsPublished ? @T("Released") : @T("UnReleased"))
-                                                    </span>
-                                                </div>
-                                            }
-                                            else if (configObject.FromRelation && configObject.RelationConfigObjectId == 0)
-                                            {
-                                                <div class="mb-2">
-                                                    <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
-                                                    <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
-                                                </div>
-                                            }
-                                            <Editor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></Editor>
-                                        </MExpansionPanelContent>
-                                        <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
-                                    </MExpansionPanel>
-                                }
+                            else
+                            {
+                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
+                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
+                                        <ChildContent>
+                                            <ConfigItems ConfigObject="configObject"
+                                                 CancelEditConfigClick="CancelEditConfigContent"
+                                                 UpdateConfigClick="UpdateOtherConfigObjectContentAsync"
+                                                 CloneConfigClick="ShowCloneModalAsync"
+                                                 ReleaseConfigClick="ShowReleaseModalAsync"
+                                                 ReleaseHistoryClick="ShowReleaseHistoryAsync"
+                                                 RollbackClick="ShowRollbackModalAsync"
+                                                 RemoveClick="RemoveAsync"
+                                                 RevokeClick="RevokeAsync" />
+                                        </ChildContent>
+                                        <ActionsContent>
+                                            <MIcon Color="#485585">
+                                                mdi-chevron-down
+                                            </MIcon>
+                                        </ActionsContent>
+                                    </MExpansionPanelHeader>
+                                    <MExpansionPanelContent>
+                                        @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
+                                        {
+                                            <div class="mb-2">
+                                                <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
+                                                <span style="font-size: 14px; color: #7681AB;">
+                                                    @T("Connected")
+                                                    <span class="regular3--text btn mx-1 font-size: 6px !important;">|</span>
+                                                    @(configObject.IsPublished ? @T("Released") : @T("UnReleased"))
+                                                </span>
+                                            </div>
+                                        }
+                                        else if (configObject.FromRelation && configObject.RelationConfigObjectId == 0)
+                                        {
+                                            <div class="mb-2">
+                                                <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
+                                                <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
+                                            </div>
+                                        }
+                                        <Editor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></Editor>
+                                    </MExpansionPanelContent>
+                                    <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
+                                </MExpansionPanel>
                             }
-                        </MExpansionPanels>
-                    }
-                    else
-                    {
-                        <SEmptyPlaceholder />
-                    }
-                    <MRow>
-                        <MOverlay Class="rounded-4" Value="_showProcess" Absolute Color="#fff" Opacity="1.0">
-                            <MProgressCircular Width="4" Indeterminate Size="48" Color="primary"></MProgressCircular>
-                        </MOverlay>
-                    </MRow>
-                </div>
+                        }
+                    </MExpansionPanels>
+                }
+                else
+                {
+                    <SEmptyPlaceholder />
+                }
+                <MRow>
+                    <MOverlay Class="rounded-4" Value="_showProcess" Absolute Color="#fff" Opacity="1.0">
+                        <MProgressCircular Width="4" Indeterminate Size="48" Color="primary"></MProgressCircular>
+                    </MOverlay>
+                </MRow>
             </div>
         </div>
     </MCol>
@@ -425,8 +424,8 @@
 
 <ReleaseHistoryModal @ref="_releaseHistoryModal" 
     ConfigValueChanged="ConfigValueChanged"
-    SelectConfigObject="_selectConfigObject"
-/>
+    SelectConfigObject="_selectConfigObject" />
+
 <CloneModal @ref="_cloneModal"
             ConfigObjects="_configObjects.DeepClone()"
             SelectCluster="_selectCluster"

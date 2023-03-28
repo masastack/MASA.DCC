@@ -4,9 +4,9 @@
 global using System.Text;
 global using System.Text.Json;
 global using System.Text.RegularExpressions;
+global using System.Xml.Linq;
 global using BlazorComponent;
 global using BlazorComponent.I18n;
-global using Dapr.Client;
 global using FluentValidation;
 global using Mapster;
 global using Masa.Blazor;
@@ -22,6 +22,7 @@ global using Masa.Dcc.Contracts.Admin.Label.Dtos;
 global using Masa.Dcc.Web.Admin.Rcl.Model;
 global using Masa.Dcc.Web.Admin.Rcl.Pages.Modal;
 global using Masa.Stack.Components.Configs;
+global using Masa.Stack.Components.Extensions;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Routing;
 global using Microsoft.AspNetCore.Components.Web;

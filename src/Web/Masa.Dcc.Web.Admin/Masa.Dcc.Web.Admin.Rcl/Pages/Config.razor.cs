@@ -78,6 +78,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private UserModel _userInfo = new();
         private string _tempContent = "";
         private string _propertyConfigDialogTitle = "";
+        private bool _showProcess = true;
 
         private List<DataTableHeader<ConfigObjectPropertyModel>> Headers
         {
@@ -130,6 +131,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         public async Task InitDataAsync(ConfigComponentModel? configModel = null)
         {
+            _showProcess = true;
+
             if (configModel != null)
             {
                 ProjectId = configModel.ProjectId;
@@ -181,6 +184,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _appClusters = _appDetail.EnvironmentClusters.Where(envCluster => envCluster.EnvironmentName == _selectEnvName).ToList();
             await OnClusterChipClick(selectEnvCluster);
 
+            _showProcess = false;
             StateHasChanged();
         }
 

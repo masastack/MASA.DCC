@@ -17,19 +17,21 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _typeName = "";
         private readonly DataModal<UpdateLabelModel> _labelModal = new();
         private string _labelDialogTitle = "";
+        private bool _showProcess = true;
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
             {
-                _labels = await GetListAsync();
+                await GetListAsync();
 
                 StateHasChanged();
             }
         }
 
-        private async Task<List<LabelDto>> GetListAsync()
+        private async Task GetListAsync()
         {
+            _showProcess = true;
             var labels = await LabelCaller.GetListAsync();
 
             foreach (var label in labels)
@@ -38,7 +40,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 label.ModifierName = user.StaffDislpayName;
             }
 
-            return labels.OrderByDescending(label => label.ModificationTime).ToList();
+            _labels = labels.OrderByDescending(label => label.ModificationTime).ToList();
+            _showProcess = false;
         }
 
         private async Task SearchAsync(KeyboardEventArgs args)
@@ -51,7 +54,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 }
                 else
                 {
-                    _labels = await GetListAsync();
+                    await GetListAsync();
                 }
             }
         }
@@ -127,7 +130,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
                 }
 
-                _labels = await GetListAsync();
+                await GetListAsync();
                 LabelModalValueChanged(false);
             }
         }
@@ -153,7 +156,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 await LabelCaller.RemoveAsync(label.TypeCode);
                 await PopupService.EnqueueSnackbarAsync(T("Delete succeeded"), AlertTypes.Success);
                 LabelModalValueChanged(false);
-                _labels = await GetListAsync();
+                await GetListAsync();
             }
         }
     }

@@ -52,8 +52,8 @@
                 <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
             </MButton>
         }
-        
-        <MButton Icon Class="mr-4" OnClick="UpdateConfig">
+
+        <MButton StopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
             @if (!ConfigObject.IsEditing)
             {
                 var relation = ConfigObject.RelationConfigObjectId != 0;

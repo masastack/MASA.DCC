@@ -14,18 +14,14 @@
     </MButton>
 </MRow>
 
-<MRow NoGutters Class="mt-6" Style="position: relative;">
+<MRow NoGutters Class="mt-6 label-cards" Style="position: relative;">
     @if (_labels.Any())
     {
-        var i = 1;
         foreach (var labelGroup in _labels.GroupBy(l => l.TypeCode))
         {
-            var mod3 = i % 3;
-            var marginClass = mod3 == 2 ? "mx-6 mb-6" : "mb-6";
-            i++;
             var label = labelGroup.FirstOrDefault() ?? new();
             <MCol Cols="4">
-                <MCard Class="@marginClass" Outlined MinHeight="242" Style="border-radius:16px !important; border: none;">
+                <MCard Class="mb-6" Outlined MinHeight="242" Style="border-radius:16px !important; border: none;">
                     <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding-bottom: 12px !important;">
                         <div class="emphasis2--text h7 text-overflow"><span class="font-weight-bold">@label.TypeName</span></div>
                         <MSpacer />
@@ -58,7 +54,7 @@
             </MCol>
         }
     }
-    else
+    else if(!_showProcess)
     {
         <SEmptyPlaceholder Height="calc(100vh - 190px);" /> 
     }

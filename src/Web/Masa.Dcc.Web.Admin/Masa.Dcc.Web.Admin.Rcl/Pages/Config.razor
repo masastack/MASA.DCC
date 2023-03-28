@@ -181,7 +181,7 @@
                                             @if (configObject.RelationConfigObjectId != 0)
                                             {
                                                 <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4 rounded-5">
-                                                    <MDataTable FixedHeader Style="max-height: 312px;" Height="312" Headers="Headers"
+                                                    <MDataTable FixedHeader Style="max-height: 312px; overflow: auto;" Headers="Headers"
                                                         SortDesc="true"
                                                         SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                                         TItem="ConfigObjectPropertyModel"
@@ -238,7 +238,7 @@
                                                     Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                                     <SElevationTabItem>
                                                         <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-3 mt-4 rounded-5">
-                                                            <MDataTable FixedHeader Style="max-height: 312px;" Height="312" Headers="Headers"
+                                                        <MDataTable FixedHeader Style="max-height: 312px; overflow: auto;" Headers="Headers"
                                                                 SortDesc="true"
                                                                 SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                                                 TItem="ConfigObjectPropertyModel"

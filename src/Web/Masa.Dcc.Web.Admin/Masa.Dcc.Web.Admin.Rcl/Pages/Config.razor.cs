@@ -2,6 +2,7 @@
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 using System.Xml.Linq;
+using Masa.Stack.Components.Extensions;
 
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
@@ -77,6 +78,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private UserModel _userInfo = new();
         private string _tempContent = "";
         private string _propertyConfigDialogTitle = "";
+        private bool _showProcess = true;
 
         private List<DataTableHeader<ConfigObjectPropertyModel>> Headers
         {
@@ -129,6 +131,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         public async Task InitDataAsync(ConfigComponentModel? configModel = null)
         {
+            _showProcess = true;
+
             if (configModel != null)
             {
                 ProjectId = configModel.ProjectId;
@@ -180,6 +184,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _appClusters = _appDetail.EnvironmentClusters.Where(envCluster => envCluster.EnvironmentName == _selectEnvName).ToList();
             await OnClusterChipClick(selectEnvCluster);
 
+            _showProcess = false;
             StateHasChanged();
         }
 
@@ -658,7 +663,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task DeleteConfigObjectPropertyContentAsync(ConfigObjectPropertyModel model, int configObjectId)
         {
-            var result = await PopupService.ConfirmAsync(T("Delete config object item"),
+            var result = await PopupService.SimpleConfirmAsync(T("Delete config object item"),
                 T("DeleteConfigItemConfirmMessage")
                 .Replace("{key}", model.Key).Replace("{value}", model.Value),
                 AlertTypes.Error);
@@ -763,7 +768,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RemoveAsync(ConfigObjectModel configObject)
         {
-            var result = await PopupService.ConfirmAsync(T("Delete config object"),
+            var result = await PopupService.SimpleConfirmAsync(T("Delete config object"),
                  T("AreYouSureToDeleteConfigObject")
                  .Replace("{name}", configObject.Name),
                  AlertTypes.Error);
@@ -806,7 +811,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task RevokeAsync(ConfigObjectModel configObject)
         {
-            var result = await PopupService.ConfirmAsync(T("Revoke config"),
+            var result = await PopupService.SimpleConfirmAsync(T("Revoke config"),
                  T("AreYouSureToRevoke")
                  .Replace("{name}", configObject.Name),
                  AlertTypes.Error);

@@ -14,43 +14,53 @@
     </MButton>
 </MRow>
 
-<MRow NoGutters Style="margin: 12px -12px !important">
-    @foreach (var labelGroup in _labels.GroupBy(l => l.TypeCode))
-    {
-        var label = labelGroup.FirstOrDefault() ?? new();
-        <MCol Cols="4">
-            <MCard Class="ma-3" Outlined MinHeight="242" Style="border-radius:16px !important; border: none;">
-                <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding-bottom: 12px !important;">
-                    <div class="emphasis2--text h7 text-overflow"><span class="font-weight-bold">@label.TypeName</span></div>
-                    <MSpacer />
-                    <MButton Icon OnClick="()=>ShowLabelModal(label)">
-                        <MIcon Size="20" Color="#323D6F">mdi-pencil</MIcon>
-                    </MButton>
-                </MCardTitle>
-                <MCardSubtitle>
-                    <div class="text-overflow regular2--text">@label.TypeCode</div>
-                    <div class="mt-4" style="display:-webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;overflow: hidden; color: #485585">
-                        @label.Description
+<MRow NoGutters Style="margin: 12px -12px !important;position: relative;">
+    @if (_labels.Any())
+    { 
+        foreach (var labelGroup in _labels.GroupBy(l => l.TypeCode))
+        {
+            var label = labelGroup.FirstOrDefault() ?? new();
+            <MCol Cols="4">
+                <MCard Class="ma-3" Outlined MinHeight="242" Style="border-radius:16px !important; border: none;">
+                    <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding-bottom: 12px !important;">
+                        <div class="emphasis2--text h7 text-overflow"><span class="font-weight-bold">@label.TypeName</span></div>
+                        <MSpacer />
+                        <MButton Icon OnClick="()=>ShowLabelModal(label)">
+                            <MIcon Size="20" Color="#323D6F">mdi-pencil</MIcon>
+                        </MButton>
+                    </MCardTitle>
+                    <MCardSubtitle>
+                        <div class="text-overflow regular2--text">@label.TypeCode</div>
+                        <div class="mt-4" style="display:-webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;text-overflow: ellipsis;overflow: hidden; color: #485585">
+                            @label.Description
+                        </div>
+                    </MCardSubtitle>
+                    <div style="position:absolute;bottom:0;left:0;right:0; padding:0 16px 16px 16px !important;">
+                        <MChipGroup Class="env-cluster-chip-group">
+                            @foreach (var item in labelGroup)
+                            {
+                                <MChip Color="#F0F3FA" Style="color: #323D6F; font-size: 14px;" Class="mr-3 font-weight-regular" Small>
+                                    @item.Name
+                                </MChip>
+                            }
+                        </MChipGroup>
+                        <div class="mx-2 d-flex justify-end regular3--text btn text-overflow" style="margin:16px 0 0 0;">
+                            <span style="font-size: 12px; color: #A3AED0;">@T("Edit in") @label.ModificationTime.Humanize(utcDate: true, culture:I18n.Culture)</span>
+                            <span class="mx-2" style="color:#E2E7F4">|</span>
+                            <span style="font-size: 12px; color: #323D6F;">@label.ModifierName</span>
+                        </div>
                     </div>
-                </MCardSubtitle>
-                <div style="position:absolute;bottom:0;left:0;right:0; padding:0 16px 16px 16px !important;">
-                    <MChipGroup Class="env-cluster-chip-group">
-                        @foreach (var item in labelGroup)
-                        {
-                            <MChip Color="#F0F3FA" Style="color: #323D6F; font-size: 14px;" Class="mr-3 font-weight-regular" Small>
-                                @item.Name
-                            </MChip>
-                        }
-                    </MChipGroup>
-                    <div class="mx-2 d-flex justify-end regular3--text btn text-overflow" style="margin:16px 0 0 0;">
-                        <span style="font-size: 12px; color: #A3AED0;">@T("Edit in") @label.ModificationTime.Humanize(utcDate: true, culture:I18n.Culture)</span>
-                        <span class="mx-2" style="color:#E2E7F4">|</span>
-                        <span style="font-size: 12px; color: #323D6F;">@label.ModifierName</span>
-                    </div>
-                </div>
-            </MCard>
-        </MCol>
+                </MCard>
+            </MCol>
+        }
     }
+    else
+    {
+        <SEmptyPlaceholder Height="calc(100vh - 170px);" />
+    }
+    <MOverlay Class="rounded-4" Value="_showProcess" Absolute Color="#fff" Opacity="1.0">
+        <MProgressCircular Width="4" Indeterminate Size="48" Color="primary"></MProgressCircular>
+    </MOverlay>
 </MRow>
 
 <SSheetDialog EnableDomReload Value="_labelModal.Visible" ValueChanged="LabelModalValueChanged" Title="@_labelDialogTitle" Icon="mdi-circle" IconColor="success">

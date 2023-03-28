@@ -59,3 +59,5 @@ global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Newtonsoft.Json.Linq;
+global using System.Xml.Linq;
+global using FluentValidation.Resources;

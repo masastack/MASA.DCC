@@ -12,3 +12,6 @@ global using Masa.Dcc.Caller;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;
+global using System.Net;
+global using Masa.BuildingBlocks.Service.Caller;
+global using Microsoft.Extensions.Logging;

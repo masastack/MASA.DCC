@@ -823,3 +823,8 @@ textarea:disabled {
 .remove-bg-after::after {
     background: none !important;
 }
+
+.label-cards div:nth-child(3n-1) .m-card{
+    margin-left: 24px;
+    margin-right: 24px;
+}

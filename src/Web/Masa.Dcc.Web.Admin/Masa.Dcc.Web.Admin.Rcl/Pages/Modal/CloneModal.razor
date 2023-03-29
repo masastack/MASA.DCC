@@ -63,18 +63,19 @@
                                                         </MButton>
                                                     }
                                                     <MCheckbox Value="configObject.IsChecked"
-                                                   TValue="bool"
-                                                   ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
-                                                   HideDetails="true"
-                                                   Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
-                                                   Color="primary"></MCheckbox>
+                                                               TValue="bool"
+                                                               ValueChanged="value=>CloneConfigObjectCheckValueChanged(configObject,value)"
+                                                               HideDetails="true"
+                                                               Style="margin: 0 8px 0 0 !important; padding: 0 !important;"
+                                                               Color="primary"></MCheckbox>
                                                     <STextField HideDetails="true"
-                                                    Style="max-width: 270px;"
-                                                    Label="@T("Name")"
-                                                                                        Outlined
-                                                    Value="configObject.Name"
-                                                    TValue="string"
-                                                    ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)"></STextField>
+                                                                Style="max-width: 270px;"
+                                                                Label="@T("Name")"
+                                                                Outlined
+                                                                Value="configObject.Name"
+                                                                TValue="string"
+                                                                ValueChanged="value=>CloneConfigObjectNameChanged(configObject,value)">
+                                                    </STextField>
                                                 </div>
                                                 <span class="ml-3 regular3--text btn">|</span>
                                                 <sapn class="ml-2 regular3--text btn">Properties</sapn>
@@ -98,7 +99,9 @@
                                                 <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
                                                     <STextField Outlined @bind-Value="item.Value"></STextField>
                                                     <div class="d-flex justify-end align-center ml-6">
-                                                        <MIcon Color="error" OnClick="()=> RemoveProperty(item.Key,configObject)" Class="hover-pointer mr-3">mdi-delete-outline</MIcon>
+                                                        <MButton Class="mr-3" Icon OnClick="()=> RemoveProperty(item.Key,configObject)">
+                                                            <MIcon Color="error">mdi-delete-outline</MIcon>
+                                                        </MButton>
                                                     </div>
                                                 </MRow>
                                             }

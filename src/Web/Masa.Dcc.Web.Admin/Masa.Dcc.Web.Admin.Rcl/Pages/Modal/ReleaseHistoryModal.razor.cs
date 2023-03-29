@@ -1,3 +1,6 @@
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+
 namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal;
 
 public partial class ReleaseHistoryModal
@@ -21,7 +24,6 @@ public partial class ReleaseHistoryModal
     private Action _handleRollbackOnClickAfter = () => { };
     private ConfigObjectReleaseModel _prevReleaseHistory = new();
     private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
-    private RollbackModal _releaseHistoryRollbackModal = new();
     private string _releaseTabText = "All configuration";
     private ConfigObjectReleaseDto? _rollbackConfigObjectRelease;
     private ConfigObjectReleaseModel _selectReleaseHistory = new();
@@ -31,16 +33,7 @@ public partial class ReleaseHistoryModal
     public bool Value { get; set; }
 
     [Parameter]
-    public EventCallback<bool> ValueChanged { get; set; }
-
-    [Parameter]
-    public bool ConfigValue { get; set; }
-
-    [Parameter]
-    public EventCallback<bool> ConfigValueChanged { get; set; }
-
-    [Parameter]
-    public ConfigObjectModel SelectConfigObject { get; set; } = new();
+    public EventCallback OnSubmitAfter { get; set; }
 
     [Inject]
     public IPopupService PopupService { get; set; } = default!;
@@ -66,7 +59,6 @@ public partial class ReleaseHistoryModal
 
     public async Task InitDataAsync(ConfigObjectModel configObject)
     {
-        SelectConfigObject = configObject;
         _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(configObject.Id);
         _configObjectReleases = _releaseHistory.ConfigObjectReleases
             .OrderByDescending(release => release.Id)
@@ -90,11 +82,13 @@ public partial class ReleaseHistoryModal
         {
             await OnTimelineItemClickAsync(_configObjectReleases.First());
             Value = true;
+            StateHasChanged();
         }
     }
 
     private async Task OnTimelineItemClickAsync(ConfigObjectReleaseModel configObjectRelease)
     {
+        _releaseTabText = "All configuration";
         _selectReleaseHistory = configObjectRelease;
 
         var creatorInfo = await GetUserAsync(_selectReleaseHistory.Creator);
@@ -111,8 +105,10 @@ public partial class ReleaseHistoryModal
             }
         });
 
-        _releaseTabText = "All configuration";
-        ReleaseHistoryTabIndexChanged(_releaseTabText);
+        if (_releaseHistory.FormatLabelCode.Trim().ToLower() == "properties")
+        {
+            ReleaseHistoryTabIndexChanged(_releaseTabText);
+        }
     }
 
     private void ReleaseHistoryTabIndexChanged(string tabText)
@@ -125,7 +121,10 @@ public partial class ReleaseHistoryModal
                 _changedProperties = _selectReleaseHistory.ConfigObjectProperties.Select(release =>
                     new ConfigObjectPropertyModel
                     {
-                        Key = release.Key, Value = release.Value, TempValue = "", IsAdded = true
+                        Key = release.Key,
+                        Value = release.Value,
+                        TempValue = "",
+                        IsAdded = true
                     }).ToList();
             }
             else
@@ -136,13 +135,17 @@ public partial class ReleaseHistoryModal
                 var added = current.ExceptBy(prev.Select(content => content.Key), content => content.Key)
                     .Select(content => new ConfigObjectPropertyModel
                     {
-                        IsAdded = true, Key = content.Key, Value = content.Value
+                        IsAdded = true,
+                        Key = content.Key,
+                        Value = content.Value
                     })
                     .ToList();
                 var deleted = prev.ExceptBy(current.Select(content => content.Key), content => content.Key)
                     .Select(content => new ConfigObjectPropertyModel
                     {
-                        IsDeleted = true, Key = content.Key, TempValue = content.Value
+                        IsDeleted = true,
+                        Key = content.Key,
+                        TempValue = content.Value
                     })
                     .ToList();
                 var intersectAndEdited = current
@@ -188,7 +191,7 @@ public partial class ReleaseHistoryModal
         _releaseHistory.ConfigObjectReleases.Clear();
         _releaseHistory.ConfigObjectReleases.Add(current);
         _releaseHistory.ConfigObjectReleases.Add(_selectReleaseHistory);
-        await ShowRollbackModalAsync();
+        ShowRollbackModal();
         _handleRollbackOnClickAfter = async () =>
         {
             _releaseHistory = await ConfigObjectCaller.GetReleaseHistoryAsync(current.ConfigObjectId);
@@ -204,24 +207,30 @@ public partial class ReleaseHistoryModal
                 });
             }
 
+            if (OnSubmitAfter.HasDelegate)
+            {
+                await OnSubmitAfter.InvokeAsync();
+            }
+
+            Value = false;
             StateHasChanged();
         };
     }
 
-    private Task ShowRollbackModalAsync()
+    private void ShowRollbackModal()
     {
         _formatLabelCode = _releaseHistory.FormatLabelCode;
         _currentConfigObjectRelease = _releaseHistory.ConfigObjectReleases.FirstOrDefault();
         _rollbackConfigObjectRelease = _releaseHistory.ConfigObjectReleases.LastOrDefault();
         _showRollbackModal = true;
-        return Task.CompletedTask;
     }
 
     private async Task RollbackAsync(ConfigObjectWithReleaseHistoryDto releaseHistory)
     {
         await ConfigObjectCaller.RollbackAsync(new RollbackConfigObjectReleaseDto
         {
-            ConfigObjectId = releaseHistory.Id, RollbackToReleaseId = releaseHistory.ConfigObjectReleases.Last().Id
+            ConfigObjectId = releaseHistory.Id,
+            RollbackToReleaseId = releaseHistory.ConfigObjectReleases.Last().Id
         });
         _showRollbackModal = false;
         await PopupService.EnqueueSnackbarAsync(T("Rollback succeeded"), AlertTypes.Success);

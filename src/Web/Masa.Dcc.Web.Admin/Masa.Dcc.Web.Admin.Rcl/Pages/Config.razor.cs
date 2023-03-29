@@ -62,12 +62,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<EnvironmentClusterModel> _allEnvClusters = new();
         private ConfigObjectModel _selectConfigObject = new();
         private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
-        private List<ConfigObjectReleaseModel> _configObjectReleases = new();
         private bool _showRollbackModal;
         private bool _showReleaseModal;
         private string _configObjectReleaseContent = "";
-        private string _releaseTabText = "All configuration";
-        private string? _cultureName;
         private CloneModal? _cloneModal;
         private RelationModal? _relation;
         private ReleaseHistoryModal? _releaseHistoryModal;
@@ -103,27 +100,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _userInfo = await AuthClient.UserService.GetCurrentUserAsync() ?? new();
                 await InitDataAsync();
             }
-        }
-
-        public override Task SetParametersAsync(ParameterView parameters)
-        {
-            bool tryGetI18n = parameters.TryGetValue("I18n", out I18n? i18n);
-            if (tryGetI18n)
-            {
-                if (i18n?.Culture.Name != _cultureName)
-                {
-                    _cultureName = i18n?.Culture.Name;
-                    _configObjects.ForEach(config =>
-                    {
-                        if (config.FormatLabelCode.ToLower() == "properties")
-                        {
-                            _releaseTabText = T("All configuration");
-                            config.ElevationTabPropertyContent.TabText = T("Table");
-                        }
-                    });
-                }
-            }
-            return base.SetParametersAsync(parameters);
         }
 
         public async Task InitDataAsync(ConfigComponentModel? configModel = null)
@@ -886,15 +862,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (_releaseHistoryModal != null)
                 await _releaseHistoryModal.InitDataAsync(configObject);
-        }
-
-        private async Task ConfigValueChanged(bool configValue)
-        {
-            if (configValue)
-            {
-                await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
-                StateHasChanged();
-            }
         }
     }
 }

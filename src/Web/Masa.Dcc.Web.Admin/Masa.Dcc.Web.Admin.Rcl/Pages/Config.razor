@@ -18,12 +18,12 @@
                                 </ActivatorContent>
                                 <ChildContent>
                                     <MList Dense>
-                                    <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
-                                    <MIcon Color="#323D6F" Size="20" Class="mr-4">far fa-copy</MIcon>
-                                    <MListItemContent>
-                                    <MListItemTitle>@T("Clone config")</MListItemTitle>
-                                    </MListItemContent>
-                                    </MListItem>
+                                        <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
+                                            <MIcon Color="#323D6F" Size="20" Class="mr-4">far fa-copy</MIcon>
+                                            <MListItemContent>
+                                                <MListItemTitle>@T("Clone config")</MListItemTitle>
+                                            </MListItemContent>
+                                        </MListItem>
                                     </MList>
                                 </ChildContent>
                             </MMenu>
@@ -156,32 +156,32 @@
                                 </MExpansionPanel>
                             }
                             else if (formatLabelCode == "properties")
-                                {
-                                    <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
-                                        <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
-                                            <ChildContent>
-                                                <ConfigItems ConfigObject="configObject"
-                                                             Disabled="_disablePanel"
-                                                             CancelEditConfigClick="CancelEditConfigContent"
-                                                             UpdateConfigClick="(config) => { ShowPropertyModal(config, config.ConfigObjectPropertyContents); }"
-                                                             CloneConfigClick="ShowCloneModalAsync"
-                                                             ReleaseConfigClick="ShowReleaseModalAsync"
-                                                             ReleaseHistoryClick="ShowReleaseHistoryAsync"
-                                                             RollbackClick="ShowRollbackModalAsync"
-                                                             RemoveClick="RemoveAsync"
-                                                             RevokeClick="RevokeAsync" />
-                                            </ChildContent>
-                                            <ActionsContent>
-                                                <MIcon Color="#485585">
-                                                    mdi-chevron-down
-                                                </MIcon>
-                                            </ActionsContent>
-                                        </MExpansionPanelHeader>
-                                        <MExpansionPanelContent>
-                                            @if (configObject.RelationConfigObjectId != 0)
-                                            {
-                                                <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4 rounded-5">
-                                                    <MDataTable FixedHeader Style="max-height: 312px; overflow: auto;" Headers="Headers"
+                            {
+                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
+                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
+                                        <ChildContent>
+                                            <ConfigItems ConfigObject="configObject"
+                                                         Disabled="_disablePanel"
+                                                         CancelEditConfigClick="CancelEditConfigContent"
+                                                         UpdateConfigClick="(config) => { ShowPropertyModal(config, config.ConfigObjectPropertyContents); }"
+                                                         CloneConfigClick="ShowCloneModalAsync"
+                                                         ReleaseConfigClick="ShowReleaseModalAsync"
+                                                         ReleaseHistoryClick="ShowReleaseHistoryAsync"
+                                                         RollbackClick="ShowRollbackModalAsync"
+                                                         RemoveClick="RemoveAsync"
+                                                         RevokeClick="RevokeAsync" />
+                                        </ChildContent>
+                                        <ActionsContent>
+                                            <MIcon Color="#485585">
+                                                mdi-chevron-down
+                                            </MIcon>
+                                        </ActionsContent>
+                                    </MExpansionPanelHeader>
+                                    <MExpansionPanelContent>
+                                        @if (configObject.RelationConfigObjectId != 0)
+                                        {
+                                            <MCard Style="border:1px solid #E2E7F4;" Class="py-3 mt-4 rounded-5">
+                                                <MDataTable FixedHeader Style="max-height: 312px; overflow: auto;" Headers="Headers"
                                                         SortDesc="true"
                                                         SortBy="new List<string>{ nameof(ConfigObjectPropertyModel.IsPublished) }"
                                                         TItem="ConfigObjectPropertyModel"
@@ -225,17 +225,17 @@
                                                             }
                                                         </ItemColContent>
                                                     </MDataTable>
-                                                </MCard>
-                                            }
-                                            else
-                                            {
-                                                <SElevationTab Tab="@T(configObject.ElevationTabPropertyContent.TabText)"
-                                                    Left
-                                                    TabChanged="tabText=>HandleTabIndexChanged(tabText, configObject)"
-                                                    TabMinWidth="70"
-                                                    ItemsClass="rounded-5"
-                                                    Dense
-                                                    Tabs="@(new List<string>{ T("Table"), T("Text") })">
+                                            </MCard>
+                                        }
+                                        else
+                                        {
+                                            <SElevationTab Tab="@T(configObject.ElevationTabPropertyContent.TabText)"
+                                                           Left
+                                                           TabChanged="tabText=>HandleTabIndexChanged(tabText, configObject)"
+                                                           TabMinWidth="70"
+                                                           ItemsClass="rounded-5"
+                                                           Dense
+                                                           Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                                     <SElevationTabItem>
                                                         <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-3 mt-4 rounded-5">
                                                         <MDataTable FixedHeader Style="max-height: 312px; overflow: auto;" Headers="Headers"
@@ -317,12 +317,12 @@
                                                         </div>
                                                         <Editor Disabled="!configObject.ElevationTabPropertyContent.Disabled" @bind-Value="@configObject.ElevationTabPropertyContent.Content"></Editor>
                                                     </SElevationTabItem>
-                                                </SElevationTab>
-                                            }
-                                        </MExpansionPanelContent>
-                                        <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
-                                    </MExpansionPanel>
-                                }
+                                            </SElevationTab>
+                                        }
+                                    </MExpansionPanelContent>
+                                    <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
+                                </MExpansionPanel>
+                            }
                             else
                             {
                                 <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
@@ -425,9 +425,8 @@
                RollbackConfigObjectRelease="@(_releaseHistory.ConfigObjectReleases.LastOrDefault() ?? new())"
                OnClick="RollbackAsync" />
 
-<ReleaseHistoryModal @ref="_releaseHistoryModal" 
-    ConfigValueChanged="ConfigValueChanged"
-    SelectConfigObject="_selectConfigObject" />
+<ReleaseHistoryModal @ref="_releaseHistoryModal"
+                     OnSubmitAfter="async ()=>{ await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType); }" />
 
 <CloneModal @ref="_cloneModal"
             ConfigObjects="_configObjects.DeepClone()"

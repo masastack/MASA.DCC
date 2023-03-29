@@ -1,9 +1,10 @@
 @inherits MasaCompontentBase
+
 <SSheetDialog EnableDomReload @bind-Value="Value" Title="@T("Release history")" Icon="mdi-circle" IconColor="success">
     <div class="d-flex flex-column" style="width:100%; height:100%; padding: 48px 228px">
         <div>
             <div class="emphasis--text h6 d-flex align-center">
-                @SelectConfigObject.Name
+                @_releaseHistory.Name
                 <span class="ml-3 regular3--text btn">|</span>
                 <sapn class="ml-2 regular3--text btn">@_releaseHistory.FormatLabelCode</sapn>
             </div>
@@ -146,8 +147,7 @@
     </div>
 </SSheetDialog>
 
-<RollbackModal @ref="_releaseHistoryRollbackModal"
-               ModalKey="@($"releaseHistoryRollbackModal{_showRollbackModal}")"
+<RollbackModal ModalKey="@($"releaseHistoryRollbackModal{_showRollbackModal}")"
                @bind-Value="_showRollbackModal"
                FormatLabelCode="@_formatLabelCode"
                CurrentConfigObjectRelease="_currentConfigObjectRelease"

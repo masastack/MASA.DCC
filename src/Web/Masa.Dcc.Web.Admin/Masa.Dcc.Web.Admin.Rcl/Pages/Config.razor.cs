@@ -80,13 +80,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 var headers = new List<DataTableHeader<ConfigObjectPropertyModel>>()
                 {
-                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished), Width = 110 },
-                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key), Width = 120 },
-                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value), Width = 120  },
+                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished), Width = 170 },
+                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key), Width = 170 },
+                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value), Width = 170  },
                     new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
-                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier), Width = 120  },
-                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime), Width = 180 },
-                    new() { Text = T("Operation"), Value="Operation", Sortable = false, Width = 88 }
+                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier), Width = 170  },
+                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime), Width = 170 },
+                    new() { Text = T("Operation"), Value="Operation", Sortable = false, Width = 170 }
                 };
 
                 return headers;

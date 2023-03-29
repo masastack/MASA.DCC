@@ -782,16 +782,19 @@ textarea:disabled {
 .masa-stack-components .m-data-table-header tr .m-icon {
     color: #A3AED0 !important;
 }
+
 .enable-encryption .m-input--switch__track {
     color: #E9EDF7 !important;
 }
+
 .m-chip--envcluster:not(.m-chip--active) {
     border-color: #E4E8F3 !important;
 }
-.m-chip--envcluster:not(.m-chip--active) .emphasis2--text
-{
-    color: #7681AB  !important;
-}
+
+    .m-chip--envcluster:not(.m-chip--active) .emphasis2--text {
+        color: #7681AB !important;
+    }
+
 .m-chip--envcluster .split--text {
     color: #E4E8F3;
 }
@@ -800,14 +803,17 @@ textarea:disabled {
 .table-header-border-1 table {
     border-collapse: collapse;
 }
-.table-header-border-1 thead tr{
+
+.table-header-border-1 thead tr {
     border-bottom: solid 0.5px #E4E8F3;
 }
-.table-header-border-1 thead tr th{
-    height: 44px !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-}
+
+    .table-header-border-1 thead tr th {
+        height: 44px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
 .table-header-border-1 tbody tr td {
     border-radius: 0 !important;
     border: 0px !important;
@@ -824,7 +830,7 @@ textarea:disabled {
     background: none !important;
 }
 
-.label-cards div:nth-child(3n-1) .m-card{
+.label-cards div:nth-child(3n-1) .m-card {
     margin-left: 24px;
     margin-right: 24px;
 }

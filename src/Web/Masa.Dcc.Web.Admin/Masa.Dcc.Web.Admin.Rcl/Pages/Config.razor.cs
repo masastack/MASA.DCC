@@ -522,7 +522,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 configObject.Content = _tempContent;
                 configObject.IsEditing = !configObject.IsEditing;
             }
-            _selectPanels.Clear();
         }
 
         private async Task UpdateJsonConfigAsync(ConfigObjectModel configObject)

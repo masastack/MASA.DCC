@@ -280,7 +280,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             var configObject = (await _configObjectRepository.FindAsync(
                 configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
 
-            configObject.AddContent(configObject.Content, configObject.Content);
+            configObject.AddContent(dto.Content, dto.Content);
             await _configObjectRepository.UpdateAsync(configObject);
 
             await _configObjectReleaseRepository.AddAsync(new ConfigObjectRelease(

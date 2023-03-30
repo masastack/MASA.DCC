@@ -7,6 +7,7 @@ namespace Masa.Dcc.Service.Infrastructure
     {
         public DccDbContext(MasaDbContextOptions<DccDbContext> options) : base(options)
         {
+            ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
         }
 
         protected override void OnModelCreatingExecuting(ModelBuilder builder)

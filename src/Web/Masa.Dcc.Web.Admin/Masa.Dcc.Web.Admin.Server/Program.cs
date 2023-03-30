@@ -3,7 +3,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-await builder.Services.AddMasaStackConfigAsync();
+builder.AddMasaStackComponentsForServer();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
@@ -64,8 +64,6 @@ builder.Services.AddServerSideBlazor();
 
 IdentityModelEventSource.ShowPII = true;
 builder.Services.AddMasaOpenIdConnect(masaOpenIdConnectOptions);
-
-builder.AddMasaStackComponentsForServer("wwwroot/i18n");
 
 var app = builder.Build();
 

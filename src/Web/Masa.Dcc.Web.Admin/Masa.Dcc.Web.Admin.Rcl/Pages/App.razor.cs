@@ -21,9 +21,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
 
         [Inject]
-        public IPopupService PopupService { get; set; } = default!;
-
-        [Inject]
         public AppCaller AppCaller { get; set; } = default!;
 
         [Inject]
@@ -78,6 +75,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _showProcess = true;
             _apps.Clear();
 
+            _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
+            _projectDetail = await ProjectCaller.GetAsync(ProjectId);
+            _projectTeamDetail = await AuthClient.TeamService.GetDetailAsync(_projectDetail.TeamId) ?? new();
+
             try
             {
                 _apps = await GetAppByProjectIdAsync(new List<int> { ProjectId });
@@ -86,10 +87,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 _showProcess = false;
             }
-
-            _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
-            _projectDetail = await ProjectCaller.GetAsync(ProjectId);
-            _projectTeamDetail = await AuthClient.TeamService.GetDetailAsync(_projectDetail.TeamId) ?? new();
 
             _backupApps = new List<Model.AppModel>(_apps.ToArray());
             _projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();

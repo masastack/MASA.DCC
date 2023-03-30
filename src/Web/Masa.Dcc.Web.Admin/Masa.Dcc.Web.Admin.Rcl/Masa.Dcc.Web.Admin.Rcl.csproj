@@ -16,7 +16,7 @@
     <PackageReference Include="Mapster" Version="7.3.0" />
     <PackageReference Include="Masa.Contrib.Development.DaprStarter.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Stack.Components" Version="0.0.285" />
+    <PackageReference Include="Masa.Stack.Components" Version="0.0.290" />
     <PackageReference Include="Masa.Utils.Security.Authentication.OpenIdConnect" Version="0.7.0-preview.14" />
     <PackageReference Include="Masa.Utils.Security.Cryptography" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.3" />

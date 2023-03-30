@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Force.DeepCloner;
+
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {
     public partial class Config
@@ -46,6 +48,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         [Inject]
         public IJSRuntime Js { get; set; } = default!;
+
+        [Inject]
+        public MasaUser MasaUser { get; set; } = default!;
 
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();
@@ -862,6 +867,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (_releaseHistoryModal != null)
                 await _releaseHistoryModal.InitDataAsync(configObject);
+        }
+
+        private List<ConfigObjectModel> GetCloneConfigObjects()
+        {
+            var configs = _configObjects.DeepClone();
+
+            if (!MasaUser.IsSuperAdmin)
+            {
+                configs.RemoveAll(config => config.Encryption);
+            }
+
+            return configs;
         }
     }
 }

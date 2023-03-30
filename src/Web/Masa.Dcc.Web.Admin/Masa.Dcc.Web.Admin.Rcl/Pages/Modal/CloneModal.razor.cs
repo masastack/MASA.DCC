@@ -146,11 +146,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 _isCloneAll = true;
             }
 
-            if (!MasaUser.IsSuperAdmin)
-            {
-                ConfigObjects.RemoveAll(config => config.Encryption);
-            }
-
             Value = true;
             _allProjects = await GetProjectList();
             if (ConfigObjectType == ConfigObjectType.Biz)

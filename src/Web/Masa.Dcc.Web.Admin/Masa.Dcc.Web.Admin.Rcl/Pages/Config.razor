@@ -433,7 +433,7 @@
                      OnSubmitAfter="async ()=>{ await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType); }" />
 
 <CloneModal @ref="_cloneModal"
-            ConfigObjects="_configObjects.DeepClone()"
+            ConfigObjects="GetCloneConfigObjects()"
             SelectCluster="_selectCluster"
             ConfigObjectType="ConfigObjectType"
             AppDetail="_appDetail"

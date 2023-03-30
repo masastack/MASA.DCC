@@ -17,6 +17,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+    <PackageReference Include="Masa.Contrib.StackSdks.Config" Version="1.0.0-preview.24" />
     <PackageReference Include="Masa.Utils.Extensions.Validations.FluentValidation" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="6.0.7" />
 		<PackageReference Include="Mapster" Version="7.3.0" />
@@ -39,7 +40,6 @@
 		<PackageReference Include="Masa.Contrib.Exceptions" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.Service.MinimalAPIs" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.StackSdks.Middleware" Version="$(MasaFrameworkPackageVersion)" />
-		<PackageReference Include="Masa.Contrib.StackSdks.Config" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaFrameworkPackageVersion)" />
 		<PackageReference Include="Masa.Utils.Extensions.Expressions" Version="$(MasaFrameworkPackageVersion)" />

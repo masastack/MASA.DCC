@@ -11,14 +11,12 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public GlobalConfig GlobalConfig { get; set; } = default!;
 
-        [Inject]
-        public MasaUser MasaUser { get; set; } = default!;
 
         private int _projectCount;
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
-        private List<Model.AppModel> _apps = new();
+        private readonly List<Model.AppModel> _apps = new();
         private string _projectName = "";
         private ConfigComponentModel _configModel = new();
         private AppComponentModel _appModel = new();

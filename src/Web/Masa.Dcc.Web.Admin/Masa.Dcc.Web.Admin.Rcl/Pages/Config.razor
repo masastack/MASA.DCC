@@ -52,11 +52,11 @@
                                     var isSelected = _selectCluster.EnvironmentName == item.EnvironmentName;
                                     var textColor = isSelected ? "white" : "";
                                     <MChip OnClick="()=>OnEnvChipClick(item.EnvironmentName)"
-                                       Outlined="@(_selectEnvName != item.EnvironmentName)"
-                                       Style="@($"border:1px solid {@item.EnvironmentColor} !important;")"
-                                       Color="@item.EnvironmentColor"
-                                       TextColor="@textColor"
-                                       Class="mr-3 mt-3 text-overflow">
+                                           Outlined="@(_selectEnvName != item.EnvironmentName)"
+                                           Style="@($"border:1px solid {@item.EnvironmentColor} !important;")"
+                                           Color="@item.EnvironmentColor"
+                                           TextColor="@textColor"
+                                           Class="mr-3 mt-3 text-overflow">
                                         @item.EnvironmentName
                                     </MChip>
                                 }
@@ -70,10 +70,10 @@
                                     var isSelected = _selectCluster.ClusterName == item.ClusterName;
                                     var textColor = isSelected ? "white" : "";
                                     <MChip OnClick="()=>OnClusterChipClick(item)"
-                                       Outlined="@(!isSelected)"
-                                       TextColor="@textColor"
-                                       Color="#323D6F"
-                                       Class="mr-3 mt-3 text-overflow">
+                                           Outlined="@(!isSelected)"
+                                           TextColor="@textColor"
+                                           Color="#323D6F"
+                                           Class="mr-3 mt-3 text-overflow">
                                         @item.ClusterName
                                     </MChip>
                                 }

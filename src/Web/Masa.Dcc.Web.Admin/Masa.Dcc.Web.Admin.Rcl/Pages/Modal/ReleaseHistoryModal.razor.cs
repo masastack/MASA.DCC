@@ -235,4 +235,11 @@ public partial class ReleaseHistoryModal
         _showRollbackModal = false;
         await PopupService.EnqueueSnackbarAsync(T("Rollback succeeded"), AlertTypes.Success);
     }
+
+    private async Task<UserModel> GetUserAsync(Guid userId)
+    {
+        var user = await AuthClient.UserService.GetByIdAsync(userId);
+
+        return user ?? new();
+    }
 }

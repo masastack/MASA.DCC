@@ -20,9 +20,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public AppCaller AppCaller { get; set; } = default!;
 
-        [Inject]
-        public NavigationManager NavigationManager { get; set; } = default!;
-
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
@@ -92,7 +89,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _curTab = value;
 
-            StateHasChanged();
+            //StateHasChanged();
 
             if (_curTab == 0 && _projectList != null)
             {

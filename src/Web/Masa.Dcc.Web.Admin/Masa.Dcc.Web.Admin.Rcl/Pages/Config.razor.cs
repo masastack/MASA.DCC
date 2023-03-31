@@ -32,9 +32,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
 
         [Inject]
-        public IPopupService PopupService { get; set; } = default!;
-
-        [Inject]
         public LabelCaller LabelCaller { get; set; } = default!;
 
         [Inject]
@@ -48,6 +45,22 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         [Inject]
         public IJSRuntime Js { get; set; } = default!;
+
+        public bool IsAppConfig
+        {
+            get
+            {
+                return ConfigObjectType == ConfigObjectType.App;
+            }
+        }
+
+        public string ConfigNavStyle
+        {
+            get
+            {
+                return IsAppConfig ? "height: calc(100vh - 309px); margin-bottom:28px;" : "height: calc(100vh - 220px);";
+            }
+        }
 
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();

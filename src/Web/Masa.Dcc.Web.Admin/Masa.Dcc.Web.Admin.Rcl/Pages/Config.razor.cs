@@ -49,9 +49,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public IJSRuntime Js { get; set; } = default!;
 
-        [Inject]
-        public MasaUser MasaUser { get; set; } = default!;
-
         private AppDetailModel _appDetail = new();
         private List<EnvironmentClusterModel> _appEnvs = new();
         private List<EnvironmentClusterModel> _appClusters = new();
@@ -176,6 +173,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task OnClusterChipClick(EnvironmentClusterModel model)
         {
+            _configObjectName = string.Empty;
             _selectCluster = model;
             _selectPanels.Clear();
 

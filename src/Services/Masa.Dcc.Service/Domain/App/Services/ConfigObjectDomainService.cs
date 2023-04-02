@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Dcc.Service.Admin.Domain.App.Aggregates;
+
 namespace Masa.Dcc.Service.Admin.Domain.App.Services
 {
     public class ConfigObjectDomainService : DomainService
@@ -417,7 +419,31 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             string configObjectName,
             string value)
         {
-            var configObject = await _configObjectRepository.FindAsync(config => config.Name == configObjectName) ?? throw new UserFriendlyException("ConfigObject does not exist");
+            var configObjects = await _configObjectRepository.GetListAsync(config => config.Name == configObjectName);
+            if (!configObjects.Any())
+            {
+                throw new UserFriendlyException("ConfigObject does not exist");
+            }
+
+            var environmentClusters = await _pmClient.ClusterService.GetEnvironmentClustersAsync();
+            var environmentCluster = environmentClusters.FirstOrDefault(ec => ec.EnvironmentName.ToLower() == environmentName.ToLower() && ec.ClusterName.ToLower() == clusterName.ToLower())
+                ?? throw new UserFriendlyException("Environment cluster does not exist");
+
+            ConfigObject? configObject = null;
+
+            var publicConfig = await _publicConfigRepository.FindAsync(p => p.Identity.ToLower() == appId.ToLower());
+            if (publicConfig == null)
+            {
+                var appDetail = await _pmClient.AppService.GetByIdentityAsync(appId);
+                var appConfigObjects = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(environmentCluster.Id, appDetail.Id);
+                configObject = configObjects.FirstOrDefault(c => appConfigObjects.Select(ac => ac.ConfigObjectId).Contains(c.Id)) ?? throw new UserFriendlyException("ConfigObject does not exist");
+            }
+            else
+            {
+                var publicConfigObjects = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(environmentCluster.Id, publicConfig.Id);
+                configObject = configObjects.FirstOrDefault(c => publicConfigObjects.Select(ac => ac.ConfigObjectId).Contains(c.Id)) ?? throw new UserFriendlyException("ConfigObject does not exist");
+            }
+            
 
             if (configObject.Encryption)
             {

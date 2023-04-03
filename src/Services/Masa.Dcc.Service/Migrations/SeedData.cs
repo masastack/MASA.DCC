@@ -130,7 +130,9 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 { "$public.Email",GetEmail(contentRootPath,masaConfig.Environment) },
                 { "$public.Sms",GetSms(contentRootPath,masaConfig.Environment) },
                 { "$public.Cdn",GetCdn(contentRootPath,masaConfig.Environment) },
-                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) }
+                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) },
+                { "$public.i18n.en-us",GetI8nEn(contentRootPath,masaConfig.Environment) },
+                { "$public.i18n.zh-cn",GetI8nCn(contentRootPath,masaConfig.Environment) }
             };
 
             await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false);
@@ -142,6 +144,18 @@ namespace Masa.Dcc.Service.Admin.Migrations
             await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true);
 
             await context.SaveChangesAsync();
+        }
+
+        private static string GetI8nEn(string contentRootPath, string environment)
+        {
+            var filePath = CombineFilePath(contentRootPath, "$public.i18n.en-us", environment);
+            return File.ReadAllText(filePath);
+        }
+
+        private static string GetI8nCn(string contentRootPath, string environment)
+        {
+            var filePath = CombineFilePath(contentRootPath, "$public.i18n.zh-cn", environment);
+            return File.ReadAllText(filePath);
         }
 
         private static string GetCdn(string contentRootPath, string environment)

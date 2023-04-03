@@ -114,22 +114,30 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 return;
             }
 
-            if (context.Validate())
+            try
             {
-                var dto = _labelModal.Data.Adapt<UpdateLabelDto>();
-                if (_labelModal.HasValue)
+                if (context.Validate())
                 {
-                    await LabelCaller.UpdateAsync(dto);
-                    await PopupService.EnqueueSnackbarAsync(T("Edit succeeded"), AlertTypes.Success);
-                }
-                else
-                {
-                    await LabelCaller.AddAsync(dto);
-                    await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
-                }
+                    var dto = _labelModal.Data.Adapt<UpdateLabelDto>();
+                    if (_labelModal.HasValue)
+                    {
+                        await LabelCaller.UpdateAsync(dto);
+                        await PopupService.EnqueueSnackbarAsync(T("Edit succeeded"), AlertTypes.Success);
+                    }
+                    else
+                    {
+                        await LabelCaller.AddAsync(dto);
+                        await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
+                    }
 
-                await GetListAsync();
-                LabelModalValueChanged(false);
+                    await GetListAsync();
+                    LabelModalValueChanged(false);
+                }
+            }
+            catch (Exception e)
+            {
+
+                throw;
             }
         }
 

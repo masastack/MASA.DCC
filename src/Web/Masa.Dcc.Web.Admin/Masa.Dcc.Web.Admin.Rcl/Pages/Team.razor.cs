@@ -90,7 +90,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _teamDetailDisabled = false;
             _configDisabled = true;
 
-            var apps = _apps.Where(app => app.ProjectId == projectId);
             _appModel = new(projectId);
 
             await TabValueChangedAsync(1);

@@ -30,18 +30,18 @@
                         </div>
                     </MRow>
                     <div class="regular3--text body2 text-overflow">
-                        @if (ConfigObjectType == ConfigObjectType.App)
+                        @if (IsAppConfig)
                         {
                             <span class="regular--text">@_appDetail.Type</span>
                             <span>&nbsp;|&nbsp;</span>
                         }
                         @_appDetail.Identity
                     </div>
-                    <div style="height: calc(100vh - 220px); overflow: auto;">
-                        @if (ConfigObjectType == ConfigObjectType.App)
+                    <div style="@($"{ConfigNavStyle} overflow: auto;")">
+                        @if (IsAppConfig)
                         {
                             <MRow NoGutters Class="mt-4" Style="word-break: break-all;">
-                            @_appDetail.Description
+                                @_appDetail.Description
                             </MRow>
                         }
                         <MRow NoGutters Class="regular3--text btn mt-6">@T("Environment")</MRow>
@@ -82,7 +82,7 @@
                     </div>
                 </div>
             </div>
-            @if (ConfigObjectType == ConfigObjectType.App)
+            @if (IsAppConfig)
             {
                 <div @onclick="ShowRelationModal" style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
                     <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>@T("Connect public config")

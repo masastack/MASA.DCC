@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddMasaStackComponentsForServer();
 var masaStackConfig = builder.Services.GetMasaStackConfig();
+builder.Services.AddValidatorsFromAssembly(typeof(LabelValueModel).Assembly, includeInternalTypes: true);
 
 MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
 {

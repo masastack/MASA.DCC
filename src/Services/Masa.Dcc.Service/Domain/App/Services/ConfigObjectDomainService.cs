@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Dcc.Service.Admin.Domain.App.Aggregates;
-
 namespace Masa.Dcc.Service.Admin.Domain.App.Services
 {
     public class ConfigObjectDomainService : DomainService
@@ -443,15 +441,12 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 var publicConfigObjects = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(environmentCluster.Id, publicConfig.Id);
                 configObject = configObjects.FirstOrDefault(c => publicConfigObjects.Select(ac => ac.ConfigObjectId).Contains(c.Id)) ?? throw new UserFriendlyException("ConfigObject does not exist");
             }
-            
 
             if (configObject.Encryption)
             {
                 value = EncryptContent(value);
             }
-
             configObject.UpdateContent(value);
-
             await _configObjectRepository.UpdateAsync(configObject);
 
             var releaseModel = new AddConfigObjectReleaseDto

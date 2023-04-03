@@ -89,7 +89,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             _curTab = value;
 
-            //StateHasChanged();
+            StateHasChanged();
 
             if (_curTab == 0 && _projectList != null)
             {

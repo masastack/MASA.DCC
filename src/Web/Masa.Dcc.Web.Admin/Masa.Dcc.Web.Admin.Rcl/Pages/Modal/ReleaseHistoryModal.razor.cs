@@ -76,7 +76,7 @@ public partial class ReleaseHistoryModal
 
         if (_configObjectReleases.Count < 1)
         {
-            await PopupService.EnqueueSnackbarAsync(T("No publishing history"), AlertTypes.Error);
+            _ = InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(T("No publishing history"), AlertTypes.Error));
         }
         else
         {

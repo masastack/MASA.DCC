@@ -825,7 +825,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (_releaseHistory.ConfigObjectReleases.Count <= 1
                 || _releaseHistory.ConfigObjectReleases.First().Version == _releaseHistory.ConfigObjectReleases.Last().Version)
             {
-                await PopupService.EnqueueSnackbarAsync(T("No publishing history can be rolled back"), AlertTypes.Error);
+                _ = InvokeAsync(async () => await PopupService.EnqueueSnackbarAsync(T("No publishing history can be rolled back"), AlertTypes.Error));
                 return;
             }
             var latestConfigObjectRelease = _releaseHistory.ConfigObjectReleases.First();

@@ -156,6 +156,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
         {
             var configObjectReleases = await _configObjectRepository.GetConfigObjectWithReleaseHistoriesAsync(query.ConfigObejctId);
 
+            Console.WriteLine($"GetConfigObjectReleaseHistoryAsync: queryQarameter[{query.ToJson()}], configObjectReleasesResult[{configObjectReleases?.ToJson()}]");
+
             TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease)
                 .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(configObjectReleases.Content) : src.Content)

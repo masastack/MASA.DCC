@@ -21,5 +21,17 @@
   "ReceiverGroup": "Receiver Group",
   "AlarmRule": "Alarm Rule",
   "AlarmHistory": "Alarm History",
-  "WebHook": "WebHook"
+  "WebHook": "WebHook",
+  "Dashboard": "Dashboard",
+  "Email": "Email",
+  "LabelManagement": "Label Management",
+  "Log": "Log",
+  "MessageRecord": "Message Record",
+  "Overview": "Overview",
+  "PublicConfig": "Public Config",
+  "ResourceFiles": "Resource Files",
+  "SendMessage": "Send Message",
+  "Sms": "Sms",
+  "Trace": "Trace",
+  "WebsiteMessage": "Website Message"
 }

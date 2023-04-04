@@ -29,7 +29,7 @@
                 <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="EnvClusterValueChanged">
                     @foreach (var item in AppDetail.EnvironmentClusters)
                     {
-                        <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6 m-chip--envcluster" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")" Style=@($"border-color:{item.EnvironmentColor};color:{item.EnvironmentColor}")>
+                        <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6 m-chip--envcluster" Filter Outlined Style=@($"border-color:{item.EnvironmentColor};color:{item.EnvironmentColor}")>
                             <div>@item.EnvironmentName</div>
                             <span class="split--text">&nbsp; | &nbsp;</span>
                             <div class="emphasis2--text">@item.ClusterName</div>

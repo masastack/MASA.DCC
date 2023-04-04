@@ -130,8 +130,6 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
         private string DecryptContent(string content)
         {
-            Console.WriteLine($"DecryptContent content: {content}--End");
-
             if (!string.IsNullOrEmpty(content) && content != "{}" && content != "[]")
             {
                 var secret = _masaStackConfig.DccSecret;
@@ -157,8 +155,6 @@ namespace Masa.Dcc.Service.Admin.Application.App
         public async Task GetConfigObjectReleaseHistoryAsync(ConfigObjectReleaseQuery query)
         {
             var configObjectReleases = await _configObjectRepository.GetConfigObjectWithReleaseHistoriesAsync(query.ConfigObejctId);
-
-            Console.WriteLine($"GetConfigObjectReleaseHistoryAsync: queryQarameter[{query.ToJson()}], configObjectReleasesResult[{configObjectReleases?.ToJson()}]");
 
             TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease)

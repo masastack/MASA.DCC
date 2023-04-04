@@ -26,9 +26,10 @@
                     <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="CloneEnvClusterValueChanged">
                     @foreach (var item in _cloneSelectApp.EnvironmentClusters)
                         {
-                            <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
-                            <div style="@($"color: {item.EnvironmentColor} !important")">@item.EnvironmentName</div>&nbsp;&nbsp;
-                            <div style="color:#05CD99">@item.ClusterName</div>
+                            <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6 m-chip--envcluster" Filter Outlined Style=@($"border-color:{item.EnvironmentColor};color:{item.EnvironmentColor}")>
+                                <div>@item.EnvironmentName</div>
+                                <span class="split--text">&nbsp; | &nbsp;</span>
+                                <div class="emphasis2--text">@item.ClusterName</div>
                             </MChip>
                         }
                     </MChipGroup>
@@ -275,9 +276,10 @@
                     <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="CloneEnvClusterValueChanged">
                         @foreach (var item in _cloneSelectApp.EnvironmentClusters)
                         {
-                            <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6" Filter Outlined ActiveClass="@($"{item.EnvironmentColor}")">
-                                <div style="@($"color: {item.EnvironmentColor} !important")">@item.EnvironmentName</div>&nbsp;&nbsp;
-                                <div style="color:#05CD99">@item.ClusterName</div>
+                            <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6 m-chip--envcluster" Filter Outlined Style=@($"border-color:{item.EnvironmentColor};color:{item.EnvironmentColor}")>
+                                <div>@item.EnvironmentName</div>
+                                <span class="split--text">&nbsp; | &nbsp;</span>
+                                <div class="emphasis2--text">@item.ClusterName</div>
                             </MChip>
                         }
                     </MChipGroup>

@@ -130,8 +130,6 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
         private string DecryptContent(string content)
         {
-            Console.WriteLine($"DecryptContent content: {content}--End");
-
             if (!string.IsNullOrEmpty(content) && content != "{}" && content != "[]")
             {
                 var secret = _masaStackConfig.DccSecret;

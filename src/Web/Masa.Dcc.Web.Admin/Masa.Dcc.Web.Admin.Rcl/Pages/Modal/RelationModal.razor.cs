@@ -18,13 +18,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = null!;
 
         [Inject]
-        public IPopupService PopupService { get; set; } = null!;
-
-        [Inject]
         public ClusterCaller ClusterCaller { get; set; } = null!;
-
-        [Inject]
-        public MasaUser MasaUser { get; set; } = default!;
 
         private List<StringNumber> _selectToEnvClusterIds = new();
         private List<ConfigObjectDto> _publicConfigObjects = new();

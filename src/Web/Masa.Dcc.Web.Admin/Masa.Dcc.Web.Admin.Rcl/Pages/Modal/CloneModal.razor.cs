@@ -65,8 +65,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             get
             {
-                var checkedConfigObejctCount = ConfigObjects.Where(c => c.IsChecked).Count();
-                return checkedConfigObejctCount == ConfigObjects.Count;
+                var checkedConfigObejctCount = ConfigObjects.Count(c => !c.FromRelation && c.IsChecked);
+                return checkedConfigObejctCount == ConfigObjects.Count(c => !c.FromRelation);
             }
         }
 

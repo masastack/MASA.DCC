@@ -734,6 +734,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         FormatLabelCode = "Properties",
                         EditConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto> { _propertyConfigModal.Data }
                     });
+
+                    await PopupService.EnqueueSnackbarAsync(T("Edit succeeded"), AlertTypes.Success);
                 }
                 else
                 {
@@ -750,12 +752,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                             FormatLabelCode = "Properties",
                             AddConfigObjectPropertyContent = new List<ConfigObjectPropertyContentDto> { _propertyConfigModal.Data }
                         });
+
+                        await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
                     }
                 }
 
                 await GetConfigObjectsAsync(_selectCluster.Id, ConfigObjectType);
                 _propertyConfigModal.Hide();
-                await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
             }
         }
 

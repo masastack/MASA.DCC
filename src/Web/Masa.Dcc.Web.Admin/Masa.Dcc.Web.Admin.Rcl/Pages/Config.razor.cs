@@ -58,7 +58,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             get
             {
-                return IsAppConfig ? "height: calc(100vh - 309px); margin-bottom:28px;" : "height: calc(100vh - 220px);";
+                return ConfigObjectType != ConfigObjectType.Public ? "height: calc(100vh - 333px); margin-bottom:28px;" : "height: calc(100vh - 220px);";
             }
         }
 

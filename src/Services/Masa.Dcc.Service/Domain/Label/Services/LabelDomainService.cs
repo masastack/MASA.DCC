@@ -7,7 +7,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
     {
         private readonly ILabelRepository _labelRepository;
         private readonly IDistributedCacheClient _distributedCacheClient;
-        private readonly II18n<DefaultResource> _il8n;
+        private readonly II18n<DefaultResource> _i18n;
 
         public LabelDomainService(IDomainEventBus eventBus,
             ILabelRepository labelRepository,
@@ -16,7 +16,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
         {
             _labelRepository = labelRepository;
             _distributedCacheClient = distributedCacheClient;
-            _il8n = i18N;
+            _i18n = i18N;
         }
 
         public async Task AddLabelAsync(UpdateLabelDto labelDto)
@@ -30,7 +30,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
                 var label = await _labelRepository.FindAsync(x => x.TypeCode == labelDto.TypeCode);
                 if (label is not null)
                 {
-                    throw new UserFriendlyException(_il8n.T("Duplicate label type code"));
+                    throw new UserFriendlyException(_i18n.T("Duplicate label type code"));
                 }
 
                 List<Aggregates.Label> labels = new();

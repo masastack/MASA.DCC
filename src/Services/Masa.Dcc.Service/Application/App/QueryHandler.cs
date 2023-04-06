@@ -148,7 +148,11 @@ namespace Masa.Dcc.Service.Admin.Application.App
         {
             var result = await _configObjectRepository.GetListAsync(c => query.Ids.Contains(c.Id));
 
-            query.Result = result.Adapt<List<ConfigObjectDto>>();
+            TypeAdapterConfig<ConfigObject, ConfigObjectDto>.NewConfig()
+                .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(src.Content) : src.Content)
+                .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(src.TempContent) : src.TempContent);
+
+            query.Result = TypeAdapter.Adapt<List<ConfigObject>, List<ConfigObjectDto>>(result.ToList());
         }
 
         [EventHandler]

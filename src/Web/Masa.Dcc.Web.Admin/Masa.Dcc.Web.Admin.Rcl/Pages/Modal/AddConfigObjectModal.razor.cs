@@ -36,9 +36,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Inject]
         public LabelCaller LabelCaller { get; set; } = null!;
 
-        [Inject]
-        public IPopupService PopupService { get; set; } = null!;
-
         private readonly DataModal<AddConfigObjectDto> _addConfigObjectModal = new();
         private List<LabelDto> _configObjectFormats { get; set; } = new();
         private List<StringNumber> _selectEnvClusterIds = new();

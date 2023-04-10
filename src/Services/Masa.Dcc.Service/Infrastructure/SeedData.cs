@@ -1,7 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Service.Admin.Migrations
+namespace Masa.Dcc.Service.Admin.Infrastructure
 {
     public static class IHostExtensions
     {
@@ -130,7 +130,9 @@ namespace Masa.Dcc.Service.Admin.Migrations
                 { "$public.Email",GetEmail(contentRootPath,masaConfig.Environment) },
                 { "$public.Sms",GetSms(contentRootPath,masaConfig.Environment) },
                 { "$public.Cdn",GetCdn(contentRootPath,masaConfig.Environment) },
-                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) }
+                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) },
+                { "$public.i18n.en-us",GetI8nUs(contentRootPath,masaConfig.Environment) },
+                { "$public.i18n.zh-cn",GetI8nCn(contentRootPath,masaConfig.Environment) }
             };
 
             await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false);
@@ -142,6 +144,18 @@ namespace Masa.Dcc.Service.Admin.Migrations
             await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true);
 
             await context.SaveChangesAsync();
+        }
+
+        private static string GetI8nUs(string contentRootPath, string environment)
+        {
+            var filePath = CombineFilePath(contentRootPath, "$public.i18n.en-us.json", environment);
+            return File.ReadAllText(filePath);
+        }
+
+        private static string GetI8nCn(string contentRootPath, string environment)
+        {
+            var filePath = CombineFilePath(contentRootPath, "$public.i18n.zh-cn.json", environment);
+            return File.ReadAllText(filePath);
         }
 
         private static string GetCdn(string contentRootPath, string environment)

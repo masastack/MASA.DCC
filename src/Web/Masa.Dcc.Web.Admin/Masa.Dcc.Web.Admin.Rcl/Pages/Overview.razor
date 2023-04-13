@@ -43,7 +43,7 @@
                                                 <MListItem @attributes="@context.Attrs" Context="_" Style="height: 48px !important; min-height: 48px !important;margin:18px 24px -32px 0px !important" Class="rounded-2 env-list" Value="env.Id" Dense OnClick="@(()=>GetClustersByEnvIdAsync(env.Id))">
                                                     <ItemContent>
                                                         <MListItemIcon Class="d-flex align-center mr-0" Style="height: 32px;">
-                                                            <MIcon Color="@env.Color" Size="12">mdi-circle</MIcon>
+                                                            <SIcon Color="@env.Color" Size="12">mdi-circle</SIcon>
                                                         </MListItemIcon>
                                                         <MListItemContent>
                                                             <MListItemTitle>@env.Name</MListItemTitle>

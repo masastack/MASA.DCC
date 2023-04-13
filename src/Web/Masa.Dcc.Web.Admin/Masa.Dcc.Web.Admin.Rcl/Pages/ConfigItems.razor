@@ -2,7 +2,7 @@
 <div class="emphasis--text h6 d-flex align-center">
     @if (ConfigObject.FromRelation)
     {
-        <MIcon Color="primary" Class="mr-2">mdi-link-variant</MIcon>
+        <SIcon Color="primary" Class="mr-2">mdi-link-variant</SIcon>
     }
     @{
         var content = ConfigObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
@@ -77,19 +77,19 @@
     <MMenu OffsetY>
         <ActivatorContent>
             <SButton Disabled="DisabledButton" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
-                <MIcon Color="#323D6F">mdi-dots-vertical</MIcon>
+                <SIcon Color="#323D6F">mdi-dots-vertical</SIcon>
             </SButton>
         </ActivatorContent>
         <ChildContent>
             <MList>
                 <MListItem OnClick="ReleaseHistory">
-                    <MIcon Class="mr-4">mdi-history</MIcon>
+                    <SIcon Class="mr-4">mdi-history</SIcon>
                     <MListItemContent>
                         <MListItemTitle>@T("Release history")</MListItemTitle>
                     </MListItemContent>
                 </MListItem>
                 <MListItem OnClick="Rollback">
-                    <MIcon Class="mr-4">mdi-repeat</MIcon>
+                    <SIcon Class="mr-4">mdi-repeat</SIcon>
                     <MListItemContent>
                         <MListItemTitle>
                             @T("Rollback")
@@ -97,7 +97,7 @@
                     </MListItemContent>
                 </MListItem>
                 <MListItem OnClick="RevokeAsync">
-                    <MIcon Class="mr-4">mdi-subdirectory-arrow-left</MIcon>
+                    <SIcon Class="mr-4">mdi-subdirectory-arrow-left</SIcon>
                     <MListItemContent>
                         <MListItemTitle>
                             @T("Revoke")
@@ -106,7 +106,7 @@
                 </MListItem>
                 <MDivider></MDivider>
                 <MListItem OnClick="RemoveAsync">
-                    <MIcon Class="mr-4" Color="error">mdi-delete</MIcon>
+                    <SIcon Class="mr-4" Color="error">mdi-delete</SIcon>
                     <MListItemContent>
                         <MListItemTitle Class="error--text">
                             @T("Delete")

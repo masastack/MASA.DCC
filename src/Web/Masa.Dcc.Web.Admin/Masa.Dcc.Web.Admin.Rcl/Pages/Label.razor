@@ -6,7 +6,7 @@
 <MRow NoGutters>
     <SSearch @bind-Value="_typeName" OnEnter="SearchAsync" Height="40" Dense BackgroundColor="#fff" MaxWidth="0" />
     <SButton Height="40" Width="100" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="()=>ShowLabelModal(null)">
-        <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
+        <SIcon Class="mr-1" Small>mdi-plus</SIcon>@T("Add")
     </SButton>
 </MRow>
 
@@ -22,7 +22,7 @@
                         <div class="emphasis2--text h7 text-overflow"><span class="font-weight-bold">@label.TypeName</span></div>
                         <MSpacer />
                         <SButton Icon OnClick="()=>ShowLabelModal(label)">
-                            <MIcon Size="20" Color="#323D6F">mdi-pencil</MIcon>
+                            <SIcon Size="20" Color="#323D6F">mdi-pencil</SIcon>
                         </SButton>
                     </MCardTitle>
                     <MCardSubtitle>
@@ -87,10 +87,10 @@
                             <STextField Style="width: 46.5%;" TextColor="@(item.Disabled ? "" : "regular")" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
                             <div class="d-flex justify-end align-start ml-6 pt-2" style="width: 5%;">
                                 <SButton Icon Class="mr-1">
-                                    <MIcon Color="#323D6F" Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</MIcon>
+                                    <SIcon Color="#323D6F" Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</SIcon>
                                 </SButton>
                                 <SButton Icon>
-                                    <MIcon Color="#323D6F" OnClick="()=>AddLabelValue(item.Index)" Class="remove-bg-after">mdi-plus</MIcon>
+                                    <SIcon Color="#323D6F" OnClick="()=>AddLabelValue(item.Index)" Class="remove-bg-after">mdi-plus</SIcon>
                                 </SButton>
                             </div>
                         </MRow>

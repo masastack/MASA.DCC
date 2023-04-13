@@ -97,7 +97,7 @@
                                         @foreach (var item in configObject.ConfigObjectPropertyContents)
                                             {
                                                 <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
-                                                <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
+                                                    <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
                                                     <STextField Outlined @bind-Value="item.Value"></STextField>
                                                     <div class="d-flex justify-end align-center ml-6">
                                                         <SButton Class="mr-3" Icon OnClick="()=> RemoveProperty(item.Key,configObject)">
@@ -351,7 +351,9 @@
                                                     <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
                                                     <STextField Outlined @bind-Value="item.Value"></STextField>
                                                     <div class="d-flex justify-end align-center ml-6">
-                                                        <SIcon Color="error" OnClick="()=> RemoveProperty(item.Key,configObject)" Class="hover-pointer mr-3">mdi-delete-outline</SIcon>
+                                                        <MButton Class="mr-3" Icon OnClick="()=> RemoveProperty(item.Key,configObject)">
+                                                            <SIcon Color="error">mdi-delete-outline</SIcon>
+                                                        </MButton>
                                                     </div>
                                                 </MRow>
                                             }

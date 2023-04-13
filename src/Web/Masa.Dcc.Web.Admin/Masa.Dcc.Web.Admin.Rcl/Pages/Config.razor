@@ -210,9 +210,11 @@
                                                                     <span style="color: @color;">@text</span>
                                                                     break;
                                                                 case "Operation":
-                                                                    <SIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">
-                                                                        mdi-pencil
-                                                                    </SIcon>
+                                                                    <MButton Class="mr-3" Icon OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">
+                                                                        <SIcon Color="#485585" Size="20">
+                                                                            mdi-pencil
+                                                                        </SIcon>
+                                                                    </MButton>
                                                                     break;
                                                                 case nameof(ConfigObjectPropertyModel.ModificationTime):
                                                                     <DateTimeZone Value="@context.Item.ModificationTime" />
@@ -279,8 +281,14 @@
                                                                         case "Operation":
                                                                             @if (!context.Item.IsDeleted)
                                                                             {
-                                                                                <SIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-pencil</SIcon>
-                                                                                <SIcon Class="hover-pointer" Style="color: #FF5252 !important;" Size="20" OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">mdi-delete</SIcon>
+                                                                                <div class="d-flex">
+                                                                                    <MButton Class="mr-3" Icon OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">
+                                                                                        <SIcon Size="20" Color="#485585" Class="align-self-center">mdi-pencil</SIcon>
+                                                                                    </MButton>
+                                                                                    <MButton Class="mr-3" Icon OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">
+                                                                                        <SIcon Size="20" Style="color: #FF5252 !important;" Class="align-self-center">mdi-delete</SIcon>
+                                                                                    </MButton>
+                                                                                </div>
                                                                             }
                                                                             break;
                                                                         case nameof(ConfigObjectPropertyModel.ModificationTime):

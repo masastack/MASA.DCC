@@ -4,14 +4,10 @@
 <PageTitle>@T("LabelManagement")</PageTitle>
 
 <MRow NoGutters>
-    <MTextField @bind-Value="_typeName" HideDetails="true" Dense OnKeyDown="SearchAsync" Class="rounded-2" Height="40" Flat Solo Placeholder="@T("Search")">
-        <PrependInnerContent>
-            <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
-        </PrependInnerContent>
-    </MTextField>
-    <MButton Height="40" Width="100" Class="rounded-lg ml-6" Color="primary" OnClick="()=>ShowLabelModal(null)">
+    <SSearch @bind-Value="_typeName" OnEnter="SearchAsync" Height="40" Dense BackgroundColor="#fff" MaxWidth="0" />
+    <SButton Height="40" Width="100" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="()=>ShowLabelModal(null)">
         <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
-    </MButton>
+    </SButton>
 </MRow>
 
 <MRow NoGutters Class="mt-6 label-cards" Style="position: relative;">
@@ -25,9 +21,9 @@
                     <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding-bottom: 12px !important;">
                         <div class="emphasis2--text h7 text-overflow"><span class="font-weight-bold">@label.TypeName</span></div>
                         <MSpacer />
-                        <MButton Icon OnClick="()=>ShowLabelModal(label)">
+                        <SButton Icon OnClick="()=>ShowLabelModal(label)">
                             <MIcon Size="20" Color="#323D6F">mdi-pencil</MIcon>
-                        </MButton>
+                        </SButton>
                     </MCardTitle>
                     <MCardSubtitle>
                         <div class="text-overflow regular2--text">@label.TypeCode</div>
@@ -90,12 +86,12 @@
                             <STextField Style="width: 46.5%" Class="pr-6" TextColor="regular" Outlined @bind-Value="item.Name" Label="Name"></STextField>
                             <STextField Style="width: 46.5%;" TextColor="@(item.Disabled ? "" : "regular")" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
                             <div class="d-flex justify-end align-start ml-6 pt-2" style="width: 5%;">
-                                <MButton Icon Class="mr-1">
-                                    <MIcon Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</MIcon>
-                                </MButton>
-                                <MButton Icon>
-                                    <MIcon OnClick="()=>AddLabelValue(item.Index)" Class="remove-bg-after">mdi-plus</MIcon>
-                                </MButton>
+                                <SButton Icon Class="mr-1">
+                                    <MIcon Color="#323D6F" Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</MIcon>
+                                </SButton>
+                                <SButton Icon>
+                                    <MIcon Color="#323D6F" OnClick="()=>AddLabelValue(item.Index)" Class="remove-bg-after">mdi-plus</MIcon>
+                                </SButton>
                             </div>
                         </MRow>
                     }

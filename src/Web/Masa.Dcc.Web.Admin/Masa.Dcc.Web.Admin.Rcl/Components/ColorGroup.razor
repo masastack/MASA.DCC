@@ -3,9 +3,9 @@
     {
         <MItem>
             <MCard Class="elevation-0" Style="@($"transition: opacity .4s ease-in-out; {(context.Active ? "" : "opacity: 0.5;")}")">
-                <MButton StopPropagation Fab class="mx-1 rounded-circle" OnClick="()=>{ context.Toggle(); ValueChanged.InvokeAsync(color); }"
+                <SButton StopPropagation Fab BorderRadiusClass="rounded-circle" Class="mx-1" OnClick="()=>{ context.Toggle(); ValueChanged.InvokeAsync(color); }"
                      Width=Size Height=Size MinWidth=Size MinHeight=Size Color="@color">
-                </MButton>
+                </SButton>
             </MCard>
             @if (ItemAppendContent is not null)
             {

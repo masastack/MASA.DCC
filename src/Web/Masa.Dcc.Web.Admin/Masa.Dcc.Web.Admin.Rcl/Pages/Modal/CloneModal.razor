@@ -58,10 +58,10 @@
                                                 <div class="d-flex align-center" @onclick:stopPropagation>
                                                     @if (configObject.IsNeedRebase)
                                                     {
-                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
-                                                        <MIcon>mdi-alert-outline</MIcon>
-                                                        @T("Conflict resolution")
-                                                        </MButton>
+                                                        <SButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
+                                                            <MIcon>mdi-alert-outline</MIcon>
+                                                            @T("Conflict resolution")
+                                                        </SButton>
                                                     }
                                                     <MCheckbox Value="configObject.IsChecked"
                                                                TValue="bool"
@@ -100,9 +100,9 @@
                                                 <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
                                                     <STextField Outlined @bind-Value="item.Value"></STextField>
                                                     <div class="d-flex justify-end align-center ml-6">
-                                                        <MButton Class="mr-3" Icon OnClick="()=> RemoveProperty(item.Key,configObject)">
+                                                        <SButton Class="mr-3" Icon OnClick="()=> RemoveProperty(item.Key,configObject)">
                                                             <MIcon Color="error">mdi-delete-outline</MIcon>
-                                                        </MButton>
+                                                        </SButton>
                                                     </div>
                                                 </MRow>
                                             }
@@ -119,10 +119,10 @@
                                                 <div class="d-flex align-center" @onclick:stopPropagation>
                                                     @if (configObject.IsNeedRebase)
                                                     {
-                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
-                                                        <MIcon>mdi-alert-outline</MIcon>
-                                                        @T("Conflict resolution")
-                                                        </MButton>
+                                                        <SButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
+                                                            <MIcon>mdi-alert-outline</MIcon>
+                                                            @T("Conflict resolution")
+                                                        </SButton>
                                                     }
                                                     <MCheckbox Value="configObject.IsChecked"
                                                    TValue="bool"
@@ -266,7 +266,7 @@
                         </MRow>
                     </div>
                     <div class="d-flex justify-end align-end full-height" style="width:100%;">
-                        <MButton Disabled="@(!_cloneAppSelect && !_cloneEnvSelect || (_cloneAppSelect && _cloneSelectAppId==0))" Height="40" Width="100" Class="rounded-pill" Color="primary" OnClick="CloneNextClick">@T("Next")</MButton>
+                        <SButton Disabled="@(!_cloneAppSelect && !_cloneEnvSelect || (_cloneAppSelect && _cloneSelectAppId==0))" Height="40" Width="100" OnClick="CloneNextClick">@T("Next")</SButton>
                     </div>
                 </div>
             </MStepperContent>
@@ -308,10 +308,10 @@
                                                 <div class="d-flex align-center" @onclick:stopPropagation>
                                                     @if (configObject.IsNeedRebase)
                                                     {
-                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
+                                                        <SButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
                                                             <MIcon>mdi-alert-outline</MIcon>
                                                             @T("Conflict resolution")
-                                                        </MButton>
+                                                        </SButton>
                                                     }
                                                     <MCheckbox Value="configObject.IsChecked"
                                                                 TValue="bool"
@@ -368,10 +368,10 @@
                                                 <div class="d-flex align-center" @onclick:stopPropagation>
                                                     @if (configObject.IsNeedRebase)
                                                     {
-                                                        <MButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
+                                                        <SButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
                                                             <MIcon>mdi-alert-outline</MIcon>
                                                             @T("Conflict resolution")
-                                                        </MButton>
+                                                        </SButton>
                                                     }
                                                     <MCheckbox Value="configObject.IsChecked"
                                                                 TValue="bool"
@@ -416,7 +416,7 @@
                     else
                     {
                         <div style="position: absolute; bottom: 0; right: 0;">
-                            <MButton Height="40" Outlined Width="100" Class="rounded-pill mr-6" Color="primary" OnClick="ClonePrevClick">@T("Back")</MButton>
+                            <SButton Height="40" Outlined Width="100" Class="mr-6" OnClick="ClonePrevClick">@T("Back")</SButton>
                             <SButton Small OnClick="CloneAsync">@T("Clone")</SButton>
                         </div>
                     }

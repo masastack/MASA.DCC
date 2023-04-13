@@ -58,9 +58,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _projectCount = projectCount;
         }
 
-        private async Task SearchProject(KeyboardEventArgs args)
+        private async Task SearchProject()
         {
-            if (args.Key == "Enter" && _projectListComponent != null)
+            if (_projectListComponent != null)
             {
                 await _projectListComponent.SearchProjectsByNameAsync(_projectName);
             }

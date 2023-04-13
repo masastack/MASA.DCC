@@ -12,9 +12,9 @@
                             <MSpacer></MSpacer>
                             <MMenu OffsetY>
                             <ActivatorContent>
-                                <MButton Icon @attributes="@context.Attrs">
+                                <SButton Icon @attributes="@context.Attrs">
                                     <MIcon Color="black">mdi-dots-horizontal</MIcon>
-                                </MButton>
+                                </SButton>
                                 </ActivatorContent>
                                 <ChildContent>
                                     <MList Dense>
@@ -93,14 +93,10 @@
     <MCol Cols="10">
         <div style="overflow: hidden;">
             <div class="d-flex mb-3">
-                <MTextField @bind-Value="_configObjectName" OnKeyDown="SearchConfigObject" Class="rounded-2" Height="40" Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the config name and press enter to query")">
-                        <PrependInnerContent>
-                            <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
-                        </PrependInnerContent>
-                    </MTextField>
-                <MButton Height="40" Width="100" Class="rounded-lg ml-6" Color="primary" OnClick="ShowAddConfigObjectModalAsync">
+                <SSearch @bind-Value="_configObjectName" OnEnter="SearchConfigObject" Height="40" Dense BackgroundColor="#fff" MaxWidth="0" Placeholder="@T("Please enter the config name and press enter to query")" />
+                <SButton Height="40" Width="100" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="ShowAddConfigObjectModalAsync">
                     <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
-                </MButton>
+                </SButton>
             </div>
             <div class="mt-3" style="overflow:auto;position: relative; @ConfigPanelStyle">
                 @if(_configObjects.Any())
@@ -181,7 +177,7 @@
                                         @if (configObject.RelationConfigObjectId != 0)
                                         {
                                             <MCard Style="border:1px solid #E2E7F4;" Class="py-2 mt-4 rounded-5">
-                                                <MDataTable FixedHeader
+                                                <SDataTable FixedHeader
                                                             Style="max-height: 312px; overflow: auto; border-radius: unset !important;"
                                                             Headers="Headers"
                                                             SortDesc="true"
@@ -226,7 +222,7 @@
                                                                     break;
                                                             }
                                                         </ItemColContent>
-                                                    </MDataTable>
+                                                    </SDataTable>
                                             </MCard>
                                         }
                                         else
@@ -240,7 +236,7 @@
                                                            Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                                     <SElevationTabItem>
                                                         <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-2 mt-4 rounded-5">
-                                                            <MDataTable FixedHeader
+                                                            <SDataTable FixedHeader
                                                                         Style="max-height: 312px; overflow: auto; border-radius: unset !important;"
                                                                         Headers="Headers"
                                                                         SortDesc="true"
@@ -295,28 +291,28 @@
                                                                             break;
                                                                     }
                                                                 </ItemColContent>
-                                                            </MDataTable>
+                                                            </SDataTable>
                                                         </MCard>
                                                     </SElevationTabItem>
                                                     <SElevationTabItem>
                                                         <div class="d-flex justify-end">
                                                             @if (configObject.ElevationTabPropertyContent.Disabled)
                                                             {
-                                                                <MButton Class="mr-4" StopPropagation Icon OnClick="()=>CancelEditConfigContent(configObject)">
-                                                                <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
-                                                                </MButton>
+                                                                <SButton Class="mr-4" StopPropagation Icon OnClick="()=>CancelEditConfigContent(configObject)">
+                                                                    <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
+                                                                </SButton>
                                                             }
                                                             @if (!configObject.ElevationTabPropertyContent.Disabled)
                                                             {
-                                                                <MButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }">
-                                                                <SIcon Tooltip="@(T("Edit"))" Class="hover-pointer" Color="#323D6F">mdi-pencil</SIcon>
-                                                                </MButton>
+                                                                <SButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }">
+                                                                    <SIcon Tooltip="@(T("Edit"))" Class="hover-pointer" Color="#323D6F">mdi-pencil</SIcon>
+                                                                </SButton>
                                                             }
                                                             else
                                                             {
-                                                                <MButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>TextConvertPropertyAsync(configObject.Id)">
-                                                                <SIcon Tooltip="@(T("Save"))" Color="success">mdi-check</SIcon>
-                                                                </MButton>
+                                                                <SButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>TextConvertPropertyAsync(configObject.Id)">
+                                                                    <SIcon Tooltip="@(T("Save"))" Color="success">mdi-check</SIcon>
+                                                                </SButton>
                                                             }
                                                         </div>
                                                         <Editor Disabled="!configObject.ElevationTabPropertyContent.Disabled" @bind-Value="@configObject.ElevationTabPropertyContent.Content"></Editor>

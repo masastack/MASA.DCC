@@ -153,18 +153,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        private void SearchApp(KeyboardEventArgs args)
+        private void SearchApp()
         {
-            if (args.Key == "Enter")
+            if (!string.IsNullOrWhiteSpace(_appName))
             {
-                if (!string.IsNullOrWhiteSpace(_appName))
-                {
-                    _apps = _backupApps.Where(app => app.Name.ToLower().Contains(_appName.ToLower())).ToList();
-                }
-                else
-                {
-                    _apps = _backupApps;
-                }
+                _apps = _backupApps.Where(app => app.Name.ToLower().Contains(_appName.ToLower())).ToList();
+            }
+            else
+            {
+                _apps = _backupApps;
             }
         }
 

@@ -37,12 +37,7 @@
                         <div class="d-flex justify-space-between align-center">
                             <div class="emphasis--text h6 mr-3" style="float:left;display:block;">@_userTeam.Name</div>
                             <div style="width:300px;">
-                                <MTextField @bind-Value="_projectName" OnKeyDown="SearchProject" Class="rounded-2" Height="40"
-                                                                Flat Dense Solo HideDetails="@("auto")" Placeholder="@T("Please enter the project name and press enter to query")">
-                                    <PrependInnerContent>
-                                        <MIcon Size=16 Class="mr-2 neutral-lighten-1--text">mdi-magnify</MIcon>
-                                    </PrependInnerContent>
-                                </MTextField>
+                                <SSearch @bind-Value="_projectName" OnEnter="SearchProject" Height="40" Dense BackgroundColor="#fff" MaxWidth="0" Placeholder="@T("Please enter the project name and press enter to query")" />
                             </div>
                         </div>
                         <div class="mt-6" style="height: calc(100vh - 256px); overflow: hidden; position: relative;">

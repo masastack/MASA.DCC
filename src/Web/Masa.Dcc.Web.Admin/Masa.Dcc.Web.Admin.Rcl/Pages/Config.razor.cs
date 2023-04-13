@@ -380,17 +380,14 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             config.ElevationTabPropertyContent.FormatLabelCode = "Properties";
         }
 
-        private void SearchConfigObject(KeyboardEventArgs args)
+        private void SearchConfigObject()
         {
-            if (args.Key == "Enter")
-            {
-                if (!string.IsNullOrWhiteSpace(_configObjectName))
-                    _configObjects = _backupConfigObjects
-                    .Where(config => config.Name.ToLower().Contains(_configObjectName.ToLower()))
-                    .ToList();
-                else
-                    _configObjects = _backupConfigObjects;
-            }
+            if (!string.IsNullOrWhiteSpace(_configObjectName))
+                _configObjects = _backupConfigObjects
+                .Where(config => config.Name.ToLower().Contains(_configObjectName.ToLower()))
+                .ToList();
+            else
+                _configObjects = _backupConfigObjects;
         }
 
         private async Task TextConvertPropertyAsync(int configObjectId)

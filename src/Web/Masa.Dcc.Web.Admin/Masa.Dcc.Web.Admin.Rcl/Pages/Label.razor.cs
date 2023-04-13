@@ -42,18 +42,15 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _showProcess = false;
         }
 
-        private async Task SearchAsync(KeyboardEventArgs args)
+        private async Task SearchAsync()
         {
-            if (args.Key == "Enter")
+            if (!string.IsNullOrEmpty(_typeName))
             {
-                if (!string.IsNullOrEmpty(_typeName))
-                {
-                    _labels = _labels.Where(l => l.TypeName.Trim().Contains(_typeName.Trim())).ToList();
-                }
-                else
-                {
-                    await GetListAsync();
-                }
+                _labels = _labels.Where(l => l.TypeName.Trim().Contains(_typeName.Trim())).ToList();
+            }
+            else
+            {
+                await GetListAsync();
             }
         }
 

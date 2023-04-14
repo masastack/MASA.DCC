@@ -57,6 +57,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             Encryption = encryption;
         }
 
+        public void SetConfigObjectType(ConfigObjectType type)
+        {
+            Type = type;
+        }
+
         public void UpdateContent(string content)
         {
             Content = content;

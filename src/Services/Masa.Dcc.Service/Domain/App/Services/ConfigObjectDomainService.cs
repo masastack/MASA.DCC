@@ -488,6 +488,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 string content = configObject.Value;
                 if (isEncryption)
                     content = EncryptContent(content);
+
                 var newConfigObject = new ConfigObject(
                     configObjectName,
                     "Json",
@@ -499,6 +500,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 var publicConfig = await _publicConfigRepository.FindAsync(publicConfig => publicConfig.Identity == appId);
                 if (publicConfig != null)
                 {
+                    newConfigObject.SetConfigObjectType(ConfigObjectType.App);
                     newConfigObject.SetPublicConfigObject(publicConfig.Id, cluster.EnvironmentClusterId);
                 }
                 else
@@ -506,10 +508,12 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     var bizConfig = await _bizConfigRepository.FindAsync(bizConfig => bizConfig.Identity == appId);
                     if (bizConfig != null)
                     {
+                        newConfigObject.SetConfigObjectType(ConfigObjectType.Biz);
                         newConfigObject.SetBizConfigObject(bizConfig.Id, cluster.EnvironmentClusterId);
                     }
                     else
                     {
+                        newConfigObject.SetConfigObjectType(ConfigObjectType.App);
                         var app = await _pmClient.AppService.GetByIdentityAsync(appId);
                         if (app != null)
                         {

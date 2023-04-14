@@ -20,7 +20,7 @@
                             _index++;
                             <MTimelineItem Class="d-flex align-start" Style="padding-bottom:16px;" HideDot="!release.IsActive" Small FillDot Right @onclick="()=>OnTimelineItemClickAsync(release)">
                                 <IconContent>
-                                    <MIcon Size="20" Color="primary">mdi-circle</MIcon>
+                                    <SIcon Size="20" Color="primary">mdi-circle</SIcon>
                                 </IconContent>
                                 <OppositeContent>
                                     <div>
@@ -111,15 +111,15 @@
                                             case nameof(ConfigObjectPropertyModel.IsPublished):
                                                 if (context.Item.IsAdded)
                                                 {
-                                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</MIcon>
+                                                    <SIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-plus</SIcon>
                                                 }
                                                 else if (context.Item.IsEdited)
                                                 {
-                                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-pencil</MIcon>
+                                                    <SIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-pencil</SIcon>
                                                 }
                                                 else if (context.Item.IsDeleted)
                                                 {
-                                                    <MIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-delete</MIcon>
+                                                    <SIcon Class="mr-1" Color="#7681AB" Style="margin-bottom:2px;" Size="16">mdi-delete</SIcon>
                                                 }
                                                 break;
                                             default:

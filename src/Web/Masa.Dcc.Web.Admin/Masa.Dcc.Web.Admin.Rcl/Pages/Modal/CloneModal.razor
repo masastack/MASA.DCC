@@ -59,7 +59,7 @@
                                                     @if (configObject.IsNeedRebase)
                                                     {
                                                         <SButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
-                                                            <MIcon>mdi-alert-outline</MIcon>
+                                                            <SIcon>mdi-alert-outline</SIcon>
                                                             @T("Conflict resolution")
                                                         </SButton>
                                                     }
@@ -83,7 +83,7 @@
                                             </div>
                                         </ChildContent>
                                         <ActionsContent>
-                                            <MIcon Color="#485585">mdi-chevron-down</MIcon>
+                                            <SIcon Color="#485585">mdi-chevron-down</SIcon>
                                         </ActionsContent>
                                         </MExpansionPanelHeader>
                                         <MExpansionPanelContent Style="padding-left: 8px;">
@@ -97,11 +97,11 @@
                                         @foreach (var item in configObject.ConfigObjectPropertyContents)
                                             {
                                                 <MRow Class="pt-4" NoGutters Justify="JustifyTypes.SpaceBetween">
-                                                <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
+                                                    <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
                                                     <STextField Outlined @bind-Value="item.Value"></STextField>
                                                     <div class="d-flex justify-end align-center ml-6">
                                                         <SButton Class="mr-3" Icon OnClick="()=> RemoveProperty(item.Key,configObject)">
-                                                            <MIcon Color="error">mdi-delete-outline</MIcon>
+                                                            <SIcon Color="error">mdi-delete-outline</SIcon>
                                                         </SButton>
                                                     </div>
                                                 </MRow>
@@ -120,7 +120,7 @@
                                                     @if (configObject.IsNeedRebase)
                                                     {
                                                         <SButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
-                                                            <MIcon>mdi-alert-outline</MIcon>
+                                                            <SIcon>mdi-alert-outline</SIcon>
                                                             @T("Conflict resolution")
                                                         </SButton>
                                                     }
@@ -143,7 +143,7 @@
                                             </div>
                                         </ChildContent>
                                         <ActionsContent>
-                                            <MIcon Color="#485585">mdi-chevron-down</MIcon>
+                                            <SIcon Color="#485585">mdi-chevron-down</SIcon>
                                         </ActionsContent>
                                         </MExpansionPanelHeader>
                                         <MExpansionPanelContent Style="padding-left: 8px;">
@@ -214,7 +214,7 @@
                                 <MCard Ripple="false" Style="@(_cloneAppSelect ? "border:2px solid #3613CC !important" : "")" Class="d-flex flex-column justify-end align-center mr-6" Height="414" Elevation="0" Color="@(_cloneAppSelect ? "white" : "#F0F3FA")" OnClick="SelectOtherApp">
                                     <div class="d-flex flex-column align-center" style="@_cloneAppCardStyle">
                                         <div class="hover-pointer d-flex align-center justify-center" style="@($"border-radius: 16px; width: 100px; height: 100px; background:{(_cloneAppSelect ? "#4318FF" : "#fff" )}")">
-                                            <MIcon Size="56" Color="@(_cloneAppSelect ? "#fff" : "#323D6F")">mdi-view-carousel</MIcon>
+                                            <SIcon Size="56" Color="@(_cloneAppSelect ? "#fff" : "#323D6F")">mdi-view-carousel</SIcon>
                                         </div>
                                         <span class="mt-6" style="font-weight: 700; font-size: 20px; color: #323D6F;">@T("Other app")</span>
                                     </div>
@@ -257,7 +257,7 @@
                                 <MCard Ripple="false" Style="@(_cloneEnvSelect ? "border:2px solid #3613CC !important" : "")" Class="d-flex flex-column justify-center align-center" Height="414" Elevation="0" Color="@(_cloneEnvSelect ? "white" : "#F0F3FA")" OnClick="SelectOtherEnv">
                                     <div class="d-flex flex-column align-center" style="@_cloneEnvCardStyle">
                                         <div class="hover-pointer d-flex align-center justify-center" style="@($"border-radius: 16px; width: 100px; height: 100px; background:{(_cloneEnvSelect ? "#4318FF" : "#fff" )}")">
-                                            <MIcon Size="56" Color="@(_cloneEnvSelect ? "#fff" : "#323D6F")">mdi-cloud</MIcon>
+                                            <SIcon Size="56" Color="@(_cloneEnvSelect ? "#fff" : "#323D6F")">mdi-cloud</SIcon>
                                         </div>
                                         <span class="mt-6" style="font-weight: 700; font-size: 20px; color: #323D6F;">@T("Other environments/clusters currently app")</span>
                                     </div>
@@ -309,7 +309,7 @@
                                                     @if (configObject.IsNeedRebase)
                                                     {
                                                         <SButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
-                                                            <MIcon>mdi-alert-outline</MIcon>
+                                                            <SIcon>mdi-alert-outline</SIcon>
                                                             @T("Conflict resolution")
                                                         </SButton>
                                                     }
@@ -332,9 +332,9 @@
                                             </div>
                                         </ChildContent>
                                         <ActionsContent>
-                                            <MIcon Color="#485585">
+                                            <SIcon Color="#485585">
                                                 mdi-chevron-down
-                                            </MIcon>
+                                            </SIcon>
                                         </ActionsContent>
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent Style="padding-left: 8px;">
@@ -351,7 +351,9 @@
                                                     <STextField Class="pr-6" Outlined @bind-Value="item.Key"></STextField>
                                                     <STextField Outlined @bind-Value="item.Value"></STextField>
                                                     <div class="d-flex justify-end align-center ml-6">
-                                                        <MIcon Color="error" OnClick="()=> RemoveProperty(item.Key,configObject)" Class="hover-pointer mr-3">mdi-delete-outline</MIcon>
+                                                        <MButton Class="mr-3" Icon OnClick="()=> RemoveProperty(item.Key,configObject)">
+                                                            <SIcon Color="error">mdi-delete-outline</SIcon>
+                                                        </MButton>
                                                     </div>
                                                 </MRow>
                                             }
@@ -369,7 +371,7 @@
                                                     @if (configObject.IsNeedRebase)
                                                     {
                                                         <SButton Outlined Color="warning" Class="mr-4" OnClick="()=> CloneConfigObjectCoverClick(configObject)">
-                                                            <MIcon>mdi-alert-outline</MIcon>
+                                                            <SIcon>mdi-alert-outline</SIcon>
                                                             @T("Conflict resolution")
                                                         </SButton>
                                                     }
@@ -392,9 +394,9 @@
                                             </div>
                                         </ChildContent>
                                         <ActionsContent>
-                                            <MIcon Color="#485585">
+                                            <SIcon Color="#485585">
                                                 mdi-chevron-down
-                                            </MIcon>
+                                            </SIcon>
                                         </ActionsContent>
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent Style="padding-left: 8px;">

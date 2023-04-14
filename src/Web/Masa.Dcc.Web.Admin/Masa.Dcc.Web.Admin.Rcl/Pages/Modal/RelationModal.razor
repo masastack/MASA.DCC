@@ -67,11 +67,11 @@
                         <MRow Class="my-3 mx-6" NoGutters Justify="JustifyTypes.SpaceBetween" Align="AlignTypes.Center">
                             @if (item.IsRelationed)
                             {
-                                <MIcon Class="d-flex justify-start" Style="width: 5%" Color="#7681AB">mdi-link-variant</MIcon>
+                                <SIcon Class="d-flex justify-start" Style="width: 5%" Color="#7681AB">mdi-link-variant</SIcon>
                             }
                             else
                             {
-                                <MIcon Class="d-flex justify-start" Style="width: 5%" Color="#7681AB">mdi-link-variant-off</MIcon>
+                                <SIcon Class="d-flex justify-start" Style="width: 5%" Color="#7681AB">mdi-link-variant-off</SIcon>
                             }
                             <div style="width: 47.5%">@item.Key</div>
                             <STextField style="width: 47.5%" HideDetails="true" Outlined TValue="string" Value="item.Value" ValueChanged="value=>PropertyValueChanged(value,item)"></STextField>
@@ -83,12 +83,12 @@
             {
                 if (_isRelation)
                 {
-                    <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
+                    <SIcon Size="18" Color="#7681AB">mdi-link-variant</SIcon>
                     <span style="color: #7681AB; font-size: 14px;">@T("Connected")</span>
                 }
                 else
                 {
-                    <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
+                    <SIcon Size="18" Color="#7681AB">mdi-link-variant-off</SIcon>
                     <span style="color: #7681AB; font-size: 14px;">@T("Covered")</span>
                 }
                 <MTextarea Class="mt-3" Dense Outlined Value="@_selectConfigObject.Content" ValueChanged="value=>ContentValueChanged(value,_selectConfigObject)"></MTextarea>

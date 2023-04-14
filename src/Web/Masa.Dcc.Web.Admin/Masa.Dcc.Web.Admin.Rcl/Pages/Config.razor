@@ -13,13 +13,13 @@
                             <MMenu OffsetY>
                             <ActivatorContent>
                                 <SButton Icon @attributes="@context.Attrs">
-                                    <MIcon Color="black">mdi-dots-horizontal</MIcon>
+                                    <SIcon Color="black">mdi-dots-horizontal</SIcon>
                                 </SButton>
                                 </ActivatorContent>
                                 <ChildContent>
                                     <MList Dense>
                                         <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
-                                            <MIcon Color="#323D6F" Size="20" Class="mr-4">far fa-copy</MIcon>
+                                            <SIcon Color="#323D6F" Size="20" Class="mr-4">far fa-copy</SIcon>
                                             <MListItemContent>
                                                 <MListItemTitle>@T("Clone config")</MListItemTitle>
                                             </MListItemContent>
@@ -85,7 +85,7 @@
             @if (IsAppConfig)
             {
                 <div @onclick="ShowRelationModal" style="width:100%; color:#323D6F; font-size:14px; position: fixed; right:24px; bottom: 24px;" class="d-flex justify-end hover-pointer">
-                    <MIcon Size="16" Class="mr-1">mdi-link-variant</MIcon>@T("Connect public config")
+                    <SIcon Size="16" Class="mr-1">mdi-link-variant</SIcon>@T("Connect public config")
                 </div>
             }
         </MNavigationDrawer>
@@ -95,7 +95,7 @@
             <div class="d-flex mb-3">
                 <SSearch @bind-Value="_configObjectName" OnEnter="SearchConfigObject" Height="40" Dense BackgroundColor="#fff" MaxWidth="0" Placeholder="@T("Please enter the config name and press enter to query")" />
                 <SButton Height="40" Width="100" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="ShowAddConfigObjectModalAsync">
-                    <MIcon Class="mr-1" Small>mdi-plus</MIcon>@T("Add")
+                    <SIcon Class="mr-1" Small>mdi-plus</SIcon>@T("Add")
                 </SButton>
             </div>
             <div class="mt-3" style="overflow:auto;position: relative; @ConfigPanelStyle">
@@ -123,16 +123,16 @@
                                                          RevokeClick="RevokeAsync" />
                                         </ChildContent>
                                         <ActionsContent>
-                                            <MIcon Color="#485585">
+                                            <SIcon Color="#485585">
                                                 mdi-chevron-down
-                                            </MIcon>
+                                            </SIcon>
                                         </ActionsContent>
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent>
                                         @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
                                         {
                                             <div class="mb-2">
-                                                <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
+                                                <SIcon Size="18" Color="#7681AB">mdi-link-variant</SIcon>
                                                 <span style="font-size: 14px; color: #7681AB;">
                                                     @T("Connected")
                                                     <span class="regular3--text btn mx-1 font-size: 6px !important;">|</span>
@@ -143,7 +143,7 @@
                                         else if (configObject.FromRelation && configObject.RelationConfigObjectId == 0)
                                         {
                                             <div class="mb-2">
-                                                <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
+                                                <SIcon Size="18" Color="#7681AB">mdi-link-variant-off</SIcon>
                                                 <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
                                             </div>
                                         }
@@ -168,9 +168,9 @@
                                                          RevokeClick="RevokeAsync" />
                                         </ChildContent>
                                         <ActionsContent>
-                                            <MIcon Color="#485585">
+                                            <SIcon Color="#485585">
                                                 mdi-chevron-down
-                                            </MIcon>
+                                            </SIcon>
                                         </ActionsContent>
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent>
@@ -206,13 +206,15 @@
                                                                         color = "#7681AB";
                                                                         text = @T("UnReleased");
                                                                     }
-                                                                    <MIcon Style="margin-bottom:2px;" Class="mr-1" Size="20" Color="@color">@icon</MIcon>
+                                                                    <SIcon Style="margin-bottom:2px;" Class="mr-1" Size="20" Color="@color">@icon</SIcon>
                                                                     <span style="color: @color;">@text</span>
                                                                     break;
                                                                 case "Operation":
-                                                                    <SIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">
-                                                                        mdi-pencil
-                                                                    </SIcon>
+                                                                    <MButton Class="mr-3" Icon OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">
+                                                                        <SIcon Color="#485585" Size="20">
+                                                                            mdi-pencil
+                                                                        </SIcon>
+                                                                    </MButton>
                                                                     break;
                                                                 case nameof(ConfigObjectPropertyModel.ModificationTime):
                                                                     <DateTimeZone Value="@context.Item.ModificationTime" />
@@ -255,22 +257,22 @@
                                                                             <div class="d-inline-flex m-0 p-0 text-overflow">
                                                                                 @if (context.Item.IsPublished)
                                                                                 {
-                                                                                    <MIcon Class="mr-1" Style="margin-bottom:2px;color: #05CD99 !important;" Size="16">mdi-link-variant</MIcon>
+                                                                                    <SIcon Class="mr-1" Style="margin-bottom:2px;color: #05CD99 !important;" Size="16">mdi-link-variant</SIcon>
                                                                                     <span class="green--text">@T("Released")</span>
                                                                                 }
                                                                                 else
                                                                                 {
                                                                                     if (context.Item.IsAdded)
                                                                                     {
-                                                                                        <MIcon Class="mr-1" Style="margin-bottom:2px;color:#A3AED0 !important;" Size="16">mdi-plus</MIcon>
+                                                                                        <SIcon Class="mr-1" Style="margin-bottom:2px;color:#A3AED0 !important;" Size="16">mdi-plus</SIcon>
                                                                                     }
                                                                                     else if (context.Item.IsEdited)
                                                                                     {
-                                                                                        <MIcon Class="mr-1" Style="margin-bottom:2px;color:#A3AED0 !important;" Size="16">mdi-pencil</MIcon>
+                                                                                        <SIcon Class="mr-1" Style="margin-bottom:2px;color:#A3AED0 !important;" Size="16">mdi-pencil</SIcon>
                                                                                     }
                                                                                     else if (context.Item.IsDeleted)
                                                                                     {
-                                                                                        <MIcon Class="mr-1" Style="margin-bottom:2px;color: #A3AED0 !important;" Size="16">mdi-delete</MIcon>
+                                                                                        <SIcon Class="mr-1" Style="margin-bottom:2px;color: #A3AED0 !important;" Size="16">mdi-delete</SIcon>
                                                                                     }
                                                                                     <span>@T("UnReleased")</span>
                                                                                 }
@@ -279,8 +281,14 @@
                                                                         case "Operation":
                                                                             @if (!context.Item.IsDeleted)
                                                                             {
-                                                                                <MIcon Class="mr-3 hover-pointer" Color="#485585" Size="20" OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">mdi-pencil</MIcon>
-                                                                                <MIcon Class="hover-pointer" Style="color: #FF5252 !important;" Size="20" OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">mdi-delete</MIcon>
+                                                                                <div class="d-flex">
+                                                                                    <MButton Class="mr-3" Icon OnClick="()=>ShowPropertyModal(configObject, null, context.Item)">
+                                                                                        <SIcon Size="20" Color="#485585" Class="align-self-center">mdi-pencil</SIcon>
+                                                                                    </MButton>
+                                                                                    <MButton Class="mr-3" Icon OnClick="()=>DeleteConfigObjectPropertyContentAsync(context.Item, configObject.Id)">
+                                                                                        <SIcon Size="20" Style="color: #FF5252 !important;" Class="align-self-center">mdi-delete</SIcon>
+                                                                                    </MButton>
+                                                                                </div>
                                                                             }
                                                                             break;
                                                                         case nameof(ConfigObjectPropertyModel.ModificationTime):
@@ -340,16 +348,16 @@
                                                          RevokeClick="RevokeAsync" />
                                         </ChildContent>
                                         <ActionsContent>
-                                            <MIcon Color="#485585">
+                                            <SIcon Color="#485585">
                                                 mdi-chevron-down
-                                            </MIcon>
+                                            </SIcon>
                                         </ActionsContent>
                                     </MExpansionPanelHeader>
                                     <MExpansionPanelContent>
                                         @if (configObject.FromRelation && configObject.RelationConfigObjectId != 0)
                                         {
                                             <div class="mb-2">
-                                                <MIcon Size="18" Color="#7681AB">mdi-link-variant</MIcon>
+                                                <SIcon Size="18" Color="#7681AB">mdi-link-variant</SIcon>
                                                 <span style="font-size: 14px; color: #7681AB;">
                                                     @T("Connected")
                                                     <span class="regular3--text btn mx-1 font-size: 6px !important;">|</span>
@@ -360,7 +368,7 @@
                                         else if (configObject.FromRelation && configObject.RelationConfigObjectId == 0)
                                         {
                                             <div class="mb-2">
-                                                <MIcon Size="18" Color="#7681AB">mdi-link-variant-off</MIcon>
+                                                <SIcon Size="18" Color="#7681AB">mdi-link-variant-off</SIcon>
                                                 <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
                                             </div>
                                         }

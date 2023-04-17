@@ -76,8 +76,8 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
                         {
                             new LabelValueDto
                             {
-                                Name ="Json",
-                                Code ="Json"
+                                Name ="JSON",
+                                Code ="JSON"
                             },
                             new LabelValueDto
                             {
@@ -86,18 +86,18 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
                             },
                             new LabelValueDto
                             {
-                                Name ="Raw",
-                                Code ="Raw"
+                                Name ="RAW",
+                                Code ="RAW"
                             },
                             new LabelValueDto
                             {
-                                Name ="Xml",
-                                Code ="Xml"
+                                Name ="XML",
+                                Code ="XML"
                             },
                             new LabelValueDto
                             {
-                                Name ="Yaml",
-                                Code ="Yaml"
+                                Name ="YAML",
+                                Code ="YAML"
                             }
                         }
                     }

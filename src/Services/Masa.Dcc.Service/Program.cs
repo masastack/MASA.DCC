@@ -99,7 +99,7 @@ builder.Services
     })
     .AddDomainEventBus(options =>
     {
-        var connStr = masaStackConfig.GetConnectionString(MasaStackContract.PROJECT_NAME);
+        var connStr = masaStackConfig.GetConnectionString(MasaStackConstant.DCC);
         options.UseIntegrationEventBus(options => options.UseDapr()
                .UseEventLog<DccDbContext>())
                .UseEventBus()

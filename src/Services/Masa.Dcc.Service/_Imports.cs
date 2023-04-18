@@ -40,7 +40,6 @@ global using Masa.Contrib.StackSdks.Middleware;
 global using Masa.Contrib.StackSdks.Tsc;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
-global using Masa.Dcc.Contracts.Admin.Infrastructure;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;
 global using Masa.Dcc.Service.Admin.Application.App.Commands;
 global using Masa.Dcc.Service.Admin.Application.App.Queries;

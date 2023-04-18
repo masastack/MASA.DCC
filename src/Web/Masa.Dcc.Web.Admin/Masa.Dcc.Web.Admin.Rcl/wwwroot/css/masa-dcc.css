@@ -834,3 +834,18 @@ textarea:disabled {
     margin-left: 24px;
     margin-right: 24px;
 }
+/* appcard */
+.masa-main .appcard {
+    border-radius: 12px !important;
+}
+.masa-main .appcard .appname {
+    max-width: 240px; 
+    overflow: hidden;
+}
+.masa-main .appcard .cardaction {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-bottom: 12px !important;
+}

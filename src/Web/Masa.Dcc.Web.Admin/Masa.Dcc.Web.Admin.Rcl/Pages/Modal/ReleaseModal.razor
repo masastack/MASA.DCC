@@ -33,15 +33,15 @@
                                     case nameof(ConfigObjectPropertyModel.IsPublished):
                                         if (context.Item.IsAdded)
                                         {
-                                            <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus-circle</MIcon>
+                                            <SIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-plus-circle</SIcon>
                                         }
                                         else if (context.Item.IsEdited || (SelectConfigObject.FromRelation && !context.Item.IsRelationed))
                                         {
-                                            <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-pencil</MIcon>
+                                            <SIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-pencil</SIcon>
                                         }
                                         else if (context.Item.IsDeleted)
                                         {
-                                            <MIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-delete</MIcon>
+                                            <SIcon Color="#323D6F" Style="margin-bottom:2px;" Size="20">mdi-delete</SIcon>
                                         }
                                         break;
                                     case nameof(ConfigObjectPropertyModel.TempValue):

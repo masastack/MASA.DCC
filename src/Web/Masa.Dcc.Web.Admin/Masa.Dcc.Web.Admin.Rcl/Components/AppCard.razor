@@ -1,12 +1,12 @@
 ﻿<MHover Context="hoverContext" Class="d-flex flex-column">
-    <MCard Ripple=false OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Class="rounded-3" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="@Style">
+    <MCard Ripple=false OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Class="appcard" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="@Style">
         <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding: 12px 16px 8px 16px !important;">
-            <div class="emphasis2--text h7 text-overflow" style="max-width: 240px; overflow: hidden;">@App.Name</div>
+            <div class="emphasis2--text h7 text-overflow appname">@App.Name</div>
             <div class="mx-3" style="color:#E2E7F4">|</div>
             <div class="emphasis2--text h7 text-overflow">@App.Type</div>
             <MSpacer />
             <SButton StopPropagation Icon OnClick="OnPinClick">
-                <MIcon Color="@(IsPin ? "#FFB547" : "#E5E5E5")" Size="20">mdi-pin</MIcon>
+                <SIcon Color="@(IsPin ? "#FFB547" : "#E5E5E5")" Size="20">mdi-pin</SIcon>
             </SButton>
             </MCardTitle>
             <MCardSubtitle>
@@ -14,8 +14,8 @@
             <div class="text-overflow regular--text body text-overflow mt-4">@App.Description</div>
             </MCardSubtitle>
             <div class="full-width" @onclick:stopPropagation>
-                <MCardActions Class="px-0 mx-4" Style="position:absolute;bottom:0;left:0;right:0; padding-bottom:12px !important;">
-                @ChildContent
+                <MCardActions Class="px-0 mx-4 cardaction">
+                    @ChildContent
                 </MCardActions>
             </div>
      </MCard>

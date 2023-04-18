@@ -1,11 +1,9 @@
-﻿{
+{
   "profiles": {
     "Masa.Dcc.Services": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:6196",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DAPR_GRPC_PORT": "3801",
@@ -24,7 +22,9 @@
         "ENVIRONMENT": "Development",
         "ADMIN_PWD": "admin123",
         "DCC_SECRET": "masastack.com"
-      }
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:6196"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -33,6 +33,14 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:60033/",
+      "sslPort": 44379
     }
   }
 }

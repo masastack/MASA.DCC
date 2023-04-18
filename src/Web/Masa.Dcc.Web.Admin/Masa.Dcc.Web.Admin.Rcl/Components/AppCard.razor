@@ -1,4 +1,6 @@
-﻿<MHover Context="hoverContext" Class="d-flex flex-column">
+﻿@inherits MasaComponentBase
+
+<MHover Context="hoverContext" Class="d-flex flex-column">
     <MCard Ripple=false OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Class="appcard" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="@Style">
         <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding: 12px 16px 8px 16px !important;">
             <div class="emphasis2--text h7 text-overflow appname">@App.Name</div>
@@ -6,18 +8,18 @@
             <div class="emphasis2--text h7 text-overflow">@App.Type</div>
             <MSpacer />
             <SButton StopPropagation Icon OnClick="OnPinClick">
-                <SIcon Color="@(IsPin ? "#FFB547" : "#E5E5E5")" Size="20">mdi-pin</SIcon>
+                <SIcon Color="@(IsPin ? "#FFB547" : "#E5E5E5")" Size="20" Tooltip="@(IsPin ? T("Cancel Pin") : null)">mdi-pin</SIcon>
             </SButton>
-            </MCardTitle>
-            <MCardSubtitle>
+        </MCardTitle>
+        <MCardSubtitle>
             <div class="body2 regular3--text text-overflow">@App.Identity</div>
             <div class="text-overflow regular--text body text-overflow mt-4">@App.Description</div>
-            </MCardSubtitle>
-            <div class="full-width" @onclick:stopPropagation>
-                <MCardActions Class="px-0 mx-4 cardaction">
-                    @ChildContent
-                </MCardActions>
-            </div>
+        </MCardSubtitle>
+        <div class="full-width" @onclick:stopPropagation>
+            <MCardActions Class="px-0 mx-4 cardaction">
+                @ChildContent
+            </MCardActions>
+        </div>
      </MCard>
 </MHover>
 

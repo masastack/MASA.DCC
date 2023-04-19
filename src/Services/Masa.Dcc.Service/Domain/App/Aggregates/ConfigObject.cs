@@ -97,5 +97,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         {
             RelationConfigObjectId = 0;
         }
+
+        public void SetUserId(Guid userId)
+        {
+            Creator = userId;
+            Modifier = userId;
+        }
     }
 }

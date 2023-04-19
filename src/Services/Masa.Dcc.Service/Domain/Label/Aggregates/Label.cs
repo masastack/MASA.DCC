@@ -51,5 +51,11 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Aggregates
             CreationTime = creationTime;
             Description = description;
         }
+
+        public void SetUserId(Guid userId)
+        {
+            Creator = userId;
+            Modifier = userId;
+        }
     }
 }

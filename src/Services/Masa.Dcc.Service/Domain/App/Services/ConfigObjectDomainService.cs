@@ -283,12 +283,16 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             configObject.AddContent(configObject.Content, configObject.Content);
             await _configObjectRepository.UpdateAsync(configObject);
 
-            await _configObjectReleaseRepository.AddAsync(new ConfigObjectRelease(
+            var configObjectRelease = new ConfigObjectRelease(
                    dto.ConfigObjectId,
                    dto.Name,
                    dto.Comment,
-                   configObject.Content)
-               );
+                   configObject.Content);
+            if (dto.UserId != null)
+            {
+                configObjectRelease.SetUserId(dto.UserId.Value);
+            }
+            await _configObjectReleaseRepository.AddAsync(configObjectRelease);
 
             var relationConfigObjects = await _configObjectRepository.GetRelationConfigObjectWithReleaseHistoriesAsync(configObject.Id);
             if (relationConfigObjects.Any())
@@ -468,7 +472,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             string clusterName,
             string appId,
             Dictionary<string, string> configObjects,
-            bool isEncryption)
+            bool isEncryption,
+            Guid? userId = null)
         {
             var envs = await _pmClient.EnvironmentService.GetListAsync();
             var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower()) ?? throw new UserFriendlyException("Environment does not exist");
@@ -495,7 +500,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     ConfigObjectType.App,
                     content,
                     "{}",
-                encryption: isEncryption);
+                    encryption: isEncryption);
+                if (userId != null)
+                {
+                    newConfigObject.SetUserId(userId.Value);
+                }
 
                 var publicConfig = await _publicConfigRepository.FindAsync(publicConfig => publicConfig.Identity == appId);
                 if (publicConfig != null)
@@ -537,6 +546,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     ClusterName = clusterName,
                     Identity = appId,
                     Content = configObject.Value,
+                    UserId = userId
                 };
                 await AddConfigObjectReleaseAsync(releaseModel);
             }

@@ -19,7 +19,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
             _i18n = i18N;
         }
 
-        public async Task AddLabelAsync(UpdateLabelDto labelDto)
+        public async Task AddLabelAsync(UpdateLabelDto labelDto, Guid? userId = null)
         {
             if (!labelDto.LabelValues.Any())
             {
@@ -36,11 +36,17 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
                 List<Aggregates.Label> labels = new();
                 foreach (var item in labelDto.LabelValues)
                 {
-                    labels.Add(new Aggregates.Label(item.Code,
+                    var labelEntity = new Aggregates.Label(item.Code,
                         item.Name,
                         labelDto.TypeCode,
                         labelDto.TypeName,
-                        labelDto.Description));
+                        labelDto.Description);
+                    if (userId != null)
+                    {
+                        labelEntity.SetUserId(userId.Value);
+                    }
+
+                    labels.Add(labelEntity);
                 }
 
                 await _labelRepository.AddRangeAsync(labels);

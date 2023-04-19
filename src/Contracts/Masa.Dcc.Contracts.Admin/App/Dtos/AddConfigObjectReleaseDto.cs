@@ -31,5 +31,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 
         [Required]
         public string Content { get; set; } = "";
+
+        public Guid? UserId { get; set; }
     }
 }

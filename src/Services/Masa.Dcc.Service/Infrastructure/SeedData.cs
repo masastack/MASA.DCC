@@ -20,7 +20,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
 
             unitOfWork.UseTransaction = false;
 
-            await InitDccDataAsync(context, labelDomainService);
+            await InitDccDataAsync(context, labelDomainService, masaConfig);
             await InitPublicConfigAsync(context, contentRootPath, masaConfig, configObjectDomainService);
         }
 
@@ -32,8 +32,9 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
             }
         }
 
-        private static async Task InitDccDataAsync(DccDbContext context, LabelDomainService labelDomainService)
+        private static async Task InitDccDataAsync(DccDbContext context, LabelDomainService labelDomainService, IMasaStackConfig masaConfig)
         {
+            var defaultUserId = masaConfig.GetDefaultUserId();
             if (!context.Set<Label>().Any())
             {
                 var labels = new List<UpdateLabelDto>
@@ -105,13 +106,14 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
 
                 foreach (var label in labels)
                 {
-                    await labelDomainService.AddLabelAsync(label);
+                    await labelDomainService.AddLabelAsync(label, defaultUserId);
                 }
             }
 
             if (!context.Set<PublicConfig>().Any())
             {
                 var publicConfig = new PublicConfig("Public", "public-$Config", "Public config");
+                publicConfig.SetUserId(defaultUserId);
                 await context.Set<PublicConfig>().AddAsync(publicConfig);
             }
 
@@ -124,6 +126,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
             IMasaStackConfig masaConfig,
             ConfigObjectDomainService configObjectDomainService)
         {
+            var defaultUserId = masaConfig.GetDefaultUserId();
             var publicConfigs = new Dictionary<string, string>
             {
                 { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,masaConfig.Environment) },
@@ -135,13 +138,13 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
                 { "$public.i18n.zh-cn",GetI8nCn(contentRootPath,masaConfig.Environment) }
             };
 
-            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false);
+            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false, defaultUserId);
 
             var encryptionPublicConfigs = new Dictionary<string, string>
             {
                 { "$public.Oss",GetOss(contentRootPath, masaConfig.Environment) }
             };
-            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true);
+            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true, defaultUserId);
 
             await context.SaveChangesAsync();
         }

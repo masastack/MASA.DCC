@@ -59,5 +59,11 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         {
             IsInvalid = true;
         }
+
+        public void SetUserId(Guid userId)
+        {
+            Creator = userId;
+            Modifier = userId;
+        }
     }
 }

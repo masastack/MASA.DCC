@@ -99,10 +99,11 @@ builder.Services
     })
     .AddDomainEventBus(options =>
     {
+        var connStr = masaStackConfig.GetConnectionString(MasaStackConstant.DCC);
         options.UseIntegrationEventBus(options => options.UseDapr()
                .UseEventLog<DccDbContext>())
                .UseEventBus()
-               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(masaStackConfig.GetConnectionString(AppSettings.Get("DBName")))
+               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(connStr)
                     .UseFilter())
                .UseRepository<DccDbContext>();
     });

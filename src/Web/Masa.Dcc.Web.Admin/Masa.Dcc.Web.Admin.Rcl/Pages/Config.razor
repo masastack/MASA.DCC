@@ -45,7 +45,7 @@
                             </MRow>
                         }
                         <MRow NoGutters Class="regular3--text btn mt-6">@T("Environment")</MRow>
-                        <MRow NoGutters>
+                        <div style="width: 100%">
                             <MChipGroup Column>
                                 @foreach (var item in _appEnvs)
                                 {
@@ -61,9 +61,9 @@
                                     </MChip>
                                 }
                             </MChipGroup>
-                        </MRow>
+                        </div>
                         <MRow NoGutters Class="regular3--text btn mt-6">@T("Cluster")</MRow>
-                        <MRow NoGutters>
+                        <div style="width: 100%">
                             <MChipGroup @key="_appClusters" Column>
                                 @foreach (var item in _appClusters)
                                 {
@@ -78,7 +78,7 @@
                                     </MChip>
                                 }
                             </MChipGroup>
-                        </MRow>
+                        </div>
                     </div>
                 </div>
             </div>

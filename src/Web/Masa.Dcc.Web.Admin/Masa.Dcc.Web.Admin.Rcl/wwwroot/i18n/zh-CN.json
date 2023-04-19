@@ -180,5 +180,6 @@
   "Value after rollback": "回滚后的值",
   "EmptyProject": "当前环境集群下还没有项目",
   "EmptyApp": "当前项目下还没有应用",
-  "EmptyConfigObject": "当前环境集群下还没有配置对象"
+  "EmptyConfigObject": "当前环境集群下还没有配置对象",
+  "Cancel Pin": "取消置顶"
 }

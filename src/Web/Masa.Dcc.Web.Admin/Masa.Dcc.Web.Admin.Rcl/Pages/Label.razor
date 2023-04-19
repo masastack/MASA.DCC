@@ -6,7 +6,7 @@
 <MRow NoGutters>
     <SSearch @bind-Value="_typeName" OnEnter="SearchAsync" Height="40" Dense BackgroundColor="#fff" MaxWidth="0" />
     <SButton Height="40" Width="100" BorderRadiusClass="rounded-lg" Class="ml-6" OnClick="()=>ShowLabelModal(null)">
-        <SIcon Class="mr-1" Small>mdi-plus</SIcon>@T("Add")
+        <SIcon Class="mr-1" Small IsDefaultToolTip="false">mdi-plus</SIcon>@T("Add")
     </SButton>
 </MRow>
 
@@ -87,7 +87,7 @@
                             <STextField Style="width: 46.5%;" TextColor="@(item.Disabled ? "" : "regular")" Disabled="@(_labelModal.HasValue && item.Disabled)" Outlined @bind-Value="item.Code" Label="Code"></STextField>
                             <div class="d-flex justify-end align-start ml-6 pt-2" style="width: 5%;">
                                 <SButton Icon Class="mr-1">
-                                    <SIcon Color="#323D6F" Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after">mdi-close</SIcon>
+                                    <SIcon Color="#323D6F" Disabled="@(_labelModal.Data.LabelValues.Count==1)" OnClick="()=>RemoveLabelValue(item.Index)" Class="remove-bg-after" Tooltip="@T("Remove")">mdi-close</SIcon>
                                 </SButton>
                                 <SButton Icon>
                                     <SIcon Color="#323D6F" OnClick="()=>AddLabelValue(item.Index)" Class="remove-bg-after">mdi-plus</SIcon>

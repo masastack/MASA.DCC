@@ -25,7 +25,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
 
             unitOfWork.UseTransaction = false;
 
-            await InitDccDataAsync(context, labelDomainService, masaConfig);
+            await InitDccDataAsync(context, labelDomainService);
             await InitPublicConfigAsync(context, contentRootPath, masaConfig, configObjectDomainService);
 
             userSetterHandle.Dispose();
@@ -39,7 +39,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
             }
         }
 
-        private static async Task InitDccDataAsync(DccDbContext context, LabelDomainService labelDomainService, IMasaStackConfig masaConfig)
+        private static async Task InitDccDataAsync(DccDbContext context, LabelDomainService labelDomainService)
         {
             if (!context.Set<Label>().Any())
             {

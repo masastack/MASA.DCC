@@ -30,11 +30,5 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             Name = name;
             Description = description;
         }
-
-        public void SetUserId(Guid userId)
-        {
-            Creator = userId;
-            Modifier = userId;
-        }
     }
 }

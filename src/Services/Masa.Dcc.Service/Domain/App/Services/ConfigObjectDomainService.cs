@@ -288,10 +288,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                    dto.Name,
                    dto.Comment,
                    configObject.Content);
-            if (dto.UserId != null)
-            {
-                configObjectRelease.SetUserId(dto.UserId.Value);
-            }
             await _configObjectReleaseRepository.AddAsync(configObjectRelease);
 
             var relationConfigObjects = await _configObjectRepository.GetRelationConfigObjectWithReleaseHistoriesAsync(configObject.Id);
@@ -472,8 +468,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             string clusterName,
             string appId,
             Dictionary<string, string> configObjects,
-            bool isEncryption,
-            Guid? userId = null)
+            bool isEncryption)
         {
             var envs = await _pmClient.EnvironmentService.GetListAsync();
             var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower()) ?? throw new UserFriendlyException("Environment does not exist");
@@ -501,10 +496,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     content,
                     "{}",
                     encryption: isEncryption);
-                if (userId != null)
-                {
-                    newConfigObject.SetUserId(userId.Value);
-                }
 
                 var publicConfig = await _publicConfigRepository.FindAsync(publicConfig => publicConfig.Identity == appId);
                 if (publicConfig != null)
@@ -545,8 +536,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     EnvironmentName = environmentName,
                     ClusterName = clusterName,
                     Identity = appId,
-                    Content = configObject.Value,
-                    UserId = userId
+                    Content = configObject.Value
                 };
                 await AddConfigObjectReleaseAsync(releaseModel);
             }

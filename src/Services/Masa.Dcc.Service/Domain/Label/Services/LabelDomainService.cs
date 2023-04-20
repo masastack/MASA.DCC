@@ -19,7 +19,7 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
             _i18n = i18N;
         }
 
-        public async Task AddLabelAsync(UpdateLabelDto labelDto, Guid? userId = null)
+        public async Task AddLabelAsync(UpdateLabelDto labelDto)
         {
             if (!labelDto.LabelValues.Any())
             {
@@ -41,11 +41,6 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
                         labelDto.TypeCode,
                         labelDto.TypeName,
                         labelDto.Description);
-                    if (userId != null)
-                    {
-                        labelEntity.SetUserId(userId.Value);
-                    }
-
                     labels.Add(labelEntity);
                 }
 

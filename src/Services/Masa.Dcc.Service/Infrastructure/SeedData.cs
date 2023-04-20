@@ -16,12 +16,19 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
             var contentRootPath = env.ContentRootPath;
             var masaConfig = builder.Services.GetMasaStackConfig();
 
+            string system = "system";
+            var userSetter = services.GetService<IUserSetter>();
+            var auditUser = new IdentityUser() { Id = masaConfig.GetDefaultUserId().ToString(), UserName = system };
+            var userSetterHandle = userSetter!.Change(auditUser);
+
             await MigrateAsync(context);
 
             unitOfWork.UseTransaction = false;
 
             await InitDccDataAsync(context, labelDomainService);
             await InitPublicConfigAsync(context, contentRootPath, masaConfig, configObjectDomainService);
+
+            userSetterHandle.Dispose();
         }
 
         private static async Task MigrateAsync(DccDbContext context)

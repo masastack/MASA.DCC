@@ -283,12 +283,12 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             configObject.AddContent(configObject.Content, configObject.Content);
             await _configObjectRepository.UpdateAsync(configObject);
 
-            await _configObjectReleaseRepository.AddAsync(new ConfigObjectRelease(
+            var configObjectRelease = new ConfigObjectRelease(
                    dto.ConfigObjectId,
                    dto.Name,
                    dto.Comment,
-                   configObject.Content)
-               );
+                   configObject.Content);
+            await _configObjectReleaseRepository.AddAsync(configObjectRelease);
 
             var relationConfigObjects = await _configObjectRepository.GetRelationConfigObjectWithReleaseHistoriesAsync(configObject.Id);
             if (relationConfigObjects.Any())
@@ -495,7 +495,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     ConfigObjectType.App,
                     content,
                     "{}",
-                encryption: isEncryption);
+                    encryption: isEncryption);
 
                 var publicConfig = await _publicConfigRepository.FindAsync(publicConfig => publicConfig.Identity == appId);
                 if (publicConfig != null)
@@ -536,7 +536,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                     EnvironmentName = environmentName,
                     ClusterName = clusterName,
                     Identity = appId,
-                    Content = configObject.Value,
+                    Content = configObject.Value
                 };
                 await AddConfigObjectReleaseAsync(releaseModel);
             }

@@ -36,11 +36,12 @@ namespace Masa.Dcc.Service.Admin.Domain.Label.Services
                 List<Aggregates.Label> labels = new();
                 foreach (var item in labelDto.LabelValues)
                 {
-                    labels.Add(new Aggregates.Label(item.Code,
+                    var labelEntity = new Aggregates.Label(item.Code,
                         item.Name,
                         labelDto.TypeCode,
                         labelDto.TypeName,
-                        labelDto.Description));
+                        labelDto.Description);
+                    labels.Add(labelEntity);
                 }
 
                 await _labelRepository.AddRangeAsync(labels);

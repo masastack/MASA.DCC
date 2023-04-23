@@ -158,6 +158,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseStackMiddleware();
+app.UseMiddleware<CheckUserMiddleware>();
 
 app.UseCloudEvents();
 app.UseEndpoints(endpoints =>

@@ -491,7 +491,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
 
                 var newConfigObject = new ConfigObject(
                     configObjectName,
-                    "Json",
+                    "JSON",
                     ConfigObjectType.App,
                     content,
                     "{}",

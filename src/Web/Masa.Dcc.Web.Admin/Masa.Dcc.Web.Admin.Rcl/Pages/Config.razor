@@ -147,7 +147,7 @@
                                                 <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
                                             </div>
                                         }
-                                        <JsonEditor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></JsonEditor>
+                                        <MonacoEditor ReadOnly="!configObject.IsEditing" @bind-Value="@configObject.Content" Language="@formatLabelCode" />
                                     </MExpansionPanelContent>
                                 </MExpansionPanel>
                             }
@@ -323,7 +323,7 @@
                                                                 </SButton>
                                                             }
                                                         </div>
-                                                        <Editor Disabled="!configObject.ElevationTabPropertyContent.Disabled" @bind-Value="@configObject.ElevationTabPropertyContent.Content"></Editor>
+                                                        <MonacoEditor ReadOnly="!configObject.ElevationTabPropertyContent.Disabled" @bind-Value="@configObject.ElevationTabPropertyContent.Content" Language="text/plain" />
                                                     </SElevationTabItem>
                                             </SElevationTab>
                                         }
@@ -372,7 +372,7 @@
                                                 <span style="font-size: 14px; color: #7681AB;">@T("Covered")</span>
                                             </div>
                                         }
-                                        <Editor Disabled="!configObject.IsEditing" @bind-Value="@configObject.Content"></Editor>
+                                        <MonacoEditor ReadOnly="!configObject.IsEditing" @bind-Value="@configObject.Content" Language="@configObject.FormatLabelCode.ToLower()"></MonacoEditor>
                                     </MExpansionPanelContent>
                                     <hr class="mx-6" style="background: none repeat scroll 0 0 #E9EDF7; border: thin none; height: 1px;" />
                                 </MExpansionPanel>

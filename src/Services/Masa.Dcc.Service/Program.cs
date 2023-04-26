@@ -17,7 +17,7 @@ if (!builder.Environment.IsDevelopment())
         {
             ServiceNameSpace = builder.Environment.EnvironmentName,
             ServiceVersion = masaStackConfig.Version,
-            ServiceName = masaStackConfig.GetServerId(MasaStackConstant.DCC)
+            ServiceName = masaStackConfig.GetServiceId(MasaStackConstant.DCC)
         };
     }, () =>
     {

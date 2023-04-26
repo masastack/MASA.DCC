@@ -527,8 +527,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
             else
             {
-                configObject.Content = _tempContent;
                 configObject.IsEditing = !configObject.IsEditing;
+                configObject.Content = _tempContent;
             }
         }
 
@@ -577,6 +577,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                         await PopupService.EnqueueSnackbarAsync(T("Wrong format"), AlertTypes.Error);
                         return;
                 }
+
+                configObject.IsEditing = false;
                 await ConfigObjectCaller.UpdateConfigObjectContentAsync(new UpdateConfigObjectContentDto
                 {
                     ConfigObjectId = configObject.Id,
@@ -584,7 +586,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     FormatLabelCode = "Json"
                 });
 
-                configObject.IsEditing = false;
                 configObject.RelationConfigObjectId = 0;
 
                 await PopupService.EnqueueSnackbarAsync(T("ModificationSucceededPublish"), AlertTypes.Success);
@@ -610,6 +611,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         {
             if (configObject.IsEditing)
             {
+                configObject.IsEditing = false;
+
                 if (configObject.FormatLabelCode.ToLower() == "xml")
                 {
                     try
@@ -631,7 +634,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     FormatLabelCode = configObject.FormatLabelCode
                 });
 
-                configObject.IsEditing = false;
                 await PopupService.EnqueueSnackbarAsync(T("ModificationSucceededPublish"), AlertTypes.Success);
             }
             else

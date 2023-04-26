@@ -20,7 +20,7 @@ public partial class ReleaseHistoryModal
     private List<ConfigObjectPropertyModel> _changedProperties = new();
     private List<ConfigObjectReleaseModel> _configObjectReleases = new();
     private ConfigObjectReleaseDto? _currentConfigObjectRelease;
-    private string _formatLabelCode = default!;
+    private string _formatLabelCode = "";
     private Action _handleRollbackOnClickAfter = () => { };
     private ConfigObjectReleaseModel _prevReleaseHistory = new();
     private ConfigObjectWithReleaseHistoryDto _releaseHistory = new();
@@ -34,9 +34,6 @@ public partial class ReleaseHistoryModal
 
     [Parameter]
     public EventCallback OnSubmitAfter { get; set; }
-
-    [Inject]
-    public IPopupService PopupService { get; set; } = default!;
 
     [Inject]
     public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;

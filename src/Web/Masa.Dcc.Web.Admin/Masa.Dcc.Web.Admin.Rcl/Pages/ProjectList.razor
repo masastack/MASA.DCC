@@ -8,7 +8,10 @@
         <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
             @foreach (var project in _projects)
             {
-                var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
+                var apps = _apps.Where(app => app.ProjectId == project.Id)
+                .OrderByDescending(app => app.IsPinned)
+                .ThenByDescending(app => app.PinTime)
+                .ThenByDescending(app => app.ModificationTime).ToList();
                 <MExpansionPanel Class="rounded-4 mb-4">
                     <MExpansionPanelHeader Style="height: 56px;" Class="my-6">
                         <ChildContent>

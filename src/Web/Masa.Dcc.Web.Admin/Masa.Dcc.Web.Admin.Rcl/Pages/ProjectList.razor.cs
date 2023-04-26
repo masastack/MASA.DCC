@@ -116,9 +116,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              PinTime = newApp != null ? newApp.ModificationTime : DateTime.MinValue
                          };
 
-            return result.OrderByDescending(app => app.IsPinned)
-                .ThenByDescending(app => app.PinTime)
-                .ThenByDescending(app => app.ModificationTime).ToList();
+            return result.ToList();
         }
 
         private async Task HandleProjectNameClick(int projectId)
@@ -154,7 +152,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             if (OnAppPinClick.HasDelegate)
             {
                 await OnAppPinClick.InvokeAsync(model);
-                _apps = await GetAppByProjectIdAsync(new List<int>() { model.ProjectId });
+                var apps = await GetAppByProjectIdAsync(new List<int>() { model.ProjectId });
+                _apps.RemoveAll(app => apps.Select(app => app.Id).Contains(app.Id));
+                _apps.AddRange(apps);
             }
         }
 

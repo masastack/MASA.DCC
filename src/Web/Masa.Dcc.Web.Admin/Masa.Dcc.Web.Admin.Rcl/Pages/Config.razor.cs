@@ -88,6 +88,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _tempContent = "";
         private string _propertyConfigDialogTitle = "";
         private bool _showProcess = true;
+        private bool _enableClone => _appEnvs.Count > 1 || _appClusters.Count > 1;
 
         private List<DataTableHeader<ConfigObjectPropertyModel>> Headers
         {

@@ -50,6 +50,9 @@ public partial class ConfigItems
     [Parameter]
     public EventCallback<ConfigObjectModel> ReleaseHistoryClick { get; set; }
 
+    [Parameter]
+    public bool EnableClone { get; set; } = true;
+
     private string FormatLabelCode
     {
         get

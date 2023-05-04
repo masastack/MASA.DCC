@@ -18,7 +18,7 @@
 ::-webkit-scrollbar-thumb {
     margin: 5px 0;
     border-radius: 15px;
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.44, rgb(170 168 168)), color-stop(0.72, rgb(170 168 168)), color-stop(0.86, rgb(170 168 168)));
+    background-color: #E4E8F3;
 }
 
 .rounded-5 {
@@ -848,4 +848,23 @@ textarea:disabled {
     left: 0;
     right: 0;
     padding-bottom: 12px !important;
+}
+
+.menu-configmore {
+    box-shadow: 0px 8px 24px rgba(50, 61, 111, 0.08);
+    border-radius: 8px !important;
+}
+.menu-configmore .m-list .m-list-item:hover {
+    border-radius: 4px;
+    background-color: #F6F8FD;
+}
+.menu-configmore .m-divider__wrapper .m-divider {
+    margin-left: 9px;
+    margin-right: 9px;
+}
+.separator {
+    width: 0px;
+    height: 24px;
+    border: 1px solid #E4E8F3;
+    margin-right: 24px;
 }

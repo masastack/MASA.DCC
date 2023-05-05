@@ -74,14 +74,14 @@
     <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="ReleaseConfig">
         <SIcon Tooltip="@T("Release")" Color="#323D6F">mdi-send</SIcon>
     </SButton>
-    <MMenu OffsetY>
+    <MMenu OffsetY NudgeLeft="72" Attach="@true">
         <ActivatorContent>
             <SButton Disabled="DisabledButton" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
                 <SIcon Color="#323D6F">mdi-dots-vertical</SIcon>
             </SButton>
         </ActivatorContent>
         <ChildContent>
-            <MList>
+            <MList Width="180">
                 <MListItem OnClick="ReleaseHistory">
                     <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-history</SIcon>
                     <MListItemContent>

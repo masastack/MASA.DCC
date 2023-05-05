@@ -10,23 +10,26 @@
                         <div class="full-width d-flex">
                             <div class="emphasis--text h6 text-overflow2">@_appDetail.Name</div>
                             <MSpacer></MSpacer>
-                            <MMenu OffsetY>
-                            <ActivatorContent>
-                                <SButton Icon @attributes="@context.Attrs">
-                                    <SIcon Color="black">mdi-dots-horizontal</SIcon>
-                                </SButton>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    <MList Dense>
-                                        <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
-                                            <SIcon Color="#323D6F" Size="20" Class="mr-4" IsDefaultToolTip="false">far fa-copy</SIcon>
-                                            <MListItemContent>
-                                                <MListItemTitle>@T("Clone config")</MListItemTitle>
-                                            </MListItemContent>
-                                        </MListItem>
-                                    </MList>
-                                </ChildContent>
-                            </MMenu>
+                            @if (_enableClone)
+                            {
+                                <MMenu OffsetY>
+                                    <ActivatorContent>
+                                        <SButton Icon @attributes="@context.Attrs">
+                                            <SIcon Color="black">mdi-dots-horizontal</SIcon>
+                                        </SButton>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <MList Dense>
+                                            <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
+                                                <SIcon Color="#323D6F" Size="20" Class="mr-4" IsDefaultToolTip="false">far fa-copy</SIcon>
+                                                <MListItemContent>
+                                                    <MListItemTitle>@T("Clone config")</MListItemTitle>
+                                                </MListItemContent>
+                                            </MListItem>
+                                        </MList>
+                                    </ChildContent>
+                                </MMenu>
+                            }
                         </div>
                     </MRow>
                     <div class="regular3--text body2 text-overflow">
@@ -113,6 +116,7 @@
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
                                                          Disabled="_disablePanel"
+                                                         EnableClone="_enableClone"
                                                          CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="UpdateJsonConfigAsync"
                                                          CloneConfigClick="ShowCloneModalAsync"
@@ -158,6 +162,7 @@
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
                                                          Disabled="_disablePanel"
+                                                         EnableClone="_enableClone"
                                                          CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="(config) => { ShowPropertyModal(config, config.ConfigObjectPropertyContents); }"
                                                          CloneConfigClick="ShowCloneModalAsync"
@@ -338,6 +343,7 @@
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
                                                          Disabled="_disablePanel"
+                                                         EnableClone="_enableClone"
                                                          CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="UpdateOtherConfigObjectContentAsync"
                                                          CloneConfigClick="ShowCloneModalAsync"

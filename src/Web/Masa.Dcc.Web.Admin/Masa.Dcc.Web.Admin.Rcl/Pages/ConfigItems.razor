@@ -5,6 +5,7 @@
         <SIcon Color="primary" Class="mr-2">mdi-link-variant</SIcon>
     }
     @{
+        var buttonColor = DisabledButton ? "#A3AED0" : "#323D6F";
         var content = ConfigObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
         var tempContent = ConfigObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
         if (ConfigObject.RelationConfigObjectId == 0 && !ConfigObject.IsPublished && content != tempContent && !ConfigObject.IsEditing)
@@ -40,7 +41,7 @@
         if (!ConfigObject.FromRelation)
         {
             <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
-                <SIcon Tooltip="@(T("Add config item"))" Color="#323D6F">mdi-plus-circle</SIcon>
+                <SIcon Tooltip="@(T("Add config item"))" Color="@buttonColor">mdi-plus-circle</SIcon>
             </SButton>
         }
     }
@@ -68,20 +69,20 @@
     @if (ConfigObjectType != ConfigObjectType.Public && ConfigObject.FromRelation == false)
     {
         <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="CloneConfig">
-            <SIcon Tooltip="@T("Clone")" Size="20" Color="#323D6F">fas fa-copy</SIcon>
+            <SIcon Tooltip="@T("Clone")" Size="20" Color="@buttonColor">fas fa-copy</SIcon>
         </SButton>
     }
     <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="ReleaseConfig">
-        <SIcon Tooltip="@T("Release")" Color="#323D6F">mdi-send</SIcon>
+        <SIcon Tooltip="@T("Release")" Color="@buttonColor">mdi-send</SIcon>
     </SButton>
-    <MMenu OffsetY>
+    <MMenu OffsetY ContentClass="menu-configmore">
         <ActivatorContent>
             <SButton Disabled="DisabledButton" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
-                <SIcon Color="#323D6F">mdi-dots-vertical</SIcon>
+                <SIcon Color="@buttonColor">mdi-dots-vertical</SIcon>
             </SButton>
         </ActivatorContent>
         <ChildContent>
-            <MList>
+            <MList Class="pa-2">
                 <MListItem OnClick="ReleaseHistory">
                     <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-history</SIcon>
                     <MListItemContent>
@@ -118,6 +119,6 @@
     </MMenu>
     @if (!Disabled)
     {
-        <span class="mr-6 regular3--text btn">|</span>
+        <MDivider Vertical Class="separator"></MDivider>
     }
 </div>

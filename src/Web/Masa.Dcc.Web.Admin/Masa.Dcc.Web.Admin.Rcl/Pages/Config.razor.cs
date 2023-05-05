@@ -95,13 +95,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 var headers = new List<DataTableHeader<ConfigObjectPropertyModel>>()
                 {
-                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished), Width = 170 },
-                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key), Width = 170 },
-                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value), Width = 170  },
+                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished) },
+                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
+                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value)  },
                     new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
-                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier), Width = 170  },
-                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime), Width = 170 },
-                    new() { Text = T("Operation"), Value="Operation", Sortable = false, Width = 170 }
+                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier) },
+                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
+                    new() { Text = T("Operation"), Value="Operation", Sortable = false }
                 };
 
                 return headers;
@@ -691,7 +691,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             else if (model != null)
             {
                 //edit
-                _propertyConfigDialogTitle = T("Modify config object item");
+                _propertyConfigDialogTitle = T("Edit config object item");
                 var dto = new ConfigObjectPropertyContentDto
                 {
                     Key = model.Key,

@@ -83,13 +83,13 @@
         <ChildContent>
             <MList>
                 <MListItem OnClick="ReleaseHistory">
-                    <SIcon Class="mr-4">mdi-history</SIcon>
+                    <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-history</SIcon>
                     <MListItemContent>
                         <MListItemTitle>@T("Release history")</MListItemTitle>
                     </MListItemContent>
                 </MListItem>
                 <MListItem OnClick="Rollback">
-                    <SIcon Class="mr-4">mdi-repeat</SIcon>
+                    <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-repeat</SIcon>
                     <MListItemContent>
                         <MListItemTitle>
                             @T("Rollback")
@@ -97,7 +97,7 @@
                     </MListItemContent>
                 </MListItem>
                 <MListItem OnClick="RevokeAsync">
-                    <SIcon Class="mr-4">mdi-subdirectory-arrow-left</SIcon>
+                    <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-subdirectory-arrow-left</SIcon>
                     <MListItemContent>
                         <MListItemTitle>
                             @T("Revoke")
@@ -106,7 +106,7 @@
                 </MListItem>
                 <MDivider></MDivider>
                 <MListItem OnClick="RemoveAsync">
-                    <SIcon Class="mr-4" Color="error">mdi-delete</SIcon>
+                    <SIcon Class="mr-4" Color="error" IsDefaultToolTip="false">mdi-delete</SIcon>
                     <MListItemContent>
                         <MListItemTitle Class="error--text">
                             @T("Delete")

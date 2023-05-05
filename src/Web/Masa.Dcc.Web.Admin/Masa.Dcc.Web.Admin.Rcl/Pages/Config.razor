@@ -153,7 +153,7 @@
                             }
                             else if (formatLabelCode == "properties")
                             {
-                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-2 my-3">
+                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-lg my-3">
                                     <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
@@ -176,7 +176,7 @@
                                     <MExpansionPanelContent>
                                         @if (configObject.RelationConfigObjectId != 0)
                                         {
-                                            <MCard Style="border:1px solid #E2E7F4; border-radius: 8px !important;" Class="py-2 mt-4">
+                                            <MCard Style="border:1px solid #E2E7F4;" Class="py-2 mt-4 rounded-lg">
                                                 <SDataTable FixedHeader
                                                             Style="max-height: 312px; overflow: auto; border-radius: unset !important;"
                                                             Headers="Headers"
@@ -237,7 +237,7 @@
                                                            Dense
                                                            Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                                     <SElevationTabItem>
-                                                        <MCard Style="border:1px solid #E2E7F4; padding: 1px; border-radius: 8px !important;" Class="py-2 mt-4">
+                                                        <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-2 mt-4 rounded-lg">
                                                             <SDataTable FixedHeader
                                                                         Style="max-height: 312px; overflow: auto; border-radius: unset !important;"
                                                                         Headers="Headers"

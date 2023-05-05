@@ -863,8 +863,13 @@ textarea:disabled {
     margin-right: 9px;
 }
 .separator {
-    width: 0px;
-    height: 24px;
-    border: 1px solid #E4E8F3;
+    margin-top: 6px;
     margin-right: 24px;
+}
+.separator .m-divider--vertical {
+    height: 24px;
+    border-color: #E4E8F3 !important;
+}
+.masa-main .rounded-lg, .masa-main .rounded-2 {
+    border-radius: 8px !important;
 }

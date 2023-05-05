@@ -128,12 +128,22 @@ namespace Masa.Dcc.Service.Admin.Application.App
             }).ToList();
         }
 
-        private string DecryptContent(string content)
+        private string DecryptContent(string content, int configObjectId = 0)
         {
             if (!string.IsNullOrEmpty(content) && content != "{}" && content != "[]")
             {
                 var secret = _masaStackConfig.DccSecret;
-                string encryptContent = AesUtils.Decrypt(content, secret, FillType.Left);
+                string encryptContent;
+
+                try
+                {
+                    encryptContent = AesUtils.Decrypt(content, secret, FillType.Left);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine($"DecryptContent.DecryptException: configObjectId[{configObjectId}],content[{content}],secret[{secret}]");
+                    throw;
+                }                
 
                 return encryptContent;
             }
@@ -149,8 +159,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
             var result = await _configObjectRepository.GetListAsync(c => query.Ids.Contains(c.Id));
 
             TypeAdapterConfig<ConfigObject, ConfigObjectDto>.NewConfig()
-                .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(src.Content) : src.Content)
-                .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(src.TempContent) : src.TempContent);
+                .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(src.Content, 0) : src.Content)
+                .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(src.TempContent, 0) : src.TempContent);
 
             query.Result = TypeAdapter.Adapt<List<ConfigObject>, List<ConfigObjectDto>>(result.ToList());
         }
@@ -162,8 +172,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
             TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease)
-                .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(configObjectReleases.Content) : src.Content)
-                .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(configObjectReleases.TempContent) : src.TempContent);
+                .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(configObjectReleases.Content, query.ConfigObejctId) : src.Content)
+                .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(configObjectReleases.TempContent, query.ConfigObejctId) : src.TempContent);
 
             var result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
             result.ConfigObjectReleases.ForEach(config =>

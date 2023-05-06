@@ -16,18 +16,12 @@ MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
 
 if (!builder.Environment.IsDevelopment())
 {
-    builder.Services.AddObservable(builder.Logging, () =>
+    builder.Services.AddObservable(builder.Logging, () => new MasaObservableOptions
     {
-        return new MasaObservableOptions
-        {
-            ServiceNameSpace = builder.Environment.EnvironmentName,
-            ServiceVersion = masaStackConfig.Version,
-            ServiceName = masaStackConfig.GetWebId(MasaStackConstant.DCC)
-        };
-    }, () =>
-    {
-        return masaStackConfig.OtlpUrl;
-    }, true);
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = masaStackConfig.Version,
+        ServiceName = masaStackConfig.GetWebId(MasaStackConstant.DCC)
+    }, () => masaStackConfig.OtlpUrl, true);
 }
 
 string dccServiceAddress = masaStackConfig.GetDccServiceDomain();

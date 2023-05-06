@@ -11,18 +11,12 @@ var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (!builder.Environment.IsDevelopment())
 {
-    builder.Services.AddObservable(builder.Logging, () =>
+    builder.Services.AddObservable(builder.Logging, () => new MasaObservableOptions
     {
-        return new MasaObservableOptions
-        {
-            ServiceNameSpace = builder.Environment.EnvironmentName,
-            ServiceVersion = masaStackConfig.Version,
-            ServiceName = masaStackConfig.GetServiceId(MasaStackConstant.DCC)
-        };
-    }, () =>
-    {
-        return masaStackConfig.OtlpUrl;
-    }, true);
+        ServiceNameSpace = builder.Environment.EnvironmentName,
+        ServiceVersion = masaStackConfig.Version,
+        ServiceName = masaStackConfig.GetServiceId(MasaStackConstant.DCC)
+    }, () => masaStackConfig.OtlpUrl, true);
 }
 
 builder.Services.AddMasaIdentity(options =>

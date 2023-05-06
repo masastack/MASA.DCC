@@ -55,8 +55,7 @@ builder.Services.AddAuthentication(options =>
             sender,
             certificate,
             chain,
-            sslPolicyErrors) =>
-        { return true; }
+            sslPolicyErrors) => true
     };
 });
 
@@ -71,10 +70,10 @@ builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 var redisOption = new RedisConfigurationOptions
 {
     Servers = new List<RedisServerOptions> {
-        new RedisServerOptions()
+        new()
         {
             Host= masaStackConfig.RedisModel.RedisHost,
-            Port=   masaStackConfig.RedisModel.RedisPort
+            Port= masaStackConfig.RedisModel.RedisPort
         }
     },
     DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
@@ -91,6 +90,7 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
 });
 
 builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
+builder.Services.AddAuthClient(authServiceBaseAddress: masaStackConfig.GetAuthServiceDomain(), redisOption);
 
 builder.Services
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -65,18 +65,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             get
             {
-                var checkedConfigObejctCount = ConfigObjects.Count(c => !c.FromRelation && c.IsChecked);
-                return checkedConfigObejctCount == ConfigObjects.Count(c => !c.FromRelation);
+                var checkedConfigObjectCount = ConfigObjects.Count(c => !c.FromRelation && c.IsChecked);
+                return checkedConfigObjectCount == ConfigObjects.Count(c => !c.FromRelation);
             }
         }
 
         public bool IsNeedRebase
         {
-            get => ConfigObjects.Where(c => c.IsNeedRebase).Any();
+            get => ConfigObjects.Any(c => c.IsNeedRebase);
         }
         #endregion
 
-        private List<ConfigObjectModel> loadConfigObjects()
+        private List<ConfigObjectModel> LoadConfigObjects()
         {
             if (!_isCloneAll && ConfigObjects.Count > 1)
             {
@@ -103,18 +103,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             if (ConfigObjectType == ConfigObjectType.Biz)
             {
                 var project = _allProjects.Find(project => project.Id == projectId) ?? new();
-                BizConfigDto bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{project.Identity}-$biz");
+                BizConfigDto bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{project.Identity}{DccConst.BizConfigSuffix}");
                 if (bizConfig.Id == 0)
                 {
                     bizConfig = await ConfigObjectCaller.AddBizConfigAsync(new AddObjectConfigDto
                     {
                         Name = "Biz",
-                        Identity = $"{project.Identity}-$biz"
+                        Identity = $"{project.Identity}{DccConst.BizConfigSuffix}"
                     });
                 }
                 _cloneApps = new List<AppDetailModel>
                 {
-                    new AppDetailModel
+                    new()
                     {
                         Id = bizConfig.Id,
                         Name= bizConfig.Name,
@@ -188,8 +188,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 if (ConfigObjectType == ConfigObjectType.Biz)
                 {
                     var allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
-                    var peoject = await ProjectCaller.GetAsync(_cloneSelectProjectId);
-                    var projectEnvClusters = allEnvClusters.Where(envCluster => peoject.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
+                    var project = await ProjectCaller.GetAsync(_cloneSelectProjectId);
+                    var projectEnvClusters = allEnvClusters.Where(envCluster => project.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
                     _cloneSelectApp.EnvironmentClusters = projectEnvClusters;
                     _cloneSelectApp.Id = _cloneSelectAppId;
                 }

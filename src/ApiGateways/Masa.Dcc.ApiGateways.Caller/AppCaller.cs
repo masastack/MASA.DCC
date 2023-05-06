@@ -11,9 +11,9 @@ namespace Masa.Dcc.Caller
         {
         }
 
-        public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int Id)
+        public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int id)
         {
-            var result = await Caller.GetAsync<AppDetailModel>($"api/v1/appWithEnvCluster/{Id}");
+            var result = await Caller.GetAsync<AppDetailModel>($"api/v1/appWithEnvCluster/{id}");
 
             return result ?? new();
         }
@@ -29,6 +29,13 @@ namespace Masa.Dcc.Caller
         {
             var result = await Caller.PostAsync<List<int>, List<AppDetailModel>>("/api/v1/projects/app", projectIds);
 
+            return result ?? new();
+        }
+
+
+        public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigAsync(LatestReleaseConfigRequestDto<int> request)
+        {
+            var result = await Caller.PostAsync<List<LatestReleaseConfigModel>>($"{_prefix}/latestReleaseConfig",request);
             return result ?? new();
         }
 

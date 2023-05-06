@@ -15,6 +15,7 @@ global using Masa.BuildingBlocks.StackSdks.Auth.Contracts.Model;
 global using Masa.BuildingBlocks.StackSdks.Pm.Model;
 global using Masa.Dcc.ApiGateways.Caller;
 global using Masa.Dcc.Caller;
+global using Masa.Dcc.Contracts.Admin;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;

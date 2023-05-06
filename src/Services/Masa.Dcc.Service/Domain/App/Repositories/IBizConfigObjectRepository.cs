@@ -8,5 +8,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
         Task<List<BizConfigObject>> GetListByEnvClusterIdAsync(int envClusterId, int bizConfigId);
 
         Task<List<BizConfigObject>> GetListByBizConfigIdAsync(int bizConfigId);
+
+        Task<List<(int projectId, ConfigObjectRelease release)>> GetLatestReleaseConfigByProjectAsync(
+            List<BuildingBlocks.StackSdks.Pm.Model.ProjectModel> projects, int? envClusterId = null);
     }
 }

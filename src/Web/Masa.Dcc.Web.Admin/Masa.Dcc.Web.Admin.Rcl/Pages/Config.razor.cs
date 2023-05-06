@@ -153,7 +153,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     EnvironmentClusterId = _allEnvClusters.First().Id;
                     break;
                 case ConfigObjectType.Biz:
-                    _appDetail = (await ConfigObjectCaller.GetBizConfigAsync($"{ProjectIdentity}-$biz")).Adapt<AppDetailModel>();
+                    _appDetail = (await ConfigObjectCaller.GetBizConfigAsync($"{ProjectIdentity}{DccConst.BizConfigSuffix}")).Adapt<AppDetailModel>();
                     _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
                     var projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
                     _appDetail.EnvironmentClusters = projectEnvClusters;

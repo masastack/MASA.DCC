@@ -11,6 +11,15 @@ namespace Masa.Dcc.ApiGateways.Caller
         {
         }
 
+        public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigAsync(
+            LatestReleaseConfigRequestDto<ProjectModel> request)
+        {
+            var result = await Caller.PostAsync<List<LatestReleaseConfigModel>>(
+                $"{_prefix}/bizConfig/latestReleaseConfig",
+                request);
+            return result ?? new();
+        }
+
         public async Task<BizConfigDto> GetBizConfigAsync(string identity)
         {
             var result = await Caller.GetAsync<BizConfigDto>($"{_prefix}/bizConfig/{identity}");

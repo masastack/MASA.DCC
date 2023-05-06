@@ -1,27 +1,41 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
+using Masa.BuildingBlocks.StackSdks.Auth;
+using Masa.Contrib.StackSdks.Pm;
+using Masa.Dcc.Contracts.Admin.App.Dtos;
+using Masa.Dcc.Service.Admin;
+
 namespace Masa.Dcc.Service.Services;
 
 public class AppService : ServiceBase
 {
     private readonly IPmClient _pmClient;
+    private readonly IAuthClient _authClient;
 
-    public AppService(IPmClient pmClient)
+    public AppService(IPmClient pmClient, IAuthClient authClient)
     {
         _pmClient = pmClient;
-        App.MapGet("api/v1/app/{Id}", GetAsync);
+        _authClient = authClient;
+        App.MapGet("api/v1/app/{id}", GetAsync);
         App.MapPost("api/v1/projects/app", GetListByProjectIdsAsync);
-        App.MapGet("api/v1/appWithEnvCluster/{Id}", GetWithEnvironmentClusterAsync);
-        App.MapPost("api/v1/app/pin/{appid}", AddAppPinAsync);
+        App.MapGet("api/v1/appWithEnvCluster/{id}", GetWithEnvironmentClusterAsync);
+        App.MapPost("api/v1/app/pin/{appId}", AddAppPinAsync);
         App.MapDelete("api/v1/app/pin/{appId}", RemoveAppPinAsync);
         App.MapGet("api/v1/app/pin", GetAppPinListAsync);
+        App.MapPost("api/v1/app/latestReleaseConfig", GetLatestReleaseConfigByAppAsync);
     }
 
-    public async Task<AppDetailModel> GetAsync(int Id)
+    public async Task<AppDetailModel> GetAsync(int id)
     {
-        var result = await _pmClient.AppService.GetAsync(Id);
-
+        var result = await _pmClient.AppService.GetAsync(id);
         return result;
+    }
+
+    public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByAppAsync(IEventBus eventBus, LatestReleaseConfigRequestDto<int> request)
+    {
+        var query = new LatestReleaseQueryByApp(request.Items, request.EnvClusterId);
+        await eventBus.PublishAsync(query);
+        return await _authClient.FillUserName(query.Result);
     }
 
     public async Task<List<AppDetailModel>> GetListAsync()
@@ -38,9 +52,9 @@ public class AppService : ServiceBase
         return result;
     }
 
-    public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int Id)
+    public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int id)
     {
-        var result = await _pmClient.AppService.GetWithEnvironmentClusterAsync(Id);
+        var result = await _pmClient.AppService.GetWithEnvironmentClusterAsync(id);
 
         return result;
     }

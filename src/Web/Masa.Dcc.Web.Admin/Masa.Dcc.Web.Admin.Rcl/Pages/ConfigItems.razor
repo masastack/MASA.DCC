@@ -5,6 +5,7 @@
         <SIcon Color="primary" Class="mr-2">mdi-link-variant</SIcon>
     }
     @{
+        var buttonColor = DisabledButton ? "#A3AED0" : "#323D6F";
         var content = ConfigObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
         var tempContent = ConfigObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
         if (ConfigObject.RelationConfigObjectId == 0 && !ConfigObject.IsPublished && content != tempContent && !ConfigObject.IsEditing)
@@ -40,7 +41,7 @@
         if (!ConfigObject.FromRelation)
         {
             <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
-                <SIcon Tooltip="@(T("Add config item"))" Color="#323D6F">mdi-plus-circle</SIcon>
+                <SIcon Tooltip="@(T("Add config item"))" Color="@buttonColor">mdi-plus-circle</SIcon>
             </SButton>
         }
     }
@@ -65,31 +66,31 @@
             }
         </SButton>
     }
-    @if (ConfigObjectType != ConfigObjectType.Public && ConfigObject.FromRelation == false)
+    @if (EnableClone && ConfigObjectType != ConfigObjectType.Public && ConfigObject.FromRelation == false)
     {
         <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="CloneConfig">
-            <SIcon Tooltip="@T("Clone")" Size="20" Color="#323D6F">fas fa-copy</SIcon>
+            <SIcon Tooltip="@T("Clone")" Size="20" Color="@buttonColor">fas fa-copy</SIcon>
         </SButton>
     }
     <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="ReleaseConfig">
-        <SIcon Tooltip="@T("Release")" Color="#323D6F">mdi-send</SIcon>
+        <SIcon Tooltip="@T("Release")" Color="@buttonColor">mdi-send</SIcon>
     </SButton>
-    <MMenu OffsetY>
+    <MMenu OffsetY NudgeLeft="72" Attach="@true" ContentClass="menu-configmore">
         <ActivatorContent>
             <SButton Disabled="DisabledButton" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
-                <SIcon Color="#323D6F">mdi-dots-vertical</SIcon>
+                <SIcon Color="@buttonColor">mdi-dots-vertical</SIcon>
             </SButton>
         </ActivatorContent>
         <ChildContent>
-            <MList>
+            <MList Width="180" Class="pa-2">
                 <MListItem OnClick="ReleaseHistory">
-                    <SIcon Class="mr-4">mdi-history</SIcon>
+                    <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-history</SIcon>
                     <MListItemContent>
                         <MListItemTitle>@T("Release history")</MListItemTitle>
                     </MListItemContent>
                 </MListItem>
                 <MListItem OnClick="Rollback">
-                    <SIcon Class="mr-4">mdi-repeat</SIcon>
+                    <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-repeat</SIcon>
                     <MListItemContent>
                         <MListItemTitle>
                             @T("Rollback")
@@ -97,7 +98,7 @@
                     </MListItemContent>
                 </MListItem>
                 <MListItem OnClick="RevokeAsync">
-                    <SIcon Class="mr-4">mdi-subdirectory-arrow-left</SIcon>
+                    <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-subdirectory-arrow-left</SIcon>
                     <MListItemContent>
                         <MListItemTitle>
                             @T("Revoke")
@@ -106,7 +107,7 @@
                 </MListItem>
                 <MDivider></MDivider>
                 <MListItem OnClick="RemoveAsync">
-                    <SIcon Class="mr-4" Color="error">mdi-delete</SIcon>
+                    <SIcon Class="mr-4" Color="error" IsDefaultToolTip="false">mdi-delete</SIcon>
                     <MListItemContent>
                         <MListItemTitle Class="error--text">
                             @T("Delete")
@@ -118,6 +119,6 @@
     </MMenu>
     @if (!Disabled)
     {
-        <span class="mr-6 regular3--text btn">|</span>
+        <MDivider Vertical Class="separator"></MDivider>
     }
 </div>

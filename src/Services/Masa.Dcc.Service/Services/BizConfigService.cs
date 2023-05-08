@@ -17,7 +17,7 @@ namespace Masa.Dcc.Service.Admin.Services
         }
 
         public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByProjectAsync(IEventBus eventBus,
-            LatestReleaseConfigRequestDto<Masa.BuildingBlocks.StackSdks.Pm.Model.ProjectModel> request)
+            LatestReleaseConfigRequestDto<ProjectModel> request)
         {
             var query = new ProjectLatestReleaseQuery(request.Items, request.EnvClusterId);
             await eventBus.PublishAsync(query);

@@ -32,14 +32,14 @@ public class ProjectService : ServiceBase
         return result;
     }
 
-    public async Task<List<BuildingBlocks.StackSdks.Pm.Model.ProjectModel>> GetListAsync()
+    public async Task<List<ProjectModel>> GetListAsync()
     {
         var result = await _pmClient.ProjectService.GetListAsync();
 
         return result;
     }
 
-    public async Task<List<BuildingBlocks.StackSdks.Pm.Model.ProjectModel>> GetListByEnvironmentClusterIdAsync(int envClusterId)
+    public async Task<List<ProjectModel>> GetListByEnvironmentClusterIdAsync(int envClusterId)
     {
         var result = await _pmClient.ProjectService.GetListByEnvironmentClusterIdAsync(envClusterId);
 
@@ -53,7 +53,7 @@ public class ProjectService : ServiceBase
         return result;
     }
 
-    public async Task<List<BuildingBlocks.StackSdks.Pm.Model.ProjectModel>> GetListByTeamIdsAsync([FromBody] List<Guid> teamIds)
+    public async Task<List<ProjectModel>> GetListByTeamIdsAsync([FromBody] List<Guid> teamIds)
     {
         var result = await _pmClient.ProjectService.GetListByTeamIdsAsync(teamIds);
 

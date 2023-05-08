@@ -26,7 +26,6 @@ global using Masa.Stack.Components.Configs;
 global using Masa.Stack.Components.Extensions;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.AspNetCore.Components.Routing;
-global using Microsoft.AspNetCore.Components.Web;
 global using Microsoft.JSInterop;
 global using Newtonsoft.Json.Linq;
 global using ProjectModel = Masa.BuildingBlocks.StackSdks.Pm.Model.ProjectModel;

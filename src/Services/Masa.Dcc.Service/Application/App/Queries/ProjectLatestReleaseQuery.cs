@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Queries;
 
-public record ProjectLatestReleaseQuery(List<BuildingBlocks.StackSdks.Pm.Model.ProjectModel> Projects, int? EnvClusterId = null) : Query<List<LatestReleaseConfigModel>>
+public record ProjectLatestReleaseQuery(List<ProjectModel> Projects, int? EnvClusterId = null) : Query<List<LatestReleaseConfigModel>>
 {
     public override List<LatestReleaseConfigModel> Result { get; set; } = new();
 }

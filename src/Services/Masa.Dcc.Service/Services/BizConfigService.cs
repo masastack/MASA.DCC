@@ -21,7 +21,7 @@ namespace Masa.Dcc.Service.Admin.Services
         {
             var query = new ProjectLatestReleaseQuery(request.Items, request.EnvClusterId);
             await eventBus.PublishAsync(query);
-            return await _authClient.FillUserName(query.Result);
+            return await _authClient.FillUserNameAsync(query.Result);
         }
 
         public async Task<BizConfigDto> AddAsync(IEventBus eventBus, AddObjectConfigDto dto)

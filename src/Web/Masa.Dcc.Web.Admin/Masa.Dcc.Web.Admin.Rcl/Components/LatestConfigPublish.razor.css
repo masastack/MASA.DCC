@@ -1,0 +1,22 @@
+﻿::deep span.body3,
+.body3 {
+    font-family: 'Roboto' !important;
+    font-size: 0.75rem !important;
+    font-weight: 400 !important;
+    line-height: 1.125rem !important;
+    letter-spacing: 0.0166667em !important;
+}
+
+::deep .body, .body {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    line-height: 1.5rem !important;
+    letter-spacing: 0em !important;
+}
+
+::deep .body2,  .body2 {
+    font-size: 0.875rem !important;
+    font-weight: 400 !important;
+    line-height: 1.3125rem !important;
+    letter-spacing: 0.015625em !important;
+}

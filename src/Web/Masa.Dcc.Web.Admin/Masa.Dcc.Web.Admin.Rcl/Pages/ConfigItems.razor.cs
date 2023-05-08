@@ -18,6 +18,9 @@ public partial class ConfigItems
     public bool Disabled { get; set; }
 
     [Parameter]
+    public bool ShowPublish { get; set; }
+
+    [Parameter]
     public ConfigObjectType ConfigObjectType { get; set; }
 
     [Parameter]

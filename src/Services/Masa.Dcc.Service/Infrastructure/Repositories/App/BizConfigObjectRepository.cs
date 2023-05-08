@@ -9,13 +9,31 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
         {
         }
 
-        public async Task<List<BizConfigObject>> GetListByEnvClusterIdAsync(int envClusterId, int bizConfigId)
+        public async Task<List<BizConfigObject>> GetListByEnvClusterIdAsync(int envClusterId, int bizConfigId,
+            bool getLatestRelease)
         {
             var configData = await Context.Set<BizConfigObject>()
                 .Where(bizConfigObject => bizConfigObject.EnvironmentClusterId == envClusterId &&
                                           bizConfigObject.BizConfigId == bizConfigId)
                 .Include(bizConfigObject => bizConfigObject.ConfigObject)
                 .ToListAsync();
+            
+            if (getLatestRelease)
+            {
+                var objectIds = configData.Select(x => x.ConfigObjectId).Distinct().ToList();
+                var group = await Context.Set<ConfigObjectRelease>().Where(x => objectIds.Contains(x.ConfigObjectId))
+                    .GroupBy(x => x.ConfigObjectId)
+                    .Select(x => x.OrderByDescending(x => x.CreationTime).FirstOrDefault()).ToListAsync();
+                foreach (var config in configData)
+                {
+                    var r = group.FirstOrDefault(x => x?.ConfigObjectId == config.ConfigObjectId);
+                    if (r != null)
+                    {
+                        config.ConfigObject.ConfigObjectRelease.Clear();
+                        config.ConfigObject.ConfigObjectRelease.Add(r);
+                    }
+                }
+            }
 
             return configData;
         }

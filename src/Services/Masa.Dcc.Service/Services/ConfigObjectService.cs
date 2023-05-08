@@ -1,15 +1,18 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Service.Services;
+namespace Masa.Dcc.Service.Admin.Services;
 
 public class ConfigObjectService : ServiceBase
 {
-    public ConfigObjectService()
+    private readonly IAuthClient _authClient;
+    public ConfigObjectService(IAuthClient authClient)
     {
+        _authClient = authClient;
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject", RemoveAsync);
-        App.MapGet("api/v1/configObjects", GetListAsync);
+        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync);
+        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}/{configObjectName}", GetListAsync);
         App.MapPost("api/v1/configObjects/getListByIds", GetListByIdsAsync);
         App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
         App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
@@ -31,11 +34,11 @@ public class ConfigObjectService : ServiceBase
     }
 
     public async Task<List<ConfigObjectDto>> GetListAsync(
-        IEventBus eventBus, int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "")
+        IEventBus eventBus, int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "", bool getLatestRelease = false)
     {
-        var query = new ConfigObjectsQuery(envClusterId, objectId, type, configObjectName);
+        var query = new ConfigObjectsQuery(envClusterId, objectId, type, configObjectName, getLatestRelease);
         await eventBus.PublishAsync(query);
-
+        query.Result = await _authClient.FillUserNameAsync(query.Result);
         return query.Result;
     }
 
@@ -56,21 +59,25 @@ public class ConfigObjectService : ServiceBase
             switch (dto.FormatLabelCode)
             {
                 case "json":
-                    try {
+                    try
+                    {
                         if (dto.Content.StartsWith("["))
                             JArray.Parse(dto.Content);
                         else
                             JObject.Parse(dto.Content);
                     }
-                    catch {
+                    catch
+                    {
                         throw new Exception(I18n.T("Wrong format"));
-                    }                    
+                    }
                     break;
                 case "xml":
-                    try {
+                    try
+                    {
                         XElement.Parse(dto.Content);
-                    } 
-                    catch {
+                    }
+                    catch
+                    {
                         throw new Exception(I18n.T("Wrong format"));
                     }
                     break;

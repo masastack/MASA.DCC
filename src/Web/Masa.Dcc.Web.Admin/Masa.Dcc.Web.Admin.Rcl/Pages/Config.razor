@@ -107,15 +107,17 @@
                     <MExpansionPanels @bind-Values="_selectPanels" Multiple Flat>
                         @foreach (var configObject in _configObjects)
                         {
-                            bool _disablePanel = _userInfo.Account.ToLower() != "admin" && configObject.Encryption;
+                            bool disablePanel = _userInfo.Account.ToLower() != "admin" && configObject.Encryption;
+                            bool showPublish = !_selectPanels.Contains(configObject.Id) && configObject.LatestRelease != null;
                             var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                             if (formatLabelCode == "json")
                             {
-                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-2 my-3">
-                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
+                                <MExpansionPanel Disabled="@disablePanel" Value="configObject.Id" Class="rounded-2 my-3">
+                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="px-6 my-4">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
-                                                         Disabled="_disablePanel"
+                                                         Disabled="disablePanel"
+                                                         ShowPublish="showPublish"
                                                          EnableClone="_enableClone"
                                                          CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="UpdateJsonConfigAsync"
@@ -157,13 +159,14 @@
                             }
                             else if (formatLabelCode == "properties")
                             {
-                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-lg my-3">
+                                <MExpansionPanel Disabled="@disablePanel" Value="configObject.Id" Class="rounded-lg my-3">
                                     <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
-                                                         Disabled="_disablePanel"
+                                                         Disabled="disablePanel"
                                                          EnableClone="_enableClone"
-                                                         CancelEditConfigClick="CancelEditConfigContent"
+                                             ShowPublish="showPublish"
+                                             CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="(config) => { ShowPropertyModal(config, config.ConfigObjectPropertyContents); }"
                                                          CloneConfigClick="ShowCloneModalAsync"
                                                          ReleaseConfigClick="ShowReleaseModalAsync"
@@ -338,12 +341,13 @@
                             }
                             else
                             {
-                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-2 my-3">
+                                <MExpansionPanel Disabled="@disablePanel" Value="configObject.Id" Class="rounded-2 my-3">
                                     <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
-                                                         Disabled="_disablePanel"
-                                                         EnableClone="_enableClone"
+                                                         Disabled="disablePanel"
+                                             ShowPublish="showPublish"
+                                             EnableClone="_enableClone"
                                                          CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="UpdateOtherConfigObjectContentAsync"
                                                          CloneConfigClick="ShowCloneModalAsync"

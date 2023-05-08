@@ -59,16 +59,7 @@
                                         <span class="regular3--text body2">@project.Identity</span>
                                         <span class="ml-2 regular3--text body2">|</span>
                                         <sapn class="ml-2 regular3--text body2">@T("AppCount"): @apps.Count</sapn>
-                                       @if (latest != null)
-                                       {
-                                           <span class="ml-2 mr-1 regular3--text body2">@T("LatestReleaseConfig"): </span>
-                                           <DateTimeZone Class="regular3--text body2" Value="@latest.LastPublishTime"></DateTimeZone>
-                                           @if (!string.IsNullOrEmpty(latest.LastPublisher))
-                                            {
-                                                <span class="mx-1 regular3--text body2">|</span>
-                                                <span class="regular3--text body2">@latest?.LastPublisher </span>
-                                            }
-                                       }
+                                        <LatestConfigPublish LatestReleaseConfigModel="latest"></LatestConfigPublish>
                                     </div>
                                 </div>
                             </span>

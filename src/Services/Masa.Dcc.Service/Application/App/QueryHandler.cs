@@ -112,34 +112,63 @@ namespace Masa.Dcc.Service.Admin.Application.App
         [EventHandler]
         public async Task GetConfigObjectsAsync(ConfigObjectsQuery query)
         {
-            List<ConfigObjectDto> objectConfigObjects = new List<ConfigObjectDto>();
+            List<ConfigObjectDto> objectConfigObjects = new();
             var labels = await _labelRepository.GetListAsync();
             if (query.Type == ConfigObjectType.Public)
             {
-                var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
+                var data = await _publicConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId, query.GetLatestRelease);
                 TypeAdapterConfig<PublicConfigObject, ConfigObjectDto>.NewConfig()
                     .Map(dest => dest, src => src.ConfigObject)
                     .Map(dest => dest.Id, src => src.ConfigObjectId)
-                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
+                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId)
+                    .AfterMapping((src, dest) =>
+                    {
+                        SetDest(dest, src.ConfigObject);
+                    });
                 objectConfigObjects = data.Adapt<List<PublicConfigObject>, List<ConfigObjectDto>>();
             }
             else if (query.Type == ConfigObjectType.Biz)
             {
-                var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
+                var data = await _bizConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId, query.GetLatestRelease);
                 TypeAdapterConfig<BizConfigObject, ConfigObjectDto>.NewConfig()
                     .Map(dest => dest, src => src.ConfigObject)
                     .Map(dest => dest.Id, src => src.ConfigObjectId)
-                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
+                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId)
+                    .AfterMapping((src, dest) =>
+                    {
+                        SetDest(dest, src.ConfigObject);
+                    });
                 objectConfigObjects = data.Adapt<List<BizConfigObject>, List<ConfigObjectDto>>();
             }
             else if (query.Type == ConfigObjectType.App)
             {
-                var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId);
+                var data = await _appConfigObjectRepository.GetListByEnvClusterIdAsync(query.EnvClusterId, query.ObjectId, query.GetLatestRelease);
                 TypeAdapterConfig<AppConfigObject, ConfigObjectDto>.NewConfig()
                     .Map(dest => dest, src => src.ConfigObject)
                     .Map(dest => dest.Id, src => src.ConfigObjectId)
-                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
+                    .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId)
+                    .AfterMapping((src, dest) =>
+                    {
+                        SetDest(dest, src.ConfigObject);
+                    });
                 objectConfigObjects = data.Adapt<List<AppConfigObject>, List<ConfigObjectDto>>();
+            }
+
+            void SetDest(ConfigObjectDto dto, ConfigObject configObject)
+            {
+                if (query.GetLatestRelease)
+                {
+                    var release = configObject.ConfigObjectRelease?.MaxBy(x => x.CreationTime);
+                    if (release != null)
+                    {
+                        dto.LatestRelease = new()
+                        {
+                            LastPublishTime = release.CreationTime,
+                            LastPublisherId = release.Creator,
+                            ConfigObjectId = release.ConfigObjectId,
+                        };
+                    }
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(query.ConfigObjectName))
@@ -165,7 +194,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 CreationTime = configObject.CreationTime,
                 Creator = configObject.Creator,
                 ModificationTime = configObject.ModificationTime,
-                Modifier = configObject.Modifier
+                Modifier = configObject.Modifier,
+                LatestRelease = configObject.LatestRelease
             }).ToList();
         }
 
@@ -207,13 +237,13 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(configObjectReleases.TempContent) : src.TempContent);
 
             var result = configObjectReleases?.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>();
-            result.ConfigObjectReleases.ForEach(config =>
+            result?.ConfigObjectReleases.ForEach(config =>
             {
                 var content = result.Encryption ? DecryptContent(config.Content) : config.Content;
                 config.Content = content;
             });
 
-            query.Result = result;
+            query.Result = result ?? new();
         }
 
         [EventHandler]

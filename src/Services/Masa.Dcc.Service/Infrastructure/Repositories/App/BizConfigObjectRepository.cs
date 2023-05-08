@@ -64,7 +64,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
             }
             var qConfigs = Context.Set<BizConfigObject>()
                    .Include(x => x.BizConfig)
-                .Where(condition)
+                   .Where(condition)
                    .Select(b => new { b.BizConfig.Identity, b.ConfigObjectId });
 
             var qReleases = from biz in qConfigs

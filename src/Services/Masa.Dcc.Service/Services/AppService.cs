@@ -33,7 +33,7 @@ public class AppService : ServiceBase
 
     public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByAppAsync(IEventBus eventBus, LatestReleaseConfigRequestDto<int> request)
     {
-        var query = new LatestReleaseQueryByApp(request.Items, request.EnvClusterId);
+        var query = new LatestReleaseByAppQuery(request.Items, request.EnvClusterId);
         await eventBus.PublishAsync(query);
         return await _authClient.FillUserName(query.Result);
     }

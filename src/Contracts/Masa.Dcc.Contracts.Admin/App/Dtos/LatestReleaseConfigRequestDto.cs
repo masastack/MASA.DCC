@@ -5,6 +5,6 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos;
 
 public class LatestReleaseConfigRequestDto<T>
 {
-    public List<T> Items { get; set; }
+    public List<T> Items { get; set; } = new();
     public int? EnvClusterId { get; set; } = null;
 }

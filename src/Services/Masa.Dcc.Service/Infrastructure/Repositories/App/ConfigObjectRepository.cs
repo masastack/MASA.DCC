@@ -9,20 +9,20 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
         {
         }
 
-        public async Task<ConfigObject> GetConfigObjectWithReleaseHistoriesAsync(int Id)
+        public async Task<ConfigObject> GetConfigObjectWithReleaseHistoriesAsync(int id)
         {
             var configObject = await Context.Set<ConfigObject>()
-                .Where(configObject => configObject.Id == Id)
+                .Where(configObject => configObject.Id == id)
                 .Include(configObject => configObject.ConfigObjectRelease)
                 .FirstOrDefaultAsync();
 
             return configObject ?? throw new Exception("Config object does not exist");
         }
 
-        public async Task<List<ConfigObject>> GetRelationConfigObjectWithReleaseHistoriesAsync(int Id)
+        public async Task<List<ConfigObject>> GetRelationConfigObjectWithReleaseHistoriesAsync(int id)
         {
             var configObjects = await Context.Set<ConfigObject>()
-                .Where(configObject => configObject.RelationConfigObjectId == Id)
+                .Where(configObject => configObject.RelationConfigObjectId == id)
                 .Include(configObject => configObject.ConfigObjectRelease)
                 .ToListAsync();
 

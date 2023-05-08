@@ -16,5 +16,6 @@
   "ModificationTime": "Modification time",
   "ClusterCount": "Cluster count",
   "ProjectCount": "Project count",
-  "AppCount": "App count"
+  "AppCount": "App count",
+  "LatestReleaseConfig": "Published in"
 }

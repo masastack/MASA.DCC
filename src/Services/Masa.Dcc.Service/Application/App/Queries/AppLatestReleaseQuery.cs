@@ -3,8 +3,8 @@
 
 namespace Masa.Dcc.Service.Admin.Application.App.Queries
 {
-    public record ConfigObjectReleaseQuery(int ConfigObjectId) : Query<ConfigObjectWithReleaseHistoryDto>
+    public record AppLatestReleaseQuery(List<int> AppIds, int? EnvClusterId = null) : Query<List<LatestReleaseConfigModel>>
     {
-        public override ConfigObjectWithReleaseHistoryDto Result { get; set; } = new();
+        public override List<LatestReleaseConfigModel> Result { get; set; } = new();
     }
 }

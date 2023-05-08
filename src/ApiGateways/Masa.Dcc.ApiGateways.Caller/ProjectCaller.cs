@@ -25,9 +25,9 @@ namespace Masa.Dcc.Caller
             return result ?? new();
         }
 
-        public async Task<ProjectDetailModel> GetAsync(int Id)
+        public async Task<ProjectDetailModel> GetAsync(int id)
         {
-            var result = await Caller.GetAsync<ProjectDetailModel>($"{_prefix}/{Id}");
+            var result = await Caller.GetAsync<ProjectDetailModel>($"{_prefix}/{id}");
 
             return result ?? new();
         }

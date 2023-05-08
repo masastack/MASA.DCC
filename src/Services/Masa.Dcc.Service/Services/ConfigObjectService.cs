@@ -10,13 +10,13 @@ public class ConfigObjectService : ServiceBase
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject", RemoveAsync);
         App.MapGet("api/v1/configObjects", GetListAsync);
-        App.MapPost("api/v1/configObjects/getListbyIds", GetListByIdsAsync);
+        App.MapPost("api/v1/configObjects/getListByIds", GetListByIdsAsync);
         App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
         App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
-        App.MapPut("api/v1/configObject/revoke/{Id}", RevokeConfigObjectAsync);
+        App.MapPut("api/v1/configObject/revoke/{id}", RevokeConfigObjectAsync);
         App.MapPut("api/v1/configObject/rollback", RollbackAsync);
         App.MapPost("api/v1/configObject/clone", CloneConfigObjectAsync);
-        App.MapGet("api/v1/configObject/release/history/{configObejctId}", GetConfigObjectReleaseHistoryAsync);
+        App.MapGet("api/v1/configObject/release/history/{configObjectId}", GetConfigObjectReleaseHistoryAsync);
         App.MapGet("api/v1/configObject/refresh", RefreshConfigObjectToRedisAsync);
     }
 
@@ -39,9 +39,9 @@ public class ConfigObjectService : ServiceBase
         return query.Result;
     }
 
-    public async Task<List<ConfigObjectDto>> GetListByIdsAsync(IEventBus eventBus, [FromBody] List<int> Ids)
+    public async Task<List<ConfigObjectDto>> GetListByIdsAsync(IEventBus eventBus, [FromBody] List<int> ids)
     {
-        var query = new ConfigObjectListQuery(Ids);
+        var query = new ConfigObjectListQuery(ids);
         await eventBus.PublishAsync(query);
 
         return query.Result;
@@ -84,9 +84,9 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(command);
     }
 
-    public async Task RevokeConfigObjectAsync(IEventBus eventBus, [FromRoute] int Id)
+    public async Task RevokeConfigObjectAsync(IEventBus eventBus, [FromRoute] int id)
     {
-        await eventBus.PublishAsync(new RevokeConfigObjectCommand(Id));
+        await eventBus.PublishAsync(new RevokeConfigObjectCommand(id));
     }
 
     public async Task CloneConfigObjectAsync(IEventBus eventBus, CloneConfigObjectDto dto)
@@ -114,9 +114,9 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(new RollbackConfigObjectReleaseCommand(dto));
     }
 
-    public async Task<ConfigObjectWithReleaseHistoryDto> GetConfigObjectReleaseHistoryAsync(IEventBus eventBus, int configObejctId)
+    public async Task<ConfigObjectWithReleaseHistoryDto> GetConfigObjectReleaseHistoryAsync(IEventBus eventBus, int configObjectId)
     {
-        var query = new ConfigObjectReleaseQuery(configObejctId);
+        var query = new ConfigObjectReleaseQuery(configObjectId);
         await eventBus.PublishAsync(query);
 
         return query.Result;

@@ -5,11 +5,23 @@ namespace Masa.Dcc.Service.Admin.Services
 {
     public class BizConfigService : ServiceBase
     {
-        public BizConfigService()
+        private readonly IAuthClient _authClient;
+
+        public BizConfigService(IAuthClient authClient)
         {
+            _authClient = authClient;
             App.MapPost("api/v1/bizConfig", AddAsync);
             App.MapPut("api/v1/bizConfig", UpdateAsync);
             App.MapGet("api/v1/bizConfig/{identity}", GetAsync);
+            App.MapPost("api/v1/bizConfig/latestReleaseConfig", GetLatestReleaseConfigByProjectAsync);
+        }
+
+        public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByProjectAsync(IEventBus eventBus,
+            LatestReleaseConfigRequestDto<ProjectModel> request)
+        {
+            var query = new ProjectLatestReleaseQuery(request.Items, request.EnvClusterId);
+            await eventBus.PublishAsync(query);
+            return await _authClient.FillUserName(query.Result);
         }
 
         public async Task<BizConfigDto> AddAsync(IEventBus eventBus, AddObjectConfigDto dto)

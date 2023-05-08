@@ -842,13 +842,11 @@ textarea:disabled {
     max-width: 240px; 
     overflow: hidden;
 }
-.masa-main .appcard .cardaction {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding-bottom: 12px !important;
-}
+    .masa-main .appcard .cardaction {
+        padding-bottom: 12px !important;
+        align-items: start;
+        flex-direction: column
+    }
 
 .menu-configmore {
     box-shadow: 0px 8px 24px rgba(50, 61, 111, 0.08);

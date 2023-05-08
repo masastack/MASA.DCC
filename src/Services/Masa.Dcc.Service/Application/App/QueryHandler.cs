@@ -26,7 +26,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
             IBizConfigObjectRepository bizConfigObjectRepository,
             IAppConfigObjectRepository appConfigObjectRepository,
             IMasaStackConfig masaStackConfig,
-            ConfigObjectDomainService configObjectDomainService)
+            ConfigObjectDomainService configObjectDomainService,
+            IAuthClient authClient)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
@@ -58,6 +59,46 @@ namespace Masa.Dcc.Service.Admin.Application.App
         }
 
         [EventHandler]
+        public async Task GetLatestReleaseConfigByProjectAsync(
+            ProjectLatestReleaseQuery query)
+        {
+            var dbResult =
+                await _bizConfigObjectRepository.GetProjectLatestReleaseConfigAsync(query.Projects,
+                    query.EnvClusterId);
+
+
+            TypeAdapterConfig<(int ProjectId, ConfigObjectRelease Release), LatestReleaseConfigModel>.NewConfig()
+                .Map(dest => dest.ConfigObjectId, src => src.Release.ConfigObjectId)
+                .Map(dest => dest.ProjectId, src => src.ProjectId)
+                .Map(dest => dest.LastPublishTime, src => src.Release.CreationTime)
+                .Map(dest => dest.LastPublisherId, src => src.Release.Creator)
+                .IgnoreNullValues(true)
+                .IgnoreNonMapped(true);
+
+            query.Result = dbResult.Adapt<List<LatestReleaseConfigModel>>();
+
+        }
+
+        [EventHandler]
+        public async Task GetLatestReleaseConfigByAppAsync(
+            AppLatestReleaseQuery query)
+        {
+            var dbResult =
+                await _appConfigObjectRepository.GetAppLatestReleaseConfigAsync(query.AppIds,
+                    query.EnvClusterId);
+
+            TypeAdapterConfig<(int AppId, ConfigObjectRelease Release), LatestReleaseConfigModel>.NewConfig()
+                .Map(dest => dest.ConfigObjectId, src => src.Release.ConfigObjectId)
+                .Map(dest => dest.AppId, src => src.AppId)
+                .Map(dest => dest.LastPublishTime, src => src.Release.CreationTime)
+                .Map(dest => dest.LastPublisherId, src => src.Release.Creator)
+                .IgnoreNullValues(true)
+                .IgnoreNonMapped(true);
+
+            query.Result = dbResult.Adapt<List<LatestReleaseConfigModel>>();
+        }
+
+        [EventHandler]
         public async Task GetBizConfigsAsync(BizConfigsQuery query)
         {
             var result = await _bizConfigRepository.FindAsync(biz => biz.Identity == query.Identity);
@@ -80,7 +121,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                     .Map(dest => dest, src => src.ConfigObject)
                     .Map(dest => dest.Id, src => src.ConfigObjectId)
                     .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
-                objectConfigObjects = TypeAdapter.Adapt<List<PublicConfigObject>, List<ConfigObjectDto>>(data);
+                objectConfigObjects = data.Adapt<List<PublicConfigObject>, List<ConfigObjectDto>>();
             }
             else if (query.Type == ConfigObjectType.Biz)
             {
@@ -89,7 +130,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                     .Map(dest => dest, src => src.ConfigObject)
                     .Map(dest => dest.Id, src => src.ConfigObjectId)
                     .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
-                objectConfigObjects = TypeAdapter.Adapt<List<BizConfigObject>, List<ConfigObjectDto>>(data);
+                objectConfigObjects = data.Adapt<List<BizConfigObject>, List<ConfigObjectDto>>();
             }
             else if (query.Type == ConfigObjectType.App)
             {
@@ -98,7 +139,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                     .Map(dest => dest, src => src.ConfigObject)
                     .Map(dest => dest.Id, src => src.ConfigObjectId)
                     .Map(dest => dest.EnvironmentClusterId, src => src.EnvironmentClusterId);
-                objectConfigObjects = TypeAdapter.Adapt<List<AppConfigObject>, List<ConfigObjectDto>>(data);
+                objectConfigObjects = data.Adapt<List<AppConfigObject>, List<ConfigObjectDto>>();
             }
 
             if (!string.IsNullOrWhiteSpace(query.ConfigObjectName))
@@ -152,20 +193,20 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(src.Content) : src.Content)
                 .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(src.TempContent) : src.TempContent);
 
-            query.Result = TypeAdapter.Adapt<List<ConfigObject>, List<ConfigObjectDto>>(result.ToList());
+            query.Result = result.ToList().Adapt<List<ConfigObject>, List<ConfigObjectDto>>();
         }
 
         [EventHandler]
         public async Task GetConfigObjectReleaseHistoryAsync(ConfigObjectReleaseQuery query)
         {
-            var configObjectReleases = await _configObjectRepository.GetConfigObjectWithReleaseHistoriesAsync(query.ConfigObejctId);
+            var configObjectReleases = await _configObjectRepository.GetConfigObjectWithReleaseHistoriesAsync(query.ConfigObjectId);
 
             TypeAdapterConfig<ConfigObject, ConfigObjectWithReleaseHistoryDto>.NewConfig()
                 .Map(dest => dest.ConfigObjectReleases, src => src.ConfigObjectRelease)
                 .Map(dest => dest.Content, src => src.Encryption ? DecryptContent(configObjectReleases.Content) : src.Content)
                 .Map(dest => dest.TempContent, src => src.Encryption ? DecryptContent(configObjectReleases.TempContent) : src.TempContent);
 
-            var result = TypeAdapter.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>(configObjectReleases);
+            var result = configObjectReleases?.Adapt<ConfigObject, ConfigObjectWithReleaseHistoryDto>();
             result.ConfigObjectReleases.ForEach(config =>
             {
                 var content = result.Encryption ? DecryptContent(config.Content) : config.Content;

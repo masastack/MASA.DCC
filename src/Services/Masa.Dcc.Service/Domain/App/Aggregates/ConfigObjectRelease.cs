@@ -21,7 +21,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         [Comment("If it is rolled back, it will be true")]
         public bool IsInvalid { get; set; }
 
-        [Comment("Version foramt is yyyyMMddHHmmss")]
+        [Comment("Version format is yyyyMMddHHmmss")]
         [Required(ErrorMessage = "Version is required")]
         [Column(TypeName = "varchar(20)")]
         public string Version { get; set; }

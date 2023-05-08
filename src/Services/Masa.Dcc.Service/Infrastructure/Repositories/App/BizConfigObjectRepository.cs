@@ -57,21 +57,17 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
             //    select new { biz.BizConfig.Identity };
             // TODO Group by is not support to join,it support in EFCore 7.0 https://github.com/dotnet/efcore/issues/24106
 
-
-            var qBizConfigs = Context.Set<BizConfigObject>()
-                   .Include(x => x.BizConfig)
-                   .Where(x => identities.Contains(x.BizConfig.Identity))
-                   .Select(b => new { b.BizConfig.Identity, b.ConfigObjectId });
+            Expression<Func<BizConfigObject, bool>> condition = x => identities.Contains(x.BizConfig.Identity);
             if (envClusterId.HasValue)
             {
-                qBizConfigs = Context.Set<BizConfigObject>().AsNoTracking()
-                    .Include(x => x.BizConfig)
-                    .Where(x => identities.Contains(x.BizConfig.Identity) &&
-                                x.EnvironmentClusterId == envClusterId.Value)
-                    .Select(b => new { b.BizConfig.Identity, b.ConfigObjectId });
+                condition.And(x => x.EnvironmentClusterId == envClusterId.Value);
             }
+            var qConfigs = Context.Set<BizConfigObject>()
+                   .Include(x => x.BizConfig)
+                .Where(condition)
+                   .Select(b => new { b.BizConfig.Identity, b.ConfigObjectId });
 
-            var qReleases = from biz in qBizConfigs
+            var qReleases = from biz in qConfigs
                             join r in Context.Set<ConfigObjectRelease>() on biz.ConfigObjectId equals r.ConfigObjectId into rNullable
                             from release in rNullable.DefaultIfEmpty()
                             select new { biz.Identity, release };

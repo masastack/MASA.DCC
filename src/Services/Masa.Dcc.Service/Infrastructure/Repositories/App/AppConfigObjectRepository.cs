@@ -28,17 +28,16 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
             {
                 return result;
             }
-            var bizConfigs = Context.Set<AppConfigObject>()
-                .Where(x => appIds.Contains(x.AppId))
-                .Select(b => new { b.ConfigObjectId, b.AppId });
+            Expression<Func<AppConfigObject, bool>> condition = appConfig => appIds.Contains(appConfig.AppId);
             if (envClusterId.HasValue)
             {
-                bizConfigs = Context.Set<AppConfigObject>()
-                    .Where(x => appIds.Contains(x.AppId) && x.EnvironmentClusterId == envClusterId.Value)
-                    .Select(b => new { b.ConfigObjectId, b.AppId });
-            }
+                condition.And(x=>x.EnvironmentClusterId == envClusterId.Value);
+            } 
+            var qConfigs = Context.Set<AppConfigObject>()
+                .Where(condition)
+                .Select(b => new { b.ConfigObjectId, b.AppId });
 
-            var qRelease = from biz in bizConfigs
+            var qRelease = from biz in qConfigs
                     join r in Context.Set<ConfigObjectRelease>() on biz.ConfigObjectId equals r.ConfigObjectId into rNullable
                     from release in rNullable.DefaultIfEmpty()
                     select new { biz.AppId, release };

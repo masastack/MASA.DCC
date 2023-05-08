@@ -35,7 +35,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
                 List<ProjectModel> projects, int? envClusterId = null)
         {
 
-            List<(int projectId, ConfigObjectRelease release)> result = new();
+            List<(int ProjectId, ConfigObjectRelease Release)> result = new();
             if (projects?.Any() != true)
             {
                 return result;

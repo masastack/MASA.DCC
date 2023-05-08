@@ -60,7 +60,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
         [EventHandler]
         public async Task GetLatestReleaseConfigByProjectAsync(
-            LatestReleaseByProjectQuery query)
+            ProjectLatestReleaseQuery query)
         {
             var dbResult =
                 await _bizConfigObjectRepository.GetProjectLatestReleaseConfigAsync(query.Projects,
@@ -81,11 +81,11 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
         [EventHandler]
         public async Task GetLatestReleaseConfigByAppAsync(
-            LatestReleaseByAppQuery byAppQuery)
+            AppLatestReleaseQuery query)
         {
             var dbResult =
-                await _appConfigObjectRepository.GetAppLatestReleaseConfigAsync(byAppQuery.AppIds,
-                    byAppQuery.EnvClusterId);
+                await _appConfigObjectRepository.GetAppLatestReleaseConfigAsync(query.AppIds,
+                    query.EnvClusterId);
 
             TypeAdapterConfig<(int appId, ConfigObjectRelease release), LatestReleaseConfigModel>.NewConfig()
                 .Map(dest => dest.ConfigObjectId, src => src.release.ConfigObjectId)
@@ -95,7 +95,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 .IgnoreNullValues(true)
                 .IgnoreNonMapped(true);
 
-            byAppQuery.Result = dbResult.Adapt<List<LatestReleaseConfigModel>>();
+            query.Result = dbResult.Adapt<List<LatestReleaseConfigModel>>();
         }
 
         [EventHandler]

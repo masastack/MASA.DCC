@@ -9,7 +9,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
 
         Task<List<BizConfigObject>> GetListByBizConfigIdAsync(int bizConfigId);
 
-        Task<List<(int projectId, ConfigObjectRelease release)>> GetLatestReleaseConfigByProjectAsync(
+        Task<List<(int projectId, ConfigObjectRelease release)>> GetProjectLatestReleaseConfigAsync(
             List<BuildingBlocks.StackSdks.Pm.Model.ProjectModel> projects, int? envClusterId = null);
     }
 }

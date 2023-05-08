@@ -33,7 +33,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
         }
 
         public async Task<List<(int projectId, ConfigObjectRelease release)>>
-            GetLatestReleaseConfigByProjectAsync(
+            GetProjectLatestReleaseConfigAsync(
                 List<BuildingBlocks.StackSdks.Pm.Model.ProjectModel> projects, int? envClusterId = null)
         {
 

@@ -63,7 +63,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             LatestReleaseByProjectQuery query)
         {
             var dbResult =
-                await _bizConfigObjectRepository.GetLatestReleaseConfigByProjectAsync(query.Projects,
+                await _bizConfigObjectRepository.GetProjectLatestReleaseConfigAsync(query.Projects,
                     query.EnvClusterId);
 
 
@@ -84,7 +84,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             LatestReleaseByAppQuery byAppQuery)
         {
             var dbResult =
-                await _appConfigObjectRepository.GetLatestReleaseConfigByAppAsync(byAppQuery.AppIds,
+                await _appConfigObjectRepository.GetAppLatestReleaseConfigAsync(byAppQuery.AppIds,
                     byAppQuery.EnvClusterId);
 
             TypeAdapterConfig<(int appId, ConfigObjectRelease release), LatestReleaseConfigModel>.NewConfig()

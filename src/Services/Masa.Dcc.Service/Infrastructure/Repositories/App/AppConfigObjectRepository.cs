@@ -21,7 +21,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
             return configData;
         }
 
-        public async Task<List<(int appId, ConfigObjectRelease release)>> GetLatestReleaseConfigByAppAsync(IEnumerable<int> appIds, int? envClusterId)
+        public async Task<List<(int appId, ConfigObjectRelease release)>> GetAppLatestReleaseConfigAsync(IEnumerable<int> appIds, int? envClusterId)
         {
             List<(int appId, ConfigObjectRelease release)> result = new();
             if (appIds?.Any() != true)

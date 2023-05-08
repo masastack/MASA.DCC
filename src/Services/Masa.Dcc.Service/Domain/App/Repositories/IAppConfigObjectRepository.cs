@@ -9,7 +9,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Repositories
 
         Task<List<AppConfigObject>> GetListByEnvClusterIdAsync(int envClusterId, int appId);
 
-        Task<List<(int appId, ConfigObjectRelease release)>> GetAppLatestReleaseConfigAsync(IEnumerable<int> appIds,
+        Task<List<(int AppId, ConfigObjectRelease Release)>> GetAppLatestReleaseConfigAsync(IEnumerable<int> appIds,
             int? envClusterId = null);
     }
 }

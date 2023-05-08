@@ -30,7 +30,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
             return bizConfigObjects;
         }
 
-        public async Task<List<(int projectId, ConfigObjectRelease release)>>
+        public async Task<List<(int ProjectId, ConfigObjectRelease Release)>>
             GetProjectLatestReleaseConfigAsync(
                 List<ProjectModel> projects, int? envClusterId = null)
         {

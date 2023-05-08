@@ -67,11 +67,11 @@ namespace Masa.Dcc.Service.Admin.Application.App
                     query.EnvClusterId);
 
 
-            TypeAdapterConfig<(int projectId, ConfigObjectRelease release), LatestReleaseConfigModel>.NewConfig()
-                .Map(dest => dest.ConfigObjectId, src => src.release.ConfigObjectId)
-                .Map(dest => dest.ProjectId, src => src.projectId)
-                .Map(dest => dest.LastPublishTime, src => src.release.CreationTime)
-                .Map(dest => dest.LastPublisherId, src => src.release.Creator)
+            TypeAdapterConfig<(int ProjectId, ConfigObjectRelease Release), LatestReleaseConfigModel>.NewConfig()
+                .Map(dest => dest.ConfigObjectId, src => src.Release.ConfigObjectId)
+                .Map(dest => dest.ProjectId, src => src.ProjectId)
+                .Map(dest => dest.LastPublishTime, src => src.Release.CreationTime)
+                .Map(dest => dest.LastPublisherId, src => src.Release.Creator)
                 .IgnoreNullValues(true)
                 .IgnoreNonMapped(true);
 
@@ -87,11 +87,11 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 await _appConfigObjectRepository.GetAppLatestReleaseConfigAsync(query.AppIds,
                     query.EnvClusterId);
 
-            TypeAdapterConfig<(int appId, ConfigObjectRelease release), LatestReleaseConfigModel>.NewConfig()
-                .Map(dest => dest.ConfigObjectId, src => src.release.ConfigObjectId)
-                .Map(dest => dest.AppId, src => src.appId)
-                .Map(dest => dest.LastPublishTime, src => src.release.CreationTime)
-                .Map(dest => dest.LastPublisherId, src => src.release.Creator)
+            TypeAdapterConfig<(int AppId, ConfigObjectRelease Release), LatestReleaseConfigModel>.NewConfig()
+                .Map(dest => dest.ConfigObjectId, src => src.Release.ConfigObjectId)
+                .Map(dest => dest.AppId, src => src.AppId)
+                .Map(dest => dest.LastPublishTime, src => src.Release.CreationTime)
+                .Map(dest => dest.LastPublisherId, src => src.Release.Creator)
                 .IgnoreNullValues(true)
                 .IgnoreNonMapped(true);
 

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.Dcc.Contracts.Admin;
-
 namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
 {
     public class BizConfigObjectRepository : Repository<DccDbContext, BizConfigObject>, IBizConfigObjectRepository

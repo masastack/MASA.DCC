@@ -33,17 +33,18 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
             return bizConfigObjects;
         }
 
-        public async Task<List<(int ProjectId, ConfigObjectRelease Release)>>
+        public async Task<List<(ConfigObjectRelease Release, int ProjectId)>>
             GetProjectLatestReleaseConfigAsync(
                 List<ProjectModel> projects, int? envClusterId = null)
         {
 
-            List<(int ProjectId, ConfigObjectRelease Release)> result = new();
+            List<(ConfigObjectRelease Release, int ProjectId)> result = new();
             if (projects?.Any() != true)
             {
                 return result;
             }
-            var identities = projects.Select(x => x.Identity + DccConst.BizConfigSuffix);
+
+            var identities = projects.Select(x => (x.Identity + DccConst.BizConfigSuffix).ToLower());
             //var bizConfigs = await qBizConfigs.ToListAsync();
 
             //var qReleases = Context.Set<ConfigObjectRelease>().GroupBy(r => r.ConfigObjectId)
@@ -77,10 +78,11 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
 
             foreach (var project in projects)
             {
-                var m = qResult.FirstOrDefault(x => x.Identity == project.Identity + DccConst.BizConfigSuffix);
+                var m = qResult.FirstOrDefault(x => string.Equals(x.Identity,
+                    project.Identity + DccConst.BizConfigSuffix, StringComparison.InvariantCultureIgnoreCase));
                 if (m != null && m.release != null)
                 {
-                    result.Add((project.Id, m.release));
+                    result.Add((m.release, project.Id));
                 }
             }
 

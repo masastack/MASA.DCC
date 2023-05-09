@@ -44,7 +44,7 @@
     <MCol Cols="10">
         <div class="bizCard">
             <h6 class="emphasis2--text h6">@T("Business configuration")</h6>
-            <MCard Ripple=false Class="mt-4 rounded-5" Height="163"
+            <MCard Ripple=false Class="mt-4 rounded-5 appcard" Height="163"
                    OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, _projectEnvClusters[0].Id, ConfigObjectType.Biz, ProjectId))">
                 <MCardTitle Class="pb-0" Style="font-size: medium; flex-wrap:nowrap;">
                     <div class="emphasis2--text h7" @onclick:stopPropagation>
@@ -78,7 +78,7 @@
                     </SButton>
                 </MCardTitle>
                 <div class="regular3--text pl-4 body2 text-overflow">@_bizDetail.Identity</div>
-                <MCardActions Class="pa-0 mx-3 pb-4">
+                <MCardActions Class="pa-0 mx-3 pb-4 cardaction">
                     <MChipGroup @key="_projectEnvClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
                         @foreach (var item in _projectEnvClusters)
                         {
@@ -90,12 +90,9 @@
                         }
                     </MChipGroup>
                     @{ var bizRelease = _bizLatestReleaseConfig.FirstOrDefault(x => x.ProjectId == _projectDetail.Id); }
-                    @if (bizRelease != null)
-                    {
-                        <div class="full-width text-end">
-                            <LatestConfigPublish LatestReleaseConfigModel="bizRelease" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
-                        </div>
-                    }
+                    <div class="full-width text-end">
+                        <LatestConfigPublish LatestReleaseConfigModel="bizRelease" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
+                    </div>
                 </MCardActions>
             </MCard>
         </div>

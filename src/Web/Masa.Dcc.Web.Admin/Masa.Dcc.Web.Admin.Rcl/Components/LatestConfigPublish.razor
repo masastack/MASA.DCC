@@ -1,19 +1,19 @@
 ﻿@inherits MasaComponentBase
 
-@if (LatestReleaseConfigModel != null)
-{
-    <div>
-    <span class="@TitleClass">@T("LatestReleaseConfig"): </span>
-    <DateTimeZone Class="@TextClass" Value="@LatestReleaseConfigModel.LastPublishTime"></DateTimeZone>
-    @if (!string.IsNullOrEmpty(LatestReleaseConfigModel.LastPublisher))
+<div style="min-height:24px;">
+    @if (LatestReleaseConfigModel != null)
     {
-        <span class="@DividerClass">|</span>
-        <span class="@TextClass">@LatestReleaseConfigModel?.LastPublisher </span>
+        <span class="@TitleClass">@T("LatestReleaseConfig"): </span>
+        <DateTimeZone Class="@TextClass" Value="@LatestReleaseConfigModel.LastPublishTime"></DateTimeZone>
+        @if (!string.IsNullOrEmpty(LatestReleaseConfigModel.LastPublisher))
+        {
+            <span class="@DividerClass">|</span>
+            <span class="@TextClass">@LatestReleaseConfigModel?.LastPublisher </span>
+        }
     }
-    </div>
-}
+</div>
 
-@code{
+@code {
 
     [Parameter]
     public LatestReleaseConfigModel? LatestReleaseConfigModel { get; set; } = null;

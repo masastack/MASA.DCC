@@ -1,7 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Service.Services;
+namespace Masa.Dcc.Service.Admin.Services;
 
 public class PublicConfigService : ServiceBase
 {

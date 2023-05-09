@@ -1,0 +1,29 @@
+﻿@inherits MasaComponentBase
+
+@if (LatestReleaseConfigModel != null)
+{
+    <div>
+    <span class="@TitleClass">@T("LatestReleaseConfig"): </span>
+    <DateTimeZone Class="@TextClass" Value="@LatestReleaseConfigModel.LastPublishTime"></DateTimeZone>
+    @if (!string.IsNullOrEmpty(LatestReleaseConfigModel.LastPublisher))
+    {
+        <span class="@DividerClass">|</span>
+        <span class="@TextClass">@LatestReleaseConfigModel?.LastPublisher </span>
+    }
+    </div>
+}
+
+@code{
+
+    [Parameter]
+    public LatestReleaseConfigModel? LatestReleaseConfigModel { get; set; } = null;
+
+    [Parameter]
+    public string TitleClass { get; set; } = "ml-2 mr-1 regular3--text body2";
+
+    [Parameter]
+    public string TextClass { get; set; } = "regular3--text body2";
+
+    [Parameter]
+    public string DividerClass { get; set; } = "mx-1 regular3--text body2";
+}

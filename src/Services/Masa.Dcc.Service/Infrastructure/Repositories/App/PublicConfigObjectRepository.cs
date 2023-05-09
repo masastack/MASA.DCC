@@ -9,7 +9,8 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
         {
         }
 
-        public async Task<List<PublicConfigObject>> GetListByEnvClusterIdAsync(int? envClusterId, int publicConfigId)
+        public async Task<List<PublicConfigObject>> GetListByEnvClusterIdAsync(int? envClusterId, int publicConfigId,
+            bool getLatestRelease)
         {
             Expression<Func<PublicConfigObject, bool>> condition = p => p.PublicConfigId == publicConfigId;
             if (envClusterId.HasValue && envClusterId != 0)
@@ -19,6 +20,8 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
                 .Where(condition)
                 .Include(publicConfigObject => publicConfigObject.ConfigObject)
                 .ToListAsync();
+            
+            if (getLatestRelease) await Context.GetLatestReleaseOfConfigData(configData);
 
             return configData;
         }

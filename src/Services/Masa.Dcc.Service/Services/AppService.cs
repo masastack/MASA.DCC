@@ -31,7 +31,7 @@ public class AppService : ServiceBase
     {
         var query = new AppLatestReleaseQuery(request.Items, request.EnvClusterId);
         await eventBus.PublishAsync(query);
-        return await _authClient.FillUserName(query.Result);
+        return await _authClient.FillUserNameAsync(query.Result);
     }
 
     public async Task<List<AppDetailModel>> GetListAsync()

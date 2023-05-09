@@ -93,13 +93,7 @@
                     @if (bizRelease != null)
                     {
                         <div class="full-width text-end">
-                            <span class="ml-2 regular3--text body2">@T("LatestReleaseConfig"): </span>
-                            <DateTimeZone Class="regular3--text body2" Value="@bizRelease.LastPublishTime"></DateTimeZone>
-                            @if (!string.IsNullOrEmpty(bizRelease.LastPublisher))
-                            {
-                                <span class="mx-1 regular3--text body2">|</span>
-                                <span class="regular3--text body2">@bizRelease.LastPublisher </span>
-                            }
+                            <LatestConfigPublish LatestReleaseConfigModel="bizRelease" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
                         </div>
                     }
                 </MCardActions>

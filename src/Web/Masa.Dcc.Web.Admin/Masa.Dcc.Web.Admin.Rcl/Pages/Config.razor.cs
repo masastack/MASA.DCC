@@ -196,7 +196,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
         {
-            var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id, configObjectType, configObjectName);
+            var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id,
+                configObjectType, configObjectName, true);
             _configObjects = configObjects.OrderByDescending(config => config.CreationTime).Adapt<List<ConfigObjectModel>>();
             var configObjectIds = _configObjects.Where(c => c.RelationConfigObjectId != 0).Select(c => c.RelationConfigObjectId).ToList();
             var publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsByIdsAsync(configObjectIds);

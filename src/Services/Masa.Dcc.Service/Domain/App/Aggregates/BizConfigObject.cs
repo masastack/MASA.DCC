@@ -4,26 +4,13 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("BizConfigObjects")]
-    public class BizConfigObject : FullAggregateRoot<int, Guid>
+    public class BizConfigObject : ConfigObjectBase
     {
         [Required]
         [Range(1, int.MaxValue)]
         public int BizConfigId { get; private set; }
 
-        [Required]
-        [Range(1, int.MaxValue)]
-        public int ConfigObjectId { get; private set; }
-
-        [Required]
-        [Range(1, int.MaxValue)]
-        public int EnvironmentClusterId { get; private set; }
-
-        public ConfigObject ConfigObject { get; private set; } = null!;
-
         public BizConfig BizConfig { get; private set; } = null!;
-
-        [NotMapped]
-        public EnvironmentClusterModel? EnvironmentClusterModel { get; private set; }
 
         public BizConfigObject(int bizConfigId, int environmentClusterId)
         {

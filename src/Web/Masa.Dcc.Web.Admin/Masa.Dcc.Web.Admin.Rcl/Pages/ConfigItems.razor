@@ -1,40 +1,53 @@
 @inherits MasaComponentBase
+@{
+    var buttonColor = DisabledButton ? "#A3AED0" : "#323D6F";
+    var content = ConfigObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
+    var tempContent = ConfigObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
+}
+
 <div class="emphasis--text h6 d-flex align-center">
-    @if (ConfigObject.FromRelation)
-    {
-        <SIcon Color="primary" Class="mr-2">mdi-link-variant</SIcon>
-    }
-    @{
-        var buttonColor = DisabledButton ? "#A3AED0" : "#323D6F";
-        var content = ConfigObject.Content.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
-        var tempContent = ConfigObject.TempContent.Replace("\n", "").Replace(" ", "").Replace("\t", "").Replace("\r", "");
-        if (ConfigObject.RelationConfigObjectId == 0 && !ConfigObject.IsPublished && content != tempContent && !ConfigObject.IsEditing)
-        {
-            <div class="mr-2" style="height: 26px; padding:0 6px; background: #FF7D00; text-align: center; font-size: 12px;color: white; border-radius: 16px; font-weight: normal; line-height: 26px;">
-                @T("Modified")
+    <MRow NoGutters class="align-center">
+        <MCol Cols="12" class="d-flex align-center">
+            @if (ConfigObject.FromRelation)
+            {
+                <SIcon Color="primary" Class="mr-2">fas fa-solid fa-link</SIcon>
+            }
+            @if (ConfigObject.Encryption)
+            {
+                <SIcon Style="pointer-events: auto !important;" Color="#323D6F" Tooltip="@T("Encrypted config object")" Size="20" Class="mr-1">fas fa-link</SIcon>
+            }
+            <MHover Context="hContext">
+                <div @attributes="hContext.Attrs" class="hover-pointer d-flex align-center">
+                    <span class="mr-2">@ConfigObject.Name</span>
+                    <div @onclick="() => Copy(ConfigObject.Name)" @onclick:stopPropagation>
+                        <SIcon Tooltip="@T("Copy name")"
+                               Color="@(_configNameCopyClicked ? "success" : "gray")"
+                               Style="@(hContext.Hover ? "width: 18px; height: 18px; margin-right: 12px; transition: 0.5s;" : "opacity:0; width: 18px; height: 0px; margin-left: -24px; transition: 0.4s;")">
+                            @(_configNameCopyClicked ? _checkSvg : _copySvg)
+                        </SIcon>
+                    </div>
+                </div>
+            </MHover>
+            <div class="regular3--text btn d-flex">
+                <span>|</span>
+                <sapn class="ml-2">@ConfigObject.FormatName</sapn>
             </div>
-        }
-    }
-    @if (ConfigObject.Encryption)
-    {
-        <SIcon Style="pointer-events: auto !important;" Color="#323D6F" Tooltip="@T("Encrypted config object")" Size="20" Class="mr-1">mdi-lock</SIcon>
-    }
-    <MHover Context="hContext">
-        <div @attributes="hContext.Attrs" class="hover-pointer d-flex align-center">
-            <span class="mr-2">@ConfigObject.Name</span>
-            <div @onclick="() => Copy(ConfigObject.Name)" @onclick:stopPropagation>
-                <SIcon Tooltip="@T("Copy name")"
-                       Color="@(_configNameCopyClicked ? "success" : "gray")"
-                       Style="@(hContext.Hover ? "width: 18px; height: 18px; margin-right: 12px; transition: 0.5s;" : "opacity:0; width: 18px; height: 0px; margin-left: -24px; transition: 0.4s;")">
-                    @(_configNameCopyClicked ? _checkSvg : _copySvg)
-                </SIcon>
-            </div>
-        </div>
-    </MHover>
-    <div class="regular3--text btn d-flex">
-        <span>|</span>
-        <sapn class="ml-2">@ConfigObject.FormatName</sapn>
-    </div>
+        </MCol>
+        <MCol Cols="12" class="d-flex" Style="font-size: 0.75rem; font-weight: 400;">
+            @if (ConfigObject is { RelationConfigObjectId: 0, IsPublished: false, IsEditing: true } && content != tempContent)
+            {
+                <div class="mr-2 d-flex align-center" style="height: 24px; padding:0 6px; background: #FF7D00;min-width:44px;max-width:56px;text-align: center;color: white; border-radius: 6px;line-height: 18px;">
+                    @T("Modified")
+                </div>
+            }
+            @if (ShowPublish)
+            {
+                <div class="mr-2 d-flex align-center" style="height: 24px; padding:0;line-height: 18px;">
+                    <LatestConfigPublish LatestReleaseConfigModel="ConfigObject.LatestRelease" TitleClass="mr-1 regular3--text body3" TextClass="regular3--text body3"></LatestConfigPublish>
+                </div>
+            }
+        </MCol>
+    </MRow>
     <MSpacer></MSpacer>
     @if (FormatLabelCode == "properties")
     {
@@ -55,7 +68,7 @@
         }
 
         <SButton StopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
-            @if (!ConfigObject.IsEditing)
+        @if (!ConfigObject.IsEditing)
             {
                 var relation = ConfigObject.RelationConfigObjectId != 0;
                 <SIcon Tooltip="@(relation ? T("UnConnected") : T("Edit"))" Color="#323D6F">@(relation ? "mdi-link-variant-off" : "mdi-pencil")</SIcon>
@@ -69,7 +82,7 @@
     @if (EnableClone && ConfigObjectType != ConfigObjectType.Public && ConfigObject.FromRelation == false)
     {
         <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="CloneConfig">
-            <SIcon Tooltip="@T("Clone")" Size="20" Color="@buttonColor">fas fa-copy</SIcon>
+        <SIcon Tooltip="@T("Clone")" Size="20" Color="@buttonColor">fas fa-copy</SIcon>
         </SButton>
     }
     <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="ReleaseConfig">
@@ -116,8 +129,8 @@
                 </MListItem>
             </MList>
         </ChildContent>
-    </MMenu>
-    @if (!Disabled)
+        </MMenu>
+        @if (!Disabled)
     {
         <MDivider Vertical Class="separator"></MDivider>
     }

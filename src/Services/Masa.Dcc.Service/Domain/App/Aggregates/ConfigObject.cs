@@ -62,6 +62,18 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             Type = type;
         }
 
+        public void SetConfigObjectRelease(IEnumerable<ConfigObjectRelease> configObjectReleases)
+        {
+            _configObjectRelease.Clear();
+            _configObjectRelease.TryAddRange(configObjectReleases);
+        }
+
+        public void SetConfigObjectRelease(ConfigObjectRelease configObjectRelease)
+        {
+            _configObjectRelease.Clear();
+            _configObjectRelease.TryAdd(configObjectRelease);
+        }
+
         public void UpdateContent(string content)
         {
             Content = content;

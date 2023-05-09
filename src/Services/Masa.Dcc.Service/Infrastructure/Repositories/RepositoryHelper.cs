@@ -6,7 +6,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories;
 public static class RepositoryHelper
 {
     public static async Task<List<T>> GetLatestReleaseOfConfigData<T>(this DccDbContext context,
-        List<T> configData) where T : GeneralConfigObject
+        List<T> configData) where T : ConfigObjectBase
     {
         var objectIds = configData.Select(x => x.ConfigObjectId).Distinct().ToList();
 

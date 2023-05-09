@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("AppConfigObjects")]
-    public class AppConfigObject : GeneralConfigObject
+    public class AppConfigObject : ConfigObjectBase
     {
         [Comment("AppId")]
         [Required]

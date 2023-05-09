@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates;
 
-public abstract class GeneralConfigObject : FullAggregateRoot<int, Guid>
+public abstract class ConfigObjectBase : FullAggregateRoot<int, Guid>
 {
     [Comment("ConfigObjectId")]
     [Required]

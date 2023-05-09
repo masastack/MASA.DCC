@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 {
     [Table("PublicConfigObjects")]
-    public class PublicConfigObject : GeneralConfigObject
+    public class PublicConfigObject : ConfigObjectBase
     {
         [Required]
         [Range(1, int.MaxValue)]

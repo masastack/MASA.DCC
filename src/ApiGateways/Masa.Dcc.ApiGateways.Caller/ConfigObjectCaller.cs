@@ -50,9 +50,9 @@ namespace Masa.Dcc.ApiGateways.Caller
             return result ?? new();
         }
 
-        public async Task<List<ConfigObjectDto>> GetConfigObjectsByIdsAsync(List<int> Ids)
+        public async Task<List<ConfigObjectDto>> GetConfigObjectsByIdsAsync(List<int> ids)
         {
-            var result = await Caller.PostAsync<List<int>, List<ConfigObjectDto>>($"{_prefix}/configObjects/getListByIds", Ids);
+            var result = await Caller.PostAsync<List<int>, List<ConfigObjectDto>>($"{_prefix}/configObjects/getListByIds", ids);
 
             return result ?? new();
         }

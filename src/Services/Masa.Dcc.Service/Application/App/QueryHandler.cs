@@ -67,7 +67,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
                     query.EnvClusterId);
 
 
-            TypeAdapterConfig<(int ProjectId, ConfigObjectRelease Release), LatestReleaseConfigModel>.NewConfig()
+            TypeAdapterConfig<(ConfigObjectRelease Release, int ProjectId), LatestReleaseConfigModel>.NewConfig()
                 .Map(dest => dest.ConfigObjectId, src => src.Release.ConfigObjectId)
                 .Map(dest => dest.ProjectId, src => src.ProjectId)
                 .Map(dest => dest.LastPublishTime, src => src.Release.CreationTime)
@@ -75,7 +75,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 .IgnoreNullValues(true)
                 .IgnoreNonMapped(true);
 
-            query.Result = dbResult.Adapt<List<LatestReleaseConfigModel>>();
+            query.Result = dbResult
+                .Adapt<List<(ConfigObjectRelease Release, int ProjectId)>, List<LatestReleaseConfigModel>>();
 
         }
 
@@ -95,7 +96,8 @@ namespace Masa.Dcc.Service.Admin.Application.App
                 .IgnoreNullValues(true)
                 .IgnoreNonMapped(true);
 
-            query.Result = dbResult.Adapt<List<LatestReleaseConfigModel>>();
+            query.Result =
+                dbResult.Adapt<List<(int AppId, ConfigObjectRelease Release)>, List<LatestReleaseConfigModel>>();
         }
 
         [EventHandler]

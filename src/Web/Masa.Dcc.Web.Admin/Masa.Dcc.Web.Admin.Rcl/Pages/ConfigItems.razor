@@ -34,7 +34,7 @@
             </div>
         </MCol>
         <MCol Cols="12" class="d-flex" Style="font-size: 0.75rem; font-weight: 400;">
-            @if (ConfigObject is { RelationConfigObjectId: 0, IsPublished: false, IsEditing: true } && content != tempContent)
+            @if (ConfigObject is { RelationConfigObjectId: 0, IsPublished: false } && content != tempContent)
             {
                 <div class="mr-2 d-flex align-center" style="height: 24px; padding:0 6px; background: #FF7D00;min-width:44px;max-width:56px;text-align: center;color: white; border-radius: 6px;line-height: 18px;">
                     @T("Modified")
@@ -95,7 +95,7 @@
             </SButton>
         </ActivatorContent>
         <ChildContent>
-            <MList Width="180" Class="pa-2">
+            <MList Width="180" Class="pa-2" __internal_stopPropagation_onclick>
                 <MListItem OnClick="ReleaseHistory">
                     <SIcon Class="mr-4" IsDefaultToolTip="false">mdi-history</SIcon>
                     <MListItemContent>

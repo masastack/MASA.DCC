@@ -10,11 +10,11 @@
         <MCol Cols="12" class="d-flex align-center">
             @if (ConfigObject.FromRelation)
             {
-                <SIcon Color="primary" Class="mr-2">fas fa-solid fa-link</SIcon>
+                <SIcon Color="primary" Class="mr-2">mdi-link-variant</SIcon>
             }
             @if (ConfigObject.Encryption)
             {
-                <SIcon Style="pointer-events: auto !important;" Color="#323D6F" Tooltip="@T("Encrypted config object")" Size="20" Class="mr-1">fas fa-link</SIcon>
+                <SIcon Style="pointer-events: auto !important;" Color="#323D6F" Tooltip="@T("Encrypted config object")" Size="18" Class="mr-2">mdi-lock</SIcon>
             }
             <MHover Context="hContext">
                 <div @attributes="hContext.Attrs" class="hover-pointer d-flex align-center">

@@ -38,12 +38,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Inject]
         public ClusterCaller ClusterCaller { get; set; } = default!;
 
-        [Inject]
-        public IPopupService PopupService { get; set; } = default!;
-
-        [Inject]
-        public MasaUser MasaUser { get; set; } = default!;
-
         #region clone
         private ConfigObjectModel _selectConfigObject = new();
         private List<StringNumber> _selectEnvClusterIds = new();

@@ -42,7 +42,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
 
         public AppConfigObject AppConfigObject { get; private set; } = null!;
 
-        public List<ConfigObjectRelease> ConfigObjectRelease { get; set; } = new();
+        private readonly List<ConfigObjectRelease> _configObjectRelease = new();
+        public IReadOnlyCollection<ConfigObjectRelease> ConfigObjectRelease => _configObjectRelease;
 
         public ConfigObject(string name, string formatLabelCode, ConfigObjectType type, string content, string tempContent, int relationConfigObjectId = 0, bool fromRelation = false, bool encryption = false)
         {
@@ -59,6 +60,18 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
         public void SetConfigObjectType(ConfigObjectType type)
         {
             Type = type;
+        }
+
+        public void SetConfigObjectRelease(IEnumerable<ConfigObjectRelease> configObjectReleases)
+        {
+            _configObjectRelease.Clear();
+            _configObjectRelease.TryAddRange(configObjectReleases);
+        }
+
+        public void SetConfigObjectRelease(ConfigObjectRelease configObjectRelease)
+        {
+            _configObjectRelease.Clear();
+            _configObjectRelease.TryAdd(configObjectRelease);
         }
 
         public void UpdateContent(string content)

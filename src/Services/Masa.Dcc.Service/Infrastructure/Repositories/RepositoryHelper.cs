@@ -21,8 +21,7 @@ public static class RepositoryHelper
                 var r = group.FirstOrDefault(x => x?.ConfigObjectId == config.ConfigObjectId);
                 if (r != null)
                 {
-                    config.ConfigObject.ConfigObjectRelease.Clear();
-                    config.ConfigObject.ConfigObjectRelease.Add(r);
+                    config.ConfigObject.SetConfigObjectRelease(r);
                 }
             }
         }

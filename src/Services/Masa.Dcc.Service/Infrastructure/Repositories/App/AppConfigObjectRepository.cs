@@ -15,24 +15,9 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
             var configData = await Context.Set<AppConfigObject>()
                 .Where(appConfigObject => appConfigObject.EnvironmentClusterId == envClusterId && appConfigObject.AppId == appId)
                 .Include(appConfigObject => appConfigObject.ConfigObject)
-                .ToListAsync();
+                .AsNoTracking().ToListAsync();
 
-            if (getLatestRelease)
-            {
-                var objectIds = configData.Select(x => x.ConfigObjectId).Distinct().ToList();
-                var group = await Context.Set<ConfigObjectRelease>().Where(x => objectIds.Contains(x.ConfigObjectId))
-                    .GroupBy(x => x.ConfigObjectId)
-                    .Select(x => x.OrderByDescending(x => x.CreationTime).FirstOrDefault()).ToListAsync();
-                foreach (var config in configData)
-                {
-                    var r = group.FirstOrDefault(x => x?.ConfigObjectId == config.ConfigObjectId);
-                    if (r != null)
-                    {
-                        config.ConfigObject.ConfigObjectRelease.Clear();
-                        config.ConfigObject.ConfigObjectRelease.Add(r);
-                    }
-                }
-            }
+            if (getLatestRelease) await Context.GetLatestReleaseOfConfigData(configData);
 
             return configData;
         }
@@ -47,16 +32,16 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
             Expression<Func<AppConfigObject, bool>> condition = appConfig => appIds.Contains(appConfig.AppId);
             if (envClusterId.HasValue)
             {
-                condition.And(x=>x.EnvironmentClusterId == envClusterId.Value);
-            } 
+                condition.And(x => x.EnvironmentClusterId == envClusterId.Value);
+            }
             var qConfigs = Context.Set<AppConfigObject>()
                 .Where(condition)
                 .Select(b => new { b.ConfigObjectId, b.AppId });
 
             var qRelease = from biz in qConfigs
-                    join r in Context.Set<ConfigObjectRelease>() on biz.ConfigObjectId equals r.ConfigObjectId into rNullable
-                    from release in rNullable.DefaultIfEmpty()
-                    select new { biz.AppId, release };
+                           join r in Context.Set<ConfigObjectRelease>() on biz.ConfigObjectId equals r.ConfigObjectId into rNullable
+                           from release in rNullable.DefaultIfEmpty()
+                           select new { biz.AppId, release };
 
             var qResult = await qRelease.OrderByDescending(x => x.release.CreationTime).AsNoTracking().ToListAsync();
             foreach (var appId in appIds)

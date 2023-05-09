@@ -20,22 +20,9 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories
                 .Where(condition)
                 .Include(publicConfigObject => publicConfigObject.ConfigObject)
                 .ToListAsync();
-            if (getLatestRelease)
-            {
-                var objectIds = configData.Select(x => x.ConfigObjectId).Distinct().ToList();
-                var group = await Context.Set<ConfigObjectRelease>().Where(x => objectIds.Contains(x.ConfigObjectId))
-                    .GroupBy(x => x.ConfigObjectId)
-                    .Select(x => x.OrderByDescending(x => x.CreationTime).FirstOrDefault()).ToListAsync();
-                foreach (var config in configData)
-                {
-                    var r = group.FirstOrDefault(x => x?.ConfigObjectId == config.ConfigObjectId);
-                    if (r != null)
-                    {
-                        config.ConfigObject.ConfigObjectRelease.Clear();
-                        config.ConfigObject.ConfigObjectRelease.Add(r);
-                    }
-                }
-            }
+            
+            if (getLatestRelease) await Context.GetLatestReleaseOfConfigData(configData);
+
             return configData;
         }
 

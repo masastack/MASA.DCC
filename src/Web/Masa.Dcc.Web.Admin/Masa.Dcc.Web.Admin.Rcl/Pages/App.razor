@@ -90,12 +90,9 @@
                         }
                     </MChipGroup>
                     @{ var bizRelease = _bizLatestReleaseConfig.FirstOrDefault(x => x.ProjectId == _projectDetail.Id); }
-                    @if (bizRelease != null)
-                    {
-                        <div class="full-width text-end">
-                            <LatestConfigPublish LatestReleaseConfigModel="bizRelease" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
-                        </div>
-                    }
+                    <div class="full-width text-end">
+                        <LatestConfigPublish LatestReleaseConfigModel="bizRelease" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
+                    </div>
                 </MCardActions>
             </MCard>
         </div>

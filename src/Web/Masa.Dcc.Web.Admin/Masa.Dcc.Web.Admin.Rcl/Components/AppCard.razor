@@ -18,12 +18,9 @@
         <div class="full-width" @onclick:stopPropagation>
                 <MCardActions Class="px-0 mx-4 cardaction">
                 @ChildContent
-                @if (LatestReleaseConfig != null)
-                {
-                    <div class="full-width text-end">
-                        <LatestConfigPublish LatestReleaseConfigModel="LatestReleaseConfig" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
-                    </div>
-                }
+                <div class="full-width text-end">
+                    <LatestConfigPublish LatestReleaseConfigModel="LatestReleaseConfig" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
+                </div>
             </MCardActions>
         </div>
     </MCard>

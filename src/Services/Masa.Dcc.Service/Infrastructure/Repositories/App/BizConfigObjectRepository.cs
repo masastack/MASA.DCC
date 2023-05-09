@@ -3,6 +3,7 @@
 
 using System.Globalization;
 
+
 namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
 {
     public class BizConfigObjectRepository : Repository<DccDbContext, BizConfigObject>, IBizConfigObjectRepository

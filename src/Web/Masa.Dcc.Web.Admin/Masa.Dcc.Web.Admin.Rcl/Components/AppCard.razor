@@ -40,9 +40,6 @@
     public Model.AppModel App { get; set; } = new();
 
     [Parameter]
-    public bool ShowEditInfo { get; set; }
-
-    [Parameter]
     public string EditInfo { get; set; } = "";
 
     [Parameter]
@@ -57,7 +54,7 @@
     [Parameter]
     public bool IsPin { get; set; }
 
-    public int Height => ShowEditInfo ? 224 : 162;
+    public int Height => 186;
 
     private async Task HandleOnClickAsync()
     {

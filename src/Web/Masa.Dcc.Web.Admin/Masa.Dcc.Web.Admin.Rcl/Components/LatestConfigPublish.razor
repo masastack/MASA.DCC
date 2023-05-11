@@ -1,6 +1,6 @@
 ﻿@inherits MasaComponentBase
 
-<div class="@_emptyStyle">
+<div class="config-publish">
     @if (LatestReleaseConfigModel != null)
     {
         <span class="@TitleClass">@T("LatestReleaseConfig"): </span>
@@ -26,16 +26,4 @@
 
     [Parameter]
     public string DividerClass { get; set; } = "mx-1 regular3--text body2";
-
-    private string? _emptyStyle = "";
-
-    protected override Task OnParametersSetAsync()
-    {
-        if (LatestReleaseConfigModel is null)
-        {
-            _emptyStyle = "emptyLine";
-        }
-        return base.OnParametersSetAsync();
-    }
-
 }

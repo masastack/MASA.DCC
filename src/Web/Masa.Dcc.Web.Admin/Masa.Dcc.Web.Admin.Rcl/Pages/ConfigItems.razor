@@ -79,7 +79,7 @@
             }
         </SButton>
     }
-    @if (EnableClone && ConfigObjectType != ConfigObjectType.Public && ConfigObject.FromRelation == false)
+    @if (EnableClone && !ConfigObject.FromRelation)
     {
         <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="CloneConfig">
         <SIcon Tooltip="@T("Clone")" Size="20" Color="@buttonColor">fas fa-copy</SIcon>

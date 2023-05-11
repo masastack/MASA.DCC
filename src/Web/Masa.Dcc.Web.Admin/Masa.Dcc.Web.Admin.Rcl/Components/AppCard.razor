@@ -2,7 +2,7 @@
 
 <MHover Context="hoverContext" Class="d-flex flex-column">
     <MCard Ripple=false OnClick="OnClick" Outlined MinHeight="Height" @attributes="hoverContext.Attrs" Class="appcard" Elevation="@(hoverContext.Hover ? 6 : 0)" Style="@Style">
-        <MCardTitle Style="font-size: medium; flex-wrap:nowrap; padding: 12px 16px 8px 16px !important;">
+        <MCardTitle Style="font-size: medium; flex-wrap:nowrap;" Class="pt-3 pb-2">
             <div class="emphasis2--text h7 text-overflow appname">@App.Name</div>
             <div class="mx-3" style="color:#E2E7F4">|</div>
             <div class="emphasis2--text h7 text-overflow">@App.Type</div>
@@ -12,17 +12,15 @@
             </SButton>
         </MCardTitle>
         <MCardSubtitle>
-            <div class="body2 regular3--text text-overflow">@App.Identity</div>
-            <div class="text-overflow regular--text body text-overflow mt-4">@App.Description</div>
+        <div class="body2 regular3--text text-overflow">@App.Identity</div>
         </MCardSubtitle>
-        <div class="full-width" @onclick:stopPropagation>
-                <MCardActions Class="px-0 mx-4 cardaction">
+        <MCardText Class="px-4">
+            <div class="text-overflow regular--text body text-overflow mb-4" style="min-height:24px;">@App.Description</div>
+            <div class="full-width" @onclick:stopPropagation="true">
                 @ChildContent
-                <div class="full-width text-end">
-                    <LatestConfigPublish LatestReleaseConfigModel="LatestReleaseConfig" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
-                </div>
-            </MCardActions>
-        </div>
+            </div>
+            <LatestConfigPublish LatestReleaseConfigModel="LatestReleaseConfig" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
+        </MCardText>
     </MCard>
 </MHover>
 

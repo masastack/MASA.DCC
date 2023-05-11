@@ -8,7 +8,7 @@
         <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
             @foreach (var project in _projects)
             {
-                var apps = _apps.Where(app => app.ProjectId == project.Id).ToList();
+                var apps = _apps.Where(app => app.ProjectId == project.Id && app.EnvironmentClusters.Any(ec => ec.Id == EnvironmentClusterId)).ToList();
                 LatestReleaseConfigModel? latest = null;
                 var bizLatestRelease = _bizLatestReleaseConfig.FirstOrDefault(x => x.ProjectId == project.Id);
                 var appLatestRelease = _appLatestReleaseConfig.Where(l => apps.Any(a => a.Id == l.AppId)).MaxBy(x => x.LastPublishTime);
@@ -35,7 +35,8 @@
                                         </span>
                                     </MHover>
                                     <div class="mt-1 regul ar3--text body2 d-flex" style="padding:0">
-                                        @{
+                                        @if (!string.IsNullOrEmpty(project.LabelName))
+                                        {
                                             string backgroundColor;
                                             switch (project.LabelCode.ToLower())
                                             {
@@ -52,10 +53,10 @@
                                                     backgroundColor = "#BDBDBD";
                                                     break;
                                             }
+                                            <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px; height: fit-content;">
+                                                @project.LabelName
+                                            </div>
                                         }
-                                        <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px; height: fit-content;">
-                                            @project.LabelName
-                                        </div>
                                         <span class="regular3--text body2">@project.Identity</span>
                                         <span class="ml-2 regular3--text body2">|</span>
                                         <sapn class="ml-2 regular3--text body2">@T("AppCount"): @apps.Count</sapn>
@@ -100,19 +101,19 @@
                                 <SEmptyPlaceholder />
                             }
                         </MRow>
-                        <div class="d-flex justify-space-between align-flex-end mt-3 mb-2">
+                        <div class="d-flex justify-space-between align-flex-end mt-4 mb-2">
                             @{
                                 var team = _allTeams.FirstOrDefault(team => team.Id == project.TeamId) ?? new();
                                 <MTooltip Right>
-                                <ActivatorContent>
-                                    <MAvatar Size="24" @attributes="@context.Attrs">
-                                        <MImage Src="@team.Avatar"></MImage>
-                                    </MAvatar>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    <span>@team.Name</span>
-                                </ChildContent>
-                            </MTooltip>
+                                    <ActivatorContent>
+                                        <MAvatar Size="24" @attributes="@context.Attrs">
+                                            <MImage Src="@team.Avatar"></MImage>
+                                        </MAvatar>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <span>@team.Name</span>
+                                    </ChildContent>
+                                </MTooltip>
                             }
                             <MHover>
                                 @{

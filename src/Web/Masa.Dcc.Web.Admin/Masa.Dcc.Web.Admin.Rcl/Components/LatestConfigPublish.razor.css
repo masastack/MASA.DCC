@@ -14,13 +14,17 @@
     letter-spacing: 0em !important;
 }
 
-::deep .body2,  .body2 {
+::deep .body2, .body2 {
     font-size: 0.875rem !important;
     font-weight: 400 !important;
     line-height: 1.3125rem !important;
     letter-spacing: 0.015625em !important;
 }
 
-.emptyLine {
+
+.config-publish {
+    display: flex;
+    justify-content: end;
+    align-items: center;
     min-height: 24px;
 }

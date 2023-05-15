@@ -1,6 +1,8 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using System.Text.Json.Nodes;
+
 namespace Masa.Dcc.Service.Admin.Services;
 
 public class ConfigObjectService : ServiceBase
@@ -61,10 +63,7 @@ public class ConfigObjectService : ServiceBase
                 case "json":
                     try
                     {
-                        if (dto.Content.StartsWith("["))
-                            JArray.Parse(dto.Content);
-                        else
-                            JObject.Parse(dto.Content);
+                        JsonNode.Parse(dto.Content);
                     }
                     catch
                     {

@@ -60,4 +60,3 @@ global using Masa.Utils.Security.Cryptography;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
-global using Newtonsoft.Json.Linq;

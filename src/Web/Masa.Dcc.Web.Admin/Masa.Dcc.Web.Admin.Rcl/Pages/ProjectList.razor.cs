@@ -132,10 +132,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              PinTime = newApp != null ? newApp.ModificationTime : DateTime.MinValue
                          };
 
-            //get third in each project
-            result = result.GroupBy(x => x.ProjectId).SelectMany(g => g.OrderByDescending(app => app.IsPinned)
+            result = result.Where(app => EnvironmentClusterId == 0 || app.EnvironmentClusters.Any(ec => ec.Id == EnvironmentClusterId))
+                .GroupBy(x => x.ProjectId).SelectMany(g => g.OrderByDescending(app => app.IsPinned)
                 .ThenByDescending(app => app.PinTime)
-                .ThenByDescending(app => app.ModificationTime).Take(3));
+                .ThenByDescending(app => app.ModificationTime));
 
             return result.ToList();
         }

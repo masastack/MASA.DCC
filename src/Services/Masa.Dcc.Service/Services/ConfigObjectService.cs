@@ -61,10 +61,7 @@ public class ConfigObjectService : ServiceBase
                 case "json":
                     try
                     {
-                        if (dto.Content.StartsWith("["))
-                            JArray.Parse(dto.Content);
-                        else
-                            JObject.Parse(dto.Content);
+                        JsonNode.Parse(dto.Content);
                     }
                     catch
                     {

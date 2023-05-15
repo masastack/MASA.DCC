@@ -7,6 +7,7 @@ global using System.Linq.Expressions;
 global using System.Reflection;
 global using System.Text.Encodings.Web;
 global using System.Text.Json;
+global using System.Text.Json.Nodes;
 global using System.Xml.Linq;
 global using FluentValidation;
 global using FluentValidation.AspNetCore;

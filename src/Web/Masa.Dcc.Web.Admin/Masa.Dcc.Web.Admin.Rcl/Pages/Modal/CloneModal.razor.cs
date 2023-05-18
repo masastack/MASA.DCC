@@ -382,33 +382,25 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                         content = configObject.Content;
                     }
 
+                    var configDto = new AddConfigObjectDto
+                    {
+                        Name = configObject.Name,
+                        FormatLabelCode = configObject.FormatLabelCode,
+                        Type = configObject.Type,
+                        ObjectId = configObject.Id,
+                        EnvironmentClusterId = envClusterId.AsT1,
+                        Content = content,
+                        TempContent = initialContent,
+                        Encryption = configObject.Encryption
+                    };
+
                     if (configObject.IsNeedCover)
                     {
-                        dto.CoverConfigObjects.Add(new AddConfigObjectDto
-                        {
-                            Name = configObject.Name,
-                            FormatLabelCode = configObject.FormatLabelCode,
-                            Type = configObject.Type,
-                            ObjectId = configObject.Id,
-                            EnvironmentClusterId = envClusterId.AsT1,
-                            Content = content,
-                            TempContent = initialContent,
-                            Encryption = configObject.Encryption
-                        });
+                        dto.CoverConfigObjects.Add(configDto);
                     }
                     else
                     {
-                        dto.ConfigObjects.Add(new AddConfigObjectDto
-                        {
-                            Name = configObject.Name,
-                            FormatLabelCode = configObject.FormatLabelCode,
-                            Type = configObject.Type,
-                            ObjectId = configObject.Id,
-                            EnvironmentClusterId = envClusterId.AsT1,
-                            Content = content,
-                            TempContent = initialContent,
-                            Encryption = configObject.Encryption
-                        });
+                        dto.ConfigObjects.Add(configDto);
                     }
                 }
             }

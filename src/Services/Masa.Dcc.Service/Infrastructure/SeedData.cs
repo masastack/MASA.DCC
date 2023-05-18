@@ -15,6 +15,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
             var env = services.GetRequiredService<IWebHostEnvironment>();
             var contentRootPath = env.ContentRootPath;
             var masaConfig = builder.Services.GetMasaStackConfig();
+            var pmClient = services.GetRequiredService<IPmClient>();
 
             string system = "system";
             var userSetter = services.GetService<IUserSetter>();
@@ -26,7 +27,7 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
             unitOfWork.UseTransaction = false;
 
             await InitDccDataAsync(context, labelDomainService);
-            await InitPublicConfigAsync(context, contentRootPath, masaConfig, configObjectDomainService);
+            await InitPublicConfigAsync(context, masaConfig, contentRootPath, pmClient, configObjectDomainService);
 
             userSetterHandle.Dispose();
         }
@@ -127,30 +128,36 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
 
         public static async Task InitPublicConfigAsync(
             DccDbContext context,
-            string contentRootPath,
             IMasaStackConfig masaConfig,
+            string contentRootPath,
+            IPmClient pmClient,
             ConfigObjectDomainService configObjectDomainService)
         {
-            var publicConfigs = new Dictionary<string, string>
+            //TODO:InitConfigObjectAsync method repeat call pmClient.EnvironmentService.GetListAsync,should be optimized
+            var environments = await pmClient.EnvironmentService.GetListAsync();
+            foreach (var environment in environments)
             {
-                { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,masaConfig.Environment) },
-                { "$public.Email",GetEmail(contentRootPath,masaConfig.Environment) },
-                { "$public.Sms",GetSms(contentRootPath,masaConfig.Environment) },
-                { "$public.Cdn",GetCdn(contentRootPath,masaConfig.Environment) },
-                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,masaConfig.Environment) },
-                { "$public.i18n.en-us",GetI8nUs(contentRootPath,masaConfig.Environment) },
-                { "$public.i18n.zh-cn",GetI8nCn(contentRootPath,masaConfig.Environment) }
-            };
+                var publicConfigs = new Dictionary<string, string>
+                {
+                    { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,environment.Name) },
+                    { "$public.Email",GetEmail(contentRootPath,environment.Name) },
+                    { "$public.Sms",GetSms(contentRootPath,environment.Name) },
+                    { "$public.Cdn",GetCdn(contentRootPath,environment.Name) },
+                    { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,environment.Name) },
+                    { "$public.i18n.en-us",GetI8nUs(contentRootPath,environment.Name) },
+                    { "$public.i18n.zh-cn",GetI8nCn(contentRootPath,environment.Name) }
+                };
 
-            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", publicConfigs, false);
+                await configObjectDomainService.InitConfigObjectAsync(environment.Name, masaConfig.Cluster, "public-$Config", publicConfigs, false);
 
-            var encryptionPublicConfigs = new Dictionary<string, string>
-            {
-                { "$public.Oss",GetOss(contentRootPath, masaConfig.Environment) }
-            };
-            await configObjectDomainService.InitConfigObjectAsync(masaConfig.Environment, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true);
+                var encryptionPublicConfigs = new Dictionary<string, string>
+                {
+                    { "$public.Oss",GetOss(contentRootPath, environment.Name) }
+                };
+                await configObjectDomainService.InitConfigObjectAsync(environment.Name, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true);
 
-            await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
+            }
         }
 
         private static string GetI8nUs(string contentRootPath, string environment)

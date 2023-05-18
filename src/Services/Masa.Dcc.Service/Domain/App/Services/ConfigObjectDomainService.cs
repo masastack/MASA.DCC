@@ -474,7 +474,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower()) ?? throw new UserFriendlyException("Environment does not exist");
             var clusters = await _pmClient.ClusterService.GetListByEnvIdAsync(env.Id);
             var cluster = clusters.FirstOrDefault(c => c.Name.ToLower() == clusterName.ToLower()) ?? throw new UserFriendlyException("Cluster does not exist");
-
             foreach (var configObject in configObjects)
             {
                 var configObjectName = configObject.Key;

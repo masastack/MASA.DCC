@@ -13,7 +13,7 @@ public static class DccHelper
         foreach (var t in data)
         {
             var u = users.FirstOrDefault(x => x.Id == t.LastPublisherId);
-            t.LastPublisher = u?.StaffDislpayName ?? u?.DisplayName;
+            t.LastPublisher = u?.StaffDisplayName ?? u?.DisplayName;
         }
 
         return data;
@@ -29,7 +29,7 @@ public static class DccHelper
             if (t.LatestRelease != null)
             {
                 var u = users.FirstOrDefault(x => x.Id == t.LatestRelease?.LastPublisherId);
-                t.LatestRelease.LastPublisher = u?.StaffDislpayName ?? u?.DisplayName;
+                t.LatestRelease.LastPublisher = u?.StaffDisplayName ?? u?.DisplayName;
             }
         }
 

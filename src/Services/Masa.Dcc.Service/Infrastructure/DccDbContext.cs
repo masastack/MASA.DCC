@@ -13,6 +13,7 @@ namespace Masa.Dcc.Service.Infrastructure
         protected override void OnModelCreatingExecuting(ModelBuilder builder)
         {
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            builder.ApplyConfiguration(new IntegrationEventLogEntityTypeConfiguration());
             base.OnModelCreatingExecuting(builder);
         }
     }

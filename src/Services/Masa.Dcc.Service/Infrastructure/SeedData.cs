@@ -133,6 +133,10 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
             IPmClient pmClient,
             ConfigObjectDomainService configObjectDomainService)
         {
+            if (context.Set<ConfigObject>().Any())
+            {
+                return;
+            }
             //TODO:InitConfigObjectAsync method repeat call pmClient.EnvironmentService.GetListAsync,should be optimized
             var environments = await pmClient.EnvironmentService.GetListAsync();
             foreach (var environment in environments)

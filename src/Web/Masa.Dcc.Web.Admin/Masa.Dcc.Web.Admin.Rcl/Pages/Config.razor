@@ -314,19 +314,19 @@
                                                         <div class="d-flex justify-end">
                                                             @if (configObject.ElevationTabPropertyContent.Disabled)
                                                             {
-                                                                <SButton Class="mr-4" StopPropagation Icon OnClick="()=>CancelEditConfigContent(configObject)">
+                                                                <SButton Class="mr-4" OnClickStopPropagation Icon OnClick="()=>CancelEditConfigContent(configObject)">
                                                                     <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
                                                                 </SButton>
                                                             }
                                                             @if (!configObject.ElevationTabPropertyContent.Disabled)
                                                             {
-                                                                <SButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }">
+                                                            <SButton OnClickStopPropagation Icon Class="mr-4 mb-2" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }">
                                                                     <SIcon Tooltip="@(T("Edit"))" Class="hover-pointer" Color="#323D6F">mdi-pencil</SIcon>
                                                                 </SButton>
                                                             }
                                                             else
                                                             {
-                                                                <SButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>TextConvertPropertyAsync(configObject.Id)">
+                                                            <SButton OnClickStopPropagation Icon Class="mr-4 mb-2" OnClick="()=>TextConvertPropertyAsync(configObject.Id)">
                                                                     <SIcon Tooltip="@(T("Save"))" Color="success">mdi-check</SIcon>
                                                                 </SButton>
                                                             }

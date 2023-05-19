@@ -62,11 +62,11 @@
                     <MSpacer />
                     @if (_isEditBiz)
                     {
-                        <SButton Class="mr-4" StopPropagation Icon OnClick="CancelEditBizName">
+                        <SButton Class="mr-4" OnClickStopPropagation Icon OnClick="CancelEditBizName">
                             <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
                         </SButton>
                     }
-                    <SButton Icon OnClick="UpdateBizAsync" StopPropagation>
+                    <SButton Icon OnClick="UpdateBizAsync" OnClickStopPropagation>
                         @if (!_isEditBiz)
                         {
                             <SIcon Color="#323D6F" Size="20">mdi-pencil</SIcon>

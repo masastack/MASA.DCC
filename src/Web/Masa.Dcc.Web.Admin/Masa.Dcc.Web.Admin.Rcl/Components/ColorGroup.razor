@@ -3,7 +3,7 @@
     {
         <MItem>
             <MCard Class="elevation-0" Style="@($"transition: opacity .4s ease-in-out; {(context.Active ? "" : "opacity: 0.5;")}")">
-                <SButton StopPropagation Fab BorderRadiusClass="rounded-circle" Class="mx-1" OnClick="()=>{ context.Toggle(); ValueChanged.InvokeAsync(color); }"
+                <SButton OnClickStopPropagation Fab BorderRadiusClass="rounded-circle" Class="mx-1" OnClick="()=>{ context.Toggle(); ValueChanged.InvokeAsync(color); }"
                      Width=Size Height=Size MinWidth=Size MinHeight=Size Color="@color">
                 </SButton>
             </MCard>

@@ -53,7 +53,7 @@
     {
         if (!ConfigObject.FromRelation)
         {
-            <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
+            <SButton Disabled="DisabledButton" OnClickStopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
                 <SIcon Tooltip="@(T("Add config item"))" Color="@buttonColor">mdi-plus-circle</SIcon>
             </SButton>
         }
@@ -62,12 +62,12 @@
     {
         if (ConfigObject.IsEditing)
         {
-            <SButton Class="mr-4" StopPropagation Icon OnClick="CancelEditConfig">
+            <SButton Class="mr-4" OnClickStopPropagation Icon OnClick="CancelEditConfig">
                 <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
             </SButton>
         }
 
-        <SButton StopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
+        <SButton OnClickStopPropagation Icon Class="mr-4" OnClick="UpdateConfig">
         @if (!ConfigObject.IsEditing)
             {
                 var relation = ConfigObject.RelationConfigObjectId != 0;
@@ -81,16 +81,16 @@
     }
     @if (EnableClone && !ConfigObject.FromRelation)
     {
-        <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="CloneConfig">
+        <SButton Disabled="DisabledButton" OnClickStopPropagation Icon Class="mr-4" OnClick="CloneConfig">
         <SIcon Tooltip="@T("Clone")" Size="20" Color="@buttonColor">fas fa-copy</SIcon>
         </SButton>
     }
-    <SButton Disabled="DisabledButton" StopPropagation Icon Class="mr-4" OnClick="ReleaseConfig">
+    <SButton Disabled="DisabledButton" OnClickStopPropagation Icon Class="mr-4" OnClick="ReleaseConfig">
         <SIcon Tooltip="@T("Release")" Color="@buttonColor">mdi-send</SIcon>
     </SButton>
     <MMenu OffsetY NudgeLeft="72" Attach="@true" ContentClass="menu-configmore">
         <ActivatorContent>
-            <SButton Disabled="DisabledButton" @attributes="@context.Attrs" StopPropagation Icon Class="mr-4">
+            <SButton Disabled="DisabledButton" @attributes="@context.Attrs" OnClickStopPropagation Icon Class="mr-4">
                 <SIcon Color="@buttonColor">mdi-dots-vertical</SIcon>
             </SButton>
         </ActivatorContent>

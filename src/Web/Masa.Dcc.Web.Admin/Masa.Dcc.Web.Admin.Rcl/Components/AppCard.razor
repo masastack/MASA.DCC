@@ -7,7 +7,7 @@
             <div class="mx-3" style="color:#E2E7F4">|</div>
             <div class="emphasis2--text h7 text-overflow">@App.Type</div>
             <MSpacer />
-            <SButton StopPropagation Icon OnClick="OnPinClick">
+            <SButton OnClickStopPropagation Icon OnClick="OnPinClick">
                 <SIcon Color="@(IsPin ? "#FFB547" : "#E5E5E5")" Size="20" Tooltip="@(IsPin ? T("Cancel Pin") : null)">mdi-pin</SIcon>
             </SButton>
         </MCardTitle>

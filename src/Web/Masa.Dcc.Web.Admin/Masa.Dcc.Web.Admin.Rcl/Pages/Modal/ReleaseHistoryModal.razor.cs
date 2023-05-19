@@ -89,7 +89,7 @@ public partial class ReleaseHistoryModal
         _selectReleaseHistory = configObjectRelease;
 
         var creatorInfo = await GetUserAsync(_selectReleaseHistory.Creator);
-        _selectReleaseHistory.CreatorName = creatorInfo.StaffDislpayName;
+        _selectReleaseHistory.CreatorName = creatorInfo.StaffDisplayName;
 
         var index = _configObjectReleases.IndexOf(configObjectRelease);
         _prevReleaseHistory = _configObjectReleases.Skip(index + 1).FirstOrDefault() ?? new ConfigObjectReleaseModel();

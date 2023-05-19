@@ -468,7 +468,8 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             string clusterName,
             string appId,
             Dictionary<string, string> configObjects,
-            bool isEncryption)
+            ConfigObjectType configObjectType = ConfigObjectType.App,
+            bool isEncryption = false)
         {
             var envs = await _pmClient.EnvironmentService.GetListAsync();
             var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower()) ?? throw new UserFriendlyException("Environment does not exist");
@@ -491,7 +492,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 var newConfigObject = new ConfigObject(
                     configObjectName,
                     "JSON",
-                    ConfigObjectType.App,
+                    configObjectType,
                     content,
                     "{}",
                     encryption: isEncryption);

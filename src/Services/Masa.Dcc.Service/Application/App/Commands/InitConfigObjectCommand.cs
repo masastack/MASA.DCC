@@ -4,7 +4,7 @@
 namespace Masa.Dcc.Service.Admin.Application.App.Commands
 {
     public record InitConfigObjectCommand(string Environment, string Cluster, string AppId,
-        Dictionary<string, string> ConfigObjects, bool IsEncryption) : Command
+        Dictionary<string, string> ConfigObjects, ConfigObjectType ConfigObjectType, bool IsEncryption) : Command
     {
     }
 }

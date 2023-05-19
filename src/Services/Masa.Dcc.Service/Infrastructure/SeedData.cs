@@ -148,13 +148,13 @@ namespace Masa.Dcc.Service.Admin.Infrastructure
                     { "$public.i18n.zh-cn",GetI8nCn(contentRootPath,environment.Name) }
                 };
 
-                await configObjectDomainService.InitConfigObjectAsync(environment.Name, masaConfig.Cluster, "public-$Config", publicConfigs, false);
+                await configObjectDomainService.InitConfigObjectAsync(environment.Name, masaConfig.Cluster, "public-$Config", publicConfigs, ConfigObjectType.Public, false);
 
                 var encryptionPublicConfigs = new Dictionary<string, string>
                 {
                     { "$public.Oss",GetOss(contentRootPath, environment.Name) }
                 };
-                await configObjectDomainService.InitConfigObjectAsync(environment.Name, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, true);
+                await configObjectDomainService.InitConfigObjectAsync(environment.Name, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, ConfigObjectType.Public, true);
 
                 await context.SaveChangesAsync();
             }

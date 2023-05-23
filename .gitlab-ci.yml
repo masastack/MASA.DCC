@@ -48,7 +48,7 @@ deploy-dev:
     - main
   before_script:
     - helm repo add masastack https://masastack.github.io/helm/
-    - helm repo update masastack
+    - helm repo update
     - helm search repo masastack --devel --versions
   script:
     - echo $KUBE_CONFIG_MASA_YDY | base64 -d > ./config
@@ -64,7 +64,7 @@ deploy-test:
     - main
   before_script:
     - helm repo add masastack https://masastack.github.io/helm/
-    - helm repo update masastack
+    - helm repo update
     - helm search repo masastack --devel --versions
   script:
     - echo $KUBE_CONFIG_MASA_YDY | base64 -d > ./config
@@ -80,7 +80,7 @@ deploy-staging:
     - main
   before_script:
     - helm repo add masastack https://masastack.github.io/helm/
-    - helm repo update masastack
+    - helm repo update
     - helm search repo masastack --devel --versions
   script:
     - echo $KUBE_CONFIG_MASA_YDY | base64 -d > ./config

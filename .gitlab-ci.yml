@@ -46,9 +46,9 @@ deploy-dev-new:
   only:
     - main
   script:
-    - echo $KUBE_CONFIG_NEW_YDY | base64 -d > ./config
+    - echo $KUBE_CONFIG_MASA_YDY | base64 -d > ./config
     - echo $CI_PIPELINE_ID
-    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_DEV --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f values.yaml
+    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_DEV --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f ./values-dev.yaml
   retry: 2
   when: manual
 
@@ -58,9 +58,8 @@ deploy-test:
   only:
     - main
   script:
-    - echo $KUBE_CONFIG_NEW_YDY | base64 -d > ./config
+    - echo $KUBE_CONFIG_MASA_YDY | base64 -d > ./config
     - echo $CI_PIPELINE_ID
-    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_TEST --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f values.yaml
+    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_TEST --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f ./values-dev.yaml
   retry: 2
   when: manual
-

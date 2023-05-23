@@ -19,9 +19,8 @@ variables:
   NEW_IMAGE_DCC_UI_DEV: $NEW_ALI_REGISTRY/masa/masa-dcc-web-admin-server:dev-$CI_PIPELINE_ID
   DOCKER_DCC_PATH: ./src/Services/Masa.Dcc.Service/Dockerfile
   DOCKER_DCC_UI_PATH: ./src/Web/Masa.Dcc.Web.Admin/Masa.Dcc.Web.Admin.Server/Dockerfile
-  NAMESPACE_DEV: masa-new-dcc-dev
-  NAMESPACE_TEST: masa-new-dcc-test
-  NAMESPACE_PRE: masa-new-dcc-pre
+  NAMESPACE_DEV: masastack-dev
+  NAMESPACE_TEST: masastack-test
   NAMESPACE_PRD: masa-new-dcc-prd
 
 docker-build-dev:
@@ -40,67 +39,28 @@ docker-build-dev:
   after_script:
     - docker rmi $NEW_IMAGE_DCC_DEV   
     - docker rmi $NEW_IMAGE_DCC_UI_DEV
-  
-deploy-dev-ali:
+
+deploy-dev-new:
   stage: deploy-dev
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:helm3_latest
   only:
-    - main  
+    - main
   script:
-    - echo $KUBE_CONFIG_DEV | base64 -d > ./config
-    - echo $CI_PIPELINE_ID     
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n $NAMESPACE_DEV
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_DEV
+    - echo $KUBE_CONFIG_NEW_YDY | base64 -d > ./config
+    - echo $CI_PIPELINE_ID
+    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_DEV --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f ./values.yaml
   retry: 2
   when: manual
 
-deploy-dev:
-  stage: deploy-dev
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
-  only:
-    - main  
-  script:
-    - echo $KUBE_CONFIG_DEV_YDY | base64 -d > ./config
-    - echo $CI_PIPELINE_ID     
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n dcc-dev
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n dcc-dev
-  retry: 2
-  when: manual
-  
 deploy-test:
   stage: deploy-test
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:helm3_latest
   only:
-    - main  
+    - main
   script:
-    - echo $KUBE_CONFIG_DEV_YDY | base64 -d > ./config
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n dcc-staging
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-ui-admin masa-dcc-ui-admin=$NEW_IMAGE_DCC_UI_DEV -n dcc-staging
-  retry: 2
-  when: manual
-
-
-deploy-test-ali:
-  stage: deploy-test
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
-  only:
-    - main  
-  script:
-    - echo $KUBE_CONFIG_DEV | base64 -d > ./config
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n $NAMESPACE_TEST
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_TEST
+    - echo $KUBE_CONFIG_NEW_YDY | base64 -d > ./config
+    - echo $CI_PIPELINE_ID
+    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_TEST --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f ./values.yaml
   retry: 2
   when: manual
 

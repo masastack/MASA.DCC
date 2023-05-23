@@ -48,7 +48,7 @@ deploy-dev-new:
   script:
     - echo $KUBE_CONFIG_NEW_YDY | base64 -d > ./config
     - echo $CI_PIPELINE_ID
-    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_DEV --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f ./values.yaml
+    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_DEV --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f values.yaml
   retry: 2
   when: manual
 
@@ -60,39 +60,7 @@ deploy-test:
   script:
     - echo $KUBE_CONFIG_NEW_YDY | base64 -d > ./config
     - echo $CI_PIPELINE_ID
-    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_TEST --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f ./values.yaml
+    - helm --kubeconfig ./config upgrade --install masastack masastack/masastack --version 1.0.0-rc2 -n $NAMESPACE_TEST --set dcc.image.tag=$NEW_IMAGE_DCC_DEV -f values.yaml
   retry: 2
   when: manual
 
-docker-build-prd:
-  stage: docker-prd
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
-  only:
-    - tags  
-  script:
-    - docker build -f $DOCKER_DCC_PATH -t $NEW_IMAGE_DCC .
-    - docker push $NEW_IMAGE_DCC
-    - docker build -f $DOCKER_DCC_UI_PATH -t $NEW_IMAGE_DCC_UI .
-    - docker push $NEW_IMAGE_DCC_UI
-  after_script:
-    - docker rmi $NEW_IMAGE_DCC  
-    - docker rmi $NEW_IMAGE_DCC_UI
-  
-deploy-prd:
-  stage: deploy-prd
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
-  only:
-    - tags
-  script:
-    - echo $KUBE_CONFIG_IOT  | base64 -d > ./config
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC -n  loncloud
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI -n  loncloud
-  retry: 2
-  when: manual
-  

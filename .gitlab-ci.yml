@@ -95,3 +95,4 @@ deploy-prd:
     - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI -n  loncloud
   retry: 2
   when: manual
+  

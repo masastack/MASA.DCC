@@ -15,7 +15,9 @@ stages:
 variables:
   NEW_ALI_REGISTRY: registry.cn-hangzhou.aliyuncs.com
   NEW_IMAGE_DCC: $NEW_ALI_REGISTRY/masa/masa-dcc-service-admin:$CI_COMMIT_TAG
+  NEW_IMAGE_DCC_DEV: $NEW_ALI_REGISTRY/masa/masa-dcc-service-admin:dev-$CI_PIPELINE_ID
   NEW_IMAGE_DCC_UI: $NEW_ALI_REGISTRY/masa/masa-dcc-web-admin-server:$CI_COMMIT_TAG
+  NEW_IMAGE_DCC_UI_DEV : $NEW_ALI_REGISTRY/masa/masa-dcc-web-admin-server:dev-$CI_PIPELINE_ID
   DOCKER_DCC_PATH: ./src/Services/Masa.Dcc.Service/Dockerfile
   DOCKER_DCC_UI_PATH: ./src/Web/Masa.Dcc.Web.Admin/Masa.Dcc.Web.Admin.Server/Dockerfile
   NAMESPACE_PRD: masa-new-dcc-prd

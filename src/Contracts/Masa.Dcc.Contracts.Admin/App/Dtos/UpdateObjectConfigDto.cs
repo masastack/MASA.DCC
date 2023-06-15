@@ -21,9 +21,9 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         {
         }
 
-        public UpdateObjectConfigDto(int Id, string name, string description = "")
+        public UpdateObjectConfigDto(int id, string name, string description = "")
         {
-            this.Id = Id;
+            this.Id = id;
             Name = name;
             Description = description;
         }

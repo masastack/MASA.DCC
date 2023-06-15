@@ -6,9 +6,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
     public partial class Overview : IDisposable
     {
         [Inject]
-        public IPopupService PopupService { get; set; } = default!;
-
-        [Inject]
         public EnvironmentCaller EnvironmentCaller { get; set; } = default!;
 
         [Inject]

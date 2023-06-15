@@ -26,5 +26,7 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
         public string TempContent { get; set; } = "";
 
         public bool Encryption { get; set; }
+
+        public LatestReleaseConfigModel? LatestRelease { get; set; } = null;
     }
 }

@@ -88,6 +88,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private string _tempContent = "";
         private string _propertyConfigDialogTitle = "";
         private bool _showProcess = true;
+        private bool _enableClone => _appEnvs.Count > 1 || _appClusters.Count > 1 || ConfigObjectType != ConfigObjectType.Public;
 
         private List<DataTableHeader<ConfigObjectPropertyModel>> Headers
         {
@@ -95,13 +96,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 var headers = new List<DataTableHeader<ConfigObjectPropertyModel>>()
                 {
-                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished), Width = 170 },
-                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key), Width = 170 },
-                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value), Width = 170  },
+                    new() { Text = T("State"), Value = nameof(ConfigObjectPropertyModel.IsPublished) },
+                    new() { Text = T("Key"), Value = nameof(ConfigObjectPropertyModel.Key) },
+                    new() { Text = T("Value"), Value = nameof(ConfigObjectPropertyModel.Value)  },
                     new() { Text = T("Description"), Value = nameof(ConfigObjectPropertyModel.Description) },
-                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier), Width = 170  },
-                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime), Width = 170 },
-                    new() { Text = T("Operation"), Value="Operation", Sortable = false, Width = 170 }
+                    new() { Text = T("Modifier"), Value = nameof(ConfigObjectPropertyModel.Modifier) },
+                    new() { Text = T("ModificationTime"), Value = nameof(ConfigObjectPropertyModel.ModificationTime) },
+                    new() { Text = T("Operation"), Value="Operation", Sortable = false }
                 };
 
                 return headers;
@@ -153,7 +154,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     EnvironmentClusterId = _allEnvClusters.First().Id;
                     break;
                 case ConfigObjectType.Biz:
-                    _appDetail = (await ConfigObjectCaller.GetBizConfigAsync($"{ProjectIdentity}-$biz")).Adapt<AppDetailModel>();
+                    _appDetail = (await ConfigObjectCaller.GetBizConfigAsync($"{ProjectIdentity}{DccConst.BizConfigSuffix}")).Adapt<AppDetailModel>();
                     _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
                     var projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
                     _appDetail.EnvironmentClusters = projectEnvClusters;
@@ -195,7 +196,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
         private async Task GetConfigObjectsAsync(int envClusterId, ConfigObjectType configObjectType, string configObjectName = "")
         {
-            var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id, configObjectType, configObjectName);
+            var configObjects = await ConfigObjectCaller.GetConfigObjectsAsync(envClusterId, _appDetail.Id,
+                configObjectType, configObjectName, true);
             _configObjects = configObjects.OrderByDescending(config => config.CreationTime).Adapt<List<ConfigObjectModel>>();
             var configObjectIds = _configObjects.Where(c => c.RelationConfigObjectId != 0).Select(c => c.RelationConfigObjectId).ToList();
             var publicConfigObjects = await ConfigObjectCaller.GetConfigObjectsByIdsAsync(configObjectIds);
@@ -422,7 +424,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                             {
                                 Key = keyValues[0].TrimEnd(),
                                 Value = keyValues[1].TrimStart(),
-                                Modifier = _userInfo.StaffDislpayName ?? _userInfo.DisplayName
+                                Modifier = _userInfo.StaffDisplayName ?? _userInfo.DisplayName
                             });
                         }
                     }
@@ -679,7 +681,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private void ShowPropertyModal(ConfigObjectModel configObject, List<ConfigObjectPropertyModel>? models = null, ConfigObjectPropertyModel? model = null)
         {
             _selectConfigObject = configObject;
-            _propertyConfigModal.Data.Modifier = _userInfo.StaffDislpayName ?? _userInfo.DisplayName;
+            _propertyConfigModal.Data.Modifier = _userInfo.StaffDisplayName ?? _userInfo.DisplayName;
             _propertyConfigModal.Data.ModificationTime = DateTime.UtcNow;
             if (models != null)
             {
@@ -691,7 +693,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             else if (model != null)
             {
                 //edit
-                _propertyConfigDialogTitle = T("Modify config object item");
+                _propertyConfigDialogTitle = T("Edit config object item");
                 var dto = new ConfigObjectPropertyContentDto
                 {
                     Key = model.Key,

@@ -42,9 +42,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Inject]
         public ConfigObjectCaller ConfigObjectCaller { get; set; } = default!;
 
-        [Inject]
-        public IPopupService PopupService { get; set; } = default!;
-
         private readonly DataModal<AddConfigObjectReleaseDto> _configObjectReleaseModal = new();
 
         private List<DataTableHeader<ConfigObjectPropertyModel>> ReleaseHeaders

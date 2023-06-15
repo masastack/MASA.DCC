@@ -38,12 +38,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         [Inject]
         public ClusterCaller ClusterCaller { get; set; } = default!;
 
-        [Inject]
-        public IPopupService PopupService { get; set; } = default!;
-
-        [Inject]
-        public MasaUser MasaUser { get; set; } = default!;
-
         #region clone
         private ConfigObjectModel _selectConfigObject = new();
         private List<StringNumber> _selectEnvClusterIds = new();
@@ -65,18 +59,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
         {
             get
             {
-                var checkedConfigObejctCount = ConfigObjects.Count(c => !c.FromRelation && c.IsChecked);
-                return checkedConfigObejctCount == ConfigObjects.Count(c => !c.FromRelation);
+                var checkedConfigObjectCount = ConfigObjects.Count(c => !c.FromRelation && c.IsChecked);
+                return checkedConfigObjectCount == ConfigObjects.Count(c => !c.FromRelation);
             }
         }
 
         public bool IsNeedRebase
         {
-            get => ConfigObjects.Where(c => c.IsNeedRebase).Any();
+            get => ConfigObjects.Any(c => c.IsNeedRebase);
         }
         #endregion
 
-        private List<ConfigObjectModel> loadConfigObjects()
+        private List<ConfigObjectModel> LoadConfigObjects()
         {
             if (!_isCloneAll && ConfigObjects.Count > 1)
             {
@@ -103,18 +97,18 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
             if (ConfigObjectType == ConfigObjectType.Biz)
             {
                 var project = _allProjects.Find(project => project.Id == projectId) ?? new();
-                BizConfigDto bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{project.Identity}-$biz");
+                BizConfigDto bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{project.Identity}{DccConst.BizConfigSuffix}");
                 if (bizConfig.Id == 0)
                 {
                     bizConfig = await ConfigObjectCaller.AddBizConfigAsync(new AddObjectConfigDto
                     {
                         Name = "Biz",
-                        Identity = $"{project.Identity}-$biz"
+                        Identity = $"{project.Identity}{DccConst.BizConfigSuffix}"
                     });
                 }
                 _cloneApps = new List<AppDetailModel>
                 {
-                    new AppDetailModel
+                    new()
                     {
                         Id = bizConfig.Id,
                         Name= bizConfig.Name,
@@ -188,8 +182,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                 if (ConfigObjectType == ConfigObjectType.Biz)
                 {
                     var allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
-                    var peoject = await ProjectCaller.GetAsync(_cloneSelectProjectId);
-                    var projectEnvClusters = allEnvClusters.Where(envCluster => peoject.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
+                    var project = await ProjectCaller.GetAsync(_cloneSelectProjectId);
+                    var projectEnvClusters = allEnvClusters.Where(envCluster => project.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
                     _cloneSelectApp.EnvironmentClusters = projectEnvClusters;
                     _cloneSelectApp.Id = _cloneSelectAppId;
                 }
@@ -388,33 +382,25 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages.Modal
                         content = configObject.Content;
                     }
 
+                    var configDto = new AddConfigObjectDto
+                    {
+                        Name = configObject.Name,
+                        FormatLabelCode = configObject.FormatLabelCode,
+                        Type = configObject.Type,
+                        ObjectId = configObject.Id,
+                        EnvironmentClusterId = envClusterId.AsT1,
+                        Content = content,
+                        TempContent = initialContent,
+                        Encryption = configObject.Encryption
+                    };
+
                     if (configObject.IsNeedCover)
                     {
-                        dto.CoverConfigObjects.Add(new AddConfigObjectDto
-                        {
-                            Name = configObject.Name,
-                            FormatLabelCode = configObject.FormatLabelCode,
-                            Type = configObject.Type,
-                            ObjectId = configObject.Id,
-                            EnvironmentClusterId = envClusterId.AsT1,
-                            Content = content,
-                            TempContent = initialContent,
-                            Encryption = configObject.Encryption
-                        });
+                        dto.CoverConfigObjects.Add(configDto);
                     }
                     else
                     {
-                        dto.ConfigObjects.Add(new AddConfigObjectDto
-                        {
-                            Name = configObject.Name,
-                            FormatLabelCode = configObject.FormatLabelCode,
-                            Type = configObject.Type,
-                            ObjectId = configObject.Id,
-                            EnvironmentClusterId = envClusterId.AsT1,
-                            Content = content,
-                            TempContent = initialContent,
-                            Encryption = configObject.Encryption
-                        });
+                        dto.ConfigObjects.Add(configDto);
                     }
                 }
             }

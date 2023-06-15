@@ -1,22 +1,25 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Service.Services;
+namespace Masa.Dcc.Service.Admin.Services;
 
 public class ConfigObjectService : ServiceBase
 {
-    public ConfigObjectService()
+    private readonly IAuthClient _authClient;
+    public ConfigObjectService(IAuthClient authClient)
     {
+        _authClient = authClient;
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject", RemoveAsync);
-        App.MapGet("api/v1/configObjects", GetListAsync);
-        App.MapPost("api/v1/configObjects/getListbyIds", GetListByIdsAsync);
+        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync);
+        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}/{configObjectName}", GetListAsync);
+        App.MapPost("api/v1/configObjects/getListByIds", GetListByIdsAsync);
         App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
         App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
-        App.MapPut("api/v1/configObject/revoke/{Id}", RevokeConfigObjectAsync);
+        App.MapPut("api/v1/configObject/revoke/{id}", RevokeConfigObjectAsync);
         App.MapPut("api/v1/configObject/rollback", RollbackAsync);
         App.MapPost("api/v1/configObject/clone", CloneConfigObjectAsync);
-        App.MapGet("api/v1/configObject/release/history/{configObejctId}", GetConfigObjectReleaseHistoryAsync);
+        App.MapGet("api/v1/configObject/release/history/{configObjectId}", GetConfigObjectReleaseHistoryAsync);
         App.MapGet("api/v1/configObject/refresh", RefreshConfigObjectToRedisAsync);
     }
 
@@ -31,17 +34,17 @@ public class ConfigObjectService : ServiceBase
     }
 
     public async Task<List<ConfigObjectDto>> GetListAsync(
-        IEventBus eventBus, int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "")
+        IEventBus eventBus, int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "", bool getLatestRelease = false)
     {
-        var query = new ConfigObjectsQuery(envClusterId, objectId, type, configObjectName);
+        var query = new ConfigObjectsQuery(envClusterId, objectId, type, configObjectName, getLatestRelease);
         await eventBus.PublishAsync(query);
-
+        query.Result = await _authClient.FillUserNameAsync(query.Result);
         return query.Result;
     }
 
-    public async Task<List<ConfigObjectDto>> GetListByIdsAsync(IEventBus eventBus, [FromBody] List<int> Ids)
+    public async Task<List<ConfigObjectDto>> GetListByIdsAsync(IEventBus eventBus, [FromBody] List<int> ids)
     {
-        var query = new ConfigObjectListQuery(Ids);
+        var query = new ConfigObjectListQuery(ids);
         await eventBus.PublishAsync(query);
 
         return query.Result;
@@ -56,21 +59,22 @@ public class ConfigObjectService : ServiceBase
             switch (dto.FormatLabelCode)
             {
                 case "json":
-                    try {
-                        if (dto.Content.StartsWith("["))
-                            JArray.Parse(dto.Content);
-                        else
-                            JObject.Parse(dto.Content);
+                    try
+                    {
+                        JsonNode.Parse(dto.Content);
                     }
-                    catch {
+                    catch
+                    {
                         throw new Exception(I18n.T("Wrong format"));
-                    }                    
+                    }
                     break;
                 case "xml":
-                    try {
+                    try
+                    {
                         XElement.Parse(dto.Content);
-                    } 
-                    catch {
+                    }
+                    catch
+                    {
                         throw new Exception(I18n.T("Wrong format"));
                     }
                     break;
@@ -84,9 +88,9 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(command);
     }
 
-    public async Task RevokeConfigObjectAsync(IEventBus eventBus, [FromRoute] int Id)
+    public async Task RevokeConfigObjectAsync(IEventBus eventBus, [FromRoute] int id)
     {
-        await eventBus.PublishAsync(new RevokeConfigObjectCommand(Id));
+        await eventBus.PublishAsync(new RevokeConfigObjectCommand(id));
     }
 
     public async Task CloneConfigObjectAsync(IEventBus eventBus, CloneConfigObjectDto dto)
@@ -114,9 +118,9 @@ public class ConfigObjectService : ServiceBase
         await eventBus.PublishAsync(new RollbackConfigObjectReleaseCommand(dto));
     }
 
-    public async Task<ConfigObjectWithReleaseHistoryDto> GetConfigObjectReleaseHistoryAsync(IEventBus eventBus, int configObejctId)
+    public async Task<ConfigObjectWithReleaseHistoryDto> GetConfigObjectReleaseHistoryAsync(IEventBus eventBus, int configObjectId)
     {
-        var query = new ConfigObjectReleaseQuery(configObejctId);
+        var query = new ConfigObjectReleaseQuery(configObjectId);
         await eventBus.PublishAsync(query);
 
         return query.Result;

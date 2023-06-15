@@ -1,37 +1,34 @@
-# include:
-#   - project: 'louzhijian/devops'
-#     ref: master
-#     file: 'devops/sonar-scanner.yml'
-
 stages:
-#   - sonarqube
   - docker-dev
   - deploy-dev
   - deploy-test
   - docker-prd
+  - deploy-staging
   - deploy-prd
 
 variables:
-  NEW_ALI_REGISTRY: registry.cn-hangzhou.aliyuncs.com
-  NEW_IMAGE_DCC: $NEW_ALI_REGISTRY/masa/masa-dcc-service-admin:$CI_COMMIT_TAG
-  NEW_IMAGE_DCC_DEV: $NEW_ALI_REGISTRY/masa/masa-dcc-service-admin:dev-$CI_PIPELINE_ID
-  NEW_IMAGE_DCC_UI: $NEW_ALI_REGISTRY/masa/masa-dcc-web-admin-server:$CI_COMMIT_TAG
-  NEW_IMAGE_DCC_UI_DEV: $NEW_ALI_REGISTRY/masa/masa-dcc-web-admin-server:dev-$CI_PIPELINE_ID
   DOCKER_DCC_PATH: ./src/Services/Masa.Dcc.Service/Dockerfile
   DOCKER_DCC_UI_PATH: ./src/Web/Masa.Dcc.Web.Admin/Masa.Dcc.Web.Admin.Server/Dockerfile
-  NAMESPACE_DEV: masa-new-dcc-dev
-  NAMESPACE_TEST: masa-new-dcc-test
-  NAMESPACE_PRE: masa-new-dcc-pre
-  NAMESPACE_PRD: masa-new-dcc-prd
 
-docker-build-dev:
+  NEW_IMAGE_DCC_DEV: $CI_ALI_REGISTRY_DOMAIN/masastack/masa-dcc-service-admin:dev-$CI_PIPELINE_ID
+  NEW_IMAGE_DCC_UI_DEV: $CI_ALI_REGISTRY_DOMAIN/masastack/masa-dcc-web-admin-server:dev-$CI_PIPELINE_ID
+
+  NEW_IMAGE_DCC: $CI_ALI_REGISTRY_DOMAIN/masastack/masa-dcc-service-admin:$CI_PIPELINE_ID
+  NEW_IMAGE_DCC_UI: $CI_ALI_REGISTRY_DOMAIN/masastack/masa-dcc-web-admin-server:$CI_PIPELINE_ID
+
+  NAMESPACE_DEV: masastack-dev
+  NAMESPACE_TEST: masastack-test
+  NAMESPACE_STAGING: masastack-staging
+  NAMESPACE_PRD: masastack
+
+docker-dev:
   stage: docker-dev
   tags:
     - linux-shell
   before_script:
     - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
   only:
-    - main  
+    - main
   script:
     - docker build -f $DOCKER_DCC_PATH -t $NEW_IMAGE_DCC_DEV .
     - docker push $NEW_IMAGE_DCC_DEV 
@@ -40,98 +37,70 @@ docker-build-dev:
   after_script:
     - docker rmi $NEW_IMAGE_DCC_DEV   
     - docker rmi $NEW_IMAGE_DCC_UI_DEV
-  
-deploy-dev-ali:
-  stage: deploy-dev
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
-  only:
-    - main  
-  script:
-    - echo $KUBE_CONFIG_DEV | base64 -d > ./config
-    - echo $CI_PIPELINE_ID     
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n $NAMESPACE_DEV
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_DEV
-  retry: 2
-  when: manual
 
 deploy-dev:
   stage: deploy-dev
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:kubectl-shell-v1.21.1
   only:
-    - main  
+    - main
   script:
-    - echo $KUBE_CONFIG_DEV_YDY | base64 -d > ./config
-    - echo $CI_PIPELINE_ID     
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n dcc-dev
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n dcc-dev
+    - echo $KUBE_CONFIG_MASA_YDY | base64 -d > ./config
+    - echo $CI_PIPELINE_ID
+    - kubectl --kubeconfig ./config set image deployment/dcc dcc=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_DEV
+    - kubectl --kubeconfig ./config set image deployment/dcc-service dcc-service=$NEW_IMAGE_DCC_DEV -n $NAMESPACE_DEV
   retry: 2
-  when: manual
-  
+
 deploy-test:
   stage: deploy-test
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:kubectl-shell-v1.21.1
   only:
-    - main  
+    - main
   script:
-    - echo $KUBE_CONFIG_DEV_YDY | base64 -d > ./config
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n dcc-staging
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-ui-admin masa-dcc-ui-admin=$NEW_IMAGE_DCC_UI_DEV -n dcc-staging
+    - echo $KUBE_CONFIG_MASA_YDY | base64 -d > ./config
+    - echo $CI_PIPELINE_ID
+    - kubectl --kubeconfig ./config set image deployment/dcc dcc=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_TEST
+    - kubectl --kubeconfig ./config set image deployment/dcc-service dcc-service=$NEW_IMAGE_DCC_DEV -n $NAMESPACE_TEST
   retry: 2
   when: manual
 
-
-deploy-test-ali:
-  stage: deploy-test
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+deploy-staging:
+  stage: deploy-staging
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:kubectl-shell-v1.21.1
   only:
-    - main  
+    - main
   script:
-    - echo $KUBE_CONFIG_DEV | base64 -d > ./config
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC_DEV -n $NAMESPACE_TEST
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_TEST
+    - echo $KUBE_CONFIG_MASA_YDY | base64 -d > ./config
+    - echo $CI_PIPELINE_ID
+    - kubectl --kubeconfig ./config set image deployment/dcc dcc=$NEW_IMAGE_DCC_UI_DEV -n $NAMESPACE_STAGING
+    - kubectl --kubeconfig ./config set image deployment/dcc-service dcc-service=$NEW_IMAGE_DCC_DEV -n $NAMESPACE_STAGING
   retry: 2
   when: manual
 
-docker-build-prd:
+docker-prd:
   stage: docker-prd
   tags:
     - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
-  only:
-    - tags  
-  script:
-    - docker build -f $DOCKER_DCC_PATH -t $NEW_IMAGE_DCC .
-    - docker push $NEW_IMAGE_DCC
-    - docker build -f $DOCKER_DCC_UI_PATH -t $NEW_IMAGE_DCC_UI .
-    - docker push $NEW_IMAGE_DCC_UI
-  after_script:
-    - docker rmi $NEW_IMAGE_DCC  
-    - docker rmi $NEW_IMAGE_DCC_UI
-  
-deploy-prd:
-  stage: deploy-prd
-  tags:
-    - linux-shell
-  before_script:
-    - docker login -u $CI_ALI_REGISTRY_USER -p $CI_ALI_REGISTRY_PASSWD $CI_ALI_REGISTRY_DOMAIN 
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:kubectl-shell-v1.21.1
   only:
     - tags
   script:
-    - echo $KUBE_CONFIG_IOT  | base64 -d > ./config
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-service-admin masa-dcc-service-admin=$NEW_IMAGE_DCC -n  loncloud
-    - kubectl --kubeconfig ./config set image deployment/masa-dcc-web-admin-server masa-dcc-web-admin-server=$NEW_IMAGE_DCC_UI -n  loncloud
+    - docker build -f $DOCKER_DCC_PATH -t $NEW_IMAGE_DCC .
+    - docker push $NEW_IMAGE_DCC 
+    - docker build -f $DOCKER_DCC_UI_PATH -t $NEW_IMAGE_DCC_UI .
+    - docker push $NEW_IMAGE_DCC_UI
+  after_script:
+    - docker rmi $NEW_IMAGE_DCC   
+    - docker rmi $NEW_IMAGE_DCC_UI
+
+deploy-prd:
+  stage: deploy-prd
+  image: registry.cn-hangzhou.aliyuncs.com/masa/library:kubectl-shell-v1.21.1
+  only:
+    - tags
+  script:
+    - echo $KUBE_CONFIG_MASA_PRD | base64 -d > ./config
+    - echo $CI_COMMIT_TAG
+    - kubectl --kubeconfig ./config set image deployment/dcc dcc=$NEW_IMAGE_DCC_UI -n $NAMESPACE_PRD
+    - kubectl --kubeconfig ./config set image deployment/dcc-service dcc-service=$NEW_IMAGE_DCC -n $NAMESPACE_PRD
   retry: 2
   when: manual

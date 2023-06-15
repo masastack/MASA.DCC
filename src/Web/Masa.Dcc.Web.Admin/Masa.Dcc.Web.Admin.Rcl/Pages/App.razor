@@ -44,7 +44,7 @@
     <MCol Cols="10">
         <div class="bizCard">
             <h6 class="emphasis2--text h6">@T("Business configuration")</h6>
-            <MCard Ripple=false Class="mt-4 rounded-5" Height="163"
+            <MCard Ripple=false Class="mt-4 rounded-5 appcard" Height="163"
                    OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(_bizDetail.Id, _projectEnvClusters[0].Id, ConfigObjectType.Biz, ProjectId))">
                 <MCardTitle Class="pb-0" Style="font-size: medium; flex-wrap:nowrap;">
                     <div class="emphasis2--text h7" @onclick:stopPropagation>
@@ -62,11 +62,11 @@
                     <MSpacer />
                     @if (_isEditBiz)
                     {
-                        <SButton Class="mr-4" StopPropagation Icon OnClick="CancelEditBizName">
+                        <SButton Class="mr-4" OnClickStopPropagation Icon OnClick="CancelEditBizName">
                             <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
                         </SButton>
                     }
-                    <SButton Icon OnClick="UpdateBizAsync" StopPropagation>
+                    <SButton Icon OnClick="UpdateBizAsync" OnClickStopPropagation>
                         @if (!_isEditBiz)
                         {
                             <SIcon Color="#323D6F" Size="20">mdi-pencil</SIcon>
@@ -78,7 +78,7 @@
                     </SButton>
                 </MCardTitle>
                 <div class="regular3--text pl-4 body2 text-overflow">@_bizDetail.Identity</div>
-                <MCardActions Class="pa-0 mx-3" Style="position: absolute; bottom: 16px; right: 0; left: 0;">
+                <MCardActions Class="pa-0 mx-3 pb-4 cardaction">
                     <MChipGroup @key="_projectEnvClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
                         @foreach (var item in _projectEnvClusters)
                         {
@@ -89,6 +89,10 @@
                                             ClusterName="@item.ClusterName" />
                         }
                     </MChipGroup>
+                    @{ var bizRelease = _bizLatestReleaseConfig.FirstOrDefault(x => x.ProjectId == _projectDetail.Id); }
+                    <div class="full-width text-end">
+                        <LatestConfigPublish LatestReleaseConfigModel="bizRelease" TextClass="regular3--text body3" TitleClass="regular3--text body3"></LatestConfigPublish>
+                    </div>
                 </MCardActions>
             </MCard>
         </div>
@@ -107,8 +111,11 @@
                     <MRow>
                         @foreach (var app in _apps)
                         {
+                            var appLatest = _appLatestReleaseConfig.FirstOrDefault(x => x.AppId == app.Id);
                             <MCol Lg="4" Md="6" Sm="12">
-                                <AppCard OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
+                                <AppCard 
+                                    OnClick="()=>NavigateToConfigAsync(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" Style="border: none;" 
+                                    OnPinClick="()=>AppDetailPinAsync(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters" LatestReleaseConfig="appLatest">
                                     <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
                                         @foreach (var item in app.EnvironmentClusters)
                                         {

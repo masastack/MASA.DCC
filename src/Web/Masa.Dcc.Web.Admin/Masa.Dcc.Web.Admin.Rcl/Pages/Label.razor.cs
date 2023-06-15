@@ -8,9 +8,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Inject]
         public LabelCaller LabelCaller { get; set; } = default!;
 
-        [Inject]
-        public IPopupService PopupService { get; set; } = default!;
-
         private List<LabelDto> _labels = new();
         private string _typeName = "";
         private readonly DataModal<UpdateLabelModel> _labelModal = new();
@@ -35,7 +32,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             foreach (var label in labels)
             {
                 var user = await AuthClient.UserService.GetByIdAsync(label.Modifier) ?? new();
-                label.ModifierName = user.StaffDislpayName;
+                label.ModifierName = user.StaffDisplayName;
             }
 
             _labels = labels.OrderByDescending(label => label.ModificationTime).ToList();
@@ -111,30 +108,22 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 return;
             }
 
-            try
+            if (context.Validate())
             {
-                if (context.Validate())
+                var dto = _labelModal.Data.Adapt<UpdateLabelDto>();
+                if (_labelModal.HasValue)
                 {
-                    var dto = _labelModal.Data.Adapt<UpdateLabelDto>();
-                    if (_labelModal.HasValue)
-                    {
-                        await LabelCaller.UpdateAsync(dto);
-                        await PopupService.EnqueueSnackbarAsync(T("Edit succeeded"), AlertTypes.Success);
-                    }
-                    else
-                    {
-                        await LabelCaller.AddAsync(dto);
-                        await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
-                    }
-
-                    await GetListAsync();
-                    LabelModalValueChanged(false);
+                    await LabelCaller.UpdateAsync(dto);
+                    await PopupService.EnqueueSnackbarAsync(T("Edit succeeded"), AlertTypes.Success);
                 }
-            }
-            catch (Exception e)
-            {
+                else
+                {
+                    await LabelCaller.AddAsync(dto);
+                    await PopupService.EnqueueSnackbarAsync(T("Add succeeded"), AlertTypes.Success);
+                }
 
-                throw;
+                await GetListAsync();
+                LabelModalValueChanged(false);
             }
         }
 

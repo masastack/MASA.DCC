@@ -18,6 +18,9 @@ public partial class ConfigItems
     public bool Disabled { get; set; }
 
     [Parameter]
+    public bool ShowPublish { get; set; }
+
+    [Parameter]
     public ConfigObjectType ConfigObjectType { get; set; }
 
     [Parameter]
@@ -49,6 +52,9 @@ public partial class ConfigItems
 
     [Parameter]
     public EventCallback<ConfigObjectModel> ReleaseHistoryClick { get; set; }
+
+    [Parameter]
+    public bool EnableClone { get; set; } = true;
 
     private string FormatLabelCode
     {

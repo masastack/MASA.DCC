@@ -8,10 +8,22 @@
         <MExpansionPanels Class="project-list" Flat Accordion @key="@($"{EnvironmentClusterId}{TeamId}")">
             @foreach (var project in _projects)
             {
-                var apps = _apps.Where(app => app.ProjectId == project.Id)
-                .OrderByDescending(app => app.IsPinned)
-                .ThenByDescending(app => app.PinTime)
-                .ThenByDescending(app => app.ModificationTime).ToList();
+                var apps = _apps.Where(app => app.ProjectId == project.Id ).ToList();
+                LatestReleaseConfigModel? latest = null;
+                var bizLatestRelease = _bizLatestReleaseConfig.FirstOrDefault(x => x.ProjectId == project.Id);
+                var appLatestRelease = _appLatestReleaseConfig.Where(l => apps.Any(a => a.Id == l.AppId)).MaxBy(x => x.LastPublishTime);
+                if (bizLatestRelease != null && appLatestRelease != null)
+                {
+                    latest = bizLatestRelease;
+                    if (bizLatestRelease.LastPublishTime <= appLatestRelease.LastPublishTime)
+                    {
+                        latest = appLatestRelease;
+                    }
+                }
+                else
+                {
+                    latest = bizLatestRelease ?? appLatestRelease;
+                }
                 <MExpansionPanel Class="rounded-4 mb-4">
                     <MExpansionPanelHeader Style="height: 56px;" Class="my-6">
                         <ChildContent>
@@ -23,7 +35,8 @@
                                         </span>
                                     </MHover>
                                     <div class="mt-1 regul ar3--text body2 d-flex" style="padding:0">
-                                        @{
+                                        @if (!string.IsNullOrEmpty(project.LabelName))
+                                        {
                                             string backgroundColor;
                                             switch (project.LabelCode.ToLower())
                                             {
@@ -40,13 +53,14 @@
                                                     backgroundColor = "#BDBDBD";
                                                     break;
                                             }
+                                            <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px; height: fit-content;">
+                                                @project.LabelName
+                                            </div>
                                         }
-                                        <div class="d-flex justify-center mr-2" style="border-radius:6px; color:#fff; background-color:@backgroundColor; padding:0 4px; height: fit-content;">
-                                            @project.LabelName
-                                        </div>
                                         <span class="regular3--text body2">@project.Identity</span>
                                         <span class="ml-2 regular3--text body2">|</span>
-                                        <sapn class="ml-2 regular3--text body2">@T("AppCount"):@apps.Count</sapn>
+                                        <sapn class="ml-2 regular3--text body2">@T("AppCount"): @apps.Count</sapn>
+                                        <LatestConfigPublish LatestReleaseConfigModel="latest"></LatestConfigPublish>
                                     </div>
                                 </div>
                             </span>
@@ -63,23 +77,23 @@
                             {
                                 foreach (var app in apps.Take(3))
                                 {
-                                    if (app.ProjectId == project.Id)
-                                    {
-                                        <MCol Lg="4" Md="6" Sm="12">
-                                            <AppCard OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))" OnPinClick="()=>HandleAppPinClick(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters">
-                                                <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
-                                                    @foreach (var item in app.EnvironmentClusters)
-                                                    {
-                                                        <EnvClusterChip OnClick="()=>HandleAppCardClick(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, app.ProjectId))"
-                                                            Style="margin:0 12px 1px 0;"
-                                                            EnvironmentName="@item.EnvironmentName"
-                                                            EnvironmentColor="@item.EnvironmentColor"
-                                                            ClusterName="@item.ClusterName" />
-                                                    }
-                                                </MChipGroup>
-                                            </AppCard>
-                                        </MCol>
-                                    }
+                                    var appLatest = _appLatestReleaseConfig.FirstOrDefault(x => x.AppId == app.Id);
+                                    <MCol Lg="4" Md="6" Sm="12">
+                                        <AppCard 
+                                            OnClick="() => HandleAppCardClick(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))"
+                                            OnPinClick="() => HandleAppPinClick(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters" LatestReleaseConfig="appLatest">
+                                            <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">
+                                                @foreach (var item in app.EnvironmentClusters)
+                                                {
+                                                    <EnvClusterChip OnClick="() => HandleAppCardClick(new ConfigComponentModel(app.Id, item.Id, ConfigObjectType.App, app.ProjectId))"
+                                                                    Style="margin:0 12px 1px 0;"
+                                                                    EnvironmentName="@item.EnvironmentName"
+                                                                    EnvironmentColor="@item.EnvironmentColor"
+                                                                    ClusterName="@item.ClusterName"/>
+                                                }
+                                            </MChipGroup>
+                                        </AppCard>
+                                    </MCol>
                                 }
                             }
                             else
@@ -87,7 +101,7 @@
                                 <SEmptyPlaceholder />
                             }
                         </MRow>
-                        <div class="d-flex justify-space-between align-flex-end mt-3 mb-2">
+                        <div class="d-flex justify-space-between align-flex-end mt-4 mb-2">
                             @{
                                 var team = _allTeams.FirstOrDefault(team => team.Id == project.TeamId) ?? new();
                                 <MTooltip Right>
@@ -124,4 +138,4 @@
 
 <MOverlay Class="rounded-4" Value="_showProcess" Absolute Color="#fff" Opacity="1.0">
     <MProgressCircular Width="4" Indeterminate Size="48" Color="primary"></MProgressCircular>
-</MOverlay>
+    </MOverlay>

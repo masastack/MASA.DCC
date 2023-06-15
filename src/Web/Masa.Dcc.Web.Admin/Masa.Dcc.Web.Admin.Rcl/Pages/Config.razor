@@ -10,23 +10,26 @@
                         <div class="full-width d-flex">
                             <div class="emphasis--text h6 text-overflow2">@_appDetail.Name</div>
                             <MSpacer></MSpacer>
-                            <MMenu OffsetY>
-                            <ActivatorContent>
-                                <SButton Icon @attributes="@context.Attrs">
-                                    <SIcon Color="black">mdi-dots-horizontal</SIcon>
-                                </SButton>
-                                </ActivatorContent>
-                                <ChildContent>
-                                    <MList Dense>
-                                        <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
-                                            <SIcon Color="#323D6F" Size="20" Class="mr-4" IsDefaultToolTip="false">far fa-copy</SIcon>
-                                            <MListItemContent>
-                                                <MListItemTitle>@T("Clone config")</MListItemTitle>
-                                            </MListItemContent>
-                                        </MListItem>
-                                    </MList>
-                                </ChildContent>
-                            </MMenu>
+                            @if (_enableClone)
+                            {
+                                <MMenu OffsetY>
+                                    <ActivatorContent>
+                                        <SButton Icon @attributes="@context.Attrs">
+                                            <SIcon Color="black">mdi-dots-horizontal</SIcon>
+                                        </SButton>
+                                    </ActivatorContent>
+                                    <ChildContent>
+                                        <MList Dense>
+                                            <MListItem Dense OnClick="()=>ShowCloneModalAsync()">
+                                                <SIcon Color="#323D6F" Size="20" Class="mr-4" IsDefaultToolTip="false">far fa-copy</SIcon>
+                                                <MListItemContent>
+                                                    <MListItemTitle>@T("Clone config")</MListItemTitle>
+                                                </MListItemContent>
+                                            </MListItem>
+                                        </MList>
+                                    </ChildContent>
+                                </MMenu>
+                            }
                         </div>
                     </MRow>
                     <div class="regular3--text body2 text-overflow">
@@ -104,15 +107,18 @@
                     <MExpansionPanels @bind-Values="_selectPanels" Multiple Flat>
                         @foreach (var configObject in _configObjects)
                         {
-                            bool _disablePanel = _userInfo.Account.ToLower() != "admin" && configObject.Encryption;
+                            bool disablePanel = _userInfo.Account.ToLower() != "admin" && configObject.Encryption;
+                            bool showPublish = !_selectPanels.Contains(configObject.Id) && configObject.LatestRelease != null;
                             var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                             if (formatLabelCode == "json")
                             {
-                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
-                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
+                                <MExpansionPanel Disabled="@disablePanel" Value="configObject.Id" Class="rounded-2 my-3">
+                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="px-6 my-4">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
-                                                         Disabled="_disablePanel"
+                                                         Disabled="disablePanel"
+                                                         ShowPublish="showPublish"
+                                                         EnableClone="_enableClone"
                                                          CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="UpdateJsonConfigAsync"
                                                          CloneConfigClick="ShowCloneModalAsync"
@@ -153,12 +159,14 @@
                             }
                             else if (formatLabelCode == "properties")
                             {
-                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
-                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
+                                <MExpansionPanel Disabled="@disablePanel" Value="configObject.Id" Class="rounded-lg my-3">
+                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="px-6 my-4">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
-                                                         Disabled="_disablePanel"
-                                                         CancelEditConfigClick="CancelEditConfigContent"
+                                                         Disabled="disablePanel"
+                                                         EnableClone="_enableClone"
+                                             ShowPublish="showPublish"
+                                             CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="(config) => { ShowPropertyModal(config, config.ConfigObjectPropertyContents); }"
                                                          CloneConfigClick="ShowCloneModalAsync"
                                                          ReleaseConfigClick="ShowReleaseModalAsync"
@@ -176,7 +184,7 @@
                                     <MExpansionPanelContent>
                                         @if (configObject.RelationConfigObjectId != 0)
                                         {
-                                            <MCard Style="border:1px solid #E2E7F4;" Class="py-2 mt-4 rounded-5">
+                                            <MCard Style="border:1px solid #E2E7F4;" Class="py-2 mt-4 rounded-lg">
                                                 <SDataTable FixedHeader
                                                             Style="max-height: 312px; overflow: auto; border-radius: unset !important;"
                                                             Headers="Headers"
@@ -233,11 +241,11 @@
                                                            Left
                                                            TabChanged="tabText=>HandleTabIndexChanged(tabText, configObject)"
                                                            TabMinWidth="70"
-                                                           ItemsClass="rounded-5"
+                                                           ItemsClass="rounded-2"
                                                            Dense
                                                            Tabs="@(new List<string>{ T("Table"), T("Text") })">
                                                     <SElevationTabItem>
-                                                        <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-2 mt-4 rounded-5">
+                                                        <MCard Style="border:1px solid #E2E7F4; padding: 1px;" Class="py-2 mt-4 rounded-lg">
                                                             <SDataTable FixedHeader
                                                                         Style="max-height: 312px; overflow: auto; border-radius: unset !important;"
                                                                         Headers="Headers"
@@ -306,19 +314,19 @@
                                                         <div class="d-flex justify-end">
                                                             @if (configObject.ElevationTabPropertyContent.Disabled)
                                                             {
-                                                                <SButton Class="mr-4" StopPropagation Icon OnClick="()=>CancelEditConfigContent(configObject)">
+                                                                <SButton Class="mr-4" OnClickStopPropagation Icon OnClick="()=>CancelEditConfigContent(configObject)">
                                                                     <SIcon Tooltip="@T("Cancel")" Color="#323D6F">mdi-close-thick</SIcon>
                                                                 </SButton>
                                                             }
                                                             @if (!configObject.ElevationTabPropertyContent.Disabled)
                                                             {
-                                                                <SButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }">
+                                                            <SButton OnClickStopPropagation Icon Class="mr-4 mb-2" OnClick="()=>{ configObject.ElevationTabPropertyContent.Disabled = !configObject.ElevationTabPropertyContent.Disabled; }">
                                                                     <SIcon Tooltip="@(T("Edit"))" Class="hover-pointer" Color="#323D6F">mdi-pencil</SIcon>
                                                                 </SButton>
                                                             }
                                                             else
                                                             {
-                                                                <SButton StopPropagation Icon Class="mr-4 mb-2" OnClick="()=>TextConvertPropertyAsync(configObject.Id)">
+                                                            <SButton OnClickStopPropagation Icon Class="mr-4 mb-2" OnClick="()=>TextConvertPropertyAsync(configObject.Id)">
                                                                     <SIcon Tooltip="@(T("Save"))" Color="success">mdi-check</SIcon>
                                                                 </SButton>
                                                             }
@@ -333,11 +341,13 @@
                             }
                             else
                             {
-                                <MExpansionPanel Disabled="@_disablePanel" Value="configObject.Id" Class="rounded-5 my-3">
-                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="my-6">
+                                <MExpansionPanel Disabled="@disablePanel" Value="configObject.Id" Class="rounded-2 my-3">
+                                    <MExpansionPanelHeader Context="_" Style="height: 56px;" Class="px-6 my-4">
                                         <ChildContent>
                                             <ConfigItems ConfigObject="configObject"
-                                                         Disabled="_disablePanel"
+                                                         Disabled="disablePanel"
+                                             ShowPublish="showPublish"
+                                             EnableClone="_enableClone"
                                                          CancelEditConfigClick="CancelEditConfigContent"
                                                          UpdateConfigClick="UpdateOtherConfigObjectContentAsync"
                                                          CloneConfigClick="ShowCloneModalAsync"

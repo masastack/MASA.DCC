@@ -178,7 +178,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         public async Task InitConfigObjectAsync(InitConfigObjectCommand command)
         {
             await _configObjectDomainService.InitConfigObjectAsync(command.Environment, command.Cluster,
-                 command.AppId, command.ConfigObjects, command.IsEncryption);
+                 command.AppId, command.ConfigObjects, command.ConfigObjectType, command.IsEncryption);
         }
     }
 }

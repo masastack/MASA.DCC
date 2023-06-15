@@ -19,11 +19,11 @@ namespace Masa.Dcc.Service.Admin.Services
         }
 
         public async Task AddConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId,
-            [FromBody] Dictionary<string, string> configObjects,
+            [FromBody] Dictionary<string, string> configObjects, ConfigObjectType configObjectType = ConfigObjectType.App,
             bool isEncryption = false)
         {
             await eventBus.PublishAsync(
-                new InitConfigObjectCommand(environment, cluster, appId, configObjects, isEncryption));
+                new InitConfigObjectCommand(environment, cluster, appId, configObjects, configObjectType, isEncryption));
         }
     }
 }

@@ -18,7 +18,7 @@
 ::-webkit-scrollbar-thumb {
     margin: 5px 0;
     border-radius: 15px;
-    background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.44, rgb(170 168 168)), color-stop(0.72, rgb(170 168 168)), color-stop(0.86, rgb(170 168 168)));
+    background-color: #E4E8F3;
 }
 
 .rounded-5 {
@@ -59,11 +59,6 @@
 
 .m-navigation-drawer__border {
     width: 0
-}
-
-.m-card {
-    box-shadow: 0px 0px 0px 0px rgb(0 0 0 / 20%), 0px 0px 0px 0px rgb(0 0 0 / 14%), 0px 0px 0px 0px rgb(0 0 0 / 12%) !important;
-    border-radius: 20px !important;
 }
 
     .m-card.line {
@@ -842,10 +837,32 @@ textarea:disabled {
     max-width: 240px; 
     overflow: hidden;
 }
-.masa-main .appcard .cardaction {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding-bottom: 12px !important;
+    .masa-main .appcard .cardaction {
+        padding-bottom: 12px !important;
+        align-items: start;
+        flex-direction: column
+    }
+
+.menu-configmore {
+    box-shadow: 0px 8px 24px rgba(50, 61, 111, 0.08);
+    border-radius: 8px !important;
+}
+.menu-configmore .m-list .m-list-item:hover {
+    border-radius: 4px;
+    background-color: #F6F8FD;
+}
+.menu-configmore .m-divider__wrapper .m-divider {
+    margin-left: 9px;
+    margin-right: 9px;
+}
+.separator {
+    margin-top: 6px;
+    margin-right: 24px;
+}
+.separator .m-divider--vertical {
+    height: 24px;
+    border-color: #E4E8F3 !important;
+}
+.masa-main .rounded-lg, .masa-main .rounded-2 {
+    border-radius: 8px !important;
 }

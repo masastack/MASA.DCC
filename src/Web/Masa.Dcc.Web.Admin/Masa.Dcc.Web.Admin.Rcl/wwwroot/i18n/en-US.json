@@ -11,5 +11,11 @@
   "RollBackAlertMessage": "This operation will be rolled back to the previous release version, and the current version will be invalidated, but it will not affect the configuration being modified.",
   "EmptyProject": "There are no projects in the current environment-cluster",
   "EmptyApp": "There are no apps in the project",
-  "EmptyConfigObject": "There are no config object in the current environment-cluster"
+  "EmptyConfigObject": "There are no config object in the current environment-cluster",
+  "CreationTime": "Creation time",
+  "ModificationTime": "Modification time",
+  "ClusterCount": "Cluster count",
+  "ProjectCount": "Project count",
+  "AppCount": "App count",
+  "LatestReleaseConfig": "Published in"
 }

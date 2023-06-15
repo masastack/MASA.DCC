@@ -54,6 +54,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         };
         private bool _showProcess = true;
+        private List<LatestReleaseConfigModel> _appLatestReleaseConfig = new();
+        private List<LatestReleaseConfigModel> _bizLatestReleaseConfig = new();
 
         private IEnumerable<Func<string, StringBoolean>> BizNameRules => new List<Func<string, StringBoolean>>
         {
@@ -92,19 +94,29 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             _projectEnvClusters = _allEnvClusters.Where(envCluster => _projectDetail.EnvironmentClusterIds.Contains(envCluster.Id)).ToList();
 
             //init biz config
-            var bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{_projectDetail.Identity}-$biz");
+            var bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{_projectDetail.Identity}{DccConst.BizConfigSuffix}");
             if (bizConfig.Id == 0)
             {
                 bizConfig = await ConfigObjectCaller.AddBizConfigAsync(new AddObjectConfigDto
                 {
                     Name = "Biz",
-                    Identity = $"{_projectDetail.Identity}-$biz"
+                    Identity = $"{_projectDetail.Identity}{DccConst.BizConfigSuffix}"
                 });
             }
             _bizDetail = bizConfig.Adapt<BizModel>();
             _bizDetail.EnvironmentClusters = _projectEnvClusters;
             _bizConfigName = bizConfig.Name;
-
+            _appLatestReleaseConfig = await AppCaller.GetLatestReleaseConfigAsync(new LatestReleaseConfigRequestDto<int>()
+            {
+                Items = _apps.Select(x => x.Id).ToList(),
+                EnvClusterId = null
+            });
+            _bizLatestReleaseConfig = await ConfigObjectCaller.GetLatestReleaseConfigAsync(
+                new LatestReleaseConfigRequestDto<ProjectModel>()
+                {
+                    Items = new() { new() { Identity = _projectDetail.Identity, Id = _projectDetail.Id } },
+                    EnvClusterId = null,
+                });
             StateHasChanged();
         }
 

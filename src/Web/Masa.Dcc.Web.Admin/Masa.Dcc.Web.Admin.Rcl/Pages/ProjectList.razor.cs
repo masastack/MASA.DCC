@@ -42,6 +42,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private List<TeamModel> _allTeams = new();
         private List<Model.AppModel> _apps = new();
         private bool _showProcess = false;
+        private List<LatestReleaseConfigModel> _appLatestReleaseConfig = new();
+        private List<LatestReleaseConfigModel> _bizLatestReleaseConfig = new();
 
         protected override async Task OnParametersSetAsync()
         {
@@ -88,12 +90,26 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             _allTeams = await AuthClient.TeamService.GetAllAsync();
             _backupProjects = new List<ProjectModel>(_projects.ToArray());
-            _apps = await GetAppByProjectIdAsync(_projects.Select(p => p.Id));
+            var projectIds = _projects.Select(p => p.Id).ToList();
+            _apps = await GetAppByProjectIdAsync(projectIds);
+            int? emvClusterId = !LandscapePage || EnvironmentClusterId <= 0 ? null : EnvironmentClusterId;
+            _appLatestReleaseConfig = await AppCaller.GetLatestReleaseConfigAsync(new LatestReleaseConfigRequestDto<int>()
+            {
+                Items = _apps.Select(x => x.Id).ToList(),
+                EnvClusterId = emvClusterId
+            });
+            _bizLatestReleaseConfig = await ConfigObjectCaller.GetLatestReleaseConfigAsync(
+                new LatestReleaseConfigRequestDto<ProjectModel>()
+                {
+                    Items = _projects,
+                    EnvClusterId = emvClusterId
+                });
         }
 
         private async Task<List<Model.AppModel>> GetAppByProjectIdAsync(IEnumerable<int> projectIds)
         {
             var apps = await AppCaller.GetListByProjectIdsAsync(projectIds.ToList());
+
             var appPins = await AppCaller.GetAppPinListAsync(apps.Select(app => app.Id).ToList());
 
             var result = from app in apps
@@ -116,6 +132,11 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                              PinTime = newApp != null ? newApp.ModificationTime : DateTime.MinValue
                          };
 
+            result = result.Where(app => EnvironmentClusterId == 0 || app.EnvironmentClusters.Any(ec => ec.Id == EnvironmentClusterId))
+                .GroupBy(x => x.ProjectId).SelectMany(g => g.OrderByDescending(app => app.IsPinned)
+                .ThenByDescending(app => app.PinTime)
+                .ThenByDescending(app => app.ModificationTime));
+
             return result.ToList();
         }
 
@@ -135,13 +156,13 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 await OnAppCardClick.InvokeAsync(model);
 
                 //init biz config
-                var bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{model.ProjectIdentity}-$biz");
+                var bizConfig = await ConfigObjectCaller.GetBizConfigAsync($"{model.ProjectIdentity}{DccConst.BizConfigSuffix}");
                 if (bizConfig.Id == 0)
                 {
                     bizConfig = await ConfigObjectCaller.AddBizConfigAsync(new AddObjectConfigDto
                     {
                         Name = "Biz",
-                        Identity = $"{model.ProjectIdentity}-$biz"
+                        Identity = $"{model.ProjectIdentity}{DccConst.BizConfigSuffix}"
                     });
                 }
             }
@@ -153,7 +174,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 await OnAppPinClick.InvokeAsync(model);
                 var apps = await GetAppByProjectIdAsync(new List<int>() { model.ProjectId });
-                _apps.RemoveAll(app => apps.Select(app => app.Id).Contains(app.Id));
+                _apps.RemoveAll(app => apps.Select(appModel => appModel.Id).Contains(app.Id));
                 _apps.AddRange(apps);
             }
         }

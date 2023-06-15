@@ -468,13 +468,13 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             string clusterName,
             string appId,
             Dictionary<string, string> configObjects,
-            bool isEncryption)
+            ConfigObjectType configObjectType = ConfigObjectType.App,
+            bool isEncryption = false)
         {
             var envs = await _pmClient.EnvironmentService.GetListAsync();
             var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower()) ?? throw new UserFriendlyException("Environment does not exist");
             var clusters = await _pmClient.ClusterService.GetListByEnvIdAsync(env.Id);
             var cluster = clusters.FirstOrDefault(c => c.Name.ToLower() == clusterName.ToLower()) ?? throw new UserFriendlyException("Cluster does not exist");
-
             foreach (var configObject in configObjects)
             {
                 var configObjectName = configObject.Key;
@@ -492,7 +492,7 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
                 var newConfigObject = new ConfigObject(
                     configObjectName,
                     "JSON",
-                    ConfigObjectType.App,
+                    configObjectType,
                     content,
                     "{}",
                     encryption: isEncryption);

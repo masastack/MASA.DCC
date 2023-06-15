@@ -11,6 +11,15 @@ namespace Masa.Dcc.ApiGateways.Caller
         {
         }
 
+        public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigAsync(
+            LatestReleaseConfigRequestDto<ProjectModel> request)
+        {
+            var result = await Caller.PostAsync<List<LatestReleaseConfigModel>>(
+                $"{_prefix}/bizConfig/latestReleaseConfig",
+                request);
+            return result ?? new();
+        }
+
         public async Task<BizConfigDto> GetBizConfigAsync(string identity)
         {
             var result = await Caller.GetAsync<BizConfigDto>($"{_prefix}/bizConfig/{identity}");
@@ -32,16 +41,18 @@ namespace Masa.Dcc.ApiGateways.Caller
             return bizConfig ?? new();
         }
 
-        public async Task<List<ConfigObjectDto>> GetConfigObjectsAsync(int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "")
+        public async Task<List<ConfigObjectDto>> GetConfigObjectsAsync(int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "", bool getLatestRelease = false)
         {
-            var result = await Caller.GetAsync<List<ConfigObjectDto>>($"{_prefix}/configObjects?envClusterId={envClusterId}&objectId={objectId}&type={type}&configObjectName={configObjectName}");
+            var url =
+                $"{_prefix}/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}/{configObjectName}";
+            var result = await Caller.GetAsync<List<ConfigObjectDto>>(url);
 
             return result ?? new();
         }
 
-        public async Task<List<ConfigObjectDto>> GetConfigObjectsByIdsAsync(List<int> Ids)
+        public async Task<List<ConfigObjectDto>> GetConfigObjectsByIdsAsync(List<int> ids)
         {
-            var result = await Caller.PostAsync<List<int>, List<ConfigObjectDto>>($"{_prefix}/configObjects/getListByIds", Ids);
+            var result = await Caller.PostAsync<List<int>, List<ConfigObjectDto>>($"{_prefix}/configObjects/getListByIds", ids);
 
             return result ?? new();
         }

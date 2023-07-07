@@ -173,28 +173,45 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             var envClusterIds = dto.CoverConfigObjects.Select(c => c.EnvironmentClusterId);
             var configNames = dto.CoverConfigObjects.Select(c => c.Name).Distinct();
 
-            IEnumerable<ConfigObject> needRemove = new List<ConfigObject>();
+            IEnumerable<ConfigObject> needEditConfig = new List<ConfigObject>();
             if (dto.ConfigObjectType == ConfigObjectType.App)
             {
                 var appConfigObjects = await _appConfigObjectRepository.GetListAsync(
                     app => app.AppId == dto.ToObjectId && envClusterIds.Contains(app.EnvironmentClusterId));
-                needRemove = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id) && configNames.Contains(c.Name));
+                needEditConfig = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id) && configNames.Contains(c.Name));
             }
             else if (dto.ConfigObjectType == ConfigObjectType.Biz)
             {
                 var bizConfigObjects = await _bizConfigObjectRepository.GetListAsync(
                     biz => biz.BizConfigId == dto.ToObjectId && envClusterIds.Contains(biz.EnvironmentClusterId));
-                needRemove = await _configObjectRepository.GetListAsync(c => bizConfigObjects.Select(biz => biz.ConfigObjectId).Contains(c.Id) && configNames.Contains(c.Name));
+                needEditConfig = await _configObjectRepository.GetListAsync(c => bizConfigObjects.Select(biz => biz.ConfigObjectId).Contains(c.Id) && configNames.Contains(c.Name));
             }
             else if (dto.ConfigObjectType == ConfigObjectType.Public)
             {
                 var publicConfigObjects = await _publicConfigObjectRepository.GetListAsync(
                     publicConfig => publicConfig.PublicConfigId == dto.ToObjectId && envClusterIds.Contains(publicConfig.EnvironmentClusterId));
-                needRemove = await _configObjectRepository.GetListAsync(c => publicConfigObjects.Select(publicConfig => publicConfig.ConfigObjectId).Contains(c.Id) && configNames.Contains(c.Name));
+                var s = await _configObjectRepository.GetListAsync(c => publicConfigObjects.Select(publicConfig => publicConfig.ConfigObjectId).Contains(c.Id));
+                var ss = publicConfigObjects.Select(publicConfig => publicConfig.ConfigObjectId);
+                needEditConfig = await _configObjectRepository.GetListAsync(c => ss.Contains(c.Id) && configNames.Contains(c.Name));
             }
 
-            await _configObjectRepository.RemoveRangeAsync(needRemove);
-            await CloneConfigObjectsAsync(dto.CoverConfigObjects, dto.ToObjectId);
+            foreach (var editConfig in needEditConfig)
+            {
+                dto.CoverConfigObjects.ForEach(configObject =>
+                {
+                    if (editConfig.Type == configObject.Type && editConfig.Name.Equals(configObject.Name))
+                    {
+                        string tempontent = editConfig.FormatLabelCode.ToLower() switch
+                        {
+                            "json" => "{}",
+                            "properties" => "[]",
+                            _ => "",
+                        };
+                        editConfig.AddContent(configObject.Content, tempontent);
+                    }
+                });
+            }
+            await _configObjectRepository.UpdateRangeAsync(needEditConfig);
         }
 
         private async Task CloneConfigObjectsAsync(List<AddConfigObjectDto> configObjects, int appId)

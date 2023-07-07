@@ -105,6 +105,12 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Aggregates
             Content = TempContent;
         }
 
+        public void Relation(int relationConfigObjectId)
+        {
+            RelationConfigObjectId = relationConfigObjectId;
+            FromRelation = true;
+        }
+
         public void UnRelation()
         {
             RelationConfigObjectId = 0;

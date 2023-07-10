@@ -127,9 +127,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             }
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
             GlobalConfig.OnCurrentTeamChanged -= HandleCurrentTeamChanged;
+            base.Dispose();
         }
     }
 }

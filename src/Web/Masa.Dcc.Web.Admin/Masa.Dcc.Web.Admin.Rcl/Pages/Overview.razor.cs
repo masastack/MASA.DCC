@@ -133,9 +133,10 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             await TabValueChangedAsync(2);
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
             NavigationManager.LocationChanged -= HandleLocationChanged;
+            base.Dispose();
         }
     }
 }

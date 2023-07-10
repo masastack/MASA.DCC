@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 ValidatorOptions.Global.LanguageManager = new MasaLanguageManager();
 GlobalValidationOptions.SetDefaultCulture("zh-CN");
 
-await builder.Services.AddMasaStackConfigAsync();
+await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 
 if (!builder.Environment.IsDevelopment())
@@ -15,7 +15,7 @@ if (!builder.Environment.IsDevelopment())
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServiceId(MasaStackConstant.DCC)
+        ServiceName = masaStackConfig.GetServiceId(MasaStackProject.DCC)
     }, () => masaStackConfig.OtlpUrl, true);
 }
 
@@ -102,7 +102,7 @@ builder.Services
     })
     .AddDomainEventBus(options =>
     {
-        var connStr = masaStackConfig.GetConnectionString(MasaStackConstant.DCC);
+        var connStr = masaStackConfig.GetConnectionString(MasaStackProject.DCC.Name);
         options.UseIntegrationEventBus(options => options.UseDapr()
                .UseEventLog<DccDbContext>())
                .UseEventBus()

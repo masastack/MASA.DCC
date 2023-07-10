@@ -3,14 +3,14 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddMasaStackComponentsForServer();
+await builder.Services.AddMasaStackComponentsAsync(project: MasaStackProject.DCC);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 builder.Services.AddValidatorsFromAssembly(typeof(LabelValueModel).Assembly, includeInternalTypes: true);
 
 MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
 {
     Authority = masaStackConfig.GetSsoDomain(),
-    ClientId = masaStackConfig.GetWebId(MasaStackConstant.DCC),
+    ClientId = masaStackConfig.GetWebId(MasaStackProject.DCC),
     Scopes = new List<string> { "offline_access" }
 };
 
@@ -20,7 +20,7 @@ if (!builder.Environment.IsDevelopment())
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetWebId(MasaStackConstant.DCC)
+        ServiceName = masaStackConfig.GetWebId(MasaStackProject.DCC)
     }, () => masaStackConfig.OtlpUrl, true);
 }
 

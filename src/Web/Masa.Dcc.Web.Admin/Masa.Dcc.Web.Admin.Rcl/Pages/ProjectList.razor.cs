@@ -26,7 +26,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Parameter]
         public EventCallback<int> FetchProjectCount { get; set; }
 
-        [Parameter]
+        [Inject]
         public IMultiEnvironmentUserContext MultiEnvironmentUserContext { get; set; } = default!;
 
         [Inject]

@@ -10,19 +10,22 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IAppPinRepository _appPinRepository;
         private readonly IBizConfigRepository _bizConfigRepository;
         private readonly ConfigObjectDomainService _configObjectDomainService;
+        private readonly IUnitOfWork _unitOfWork;
 
         public CommandHandler(
             IPublicConfigRepository publicConfigRepository,
             IConfigObjectRepository configObjectRepository,
             IAppPinRepository appPinRepository,
             IBizConfigRepository bizConfigRepository,
-            ConfigObjectDomainService configObjectDomainService)
+            ConfigObjectDomainService configObjectDomainService,
+            IUnitOfWork unitOfWork)
         {
             _publicConfigRepository = publicConfigRepository;
             _configObjectRepository = configObjectRepository;
             _appPinRepository = appPinRepository;
             _bizConfigRepository = bizConfigRepository;
             _configObjectDomainService = configObjectDomainService;
+            _unitOfWork = unitOfWork;
         }
 
         #region PublicConfig
@@ -69,7 +72,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
 
             var result = await _bizConfigRepository.AddAsync(new BizConfig(bizConfig.Name, bizConfig.Identity));
 
-            await _bizConfigRepository.UnitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             command.BizConfigDto = result.Adapt<BizConfigDto>();
         }

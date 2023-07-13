@@ -22,6 +22,7 @@
                 </SSelect>
                 <p class="emphasis--text pt-6" style="font-size:14px; font-weight:700;">@T("Enable encryption")</p>
                 <MSwitch Class="ml-3 mt-0 enable-encryption" Style="display: inline-block;" @bind-Value="_addConfigObjectModal.Data.Encryption"
+                         TValue="bool"
                          Label="@(_addConfigObjectModal.Data.Encryption ? T("ON") : T("OFF"))"
                          Inset>
                 </MSwitch>

@@ -26,6 +26,9 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         [Parameter]
         public EventCallback<int> FetchProjectCount { get; set; }
 
+        [Parameter]
+        public string Environment { get; set; } = string.Empty;
+
         [Inject]
         public ProjectCaller ProjectCaller { get; set; } = default!;
 
@@ -88,7 +91,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                 _projects = await ProjectCaller.GetListByTeamIdAsync(new List<Guid> { TeamId });
             }
 
-            _allTeams = await AuthClient.TeamService.GetAllAsync();
+            _allTeams = await AuthClient.TeamService.GetAllAsync(Environment);
             _backupProjects = new List<ProjectModel>(_projects.ToArray());
             var projectIds = _projects.Select(p => p.Id).ToList();
             _apps = await GetAppByProjectIdAsync(projectIds);

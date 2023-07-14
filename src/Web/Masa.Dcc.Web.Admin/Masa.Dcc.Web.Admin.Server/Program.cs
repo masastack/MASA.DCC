@@ -14,16 +14,6 @@ MasaOpenIdConnectOptions masaOpenIdConnectOptions = new MasaOpenIdConnectOptions
     Scopes = new List<string> { "offline_access" }
 };
 
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Services.AddObservable(builder.Logging, () => new MasaObservableOptions
-    {
-        ServiceNameSpace = builder.Environment.EnvironmentName,
-        ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetWebId(MasaStackProject.DCC)
-    }, () => masaStackConfig.OtlpUrl, true);
-}
-
 string dccServiceAddress = masaStackConfig.GetDccServiceDomain();
 #if DEBUG
 dccServiceAddress = "http://localhost:6196";

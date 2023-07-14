@@ -891,6 +891,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 configs.RemoveAll(config => config.Encryption);
             }
+            configs.RemoveAll(config => config.FromRelation);
 
             return configs;
         }

@@ -25,24 +25,24 @@
                     <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Clusters requiring cloning")</p>
                     <MChipGroup Multiple Column Values="_selectEnvClusterIds" ValuesChanged="CloneEnvClusterValueChanged">
                     @foreach (var item in _cloneSelectApp.EnvironmentClusters)
-                        {
-                            <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6 m-chip--envcluster" Filter Outlined Style=@($"border-color:{item.EnvironmentColor};color:{item.EnvironmentColor}")>
-                                <div>@item.EnvironmentName</div>
-                                <span class="split--text">&nbsp; | &nbsp;</span>
-                                <div class="emphasis2--text">@item.ClusterName</div>
-                            </MChip>
-                        }
+                    {
+                        <MChip Value="item.Id" Large Class="envClusterChip mr-6 mb-6 m-chip--envcluster" Filter Outlined Style=@($"border-color:{item.EnvironmentColor};color:{item.EnvironmentColor}")>
+                            <div>@item.EnvironmentName</div>
+                            <span class="split--text">&nbsp; | &nbsp;</span>
+                            <div class="emphasis2--text">@item.ClusterName</div>
+                        </MChip>
+                    }
                     </MChipGroup>
                     <p style="font-size:14px; font-weight:700; color:#1B2559">@T("Select config object")</p>
 
-                    @if (ConfigObjects.Any())
+                    @if (ConfigObjects.Any(c => !c.FromRelation || c.Encryption && !MasaUser.IsSuperAdmin))
                     {
                         <MCheckbox Value="CloneConfigObjectAllChecked"
-                           ValueChanged="CloneConfigObjectAllCheckedChanged"
-                           TValue="bool"
-                           HideDetails="true"
-                           Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
-                           Color="primary"></MCheckbox>
+                                   ValueChanged="CloneConfigObjectAllCheckedChanged"
+                                   TValue="bool"
+                                   HideDetails="true"
+                                   Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
+                                   Color="primary"></MCheckbox>
                     }
 
                     <MExpansionPanels Flat Accordion>
@@ -288,11 +288,11 @@
                     @if (ConfigObjects.Any())
                     {
                         <MCheckbox Value="CloneConfigObjectAllChecked"
-                                    ValueChanged="CloneConfigObjectAllCheckedChanged"
-                                    TValue="bool"
-                                    HideDetails="true"
-                                    Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
-                                    Color="primary"></MCheckbox>
+                                   ValueChanged="CloneConfigObjectAllCheckedChanged"
+                                   TValue="bool"
+                                   HideDetails="true"
+                                   Label="@(CloneConfigObjectAllChecked ? @T("Deselect all") : @T("Select all"))"
+                                   Color="primary"></MCheckbox>
                     }
                         
                     <MExpansionPanels Flat Accordion>

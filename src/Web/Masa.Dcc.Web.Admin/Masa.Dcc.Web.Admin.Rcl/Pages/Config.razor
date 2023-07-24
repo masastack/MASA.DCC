@@ -107,7 +107,7 @@
                     <MExpansionPanels @bind-Values="_selectPanels" Multiple Flat>
                         @foreach (var configObject in _configObjects)
                         {
-                            bool disablePanel = _userInfo.Account.ToLower() != "admin" && configObject.Encryption;
+                            bool disablePanel = !MasaUser.IsSuperAdmin && configObject.Encryption;
                             bool showPublish = !_selectPanels.Contains(configObject.Id) && configObject.LatestRelease != null;
                             var formatLabelCode = configObject.FormatLabelCode.Trim().ToLower();
                             if (formatLabelCode == "json")

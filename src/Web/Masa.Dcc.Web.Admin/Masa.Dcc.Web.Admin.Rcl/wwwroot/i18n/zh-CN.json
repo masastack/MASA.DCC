@@ -182,5 +182,6 @@
   "EmptyApp": "当前项目下还没有应用",
   "EmptyConfigObject": "当前环境集群下还没有配置对象",
   "Cancel Pin": "取消置顶",
-  "LatestReleaseConfig": "发布于"
+  "LatestReleaseConfig": "发布于",
+  "The label value Code and label value Name cannot be duplicate": "标签值Code和标签值Name不能重复"
 }

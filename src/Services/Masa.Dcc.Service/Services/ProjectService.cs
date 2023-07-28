@@ -53,9 +53,9 @@ public class ProjectService : ServiceBase
         return result;
     }
 
-    public async Task<List<ProjectModel>> GetListByTeamIdsAsync([FromBody] List<Guid> teamIds)
+    public async Task<List<ProjectModel>> GetListByTeamIdsAsync([FromBody] List<Guid> teamIds, IMultiEnvironmentUserContext multiEnvironmentUserContext)
     {
-        var result = await _pmClient.ProjectService.GetListByTeamIdsAsync(teamIds);
+        var result = await _pmClient.ProjectService.GetListByTeamIdsAsync(teamIds, multiEnvironmentUserContext.Environment ?? "");
 
         return result;
     }

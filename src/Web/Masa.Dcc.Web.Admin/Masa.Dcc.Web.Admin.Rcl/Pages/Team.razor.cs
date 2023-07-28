@@ -16,7 +16,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         private StringNumber _curTab = 0;
         private bool _teamDetailDisabled = true;
         private bool _configDisabled = true;
-        private readonly List<Model.AppModel> _apps = new();
         private string _projectName = "";
         private ConfigComponentModel _configModel = new();
         private AppComponentModel _appModel = new();

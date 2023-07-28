@@ -11,13 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapr.AspNetCore" Version="1.10.0" />
-    <PackageReference Include="Humanizer.Core.zh-CN" Version="2.14.1" />
-    <PackageReference Include="Mapster" Version="7.3.0" />
-    <PackageReference Include="Masa.Contrib.Development.DaprStarter.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.StackSdks.Tsc" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Stack.Components" Version="0.0.409" />
-    <PackageReference Include="Masa.Utils.Security.Cryptography" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Stack.Components" Version="0.0.421" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.3" />
   </ItemGroup>
 

@@ -88,5 +88,13 @@ namespace Masa.Dcc.Service.Admin.Infrastructure.Repositories.App
 
             return result;
         }
+
+        public async Task<BizConfigObject> GetByConfigObjectIdAsync(int configObjectId)
+        {
+            var result = await Context.Set<BizConfigObject>()
+                .FirstOrDefaultAsync(p => p.ConfigObjectId == configObjectId);
+
+            return result ?? new(0, 0);
+        }
     }
 }

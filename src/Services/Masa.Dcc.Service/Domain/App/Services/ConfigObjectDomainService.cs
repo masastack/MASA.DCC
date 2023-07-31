@@ -366,7 +366,6 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             else
             {
                 //add redis cache
-                //TODO: encryption value
                 var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
                 if (configObject.Encryption)
                 {
@@ -425,6 +424,38 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             var configObject = (await _configObjectRepository.FindAsync(config => config.Id == rollbackDto.ConfigObjectId))!;
             configObject.AddContent(configObject.Content, rollbackToEntity.Content);
             await _configObjectRepository.UpdateAsync(configObject);
+
+            string key = string.Empty;
+            var envClusters = await _pmClient.ClusterService.GetEnvironmentClustersAsync();
+            if (configObject.Type == ConfigObjectType.Public)
+            {
+                var publicConfigObject = await _publicConfigObjectRepository.GetByConfigObjectIdAsync(configObject.Id);
+                var publicConfig = await _publicConfigRepository.FindAsync(c => c.Id == publicConfigObject.PublicConfigId) ?? throw new MasaException();
+                var envCluster = envClusters.First(e => e.Id == publicConfigObject.EnvironmentClusterId);
+                key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{publicConfig.Identity}-{configObject.Name}";
+            }
+            else if (configObject.Type == ConfigObjectType.Biz)
+            {
+                var bizConfigObject = await _bizConfigObjectRepository.GetByConfigObjectIdAsync(configObject.Id);
+                var bizConfig = await _bizConfigRepository.FindAsync(c => c.Id == bizConfigObject.BizConfigId) ?? throw new MasaException();
+                var envCluster = envClusters.First(e => e.Id == bizConfigObject.EnvironmentClusterId);
+                key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{bizConfig.Identity}-{configObject.Name}";
+            }
+            else if (configObject.Type == ConfigObjectType.App)
+            {
+                var appConfigObject = await _appConfigObjectRepository.GetbyConfigObjectIdAsync(configObject.Id);
+                var app = await _pmClient.AppService.GetAsync(appConfigObject.AppId) ?? throw new MasaException(); ;
+                var envCluster = envClusters.First(e => e.Id == appConfigObject.EnvironmentClusterId);
+                key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{configObject.Name}";
+            }
+
+            var releaseContent = new PublishReleaseModel
+            {
+                Content = configObject.Encryption ? EncryptContent(rollbackToEntity.Content) : rollbackToEntity.Content,
+                FormatLabelCode = configObject.FormatLabelCode,
+                Encryption = configObject.Encryption
+            };
+            await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
         }
 
         public async Task UpdateConfigObjectAsync(

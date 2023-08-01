@@ -32,7 +32,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             foreach (var label in labels)
             {
                 var user = await AuthClient.UserService.GetByIdAsync(label.Modifier) ?? new();
-                label.ModifierName = user.StaffDisplayName;
+                label.ModifierName = user.RealDisplayName;
             }
 
             _labels = labels.OrderByDescending(label => label.ModificationTime).ToList();

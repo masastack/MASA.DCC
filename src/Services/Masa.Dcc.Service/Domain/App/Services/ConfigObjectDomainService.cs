@@ -1,6 +1,11 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.BuildingBlocks.Configuration;
+using Masa.BuildingBlocks.Data;
+using Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Enum;
+using Masa.Dcc.Service.Admin.Domain.App.Aggregates;
+
 namespace Masa.Dcc.Service.Admin.Domain.App.Services
 {
     public class ConfigObjectDomainService : DomainService
@@ -635,6 +640,41 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             });
 
             return "success";
+        }
+
+        public async Task<Dictionary<string, PublishReleaseModel>> GetConfigObjectsAsync(string environmentName,
+            string clusterName, string appId, List<string>? configObjects)
+        {
+            var resultDic = new Dictionary<string, PublishReleaseModel>();
+
+            var envs = await _pmClient.EnvironmentService.GetListAsync();
+            var env = envs.FirstOrDefault(e => e.Name.ToLower() == environmentName.ToLower()) ?? throw new UserFriendlyException("Environment does not exist");
+            var clusters = await _pmClient.ClusterService.GetListByEnvIdAsync(env.Id);
+            var cluster = clusters.FirstOrDefault(c => c.Name.ToLower() == clusterName.ToLower()) ?? throw new UserFriendlyException("Cluster does not exist");
+            var apps = await _pmClient.AppService.GetListAsync();
+            var app = apps.FirstOrDefault(apps => apps.Identity.ToLower() == appId.ToLower()) ?? throw new UserFriendlyException("AppId does not exist");
+
+            Expression<Func<ConfigObject, bool>> configObjectFilter = configObject =>
+                        configObject.AppConfigObject.EnvironmentClusterId == cluster.Id &&
+                        configObject.AppConfigObject.AppId == app.Id &&
+                        (configObjects == null || configObjects.Contains(configObject.Name));
+            var configObjectList = await _configObjectRepository.GetListAsync(configObjectFilter);
+            var configObjectPublicList = await _configObjectRepository.GetListAsync(configObject => configObject.PublicConfigObject.EnvironmentClusterId == cluster.Id);
+            var configObjectUnions = configObjectList.Union(configObjectPublicList);
+
+            foreach (var configObject in configObjectUnions)
+            {
+                var key = $"{configObject.Name}".ToLower();//{environmentName}-{clusterName}-{appId}-
+                if (resultDic.ContainsKey(key)) continue;
+                resultDic.Add(key, new PublishReleaseModel()
+                {
+                    Encryption = configObject.Encryption,
+                    FormatLabelCode = configObject.FormatLabelCode,
+                    Content = configObject.Content,
+                });
+            }
+
+            return resultDic;
         }
     }
 }

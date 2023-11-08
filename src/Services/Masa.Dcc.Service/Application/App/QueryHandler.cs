@@ -269,5 +269,11 @@ namespace Masa.Dcc.Service.Admin.Application.App
         {
             query.Result = await _configObjectDomainService.RefreshConfigObjectToRedisAsync();
         }
+
+        [EventHandler]
+        public async Task GetConfigObjectsAsync(ConfigObjectsByDynamicQuery query)
+        {
+            query.Result = await _configObjectDomainService.GetConfigObjectsAsync(query.environment, query.cluster, query.appId, query.configObjects);
+        }
     }
 }

@@ -657,12 +657,15 @@ namespace Masa.Dcc.Service.Admin.Domain.App.Services
             Expression<Func<ConfigObject, bool>> configObjectFilter = configObject =>
                         configObject.AppConfigObject.EnvironmentClusterId == cluster.Id &&
                         configObject.AppConfigObject.AppId == app.Id &&
-                        (configObjects == null || configObjects.Contains(configObject.Name));
+                        ((configObjects == null || configObjects.Count == 0) || configObjects.Contains(configObject.Name));
             var configObjectList = await _configObjectRepository.GetListAsync(configObjectFilter);
-            var configObjectPublicList = await _configObjectRepository.GetListAsync(configObject => configObject.PublicConfigObject.EnvironmentClusterId == cluster.Id);
-            var configObjectUnions = configObjectList.Union(configObjectPublicList);
+            if (configObjects == null || configObjects.Count == 0)
+            {
+                var configObjectPublicList = await _configObjectRepository.GetListAsync(configObject => configObject.PublicConfigObject.EnvironmentClusterId == cluster.Id);
+                configObjectList = configObjectList.Union(configObjectPublicList);
+            }
 
-            foreach (var configObject in configObjectUnions)
+            foreach (var configObject in configObjectList)
             {
                 var key = $"{configObject.Name}".ToLower();//{environmentName}-{clusterName}-{appId}-
                 if (resultDic.ContainsKey(key)) continue;

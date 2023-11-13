@@ -9,7 +9,7 @@ namespace Masa.Dcc.Service.Admin.Services
         {
             App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
             App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync);
-            App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}/{configObjects}", GetConfigObjectsAsync);
+            App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync);
         }
 
         public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,

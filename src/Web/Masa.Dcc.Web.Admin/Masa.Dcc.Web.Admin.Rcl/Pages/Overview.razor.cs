@@ -136,7 +136,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public new void Dispose()
         {
             NavigationManager.LocationChanged -= HandleLocationChanged;
-            base.Dispose();
+            base.DisposeAsyncCore();
         }
     }
 }

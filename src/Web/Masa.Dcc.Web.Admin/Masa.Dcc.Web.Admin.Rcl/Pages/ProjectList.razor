@@ -79,7 +79,7 @@
                                 {
                                     var appLatest = _appLatestReleaseConfig.FirstOrDefault(x => x.AppId == app.Id);
                                     <MCol Lg="4" Md="6" Sm="12">
-                                        <AppCard 
+                                        <AppCard Style="border: 1px solid #E2E7F4;"
                                             OnClick="() => HandleAppCardClick(new ConfigComponentModel(app.Id, app.EnvironmentClusters[0].Id, ConfigObjectType.App, app.ProjectId))"
                                             OnPinClick="() => HandleAppPinClick(app)" IsPin="app.IsPinned" App="app" EnvironmentClusters="app.EnvironmentClusters" LatestReleaseConfig="appLatest">
                                             <MChipGroup @key="app.EnvironmentClusters" Class="env-cluster-chip-group" ActiveClass="primary--text">

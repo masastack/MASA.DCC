@@ -596,7 +596,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 configObject.IsEditing = true;
                 _tempContent = configObject.Content;
-                var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
+                var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject }).ToList();
                 configObjects.ForEach(config =>
                 {
                     config.IsEditing = false;
@@ -642,7 +642,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
             {
                 configObject.IsEditing = true;
                 _tempContent = configObject.Content;
-                var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject });
+                var configObjects = _configObjects.Except(new List<ConfigObjectModel> { configObject }).ToList();
                 configObjects.ForEach(config =>
                 {
                     config.IsEditing = false;

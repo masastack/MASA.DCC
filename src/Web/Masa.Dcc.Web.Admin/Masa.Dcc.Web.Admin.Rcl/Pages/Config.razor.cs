@@ -23,9 +23,6 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
         public int ProjectId { get; set; }
 
         [Parameter]
-        public string Style { get; set; } = "height: calc(100vh - 192px);";
-
-        [Parameter]
         public string ConfigPanelStyle { get; set; } = "height: calc(100vh - 244px);";
 
         [Inject]

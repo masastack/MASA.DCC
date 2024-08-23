@@ -15,6 +15,7 @@ global using FluentValidation.Resources;
 global using Mapster;
 global using Masa.BuildingBlocks.Authentication.Identity;
 global using Masa.BuildingBlocks.Caching;
+global using Masa.BuildingBlocks.Configuration;
 global using Masa.BuildingBlocks.Data.UoW;
 global using Masa.BuildingBlocks.Ddd.Domain.Entities.Full;
 global using Masa.BuildingBlocks.Ddd.Domain.Events;

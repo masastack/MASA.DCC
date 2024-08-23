@@ -15,6 +15,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
         private readonly IAppConfigObjectRepository _appConfigObjectRepository;
         private readonly IMasaStackConfig _masaStackConfig;
         private readonly ConfigObjectDomainService _configObjectDomainService;
+        private readonly IConfigurationApiClient _configurationApiClient;
 
         public QueryHandler(
             IPublicConfigRepository publicConfigRepository,
@@ -27,7 +28,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             IAppConfigObjectRepository appConfigObjectRepository,
             IMasaStackConfig masaStackConfig,
             ConfigObjectDomainService configObjectDomainService,
-            IAuthClient authClient)
+            IConfigurationApiClient configurationApiClient)
         {
             _publicConfigRepository = publicConfigRepository;
             _publicConfigObjectRepository = publicConfigObjectRepository;
@@ -39,6 +40,7 @@ namespace Masa.Dcc.Service.Admin.Application.App
             _appConfigObjectRepository = appConfigObjectRepository;
             _masaStackConfig = masaStackConfig;
             _configObjectDomainService = configObjectDomainService;
+            _configurationApiClient = configurationApiClient;
         }
 
         [EventHandler]
@@ -274,6 +276,16 @@ namespace Masa.Dcc.Service.Admin.Application.App
         public async Task GetConfigObjectsAsync(ConfigObjectsByDynamicQuery query)
         {
             query.Result = await _configObjectDomainService.GetConfigObjectsAsync(query.environment, query.cluster, query.appId, query.configObjects);
+        }
+
+        [EventHandler]
+        public async Task GetPublicConfigAsync(PublicConfigQuery query)
+        {
+            query.Result = await _configurationApiClient.GetAsync<Dictionary<string, string>>(
+               query.Environment,
+               query.Cluster,
+               "public-$Config",
+               query.ConfigObject);
         }
     }
 }

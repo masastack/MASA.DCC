@@ -5,13 +5,8 @@ namespace Masa.Dcc.Service.Admin.Services;
 
 public class AppService : ServiceBase
 {
-    private readonly IPmClient _pmClient;
-    private readonly IAuthClient _authClient;
-
-    public AppService(IPmClient pmClient, IAuthClient authClient)
+    public AppService()
     {
-        _pmClient = pmClient;
-        _authClient = authClient;
         App.MapGet("api/v1/app/{id}", GetAsync);
         App.MapPost("api/v1/projects/app", GetListByProjectIdsAsync);
         App.MapGet("api/v1/appWithEnvCluster/{id}", GetWithEnvironmentClusterAsync);
@@ -21,38 +16,31 @@ public class AppService : ServiceBase
         App.MapPost("api/v1/app/latestReleaseConfig", GetLatestReleaseConfigByAppAsync);
     }
 
-    public async Task<AppDetailModel> GetAsync(int id)
+    public Task<AppDetailModel> GetAsync(IPmClient pmClient, int id)
     {
-        var result = await _pmClient.AppService.GetAsync(id);
-        return result;
+        return pmClient.AppService.GetAsync(id);
     }
 
-    public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByAppAsync(IEventBus eventBus, LatestReleaseConfigRequestDto<int> request)
+    public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByAppAsync(IEventBus eventBus, IAuthClient authClient, LatestReleaseConfigRequestDto<int> request)
     {
         var query = new AppLatestReleaseQuery(request.Items, request.EnvClusterId);
         await eventBus.PublishAsync(query);
-        return await _authClient.FillUserNameAsync(query.Result);
+        return await authClient.FillUserNameAsync(query.Result);
     }
 
-    public async Task<List<AppDetailModel>> GetListAsync()
+    public async Task<List<AppDetailModel>> GetListAsync(IPmClient pmClient)
     {
-        var result = await _pmClient.AppService.GetListAsync();
-
-        return result;
+        return await pmClient.AppService.GetListAsync();
     }
 
-    public async Task<List<AppDetailModel>> GetListByProjectIdsAsync([FromBody] List<int> projectIds)
+    public async Task<List<AppDetailModel>> GetListByProjectIdsAsync(IPmClient pmClient, [FromBody] List<int> projectIds)
     {
-        var result = await _pmClient.AppService.GetListByProjectIdsAsync(projectIds);
-
-        return result;
+        return await pmClient.AppService.GetListByProjectIdsAsync(projectIds);
     }
 
-    public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(int id)
+    public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(IPmClient pmClient, int id)
     {
-        var result = await _pmClient.AppService.GetWithEnvironmentClusterAsync(id);
-
-        return result;
+        return await pmClient.AppService.GetWithEnvironmentClusterAsync(id);
     }
 
     public async Task AddAppPinAsync(IEventBus eventBus, int appId)
@@ -69,7 +57,6 @@ public class AppService : ServiceBase
     {
         var query = new AppPinQuery(appIds);
         await eventBus.PublishAsync(query);
-
         return query.Result;
     }
 }

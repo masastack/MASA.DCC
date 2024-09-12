@@ -5,41 +5,38 @@ namespace Masa.Dcc.Service.Admin.Services;
 
 public class ClusterService : ServiceBase
 {
-    private readonly IPmClient _pmClient;
-
     public ClusterService(IPmClient pmClient)
     {
-        _pmClient = pmClient;
         App.MapGet("api/v1/cluster", GetListAsync);
         App.MapGet("api/v1/cluster/{Id}", GetAsync);
         App.MapGet("api/v1/envClusters", GetEnvironmentClustersAsync);
         App.MapGet("api/v1/{envId}/cluster", GetListByEnvIdAsync);
     }
 
-    public async Task<List<ClusterModel>> GetListAsync()
+    public async Task<List<ClusterModel>> GetListAsync(IPmClient pmClient)
     {
-        var result = await _pmClient.ClusterService.GetListAsync();
+        var result = await pmClient.ClusterService.GetListAsync();
 
         return result;
     }
 
-    public async Task<ClusterDetailModel> GetAsync(int Id)
+    public async Task<ClusterDetailModel> GetAsync(IPmClient pmClient, int Id)
     {
-        var result = await _pmClient.ClusterService.GetAsync(Id);
+        var result = await pmClient.ClusterService.GetAsync(Id);
 
         return result;
     }
 
-    public async Task<List<EnvironmentClusterModel>> GetEnvironmentClustersAsync()
+    public async Task<List<EnvironmentClusterModel>> GetEnvironmentClustersAsync(IPmClient pmClient)
     {
-        var result = await _pmClient.ClusterService.GetEnvironmentClustersAsync();
+        var result = await pmClient.ClusterService.GetEnvironmentClustersAsync();
 
         return result;
     }
 
-    public async Task<List<ClusterModel>> GetListByEnvIdAsync(int envId)
+    public async Task<List<ClusterModel>> GetListByEnvIdAsync(IPmClient pmClient, int envId)
     {
-        var result = await _pmClient.ClusterService.GetListByEnvIdAsync(envId);
+        var result = await pmClient.ClusterService.GetListByEnvIdAsync(envId);
 
         return result;
     }

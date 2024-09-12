@@ -5,10 +5,8 @@ namespace Masa.Dcc.Service.Admin.Services;
 
 public class ConfigObjectService : ServiceBase
 {
-    private readonly IAuthClient _authClient;
-    public ConfigObjectService(IAuthClient authClient)
+    public ConfigObjectService()
     {
-        _authClient = authClient;
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject", RemoveAsync);
         App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync);
@@ -34,11 +32,11 @@ public class ConfigObjectService : ServiceBase
     }
 
     public async Task<List<ConfigObjectDto>> GetListAsync(
-        IEventBus eventBus, int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "", bool getLatestRelease = false)
+        IEventBus eventBus, IAuthClient authClient, int envClusterId, int objectId, ConfigObjectType type, string configObjectName = "", bool getLatestRelease = false)
     {
         var query = new ConfigObjectsQuery(envClusterId, objectId, type, configObjectName, getLatestRelease);
         await eventBus.PublishAsync(query);
-        query.Result = await _authClient.FillUserNameAsync(query.Result);
+        query.Result = await authClient.FillUserNameAsync(query.Result);
         return query.Result;
     }
 

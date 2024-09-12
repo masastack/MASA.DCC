@@ -5,25 +5,22 @@ namespace Masa.Dcc.Service.Admin.Services;
 
 public class EnvironmentService : ServiceBase
 {
-    private readonly IPmClient _pmClient;
-
     public EnvironmentService(IPmClient pmClient)
     {
-        _pmClient = pmClient;
         App.MapGet("api/v1/env", GetListAsync);
         App.MapGet("api/v1/env/{Id}", GetAsync);
     }
 
-    public async Task<List<EnvironmentModel>> GetListAsync()
+    public async Task<List<EnvironmentModel>> GetListAsync(IPmClient pmClient)
     {
-        var result = await _pmClient.EnvironmentService.GetListAsync();
+        var result = await pmClient.EnvironmentService.GetListAsync();
 
         return result;
     }
 
-    public async Task<EnvironmentDetailModel> GetAsync(int Id)
+    public async Task<EnvironmentDetailModel> GetAsync(IPmClient pmClient,int Id)
     {
-        var result = await _pmClient.EnvironmentService.GetAsync(Id);
+        var result = await pmClient.EnvironmentService.GetAsync(Id);
 
         return result;
     }

@@ -4,6 +4,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
 await builder.Services.AddMasaStackComponentsAsync(project: MasaStackProject.DCC);
+
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 builder.Services.AddValidatorsFromAssembly(typeof(LabelValueModel).Assembly, includeInternalTypes: true);
 

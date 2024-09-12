@@ -21,7 +21,7 @@ public class AppService : ServiceBase
         return pmClient.AppService.GetAsync(id);
     }
 
-    public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByAppAsync(IEventBus eventBus, IHttpContextAccessor httpContext, IAuthClient authClient, LatestReleaseConfigRequestDto<int> request)
+    public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByAppAsync(IEventBus eventBus, IAuthClient authClient, LatestReleaseConfigRequestDto<int> request)
     {
         var query = new AppLatestReleaseQuery(request.Items, request.EnvClusterId);
         await eventBus.PublishAsync(query);
@@ -30,12 +30,12 @@ public class AppService : ServiceBase
 
     public async Task<List<AppDetailModel>> GetListAsync(IPmClient pmClient)
     {
-       return await pmClient.AppService.GetListAsync();
+        return await pmClient.AppService.GetListAsync();
     }
 
     public async Task<List<AppDetailModel>> GetListByProjectIdsAsync(IPmClient pmClient, [FromBody] List<int> projectIds)
     {
-       return await pmClient.AppService.GetListByProjectIdsAsync(projectIds);
+        return await pmClient.AppService.GetListByProjectIdsAsync(projectIds);
     }
 
     public async Task<AppDetailModel> GetWithEnvironmentClusterAsync(IPmClient pmClient, int id)

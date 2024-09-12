@@ -1,11 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Configuration;
-using Masa.BuildingBlocks.Data;
-using Masa.BuildingBlocks.StackSdks.Dcc.Contracts.Enum;
-using Masa.Dcc.Service.Admin.Domain.App.Aggregates;
-
 namespace Masa.Dcc.Service.Admin.Domain.App.Services
 {
     public class ConfigObjectDomainService : DomainService

@@ -1,4 +1,4 @@
-using Masa.Dcc.Web.Admin.Rcl.Global;
+﻿using Masa.Dcc.Web.Admin.Rcl.Global;
 using Masa.Dcc.Web.Admin.Rcl;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

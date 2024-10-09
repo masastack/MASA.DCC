@@ -15,7 +15,8 @@ if (!builder.Environment.IsDevelopment())
     {
         ServiceNameSpace = builder.Environment.EnvironmentName,
         ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServiceId(MasaStackProject.DCC)
+        ServiceName = masaStackConfig.GetServiceId(MasaStackProject.DCC),
+        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")!
     }, () => masaStackConfig.OtlpUrl, true);
 }
 
@@ -77,7 +78,8 @@ var redisOption = new RedisConfigurationOptions
         }
     },
     DefaultDatabase = masaStackConfig.RedisModel.RedisDb,
-    Password = masaStackConfig.RedisModel.RedisPassword
+    Password = masaStackConfig.RedisModel.RedisPassword,
+    ClientName = builder.Configuration.GetValue<string>("HOSTNAME") ?? masaStackConfig.GetServiceId(MasaStackProject.DCC)
 };
 
 builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>

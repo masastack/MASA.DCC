@@ -8,6 +8,9 @@ GlobalValidationOptions.SetDefaultCulture("zh-CN");
 
 await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
+var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING);
+var dbModel = JsonSerializer.Deserialize<DbModel>(connStr)!;
+bool isPgsql = string.Equals(dbModel.DbType, "postgresql", StringComparison.CurrentCultureIgnoreCase);
 
 if (!builder.Environment.IsDevelopment())
 {
@@ -103,14 +106,20 @@ builder.Services
         options.RegisterValidatorsFromAssemblyContaining<Program>();
     })
     .AddDomainEventBus(options =>
-    {
-        var connStr = masaStackConfig.GetConnectionString(MasaStackProject.DCC.Name);
-        options.UseIntegrationEventBus(options => options.UseDapr()
-               .UseEventLog<DccDbContext>())
-               .UseEventBus()
-               .UseUoW<DccDbContext>(dbOptions => dbOptions.UseSqlServer(connStr)
-                    .UseFilter())
-               .UseRepository<DccDbContext>();
+    {     
+        var connStr = masaStackConfig.GetConnectionString(MasaStackProject.DCC.Name);       
+        if (isPgsql)
+            DccDbContext.RegistAssembly(Assembly.Load("Masa.Dcc.Infrastructure.EFCore.PostgreSql"));
+        else
+            DccDbContext.RegistAssembly(Assembly.Load("Masa.Dcc.Infrastructure.EFCore.SqlServer"));
+
+        options.UseIntegrationEventBus(options =>
+                                                                options.UseDapr()
+                                                                             .UseEventBus())
+                     .UseUoW<DccDbContext>(dbOptions =>
+                                                                            (isPgsql ? dbOptions.UsePgsql(connStr, options => options.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.PostgreSql")) :
+                                                                                            dbOptions.UseSqlServer(connStr, options => options.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.SqlServer"))).UseFilter())
+                     .UseRepository<DccDbContext>();
     });
 
 builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
@@ -118,10 +127,7 @@ builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 //seed data
 await builder.SeedDataAsync();
 
-var app = builder.AddServices(options =>
-{
-    options.DisableAutoMapRoute = true; // todo :remove it before v1.0
-});
+var app = builder.Services.AddServices(builder, new Assembly[] { typeof(IAppConfigObjectRepository).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly });
 
 
 if (app.Environment.IsDevelopment())

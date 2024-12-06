@@ -7,6 +7,7 @@ public class ProjectService : ServiceBase
 {
     public ProjectService(IPmClient pmClient)
     {
+        RouteOptions.DisableAutoMapRoute = true;
         App.MapGet("api/v1/projectwithapps/{envName}", GetProjectListAsync);
         App.MapGet("api/v1/project/{id}", GetAsync);
         App.MapGet("api/v1/{envClusterId}/project", GetListByEnvironmentClusterIdAsync);

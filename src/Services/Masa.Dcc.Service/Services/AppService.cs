@@ -7,6 +7,7 @@ public class AppService : ServiceBase
 {
     public AppService()
     {
+        RouteOptions.DisableAutoMapRoute = true;
         App.MapGet("api/v1/app/{id}", GetAsync);
         App.MapPost("api/v1/projects/app", GetListByProjectIdsAsync);
         App.MapGet("api/v1/appWithEnvCluster/{id}", GetWithEnvironmentClusterAsync);

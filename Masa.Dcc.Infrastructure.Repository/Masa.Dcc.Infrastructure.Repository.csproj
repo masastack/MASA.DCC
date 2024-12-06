@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Masa.Dcc.Infrastructure.Domain\Masa.Dcc.Infrastructure.Domain.csproj" />
+    <ProjectReference Include="..\Masa.Dcc.Infrastructure.Domain.Shared\Masa.Dcc.Infrastructure.Domain.Shared.csproj" />
     <ProjectReference Include="..\Masa.Dcc.Infrastructure.EFCore\Masa.Dcc.Infrastructure.EFCore.csproj" />
   </ItemGroup>
 

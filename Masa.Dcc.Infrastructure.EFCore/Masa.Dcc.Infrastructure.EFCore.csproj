@@ -10,4 +10,8 @@
     <PackageReference Include="Masa.Contrib.Data.UoW.EFCore" Version="$(MasaFrameworkPackageVersion)" />    
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Masa.Dcc.Infrastructure.Domain.Shared\Masa.Dcc.Infrastructure.Domain.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

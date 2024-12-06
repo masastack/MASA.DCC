@@ -3,9 +3,9 @@
 
 namespace Masa.Dcc.Infrastructure.EFCore.PostgreSql.EntityConfigurations.Label;
 
-internal class LabelEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Label.Aggregates.Label>
+internal class LabelEntityTypeConfiguration : IEntityTypeConfiguration<Domain.Shared.Label>
 {
-    public void Configure(EntityTypeBuilder<Domain.Label.Aggregates.Label> builder)
+    public void Configure(EntityTypeBuilder<Domain.Shared.Label> builder)
     {
     }
 }

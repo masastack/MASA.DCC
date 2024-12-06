@@ -11,7 +11,7 @@ internal class DccDbPostGreSqlContextFactory : IDesignTimeDbContextFactory<DccDb
         var optionsBuilder = new MasaDbContextOptionsBuilder<DccDbContext>();
         var configurationBuilder = new ConfigurationBuilder();
         var configuration = configurationBuilder
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("migration-pgsql.json")
             .Build();
         optionsBuilder.DbContextOptionsBuilder.UseNpgsql(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.PostgreSql"));
 

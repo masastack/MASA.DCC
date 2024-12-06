@@ -3,6 +3,6 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.Label;
 
-public interface ILabelRepository : IRepository<Domain.Label.Aggregates.Label>
+public interface ILabelRepository : IRepository<Domain.Shared.Label>
 {
 }

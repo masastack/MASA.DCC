@@ -11,7 +11,7 @@ internal class DccDbSqlServerContextFactory : IDesignTimeDbContextFactory<DccDbC
         var optionsBuilder = new MasaDbContextOptionsBuilder<DccDbContext>();
         var configurationBuilder = new ConfigurationBuilder();
         var configuration = configurationBuilder
-            .AddJsonFile("appsettings.json")
+            .AddJsonFile("migration-sqlserver.json")
             .Build();
         optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), mbox => mbox.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.SqlServer"));
 

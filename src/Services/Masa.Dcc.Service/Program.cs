@@ -106,8 +106,8 @@ builder.Services
         options.RegisterValidatorsFromAssemblyContaining<Program>();
     })
     .AddDomainEventBus(options =>
-    {     
-        var connStr = masaStackConfig.GetConnectionString(MasaStackProject.DCC.Name);       
+    {
+        var connStr = masaStackConfig.GetConnectionString(MasaStackProject.DCC.Name);
         if (isPgsql)
             DccDbContext.RegistAssembly(Assembly.Load("Masa.Dcc.Infrastructure.EFCore.PostgreSql"));
         else
@@ -127,7 +127,7 @@ builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 //seed data
 await builder.SeedDataAsync();
 
-var app = builder.Services.AddServices(builder, new Assembly[] { typeof(IAppConfigObjectRepository).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly });
+var app = builder.Services.AddServices(builder, new Assembly[] { typeof(IAppConfigObjectRepository).Assembly, typeof(LabelDomainService).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly });
 
 
 if (app.Environment.IsDevelopment())

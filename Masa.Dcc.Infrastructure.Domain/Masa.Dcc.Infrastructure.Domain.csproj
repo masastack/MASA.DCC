@@ -7,13 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.BuildingBlocks.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.Ddd.Domain" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="$(MasaStackSdksPackageVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Abstractions" Version="6.0.7.0" />
+    <PackageReference Include="Mapster" Version="7.3.0" />
+    <PackageReference Include="Masa.Contrib.Caching.MultilevelCache" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Config" Version="$(MasaStackSdksPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.Dispatcher.Events" Version="$(MasaFrameworkPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Middleware" Version="$(MasaStackSdksPackageVersion)" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Masa.Dcc.Infrastructure.Domain.Shared\Masa.Dcc.Infrastructure.Domain.Shared.csproj" />
+    <ProjectReference Include="..\Masa.Dcc.Infrastructure.Repository\Masa.Dcc.Infrastructure.Repository.csproj" />
     <ProjectReference Include="..\src\Contracts\Masa.Dcc.Contracts.Admin\Masa.Dcc.Contracts.Admin.csproj" />
   </ItemGroup>
 

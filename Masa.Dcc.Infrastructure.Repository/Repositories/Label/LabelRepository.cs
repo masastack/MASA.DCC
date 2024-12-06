@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.Repositories.Label;
 
-internal class LabelRepository : Repository<DccDbContext, Domain.Label.Aggregates.Label>, ILabelRepository
+internal class LabelRepository : Repository<DccDbContext, Domain.Shared.Label>, ILabelRepository
 {
     public LabelRepository(DccDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
     {

@@ -16,12 +16,11 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Masa.Dcc.Infrastructure.Domain\Masa.Dcc.Infrastructure.Domain.csproj" />
     <ProjectReference Include="..\Masa.Dcc.Infrastructure.EFCore\Masa.Dcc.Infrastructure.EFCore.csproj" />
   </ItemGroup>
   
   <ItemGroup>
-    <None Update="appsettings.json">
+    <None Update="migration-sqlserver.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

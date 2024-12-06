@@ -3,7 +3,7 @@
 
 global using Masa.BuildingBlocks.Ddd.Domain.Repositories;
 global using Masa.BuildingBlocks.StackSdks.Pm.Model;
-global using Masa.Dcc.Infrastructure.Domain.App.Aggregates;
+global using Masa.Dcc.Infrastructure.Domain.Shared;
 global using Masa.Dcc.Infrastructure.EFCore;
 global using Microsoft.EntityFrameworkCore;
 global using Masa.BuildingBlocks.Data.UoW;

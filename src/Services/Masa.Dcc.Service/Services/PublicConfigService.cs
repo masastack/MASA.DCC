@@ -7,6 +7,7 @@ public class PublicConfigService : ServiceBase
 {
     public PublicConfigService()
     {
+        RouteOptions.DisableAutoMapRoute = true;
         App.MapPost("api/v1/publicConfig", AddAsync);
         App.MapPut("api/v1/publicConfig", UpdateAsync);
         App.MapDelete("api/v1/publicConfig/{Id}", RemoveAsync);

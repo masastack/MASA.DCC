@@ -7,6 +7,7 @@ public class ConfigObjectService : ServiceBase
 {
     public ConfigObjectService()
     {
+        RouteOptions.DisableAutoMapRoute = true;
         App.MapPost("api/v1/configObject", AddAsync);
         App.MapDelete("api/v1/configObject", RemoveAsync);
         App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync);

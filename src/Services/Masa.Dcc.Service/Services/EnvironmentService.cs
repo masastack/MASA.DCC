@@ -7,6 +7,7 @@ public class EnvironmentService : ServiceBase
 {
     public EnvironmentService(IPmClient pmClient)
     {
+        RouteOptions.DisableAutoMapRoute = true;
         App.MapGet("api/v1/env", GetListAsync);
         App.MapGet("api/v1/env/{Id}", GetAsync);
     }

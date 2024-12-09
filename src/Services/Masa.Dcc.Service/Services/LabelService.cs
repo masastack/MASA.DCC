@@ -7,6 +7,7 @@ namespace Masa.Dcc.Service.Admin.Services
     {
         public LabelService()
         {
+            RouteOptions.DisableAutoMapRoute = true;
             App.MapGet("api/v1/labels", GetListAsync);
             App.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync);
             App.MapPost("api/v1/labels", AddAsync);

@@ -7,6 +7,7 @@ public class ClusterService : ServiceBase
 {
     public ClusterService(IPmClient pmClient)
     {
+        RouteOptions.DisableAutoMapRoute = true;
         App.MapGet("api/v1/cluster", GetListAsync);
         App.MapGet("api/v1/cluster/{Id}", GetAsync);
         App.MapGet("api/v1/envClusters", GetEnvironmentClustersAsync);

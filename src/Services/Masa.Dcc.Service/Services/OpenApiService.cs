@@ -7,6 +7,7 @@ namespace Masa.Dcc.Service.Admin.Services
     {
         public OpenApiService()
         {
+            RouteOptions.DisableAutoMapRoute = true;
             App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
             App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync);
             App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync);

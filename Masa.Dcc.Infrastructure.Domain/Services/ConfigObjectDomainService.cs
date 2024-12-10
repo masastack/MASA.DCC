@@ -526,13 +526,6 @@ public class ConfigObjectDomainService : DomainService
         foreach (var configObject in configObjects)
         {
             var configObjectName = configObject.Key;
-            var key = $"{environmentName}-{clusterName}-{appId}-{configObjectName}".ToLower();
-            var redisData = await _memoryCacheClient.GetAsync<PublishReleaseModel?>(key);
-            if (redisData != null)
-            {
-                continue;
-            }
-
             string content = configObject.Value;
             if (isEncryption)
                 content = EncryptContent(content);
@@ -573,8 +566,18 @@ public class ConfigObjectDomainService : DomainService
                     }
                 }
             }
-            await _configObjectRepository.AddAsync(newConfigObject);
-            await _unitOfWork.SaveChangesAsync();
+            if (await _configObjectRepository.FindAsync(x => x.Name == newConfigObject.Name && x.Type == newConfigObject.Type) == null)
+            {
+                await _configObjectRepository.AddAsync(newConfigObject);
+                await _unitOfWork.SaveChangesAsync();
+            }
+
+            var key = $"{environmentName}-{clusterName}-{appId}-{configObjectName}".ToLower();
+            var redisData = await _memoryCacheClient.GetAsync<PublishReleaseModel?>(key);
+            if (redisData != null)
+            {
+                continue;
+            }
 
             var releaseModel = new AddConfigObjectReleaseDto
             {

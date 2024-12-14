@@ -277,14 +277,4 @@ internal class QueryHandler
     {
         query.Result = await _configObjectDomainService.GetConfigObjectsAsync(query.environment, query.cluster, query.appId, query.configObjects);
     }
-
-    [EventHandler]
-    public async Task GetPublicConfigAsync(PublicConfigQuery query)
-    {
-        query.Result = await _configurationApiClient.GetAsync<Dictionary<string, string>>(
-           query.Environment,
-           query.Cluster,
-           "public-$Config",
-           query.ConfigObject);
-    }
 }

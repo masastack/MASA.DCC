@@ -11,7 +11,6 @@ namespace Masa.Dcc.Service.Admin.Services
             App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
             App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync);
             App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync);
-            App.MapGet("open-api/releasing/{environment}/{cluster}/publicConfig/{configObject}", GetPublicConfigAsync);
         }
 
         public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,
@@ -33,13 +32,6 @@ namespace Masa.Dcc.Service.Admin.Services
            [FromBody] List<string>? configObjects)
         {
             var query = new ConfigObjectsByDynamicQuery(environment, cluster, appId, configObjects);
-            await eventBus.PublishAsync(query);
-            return query.Result;
-        }
-
-        public async Task<Dictionary<string, string>> GetPublicConfigAsync(IEventBus eventBus, string environment, string cluster, string configObject)
-        {
-            var query = new PublicConfigQuery(environment, cluster, configObject);
             await eventBus.PublishAsync(query);
             return query.Result;
         }

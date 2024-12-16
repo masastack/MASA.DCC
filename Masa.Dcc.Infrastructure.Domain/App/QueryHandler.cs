@@ -1,6 +1,9 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using Masa.Dcc.Infrastructure.Domain.App.Queries;
+using Masa.Dcc.Infrastructure.Domain.Queries;
+
 namespace Masa.Dcc.Service.Admin.Application.App;
 
 internal class QueryHandler
@@ -276,5 +279,44 @@ internal class QueryHandler
     public async Task GetConfigObjectsAsync(ConfigObjectsByDynamicQuery query)
     {
         query.Result = await _configObjectDomainService.GetConfigObjectsAsync(query.environment, query.cluster, query.appId, query.configObjects);
+    }
+
+    [EventHandler]
+    public async Task GetStackConfigAsync(StackConfigQuery query)
+    {
+        var defaultConfig = await _configurationApiClient.GetAsync<Dictionary<string, string>>(
+           query.Environment,
+           query.Cluster,
+           "public-$Config",
+           "$public.DefaultConfig");
+
+        var allowedSafeKeys = new List<string>
+        {
+            MasaStackConfigConstant.VERSION,
+            MasaStackConfigConstant.ENVIRONMENT,
+            MasaStackConfigConstant.IS_DEMO,
+            MasaStackConfigConstant.CLUSTER,
+            MasaStackConfigConstant.DOMAIN_NAME,
+            MasaStackConfigConstant.NAMESPACE,
+            MasaStackConfigConstant.MASA_STACK,
+            MasaStackConfigConstant.OTLP_URL
+        };
+
+        var stackConfig = defaultConfig.Where(x => allowedSafeKeys.Contains(x.Key))
+            .ToDictionary(x => x.Key, x => x.Value);
+
+        query.Result = stackConfig;
+    }
+
+    [EventHandler]
+    public async Task GetI18NConfigAsync(I18NConfigQuery query)
+    {
+        var i18nConfig = await _configurationApiClient.GetAsync<Dictionary<string, string>>(
+           query.Environment,
+           query.Cluster,
+           "public-$Config",
+           $"$public.i18n.{query.Culture}");
+
+        query.Result = i18nConfig;
     }
 }

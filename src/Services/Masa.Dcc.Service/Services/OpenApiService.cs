@@ -11,6 +11,8 @@ namespace Masa.Dcc.Service.Admin.Services
             App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
             App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync);
             App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync);
+            App.MapGet("open-api/releasing/{environment}/{cluster}/stack-config", GetStackConfigAsync);
+            App.MapGet("open-api/releasing/{environment}/{cluster}/i18n/{culture}", GetI18NConfigAsync);
         }
 
         public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,
@@ -32,6 +34,20 @@ namespace Masa.Dcc.Service.Admin.Services
            [FromBody] List<string>? configObjects)
         {
             var query = new ConfigObjectsByDynamicQuery(environment, cluster, appId, configObjects);
+            await eventBus.PublishAsync(query);
+            return query.Result;
+        }
+
+        public async Task<Dictionary<string, string>> GetStackConfigAsync(IEventBus eventBus, string environment, string cluster)
+        {
+            var query = new StackConfigQuery(environment, cluster);
+            await eventBus.PublishAsync(query);
+            return query.Result;
+        }
+
+        public async Task<Dictionary<string, string>> GetI18NConfigAsync(IEventBus eventBus, string environment, string cluster, string culture)
+        {
+            var query = new I18NConfigQuery(environment, cluster, culture);
             await eventBus.PublishAsync(query);
             return query.Result;
         }

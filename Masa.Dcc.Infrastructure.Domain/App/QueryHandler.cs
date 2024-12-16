@@ -277,4 +277,43 @@ internal class QueryHandler
     {
         query.Result = await _configObjectDomainService.GetConfigObjectsAsync(query.environment, query.cluster, query.appId, query.configObjects);
     }
+
+    [EventHandler]
+    public async Task GetStackConfigAsync(StackConfigQuery query)
+    {
+        var defaultConfig = await _configurationApiClient.GetAsync<Dictionary<string, string>>(
+           query.Environment,
+           query.Cluster,
+           "public-$Config",
+           "$public.DefaultConfig");
+
+        var allowedSafeKeys = new List<string>
+        {
+            MasaStackConfigConstant.VERSION,
+            MasaStackConfigConstant.ENVIRONMENT,
+            MasaStackConfigConstant.IS_DEMO,
+            MasaStackConfigConstant.CLUSTER,
+            MasaStackConfigConstant.DOMAIN_NAME,
+            MasaStackConfigConstant.NAMESPACE,
+            MasaStackConfigConstant.MASA_STACK,
+            MasaStackConfigConstant.OTLP_URL
+        };
+
+        var stackConfig = defaultConfig.Where(x => allowedSafeKeys.Contains(x.Key))
+            .ToDictionary(x => x.Key, x => x.Value);
+
+        query.Result = stackConfig;
+    }
+
+    [EventHandler]
+    public async Task GetI18NConfigAsync(I18NConfigQuery query)
+    {
+        var i18nConfig = await _configurationApiClient.GetAsync<Dictionary<string, string>>(
+           query.Environment,
+           query.Cluster,
+           "public-$Config",
+           $"$public.i18n.{query.Culture}");
+
+        query.Result = i18nConfig;
+    }
 }

@@ -22,6 +22,7 @@ global using Masa.Contrib.Dispatcher.Events;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;
+global using Masa.Dcc.Infrastructure.Domain.App.Queries;
 global using Masa.Dcc.Infrastructure.Domain.Commands;
 global using Masa.Dcc.Infrastructure.Domain.Queries;
 global using Masa.Dcc.Infrastructure.Domain.Services;

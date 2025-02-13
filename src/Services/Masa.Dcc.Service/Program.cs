@@ -98,9 +98,11 @@ builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
 builder.Services.AddAuthClient(authServiceBaseAddress: masaStackConfig.GetAuthServiceDomain(), redisOption);
 
 builder.Services
+#if DEBUG
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
+#endif
     .AddFluentValidation(options =>
     {
         options.RegisterValidatorsFromAssemblyContaining<Program>();
@@ -149,9 +151,10 @@ else
 }
 
 // Configure the HTTP request pipeline.
-
+#if DEBUG
 app.UseSwagger();
 app.UseSwaggerUI();
+#endif
 
 app.UseRouting();
 app.UseI18n();

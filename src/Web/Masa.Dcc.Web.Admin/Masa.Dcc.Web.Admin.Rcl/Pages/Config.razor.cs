@@ -551,7 +551,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     case "[":
                         try
                         {
-                            configObject.Content = JArray.Parse(configObject.Content).ToString();
+                            configObject.Content = JsonDocument.Parse(configObject.Content).ToString();
                         }
                         catch
                         {
@@ -563,7 +563,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
                     case "{":
                         try
                         {
-                            configObject.Content = JObject.Parse(configObject.Content).ToString();
+                            configObject.Content = JsonDocument.Parse(configObject.Content).ToString();
                         }
                         catch
                         {

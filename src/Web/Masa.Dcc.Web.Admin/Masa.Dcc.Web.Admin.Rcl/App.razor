@@ -1,8 +1,6 @@
-﻿@inject TokenProvider TokenProvider
-
-<CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(App).Assembly" 
-            AdditionalAssemblies='new List<Assembly>(){ Assembly.Load("Masa.Stack.Components")}'>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly"
+            AdditionalAssemblies='new []{ Assembly.Load("Masa.Stack.Components")}' OnNavigateAsync="OnNavigateAsync">
         <Found Context="routeData">
             <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -16,14 +14,9 @@
 </CascadingAuthenticationState>
 
 @code {
-    [Parameter]
-    public TokenProvider InitialState { get; set; } = null!;
-
-    protected override Task OnInitializedAsync()
+    private async Task OnNavigateAsync(NavigationContext args)
     {
-        TokenProvider.AccessToken = InitialState.AccessToken;
-        TokenProvider.RefreshToken = InitialState.RefreshToken;
-        TokenProvider.IdToken = InitialState.IdToken;
-        return base.OnInitializedAsync();
+        //ApmComponentBase.CurrentUrl = args.Path;
+        await Task.CompletedTask;
     }
 }

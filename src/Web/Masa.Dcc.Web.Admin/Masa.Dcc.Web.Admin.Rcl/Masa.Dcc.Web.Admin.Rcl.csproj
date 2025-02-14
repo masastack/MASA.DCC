@@ -10,9 +10,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.Stack.Components" Version="0.0.497" />
+    <PackageReference Include="Masa.Stack.Components" Version="0.0.498" />
     <!--<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.3" />-->
-    <PackageReference Include="Masa.Contrib.StackSdks.Tsc.OpenTelemetry" Version="$(MasaStackSdksPackageVersion)" />
+    <!--<PackageReference Include="Masa.Contrib.StackSdks.Tsc.OpenTelemetry" Version="$(MasaStackSdksPackageVersion)" />-->
   </ItemGroup>
 
   <ItemGroup>

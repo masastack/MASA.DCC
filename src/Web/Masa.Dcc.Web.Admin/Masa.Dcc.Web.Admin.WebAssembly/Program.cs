@@ -1,26 +1,36 @@
-﻿using Masa.Dcc.Web.Admin.Rcl.Global;
-using Masa.Dcc.Web.Admin.Rcl;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.AspNetCore.Components.Authorization;
-using Masa.Dcc.Web.Admin.WebAssembly;
+﻿// Copyright (c) MASA Stack All rights reserved.
+// Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.Services.AddSingleton(sp => builder.Configuration);
 
-builder.Services.AddAuthorizationCore();
-builder.Services.AddScoped<AuthenticationStateProvider, TestAuthStateProvider>();
+await builder.Services.AddMasaStackConfigAsync(builder.Configuration);
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-await builder.Services.AddGlobalForWasmAsync(builder.HostEnvironment.BaseAddress);
+builder.RootComponents.RegisterCustomElement<App>("mfe-dcc-app");
 
-builder.RootComponents.Add(typeof(App), "#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
-builder.Services.AddMasaBlazor(builder =>
+var masaStackConfig = builder.Services.GetMasaStackConfig();
+
+MasaOpenIdConnectOptions masaOpenIdConnectOptions = new()
 {
-    builder.UseTheme(option =>
-    {
-        option.Primary = "#4318FF";
-        option.Accent = "#4318FF";
-    });
+    Authority = masaStackConfig.GetSsoDomain(),
+    ClientId = masaStackConfig.GetWebId(MasaStackProject.DCC),
+    Scopes = new List<string> { "openid", "profile" }
+};
+
+await builder.AddMasaOpenIdConnectAsync(masaOpenIdConnectOptions);
+builder.Services.AddDccApiGateways(option =>
+{
+    option.DccServiceAddress = masaStackConfig.GetDccServiceDomain();
+    option.AuthorityEndpoint = masaOpenIdConnectOptions.Authority;
+    option.ClientId = masaOpenIdConnectOptions.ClientId;
+    option.ClientSecret = masaOpenIdConnectOptions.ClientSecret;
 });
 
-await builder.Build().RunAsync();
+var projectPrefix = MasaStackProject.DCC.Name.ToLower();
+string i18nDirectoryPath = builder.HostEnvironment.BaseAddress.TrimEnd('/').Replace(projectPrefix, $"stack/{projectPrefix}") + "/_content/Masa.Dcc.Web.Admin.Rcl/i18n";
+builder.Services.AddMasaStackComponent(MasaStackProject.DCC, i18nDirectoryPath, microFrontend: true);
+
+var host = builder.Build();
+await host.Services.InitializeMasaStackApplicationAsync();
+await host.RunAsync();

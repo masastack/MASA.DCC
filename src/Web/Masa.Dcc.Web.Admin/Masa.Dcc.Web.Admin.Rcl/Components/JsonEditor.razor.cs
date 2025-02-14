@@ -58,10 +58,7 @@ namespace Masa.Dcc.Web.Admin.Rcl.Components
 
             try
             {
-                if (value.StartsWith("["))
-                    JArray.Parse(value);
-                else
-                    JObject.Parse(value);
+                JsonDocument.Parse(value);
                 _errorLine = 0;
             }
             catch (Exception ex)

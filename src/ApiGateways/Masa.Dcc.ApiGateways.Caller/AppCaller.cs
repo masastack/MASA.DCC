@@ -35,16 +35,21 @@ namespace Masa.Dcc.Caller
 
         public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigAsync(LatestReleaseConfigRequestDto<int> request)
         {
-            var result = await Caller.PostAsync<List<LatestReleaseConfigModel>>($"{_prefix}/latestReleaseConfig",request);
+            var result = await Caller.PostAsync<List<LatestReleaseConfigModel>>($"{_prefix}/latestReleaseConfig", request);
             return result ?? new();
         }
 
         public async Task<List<AppPinDto>> GetAppPinListAsync(List<int> appIds)
         {
-            HttpRequestMessage httpRequest = new HttpRequestMessage(HttpMethod.Get, $"{_prefix}/pin");
-            httpRequest.Content = new StringContent(JsonSerializer.Serialize(appIds), Encoding.UTF8, "application/json");
-            var result = await Caller.SendAsync<List<AppPinDto>>(httpRequest);
+            var param = new StringBuilder();
+            foreach (var appId in appIds)
+            {
+                param.Append($"&appIds={appId}");
+            }
+            if (param.Length > 0)
+                param.Remove(0, 1);
 
+            var result = await Caller.GetAsync<List<AppPinDto>>($"{_prefix}/pin?{param.ToString()}");
             return result ?? new();
         }
 

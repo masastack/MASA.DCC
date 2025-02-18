@@ -54,9 +54,9 @@ public class AppService : ServiceBase
         await eventBus.PublishAsync(new RemoveAppPinCommand(appId));
     }
 
-    public async Task<List<AppPinDto>> GetAppPinListAsync(IEventBus eventBus, [FromBody] List<int> appIds)
+    public async Task<List<AppPinDto>> GetAppPinListAsync(IEventBus eventBus, [FromQuery] int[] appIds)
     {
-        var query = new AppPinQuery(appIds);
+        var query = new AppPinQuery(appIds.ToList());
         await eventBus.PublishAsync(query);
         return query.Result;
     }

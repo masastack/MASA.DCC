@@ -42,3 +42,4 @@ global using Masa.Dcc.Service.Admin.Infrastructure.Middleware;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.AspNetCore.Authorization;

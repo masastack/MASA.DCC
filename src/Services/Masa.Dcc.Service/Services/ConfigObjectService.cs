@@ -3,23 +3,24 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
+[Authorize]
 public class ConfigObjectService : ServiceBase
 {
     public ConfigObjectService()
     {
         RouteOptions.DisableAutoMapRoute = true;
-        App.MapPost("api/v1/configObject", AddAsync);
-        App.MapDelete("api/v1/configObject", RemoveAsync);
-        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync);
-        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}/{configObjectName}", GetListAsync);
-        App.MapPost("api/v1/configObjects/getListByIds", GetListByIdsAsync);
-        App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
-        App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
-        App.MapPut("api/v1/configObject/revoke/{id}", RevokeConfigObjectAsync);
-        App.MapPut("api/v1/configObject/rollback", RollbackAsync);
-        App.MapPost("api/v1/configObject/clone", CloneConfigObjectAsync);
-        App.MapGet("api/v1/configObject/release/history/{configObjectId}", GetConfigObjectReleaseHistoryAsync);
-        App.MapGet("api/v1/configObject/refresh", RefreshConfigObjectToRedisAsync);
+        App.MapPost("api/v1/configObject", AddAsync).RequireAuthorization();
+        App.MapDelete("api/v1/configObject", RemoveAsync).RequireAuthorization();
+        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync).RequireAuthorization();
+        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}/{configObjectName}", GetListAsync).RequireAuthorization();
+        App.MapPost("api/v1/configObjects/getListByIds", GetListByIdsAsync).RequireAuthorization();
+        App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync).RequireAuthorization();
+        App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync).RequireAuthorization();
+        App.MapPut("api/v1/configObject/revoke/{id}", RevokeConfigObjectAsync).RequireAuthorization();
+        App.MapPut("api/v1/configObject/rollback", RollbackAsync).RequireAuthorization();
+        App.MapPost("api/v1/configObject/clone", CloneConfigObjectAsync).RequireAuthorization();
+        App.MapGet("api/v1/configObject/release/history/{configObjectId}", GetConfigObjectReleaseHistoryAsync).RequireAuthorization();
+        App.MapGet("api/v1/configObject/refresh", RefreshConfigObjectToRedisAsync).RequireAuthorization();
     }
 
     public async Task AddAsync(IEventBus eventBus, List<AddConfigObjectDto> dtos)

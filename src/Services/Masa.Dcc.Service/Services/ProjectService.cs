@@ -3,17 +3,18 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
+[Authorize]
 public class ProjectService : ServiceBase
 {
     public ProjectService(IPmClient pmClient)
     {
         RouteOptions.DisableAutoMapRoute = true;
-        App.MapGet("api/v1/projectwithapps/{envName}", GetProjectListAsync);
-        App.MapGet("api/v1/project/{id}", GetAsync);
-        App.MapGet("api/v1/{envClusterId}/project", GetListByEnvironmentClusterIdAsync);
-        App.MapGet("api/v1/project/projectType", GetProjectTypes);
-        App.MapGet("api/v1/project", GetListAsync);
-        App.MapPost("api/v1/project/teamsProject", GetListByTeamIdsAsync);
+        App.MapGet("api/v1/projectwithapps/{envName}", GetProjectListAsync).RequireAuthorization();
+        App.MapGet("api/v1/project/{id}", GetAsync).RequireAuthorization();
+        App.MapGet("api/v1/{envClusterId}/project", GetListByEnvironmentClusterIdAsync).RequireAuthorization();
+        App.MapGet("api/v1/project/projectType", GetProjectTypes).RequireAuthorization();
+        App.MapGet("api/v1/project", GetListAsync).RequireAuthorization();
+        App.MapPost("api/v1/project/teamsProject", GetListByTeamIdsAsync).RequireAuthorization();
     }
 
     public async Task<List<ProjectAppsModel>> GetProjectListAsync(IPmClient pmClient, string envName)

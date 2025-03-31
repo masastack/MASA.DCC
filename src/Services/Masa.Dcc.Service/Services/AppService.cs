@@ -3,18 +3,19 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
+[Authorize]
 public class AppService : ServiceBase
 {
     public AppService()
-    {
+    {        
         RouteOptions.DisableAutoMapRoute = true;
-        App.MapGet("api/v1/app/{id}", GetAsync);
-        App.MapPost("api/v1/projects/app", GetListByProjectIdsAsync);
-        App.MapGet("api/v1/appWithEnvCluster/{id}", GetWithEnvironmentClusterAsync);
-        App.MapPost("api/v1/app/pin/{appId}", AddAppPinAsync);
-        App.MapDelete("api/v1/app/pin/{appId}", RemoveAppPinAsync);
-        App.MapGet("api/v1/app/pin", GetAppPinListAsync);
-        App.MapPost("api/v1/app/latestReleaseConfig", GetLatestReleaseConfigByAppAsync);
+        App.MapGet("api/v1/app/{id}", GetAsync).RequireAuthorization();
+        App.MapPost("api/v1/projects/app", GetListByProjectIdsAsync).RequireAuthorization();
+        App.MapGet("api/v1/appWithEnvCluster/{id}", GetWithEnvironmentClusterAsync).RequireAuthorization();
+        App.MapPost("api/v1/app/pin/{appId}", AddAppPinAsync).RequireAuthorization();
+        App.MapDelete("api/v1/app/pin/{appId}", RemoveAppPinAsync).RequireAuthorization();
+        App.MapGet("api/v1/app/pin", GetAppPinListAsync).RequireAuthorization();
+        App.MapPost("api/v1/app/latestReleaseConfig", GetLatestReleaseConfigByAppAsync).RequireAuthorization();
     }
 
     public Task<AppDetailModel> GetAsync(IPmClient pmClient, int id)

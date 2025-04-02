@@ -3,13 +3,14 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
+[Authorize]
 public class EnvironmentService : ServiceBase
 {
     public EnvironmentService(IPmClient pmClient)
     {
         RouteOptions.DisableAutoMapRoute = true;
-        App.MapGet("api/v1/env", GetListAsync);
-        App.MapGet("api/v1/env/{Id}", GetAsync);
+        App.MapGet("api/v1/env", GetListAsync).RequireAuthorization();
+        App.MapGet("api/v1/env/{Id}", GetAsync).RequireAuthorization();
     }
 
     public async Task<List<EnvironmentModel>> GetListAsync(IPmClient pmClient)

@@ -3,7 +3,6 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
-[Authorize]
 public class OpenApiService : ServiceBase
 {
     public OpenApiService()
@@ -12,11 +11,10 @@ public class OpenApiService : ServiceBase
         App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync).RequireAuthorization();
         App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync).RequireAuthorization();
         App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync).RequireAuthorization();
-        App.MapGet("open-api/releasing/{environment}/{cluster}/stack-config", GetStackConfigAsync).RequireAuthorization();
-        App.MapGet("open-api/releasing/{environment}/{cluster}/i18n/{culture}", GetI18NConfigAsync).RequireAuthorization();
+        App.MapGet("open-api/releasing/{environment}/{cluster}/stack-config", GetStackConfigAsync);
+        App.MapGet("open-api/releasing/{environment}/{cluster}/i18n/{culture}", GetI18NConfigAsync);
     }
 
-    [AllowAnonymous]
     public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,
         [FromBody] string value)
     {
@@ -24,7 +22,6 @@ public class OpenApiService : ServiceBase
             new UpdateConfigAndPublishCommand(environment, cluster, appId, configObject, value));
     }
 
-    [AllowAnonymous]
     public async Task AddConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId,
         [FromBody] Dictionary<string, string> configObjects, ConfigObjectType configObjectType = ConfigObjectType.App,
         bool isEncryption = false)

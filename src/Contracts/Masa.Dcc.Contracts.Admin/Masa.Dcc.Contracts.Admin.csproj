@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
     <ImplicitUsings>enable</ImplicitUsings>
@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Masa.BuildingBlocks.StackSdks.Dcc.Contracts" Version="2.4.23" />
+    <PackageReference Include="Masa.BuildingBlocks.StackSdks.Dcc.Contracts" Version="$(MasaStackSdksPackageVersion)" />
     <PackageReference Include="Masa.Utils.Data.DataAnnotations" Version="$(MasaFrameworkPackageVersion)" />
   </ItemGroup>
 

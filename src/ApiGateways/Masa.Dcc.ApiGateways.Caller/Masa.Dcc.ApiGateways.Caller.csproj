@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="Masa.Contrib.Service.Caller.HttpClient" Version="$(MasaFrameworkPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.StackSdks.Caller" Version="$(MasaStackSdksPackageVersion)" />
-    <PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="$(MasaStackSdksPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Caller" Version="$(MasaStackSdksBlazorServerPackageVersion)" />
+    <PackageReference Include="Masa.Contrib.StackSdks.Pm" Version="$(MasaStackSdksBlazorServerPackageVersion)" />
     <PackageReference Include="Masa.Utils.Configuration.Json" Version="$(MasaFrameworkPackageVersion)" />
   </ItemGroup>
 

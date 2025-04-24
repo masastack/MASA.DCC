@@ -13,6 +13,7 @@ public class OpenApiService : ServiceBase
         App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync).RequireAuthorization();
         App.MapGet("open-api/releasing/{environment}/{cluster}/stack-config", GetStackConfigAsync);
         App.MapGet("open-api/releasing/{environment}/{cluster}/i18n/{culture}", GetI18NConfigAsync);
+        App.MapGet("open-api/oss-token", GetOssSecurityTokenAsync).RequireAuthorization();
     }
 
     public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,
@@ -50,5 +51,21 @@ public class OpenApiService : ServiceBase
         var query = new I18NConfigQuery(environment, cluster, culture);
         await eventBus.PublishAsync(query);
         return query.Result;
+    }
+
+    private async Task<OssSecurityTokenDto> GetOssSecurityTokenAsync([FromServices] IObjectStorageClient client, IMultiEnvironmentContext multiEnvironmentContext, IMasaStackConfig masaStackConfig, [FromServices] IConfigurationApiClient configurationApiClient)
+    {
+        var environment = multiEnvironmentContext.CurrentEnvironment;
+        if (environment.IsNullOrEmpty())
+        {
+            environment = masaStackConfig.Environment;
+        }
+        var ossOptions = await configurationApiClient.GetAsync<OssOptions>(environment, "Default", "public-$Config", DccConstants.OssKey);
+        var cdn = await configurationApiClient.GetAsync<CdnDto>(environment, "Default", "public-$Config", DccConstants.CdnKey);
+
+        MasaArgumentException.ThrowIfNull(ossOptions);
+        MasaArgumentException.ThrowIfNull(cdn);
+        var response = client.GetSecurityToken();
+        return new OssSecurityTokenDto(ossOptions.RegionId, response.AccessKeyId, response.AccessKeySecret, response.SessionToken, ossOptions.Bucket, cdn.CdnEndpoint);
     }
 }

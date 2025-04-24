@@ -11,6 +11,21 @@ var masaStackConfig = builder.Services.GetMasaStackConfig();
 var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING);
 var dbModel = JsonSerializer.Deserialize<DbModel>(connStr)!;
 bool isPgsql = string.Equals(dbModel.DbType, "postgresql", StringComparison.CurrentCultureIgnoreCase);
+var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
+
+var ossSptions = publicConfiguration.GetSection(DccConstants.OssKey).Get<OssOptions>()!;
+builder.Services.AddObjectStorage(option => option.UseAliyunStorage(options =>
+{
+    options.AccessKeyId = ossSptions.AccessId;
+    options.AccessKeySecret = ossSptions.AccessSecret;
+    options.Endpoint = ossSptions.Endpoint;
+    options.RoleArn = ossSptions.RoleArn;
+    options.RoleSessionName = ossSptions.RoleSessionName;
+    options.Sts = new Masa.Contrib.Storage.ObjectStorage.Aliyun.Options.AliyunStsOptions
+    {
+        RegionId = ossSptions.RegionId
+    };
+}));
 
 if (!builder.Environment.IsDevelopment())
 {
@@ -40,6 +55,7 @@ builder.Services.AddScoped(serviceProvider =>
     return masaUser;
 });
 
+builder.Services.AddAutoInject();
 builder.Services.AddDaprClient();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(options =>
@@ -62,6 +78,7 @@ builder.Services.AddAuthentication(options =>
             sslPolicyErrors) => true
     };
 });
+
 
 if (builder.Environment.IsDevelopment())
 {

@@ -86,4 +86,30 @@ internal class ConfigObjectRepository : Repository<DccDbContext, ConfigObject>, 
             new ValueTuple<ConfigObject, int, int>(config.ConfigObject, config.PublicConfigId, config.EnvironmentClusterId)))
             .ToList();
     }
+
+    public async Task<List<ConfigObject>> GetConfigObjectsByNameAsync(string Name)
+    {
+        var names = await Context.Set<ConfigObject>().Select(configObject => new { configObject.Id, configObject.Name }).ToListAsync();
+        if (names == null || names.Count == 0)
+            return [];
+        Name = Name.ToLower().Trim();
+        var matches = names.Where(item => Name.Equals(item.Name.ToLower())).ToList();
+        if (matches == null || matches.Count == 0)
+            return [];
+
+        var ids = matches.Select(item => item.Id).ToList();
+        return await Context.Set<ConfigObject>().Include(configObject => configObject.ConfigObjectRelease).Where(item => ids.Contains(item.Id)).ToListAsync();
+    }
+
+    public async Task<int> GetIdAsync(string Name, ConfigObjectType Type)
+    {
+        var names = await Context.Set<ConfigObject>().Where(item => item.Type == Type).Select(configObject => new { configObject.Id, configObject.Name }).ToListAsync();
+        if (names == null || names.Count == 0)
+            return default;
+        Name = Name.ToLower().Trim();
+        var matches = names.Where(item => Name.Equals(item.Name.ToLower())).ToList();
+        if (matches == null || matches.Count == 0)
+            return default;
+        return matches[0].Id;
+    }
 }

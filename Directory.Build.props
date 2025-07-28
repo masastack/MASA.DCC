@@ -1,9 +1,9 @@
 <Project>
   <PropertyGroup>
-    <MasaFrameworkPackageVersion>1.2.0-preview.6</MasaFrameworkPackageVersion>
-    <MasaStackSdksPackageVersion>1.2.1-preview.36</MasaStackSdksPackageVersion>
-    <MasaStackSdksBlazorServerPackageVersion>1.2.1-preview.9</MasaStackSdksBlazorServerPackageVersion>
+    <MasaFrameworkPackageVersion>1.2.0-preview.*</MasaFrameworkPackageVersion>
+    <MasaStackSdksPackageVersion>1.2.1-preview.*</MasaStackSdksPackageVersion>
+    <MasaStackSdksBlazorServerPackageVersion>1.2.1-preview.*</MasaStackSdksBlazorServerPackageVersion>
     <TargetFramework>net8.0</TargetFramework>
-    <DotnetVersion>8.0</DotnetVersion>
+    <DotnetVersion>8.*</DotnetVersion>
   </PropertyGroup>
 </Project>

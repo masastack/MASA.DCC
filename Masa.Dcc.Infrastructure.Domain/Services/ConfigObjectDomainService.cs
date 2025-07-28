@@ -171,14 +171,14 @@ public class ConfigObjectDomainService : DomainService
 
         //update
         var envClusterIds = dto.CoverConfigObjects.Select(c => c.EnvironmentClusterId);
-        var configNames = dto.CoverConfigObjects.Select(c => c.Name).Distinct();
+        var configNames = dto.CoverConfigObjects.Select(c => c.Name).Distinct().ToList();
 
         IEnumerable<ConfigObject> needEditConfig = new List<ConfigObject>();
         if (dto.ConfigObjectType == ConfigObjectType.App)
         {
             var appConfigObjects = await _appConfigObjectRepository.GetListAsync(
                 app => app.AppId == dto.ToObjectId && envClusterIds.Contains(app.EnvironmentClusterId));
-            needEditConfig = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id) && configNames.Contains(c.Name));
+            needEditConfig = await _configObjectRepository.GetListAsync(c => appConfigObjects.Select(app => app.ConfigObjectId).Contains(c.Id));
         }
         else if (dto.ConfigObjectType == ConfigObjectType.Biz)
         {
@@ -190,9 +190,13 @@ public class ConfigObjectDomainService : DomainService
         {
             var publicConfigObjects = await _publicConfigObjectRepository.GetListAsync(
                 publicConfig => publicConfig.PublicConfigId == dto.ToObjectId && envClusterIds.Contains(publicConfig.EnvironmentClusterId));
-            var s = await _configObjectRepository.GetListAsync(c => publicConfigObjects.Select(publicConfig => publicConfig.ConfigObjectId).Contains(c.Id));
             var ss = publicConfigObjects.Select(publicConfig => publicConfig.ConfigObjectId);
             needEditConfig = await _configObjectRepository.GetListAsync(c => ss.Contains(c.Id) && configNames.Contains(c.Name));
+        }
+
+        if (needEditConfig != null && needEditConfig.Any() && configNames.Any())
+        {
+            needEditConfig = needEditConfig.Where(item => configNames.Any(name => string.Equals(name, item.Name, StringComparison.CurrentCultureIgnoreCase))).ToList();
         }
 
         foreach (var editConfig in needEditConfig)
@@ -294,8 +298,7 @@ public class ConfigObjectDomainService : DomainService
 
     public async Task AddConfigObjectReleaseAsync(AddConfigObjectReleaseDto dto)
     {
-        var configObject = (await _configObjectRepository.FindAsync(
-            configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
+        var configObject = (await _configObjectRepository.FindAsync(configObject => configObject.Id == dto.ConfigObjectId)) ?? throw new Exception("Config object does not exist");
 
         configObject.AddContent(configObject.Content, configObject.Content);
         await _configObjectRepository.UpdateAsync(configObject);
@@ -465,8 +468,8 @@ public class ConfigObjectDomainService : DomainService
         string configObjectName,
         string value)
     {
-        var configObjects = await _configObjectRepository.GetListAsync(config => config.Name == configObjectName);
-        if (!configObjects.Any())
+        var configObjects = await _configObjectRepository.GetConfigObjectsByNameAsync(configObjectName);
+        if (configObjects.Count == 0)
         {
             throw new UserFriendlyException("ConfigObject does not exist");
         }
@@ -566,10 +569,12 @@ public class ConfigObjectDomainService : DomainService
                     }
                 }
             }
-            if (await _configObjectRepository.FindAsync(x => x.Name == newConfigObject.Name && x.Type == newConfigObject.Type) == null)
+            var objectId = await _configObjectRepository.GetIdAsync(newConfigObject.Name, newConfigObject.Type);
+            if (objectId == 0)
             {
                 await _configObjectRepository.AddAsync(newConfigObject);
                 await _unitOfWork.SaveChangesAsync();
+                objectId = newConfigObject.Id;
             }
 
             var key = $"{environmentName}-{clusterName}-{appId}-{configObjectName}".ToLower();
@@ -582,7 +587,7 @@ public class ConfigObjectDomainService : DomainService
             var releaseModel = new AddConfigObjectReleaseDto
             {
                 Type = ReleaseType.MainRelease,
-                ConfigObjectId = newConfigObject.Id,
+                ConfigObjectId = objectId,
                 Name = "通过Sdk发布",
                 EnvironmentName = environmentName,
                 ClusterName = clusterName,
@@ -654,9 +659,12 @@ public class ConfigObjectDomainService : DomainService
 
         Expression<Func<ConfigObject, bool>> configObjectFilter = configObject =>
                     configObject.AppConfigObject.EnvironmentClusterId == cluster.Id &&
-                    configObject.AppConfigObject.AppId == app.Id &&
-                    ((configObjects == null || configObjects.Count == 0) || configObjects.Contains(configObject.Name));
+                    configObject.AppConfigObject.AppId == app.Id;
         var configObjectList = await _configObjectRepository.GetListAsync(configObjectFilter);
+        if (configObjectList != null && configObjectList.Any() && configObjects != null && configObjects.Count > 0)
+        {
+            configObjectList = configObjectList.Where(configObject => configObjects.Contains(configObject.Name, StringComparer.OrdinalIgnoreCase)).ToList();
+        }
         if (configObjects == null || configObjects.Count == 0)
         {
             var configObjectPublicList = await _configObjectRepository.GetListAsync(configObject => configObject.PublicConfigObject.EnvironmentClusterId == cluster.Id);

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using DeepCloner.Core;
+using Force.DeepCloner;
 
 namespace Masa.Dcc.Web.Admin.Rcl.Pages
 {

@@ -79,7 +79,8 @@ namespace Masa.Dcc.Web.Admin.Rcl.Pages
 
             _allEnvClusters = await ClusterCaller.GetEnvironmentClustersAsync();
             _projectDetail = await ProjectCaller.GetAsync(ProjectId);
-            _projectTeamDetail = await AuthClient.TeamService.GetDetailAsync(_projectDetail.TeamId) ?? new();
+
+            _projectTeamDetail = new(); /*await AuthClient.TeamService.GetDetailAsync(_projectDetail.TeamId) ?? new();*/
 
             try
             {

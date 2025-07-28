@@ -10,4 +10,8 @@ public interface IConfigObjectRepository : IRepository<ConfigObject>
     Task<List<ConfigObject>> GetRelationConfigObjectWithReleaseHistoriesAsync(int Id);
 
     Task<List<(ConfigObject ConfigObject, int ObjectId, int EnvironmentClusterId)>> GetNewestConfigObjectReleaseWithAppInfo();
+
+    Task<List<ConfigObject>> GetConfigObjectsByNameAsync(string Name);
+
+    Task<int> GetIdAsync(string Name, ConfigObjectType Type);
 }

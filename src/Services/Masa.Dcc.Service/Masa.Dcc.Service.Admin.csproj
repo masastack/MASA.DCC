@@ -29,7 +29,7 @@
     <PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Globalization.I18n.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />    
 
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(DotnetVersion)" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.4.0" />
     <PackageReference Include="Dapr.AspNetCore" Version="1.10.0" />

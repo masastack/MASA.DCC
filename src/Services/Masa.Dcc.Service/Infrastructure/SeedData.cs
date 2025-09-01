@@ -144,7 +144,7 @@ internal static class IHostExtensions
         IPmClient pmClient,
         InitConfigObjectDomainService configObjectDomainService)
     {
-        if (await context.Set<ConfigObject>().AnyAsync())
+        if (await context.Set<PublicConfig>().AnyAsync())
         {
             return;
         }

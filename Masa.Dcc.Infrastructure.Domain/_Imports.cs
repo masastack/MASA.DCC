@@ -32,3 +32,4 @@ global using Masa.Dcc.Infrastructure.Repository.App;
 global using Masa.Dcc.Infrastructure.Repository.Label;
 global using Masa.Utils.Security.Cryptography;
 global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Logging;

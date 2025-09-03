@@ -19,7 +19,7 @@ public class DccDbContext : MasaDbContext<DccDbContext>
 
     protected override void OnModelCreatingExecuting(ModelBuilder builder)
     {
-        builder.ApplyConfigurationsFromAssembly(Assembly);
+        builder.ApplyConfigurationsFromAssembly(Assembly);        
         base.OnModelCreatingExecuting(builder);
     }
 }

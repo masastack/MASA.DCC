@@ -5,7 +5,6 @@ namespace Masa.Dcc.Contracts.Admin.App.Dtos
 {
     public class ConfigObjectPropertyContentDto
     {
-        [Required]
         public string Key { get; set; } = "";
 
         public string Value { get; set; } = "";

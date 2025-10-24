@@ -1,32 +1,24 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-namespace Masa.Dcc.Contracts.Admin.App.Dtos
+namespace Masa.Dcc.Contracts.Admin.App.Dtos;
+
+public class AddObjectConfigDto
 {
-    public class AddObjectConfigDto
+    public string Name { get; set; } = "";
+
+    public string Identity { get; set; } = "";
+
+    public string Description { get; set; } = "";
+
+    public AddObjectConfigDto()
     {
-        [Required]
-        [RegularExpression(@"^[\u4E00-\u9FA5A-Za-z0-9_-.]+$", ErrorMessage = "Please enter [Chinese, English、and - _ . symbols] ")]
-        [StringLength(50, MinimumLength = 2)]
-        public string Name { get; set; } = "";
+    }
 
-        [Required]
-        [RegularExpression(@"^[\u4E00-\u9FA5A-Za-z0-9_-.]+$", ErrorMessage = "Please enter [Chinese, English、and - _ . symbols] ")]
-        [StringLength(50, MinimumLength = 2)]
-        public string Identity { get; set; } = "";
-
-        [StringLength(255)]
-        public string Description { get; set; } = "";
-
-        public AddObjectConfigDto()
-        {
-        }
-
-        public AddObjectConfigDto(string name, string identity, string description = "")
-        {
-            Name = name;
-            Identity = identity;
-            Description = description;
-        }
+    public AddObjectConfigDto(string name, string identity, string description = "")
+    {
+        Name = name;
+        Identity = identity;
+        Description = description;
     }
 }

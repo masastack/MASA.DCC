@@ -9,11 +9,11 @@ public class LabelService : ServiceBase
     public LabelService()
     {
         RouteOptions.DisableAutoMapRoute = true;
-        App.MapGet("api/v1/labels", GetListAsync).RequireAuthorization();
-        App.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync).RequireAuthorization();
-        App.MapPost("api/v1/labels", AddAsync).RequireAuthorization();
-        App.MapPut("api/v1/labels", UpdateAsync).RequireAuthorization();
-        App.MapDelete("api/v1/labels/{typeCode}", RemoveAsync).RequireAuthorization();
+        App.MapGet("api/v1/labels", GetListAsync);
+        App.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync);
+        App.MapPost("api/v1/labels", AddAsync).AddFluentValidationAutoValidation();
+        App.MapPut("api/v1/labels", UpdateAsync).AddFluentValidationAutoValidation();
+        App.MapDelete("api/v1/labels/{typeCode}", RemoveAsync);
     }
 
     public async Task<List<LabelDto>> GetLabelsByTypeCodeAsync(IEventBus eventBus, string typeCode)

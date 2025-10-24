@@ -79,6 +79,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services
+    .AddValidatorsFromAssemblyContaining<AddConfigObjectDto>()
+    .AddFluentValidationAutoValidation(configuration => {
+        configuration.OverrideDefaultResultFactoryWith<CustomResultFactory>();
+    });
 
 if (builder.Environment.IsDevelopment())
 {
@@ -144,11 +149,7 @@ builder.Services
             }
         });
      })
-#endif
-    .AddFluentValidation(options =>
-    {
-        options.RegisterValidatorsFromAssemblyContaining<Program>();
-    })
+#endif   
     .AddDomainEventBus(options =>
     {
         var connStr = masaStackConfig.GetConnectionString(MasaStackProject.DCC.Name);
@@ -172,8 +173,6 @@ builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 await builder.SeedDataAsync();
 
 var app = builder.Services.AddServices(builder, [typeof(IAppConfigObjectRepository).Assembly, typeof(LabelDomainService).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly]);
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseMasaExceptionHandler(options =>
@@ -189,7 +188,24 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseMasaExceptionHandler();
+    app.UseMasaExceptionHandler(opt =>
+    {
+        opt.ExceptionHandler = context =>
+        {
+            if (context.Exception is UserFriendlyException userFriendlyException)
+            {
+                context.ToResult(userFriendlyException.ErrorCode!, 299);
+            }
+            else if (context.Exception is ValidationException validationException)
+            {
+                context.ToResult(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
+            }
+            else if (context.Exception is UserStatusException userStatusException)
+            {
+                context.ToResult(userStatusException.Message, 293);
+            }
+        };
+    });
 }
 
 // Configure the HTTP request pipeline.

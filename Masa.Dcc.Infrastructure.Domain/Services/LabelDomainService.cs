@@ -27,10 +27,10 @@ public class LabelDomainService : DomainService
         }
         else
         {
-            var label = await _labelRepository.FindAsync(x => x.TypeCode == labelDto.TypeCode);
+            var label = await _labelRepository.FindAsync(x => x.TypeCode == labelDto.TypeCode || x.TypeName == labelDto.TypeName);
             if (label is not null)
             {
-                throw new UserFriendlyException(_i18n.T("Duplicate label type code"));
+                throw new UserFriendlyException(_i18n.T(label.TypeCode == labelDto.TypeCode ? "Duplicate label type code" : "Duplicate label type name"));
             }
 
             List<Label> labels = new();
@@ -51,11 +51,15 @@ public class LabelDomainService : DomainService
 
     public async Task UpdateLabelAsync(UpdateLabelDto labelDto)
     {
+        if (await _labelRepository.AsQueryable().Where(lable => lable.TypeCode != labelDto.TypeCode && lable.TypeName == labelDto.TypeName).AnyAsync())
+        {
+            throw new UserFriendlyException(_i18n.T("Duplicate label type name"));
+        }
+
         var labelEntities = await _labelRepository.GetListAsync(l => l.TypeCode.Equals(labelDto.TypeCode));
         if (labelEntities.Any())
         {
             await _labelRepository.RemoveRangeAsync(labelEntities);
-
             List<Label> labels = new();
             var labelEntity = labelEntities.First();
             foreach (var item in labelDto.LabelValues)

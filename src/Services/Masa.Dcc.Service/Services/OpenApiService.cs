@@ -8,12 +8,12 @@ public class OpenApiService : ServiceBase
     public OpenApiService()
     {
         RouteOptions.DisableAutoMapRoute = true;
-        App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync).RequireAuthorization();
-        App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync).RequireAuthorization();
-        App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync).RequireAuthorization();
+        App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
+        App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync);
+        App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync);
         App.MapGet("open-api/releasing/{environment}/{cluster}/stack-config", GetStackConfigAsync);
         App.MapGet("open-api/releasing/{environment}/{cluster}/i18n/{culture}", GetI18NConfigAsync);
-        App.MapGet("open-api/oss-token", GetOssSecurityTokenAsync).RequireAuthorization();
+        App.MapGet("open-api/oss-token", GetOssSecurityTokenAsync);
     }
 
     public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,

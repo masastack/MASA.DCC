@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.App;
 
-public interface IAppConfigObjectRepository : IRepository<AppConfigObject>
+public interface IAppConfigObjectRepository : IRepositoryExtensition<AppConfigObject>
 {
     Task<List<AppConfigObject>> GetListByAppIdAsync(int appId);
 

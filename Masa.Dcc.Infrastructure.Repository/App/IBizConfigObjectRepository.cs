@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.App;
 
-public interface IBizConfigObjectRepository : IRepository<BizConfigObject>
+public interface IBizConfigObjectRepository : IRepositoryExtensition<BizConfigObject>
 {
     Task<List<BizConfigObject>> GetListByEnvClusterIdAsync(int envClusterId, int bizConfigId,
         bool getLatestRelease = false);

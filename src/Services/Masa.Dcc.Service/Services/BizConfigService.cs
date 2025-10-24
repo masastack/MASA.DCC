@@ -8,10 +8,10 @@ public class BizConfigService : ServiceBase
     public BizConfigService()
     {
         RouteOptions.DisableAutoMapRoute = true;
-        App.MapPost("api/v1/bizConfig", AddAsync).RequireAuthorization();
-        App.MapPut("api/v1/bizConfig", UpdateAsync).RequireAuthorization();
-        App.MapGet("api/v1/bizConfig/{identity}", GetAsync).RequireAuthorization();
-        App.MapPost("api/v1/bizConfig/latestReleaseConfig", GetLatestReleaseConfigByProjectAsync).RequireAuthorization();
+        App.MapPost("api/v1/bizConfig", AddAsync).AddFluentValidationAutoValidation();
+        App.MapPut("api/v1/bizConfig", UpdateAsync).AddFluentValidationAutoValidation();
+        App.MapGet("api/v1/bizConfig/{identity}", GetAsync);
+        App.MapPost("api/v1/bizConfig/latestReleaseConfig", GetLatestReleaseConfigByProjectAsync);
     }
 
     public async Task<List<LatestReleaseConfigModel>> GetLatestReleaseConfigByProjectAsync(IEventBus eventBus,

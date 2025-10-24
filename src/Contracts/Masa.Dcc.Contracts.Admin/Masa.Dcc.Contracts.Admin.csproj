@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>    
+  <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Masa.Utils.Extensions.Validations.FluentValidation" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.BuildingBlocks.StackSdks.Dcc.Contracts" Version="$(MasaStackSdksPackageVersion)" />
     <PackageReference Include="Masa.Utils.Data.DataAnnotations" Version="$(MasaFrameworkPackageVersion)" />
   </ItemGroup>

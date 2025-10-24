@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.App;
 
-public interface IConfigObjectRepository : IRepository<ConfigObject>
+public interface IConfigObjectRepository : IRepositoryExtensition<ConfigObject>
 {
     Task<ConfigObject> GetConfigObjectWithReleaseHistoriesAsync(int Id);
 

@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.App;
 
-public interface IAppPinRepository : IRepository<AppPin>
+public interface IAppPinRepository : IRepositoryExtensition<AppPin>
 {
     Task<List<AppPin>> GetListAsync(List<int> appIds);
 }

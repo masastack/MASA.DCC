@@ -7,12 +7,12 @@ public class PublicConfigService : ServiceBase
 {
     public PublicConfigService()
     {
-        RouteOptions.DisableAutoMapRoute = true;
-        App.MapPost("api/v1/publicConfig", AddAsync);
-        App.MapPut("api/v1/publicConfig", UpdateAsync);
-        App.MapDelete("api/v1/publicConfig/{Id}", RemoveAsync);
-        App.MapGet("api/v1/publicConfig", GetListAsync);
-        App.MapGet("api/v1/pubConfigObjects", GetByConfigObjectIdAsync);
+        
+        this.MapPost("api/v1/publicConfig", AddAsync);
+        this.MapPut("api/v1/publicConfig", UpdateAsync);
+        this.MapDelete("api/v1/publicConfig/{Id}", RemoveAsync);
+        this.MapGet("api/v1/publicConfig", GetListAsync);
+        this.MapGet("api/v1/pubConfigObjects", GetByConfigObjectIdAsync);
     }
 
     public async Task<PublicConfigDto> AddAsync(IEventBus eventBus, AddObjectConfigDto dto)

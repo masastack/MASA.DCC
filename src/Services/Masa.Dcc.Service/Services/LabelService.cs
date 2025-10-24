@@ -3,17 +3,17 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
-[Authorize]
+
 public class LabelService : ServiceBase
 {
     public LabelService()
     {
-        RouteOptions.DisableAutoMapRoute = true;
-        App.MapGet("api/v1/labels", GetListAsync);
-        App.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync);
-        App.MapPost("api/v1/labels", AddAsync).AddFluentValidationAutoValidation();
-        App.MapPut("api/v1/labels", UpdateAsync).AddFluentValidationAutoValidation();
-        App.MapDelete("api/v1/labels/{typeCode}", RemoveAsync);
+        
+        this.MapGet("api/v1/labels", GetListAsync);
+        this.MapGet("api/v1/{typeCode}/labels", GetLabelsByTypeCodeAsync);
+        this.MapPost("api/v1/labels", AddAsync);
+        this.MapPut("api/v1/labels", UpdateAsync);
+        this.MapDelete("api/v1/labels/{typeCode}", RemoveAsync);
     }
 
     public async Task<List<LabelDto>> GetLabelsByTypeCodeAsync(IEventBus eventBus, string typeCode)

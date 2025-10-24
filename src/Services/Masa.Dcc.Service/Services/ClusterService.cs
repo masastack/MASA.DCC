@@ -3,16 +3,14 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
-[Authorize]
 public class ClusterService : ServiceBase
 {
     public ClusterService(IPmClient pmClient)
     {
-        RouteOptions.DisableAutoMapRoute = true;
-        App.MapGet("api/v1/cluster", GetListAsync);
-        App.MapGet("api/v1/cluster/{Id}", GetAsync);
-        App.MapGet("api/v1/envClusters", GetEnvironmentClustersAsync);
-        App.MapGet("api/v1/{envId}/cluster", GetListByEnvIdAsync);
+        this.MapGet("api/v1/cluster", GetListAsync);
+        this.MapGet("api/v1/cluster/{Id}", GetAsync);
+        this.MapGet("api/v1/envClusters", GetEnvironmentClustersAsync);
+        this.MapGet("api/v1/{envId}/cluster", GetListByEnvIdAsync);
     }
 
     public async Task<List<ClusterModel>> GetListAsync(IPmClient pmClient)

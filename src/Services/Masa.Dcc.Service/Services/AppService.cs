@@ -3,19 +3,17 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
-[Authorize]
 public class AppService : ServiceBase
 {
     public AppService()
-    {        
-        RouteOptions.DisableAutoMapRoute = true;
-        App.MapGet("api/v1/app/{id}", GetAsync);
-        App.MapPost("api/v1/projects/app", GetListByProjectIdsAsync);
-        App.MapGet("api/v1/appWithEnvCluster/{id}", GetWithEnvironmentClusterAsync);
-        App.MapPost("api/v1/app/pin/{appId}", AddAppPinAsync);
-        App.MapDelete("api/v1/app/pin/{appId}", RemoveAppPinAsync);
-        App.MapGet("api/v1/app/pin", GetAppPinListAsync);
-        App.MapPost("api/v1/app/latestReleaseConfig", GetLatestReleaseConfigByAppAsync);
+    {
+        this.MapGet("api/v1/app/{id}", GetAsync);
+        this.MapPost("api/v1/projects/app", GetListByProjectIdsAsync);
+        this.MapGet("api/v1/appWithEnvCluster/{id}", GetWithEnvironmentClusterAsync);
+        this.MapPost("api/v1/app/pin/{appId}", AddAppPinAsync);
+        this.MapDelete("api/v1/app/pin/{appId}", RemoveAppPinAsync);
+        this.MapGet("api/v1/app/pin", GetAppPinListAsync);
+        this.MapPost("api/v1/app/latestReleaseConfig", GetLatestReleaseConfigByAppAsync);
     }
 
     public Task<AppDetailModel> GetAsync(IPmClient pmClient, int id)

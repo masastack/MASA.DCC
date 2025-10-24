@@ -3,14 +3,13 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
-[Authorize]
+
 public class EnvironmentService : ServiceBase
 {
     public EnvironmentService(IPmClient pmClient)
     {
-        RouteOptions.DisableAutoMapRoute = true;
-        App.MapGet("api/v1/env", GetListAsync);
-        App.MapGet("api/v1/env/{Id}", GetAsync);
+        this.MapGet("api/v1/env", GetListAsync);        
+        this.MapGet("api/v1/env/{Id}", GetAsync);
     }
 
     public async Task<List<EnvironmentModel>> GetListAsync(IPmClient pmClient)
@@ -20,7 +19,7 @@ public class EnvironmentService : ServiceBase
         return result;
     }
 
-    public async Task<EnvironmentDetailModel> GetAsync(IPmClient pmClient,int Id)
+    public async Task<EnvironmentDetailModel> GetAsync(IPmClient pmClient, int Id)
     {
         var result = await pmClient.EnvironmentService.GetAsync(Id);
 

@@ -7,13 +7,13 @@ public class OpenApiService : ServiceBase
 {
     public OpenApiService()
     {
-        RouteOptions.DisableAutoMapRoute = true;
-        App.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
-        App.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync);
-        App.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync);
-        App.MapGet("open-api/releasing/{environment}/{cluster}/stack-config", GetStackConfigAsync);
-        App.MapGet("open-api/releasing/{environment}/{cluster}/i18n/{culture}", GetI18NConfigAsync);
-        App.MapGet("open-api/oss-token", GetOssSecurityTokenAsync);
+
+        this.MapPut("open-api/releasing/{environment}/{cluster}/{appId}/{configObject}", UpdateConfigObjectAsync);
+        this.MapPost("open-api/releasing/{environment}/{cluster}/{appId}/{isEncryption}", AddConfigObjectAsync);
+        this.MapPost("open-api/releasing/get/{environment}/{cluster}/{appId}", GetConfigObjectsAsync);
+        this.MapGet("open-api/releasing/{environment}/{cluster}/stack-config", GetStackConfigAsync).AllowAnonymous();
+        this.MapGet("open-api/releasing/{environment}/{cluster}/i18n/{culture}", GetI18NConfigAsync).AllowAnonymous();
+        this.MapGet("open-api/oss-token", GetOssSecurityTokenAsync);
     }
 
     public async Task UpdateConfigObjectAsync(IEventBus eventBus, string environment, string cluster, string appId, string configObject,

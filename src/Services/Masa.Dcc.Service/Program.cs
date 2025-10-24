@@ -81,7 +81,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services
     .AddValidatorsFromAssemblyContaining<AddConfigObjectDto>()
-    .AddFluentValidationAutoValidation(configuration => {
+    .AddFluentValidationAutoValidation(configuration =>
+    {
         configuration.OverrideDefaultResultFactoryWith<CustomResultFactory>();
     });
 
@@ -167,46 +168,43 @@ builder.Services
                      .UseRepository<DccDbContext>();
     });
 
+
+builder.Services.AddAutoInject([typeof(IAppConfigObjectRepository).Assembly, typeof(LabelDomainService).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly]);
+
+
 builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 
 //seed data
 await builder.SeedDataAsync();
 
-var app = builder.Services.AddServices(builder, [typeof(IAppConfigObjectRepository).Assembly, typeof(LabelDomainService).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly]);
-if (app.Environment.IsDevelopment())
+var app = builder.AddServices(config =>
 {
-    app.UseMasaExceptionHandler(options =>
+    config.DisableAutoMapRoute = true;
+    config.RouteHandlerBuilder = (builder) =>
     {
-        options.ExceptionHandler = context =>
-        {
-            if (context.Exception is not UserFriendlyException)
-            {
-                context.ToResult(context.Exception.Message);
-            }
-        };
-    });
-}
-else
+        builder.RequireAuthorization();
+        builder.AddFluentValidationAutoValidation();
+    };
+});
+
+app.UseMasaExceptionHandler(opt =>
 {
-    app.UseMasaExceptionHandler(opt =>
+    opt.ExceptionHandler = context =>
     {
-        opt.ExceptionHandler = context =>
+        if (context.Exception is UserFriendlyException userFriendlyException)
         {
-            if (context.Exception is UserFriendlyException userFriendlyException)
-            {
-                context.ToResult(userFriendlyException.ErrorCode!, 299);
-            }
-            else if (context.Exception is ValidationException validationException)
-            {
-                context.ToResult(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
-            }
-            else if (context.Exception is UserStatusException userStatusException)
-            {
-                context.ToResult(userStatusException.Message, 293);
-            }
-        };
-    });
-}
+            context.ToResult(userFriendlyException.ErrorCode!, 299);
+        }
+        else if (context.Exception is ValidationException validationException)
+        {
+            context.ToResult(validationException.Errors.Select(err => err.ToString()).FirstOrDefault()!);
+        }
+        else if (context.Exception is UserStatusException userStatusException)
+        {
+            context.ToResult(userStatusException.Message, 293);
+        }
+    };
+});
 
 // Configure the HTTP request pipeline.
 #if DEBUG

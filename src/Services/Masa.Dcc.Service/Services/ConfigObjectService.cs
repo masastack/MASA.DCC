@@ -3,24 +3,24 @@
 
 namespace Masa.Dcc.Service.Admin.Services;
 
-[Authorize]
+
 public class ConfigObjectService : ServiceBase
 {
     public ConfigObjectService()
     {
-        RouteOptions.DisableAutoMapRoute = true;
-        App.MapPost("api/v1/configObject", AddAsync).AddFluentValidationAutoValidation();
-        App.MapDelete("api/v1/configObject", RemoveAsync);
-        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync);
-        App.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}/{configObjectName}", GetListAsync);
-        App.MapPost("api/v1/configObjects/getListByIds", GetListByIdsAsync);
-        App.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync).AddFluentValidationAutoValidation();
-        App.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync).AddFluentValidationAutoValidation();
-        App.MapPut("api/v1/configObject/revoke/{id}", RevokeConfigObjectAsync);
-        App.MapPut("api/v1/configObject/rollback", RollbackAsync);
-        App.MapPost("api/v1/configObject/clone", CloneConfigObjectAsync);
-        App.MapGet("api/v1/configObject/release/history/{configObjectId}", GetConfigObjectReleaseHistoryAsync);
-        App.MapGet("api/v1/configObject/refresh", RefreshConfigObjectToRedisAsync);
+        
+        this.MapPost("api/v1/configObject", AddAsync);
+        this.MapDelete("api/v1/configObject", RemoveAsync);
+        this.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync);
+        this.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}/{configObjectName}", GetListAsync);
+        this.MapPost("api/v1/configObjects/getListByIds", GetListByIdsAsync);
+        this.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
+        this.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
+        this.MapPut("api/v1/configObject/revoke/{id}", RevokeConfigObjectAsync);
+        this.MapPut("api/v1/configObject/rollback", RollbackAsync);
+        this.MapPost("api/v1/configObject/clone", CloneConfigObjectAsync);
+        this.MapGet("api/v1/configObject/release/history/{configObjectId}", GetConfigObjectReleaseHistoryAsync);
+        this.MapGet("api/v1/configObject/refresh", RefreshConfigObjectToRedisAsync);
     }
 
     public async Task AddAsync(IEventBus eventBus, List<AddConfigObjectDto> dtos)

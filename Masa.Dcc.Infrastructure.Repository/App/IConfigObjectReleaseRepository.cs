@@ -3,6 +3,6 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.App;
 
-public interface IConfigObjectReleaseRepository : IRepository<ConfigObjectRelease>
+public interface IConfigObjectReleaseRepository : IRepositoryExtensition<ConfigObjectRelease>
 {
 }

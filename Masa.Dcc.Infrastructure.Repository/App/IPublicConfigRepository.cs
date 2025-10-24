@@ -3,6 +3,6 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.App;
 
-public interface IPublicConfigRepository : IRepository<PublicConfig>
+public interface IPublicConfigRepository : IRepositoryExtensition<PublicConfig>
 {
 }

@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.Repositories.App;
 
-internal class BizConfigObjectRepository : Repository<DccDbContext, BizConfigObject>, IBizConfigObjectRepository
+internal class BizConfigObjectRepository : EFBaseRepository<DccDbContext, BizConfigObject>, IBizConfigObjectRepository
 {
     public BizConfigObjectRepository(DccDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
     {

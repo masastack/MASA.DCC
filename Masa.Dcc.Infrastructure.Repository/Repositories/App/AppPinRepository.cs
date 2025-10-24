@@ -3,7 +3,7 @@
 
 namespace Masa.Dcc.Infrastructure.Repository.Repositories.App;
 
-internal class AppPinRepository : Repository<DccDbContext, AppPin>, IAppPinRepository
+internal class AppPinRepository : EFBaseRepository<DccDbContext, AppPin>, IAppPinRepository
 {
     public AppPinRepository(DccDbContext context, IUnitOfWork unitOfWork) : base(context, unitOfWork)
     { }

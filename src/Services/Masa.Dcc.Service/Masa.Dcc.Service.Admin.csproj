@@ -5,7 +5,8 @@
     <Nullable>enable</Nullable>    
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup> 
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" /> 
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="$(DotnetVersion)" />
 
     <PackageReference Include="Masa.BuildingBlocks.StackSdks.Auth" Version="$(MasaStackSdksPackageVersion)" />
@@ -29,9 +30,10 @@
     <PackageReference Include="Masa.Contrib.Dispatcher.IntegrationEvents.Dapr" Version="$(MasaFrameworkPackageVersion)" />
     <PackageReference Include="Masa.Contrib.Globalization.I18n.AspNetCore" Version="$(MasaFrameworkPackageVersion)" />    
 
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(DotnetVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(DotnetVersion)" />    
+
+    <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Endpoints" Version="1.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
-    <PackageReference Include="FluentValidation.AspNetCore" Version="10.4.0" />
     <PackageReference Include="Dapr.AspNetCore" Version="1.10.0" />
   </ItemGroup>
 

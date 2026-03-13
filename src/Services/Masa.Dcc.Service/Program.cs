@@ -12,6 +12,7 @@ var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING)
 var dbModel = JsonSerializer.Deserialize<DbModel>(connStr)!;
 bool isPgsql = string.Equals(dbModel.DbType, "postgresql", StringComparison.CurrentCultureIgnoreCase);
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
+StackExchangeRedisInstrumentation redisInstrumentation = default!;
 
 var ossSptions = publicConfiguration.GetSection(DccConstants.OssKey).Get<OssOptions>()!;
 builder.Services.AddObjectStorage(option => option.UseAliyunStorage(options =>
@@ -27,16 +28,23 @@ builder.Services.AddObjectStorage(option => option.UseAliyunStorage(options =>
     };
 }));
 
-if (!builder.Environment.IsDevelopment())
+builder.Services.AddObservable(builder.Logging, new MasaObservableOptions
 {
-    builder.Services.AddObservable(builder.Logging, () => new MasaObservableOptions
+    ServiceNameSpace = builder.Environment.EnvironmentName,
+    ServiceVersion = masaStackConfig.Version,
+    ServiceName = masaStackConfig.GetServiceId(MasaStackProject.DCC),
+    ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")!
+}, masaStackConfig.OtlpUrl, true, traceInstrumentConfig: traceBuilder =>
+{
+    traceBuilder.AddRedisInstrumentation(options =>
     {
-        ServiceNameSpace = builder.Environment.EnvironmentName,
-        ServiceVersion = masaStackConfig.Version,
-        ServiceName = masaStackConfig.GetServiceId(MasaStackProject.DCC),
-        ServiceInstanceId = builder.Configuration.GetValue<string>("HOSTNAME")!
-    }, () => masaStackConfig.OtlpUrl, true);
-}
+        options.SetVerboseDatabaseStatements = true;
+    })
+    .ConfigureRedisInstrumentation(instrumentation =>
+    {
+        redisInstrumentation = instrumentation;
+    });
+});
 
 builder.Services.AddMasaIdentity(options =>
 {
@@ -110,7 +118,7 @@ var redisOption = new RedisConfigurationOptions
 
 builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOptions =>
 {
-    distributedCacheOptions.UseStackExchangeRedisCache(redisOption);
+    distributedCacheOptions.UseStackExchangeRedisCache(redisOption, connectConfig: connect => redisInstrumentation.AddConnection(connect));
 }, options =>
 {
     options.SubscribeKeyPrefix = "masa.dcc:";
@@ -118,7 +126,7 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
 });
 
 builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
-builder.Services.AddAuthClient(authServiceBaseAddress: masaStackConfig.GetAuthServiceDomain(), redisOption);
+builder.Services.AddAuthClient(authServiceBaseAddress: masaStackConfig.GetAuthServiceDomain(), redisOption, connectConfig: connect => redisInstrumentation.AddConnection(connect));
 
 builder.Services
 #if DEBUG

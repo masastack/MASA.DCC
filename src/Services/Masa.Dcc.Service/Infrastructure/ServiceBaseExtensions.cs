@@ -1,10 +1,6 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
-using Masa.BuildingBlocks.Data;
-using Masa.Contrib.Service.MinimalAPIs;
-using Microsoft.Extensions.Options;
-
 namespace Microsoft.AspNetCore.Builder;
 
 public static class ServiceBaseExtensions
@@ -23,5 +19,10 @@ public static class ServiceBaseExtensions
         var options = MasaApp.GetRequiredService<IOptions<ServiceGlobalRouteOptions>>().Value;
         options.RouteHandlerBuilder?.Invoke(builder);
         return builder;
+    }
+
+    public static IServiceCollection AddStackExchangeRedis(this IServiceCollection servies, RedisConfigurationOptions options)
+    {
+        return servies.AddSingleton(new Lazy<StackExchange.Redis.IConnectionMultiplexer>(StackExchange.Redis.ConnectionMultiplexer.Connect(options)));
     }
 }

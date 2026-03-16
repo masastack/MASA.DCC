@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 ValidatorOptions.Global.LanguageManager = new MasaLanguageManager();
 GlobalValidationOptions.SetDefaultCulture("zh-CN");
 
-await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service);
+await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service, init: true);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING);
 var dbModel = JsonSerializer.Deserialize<DbModel>(connStr)!;
@@ -113,12 +113,14 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
     distributedCacheOptions.UseStackExchangeRedisCache(redisOption);
 }, options =>
 {
-    options.SubscribeKeyPrefix = "masa.dcc:";
     options.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
 });
 
+builder.Services.AddStackExchangeRedis(redisOption);
+
 builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
 builder.Services.AddAuthClient(authServiceBaseAddress: masaStackConfig.GetAuthServiceDomain(), redisOption);
+
 
 builder.Services
 #if DEBUG

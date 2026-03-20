@@ -60,8 +60,8 @@ public class OpenApiService : ServiceBase
         {
             environment = masaStackConfig.Environment;
         }
-        var ossOptions = await configurationApiClient.GetAsync<OssOptions>(environment, "Default", "public-$Config", DccConstants.OssKey);
-        var cdn = await configurationApiClient.GetAsync<CdnDto>(environment, "Default", "public-$Config", DccConstants.CdnKey);
+        var ossOptions = await configurationApiClient.GetAsync<OssOptions>(environment, DccConst.DEFAULT_CLUSTER, DccConst.DEFAULT_PUBLIC_ID, DccConstants.OssKey);
+        var cdn = await configurationApiClient.GetAsync<CdnDto>(environment, DccConst.DEFAULT_CLUSTER, DccConst.DEFAULT_PUBLIC_ID, DccConstants.CdnKey);
 
         MasaArgumentException.ThrowIfNull(ossOptions);
         MasaArgumentException.ThrowIfNull(cdn);

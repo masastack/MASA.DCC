@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 ValidatorOptions.Global.LanguageManager = new MasaLanguageManager();
 GlobalValidationOptions.SetDefaultCulture("zh-CN");
 
-await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service);
+await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service,init:true);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING);
 var dbModel = JsonSerializer.Deserialize<DbModel>(connStr)!;
@@ -120,6 +120,8 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
 builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
 builder.Services.AddAuthClient(authServiceBaseAddress: masaStackConfig.GetAuthServiceDomain(), redisOption);
 
+
+var pmConnStr = masaStackConfig.GetConnectionString(MasaStackProject.PM.Name);
 builder.Services
 #if DEBUG
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -166,11 +168,10 @@ builder.Services
                                                                             (isPgsql ? dbOptions.UsePgsql(connStr, options => options.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.PostgreSql")) :
                                                                                             dbOptions.UseSqlServer(connStr, options => options.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.SqlServer"))).UseFilter())
                      .UseRepository<DccDbContext>();
-    });
-
+    })
+    .AddMasaDbContext<PmDbConText>(dbOptions => (isPgsql ? dbOptions.UsePgsql(pmConnStr) : dbOptions.UseSqlServer(pmConnStr)).UseFilter());
 
 builder.Services.AddAutoInject([typeof(IAppConfigObjectRepository).Assembly, typeof(LabelDomainService).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly]);
-
 
 builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 

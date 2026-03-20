@@ -3,7 +3,13 @@
 
 namespace Masa.Dcc.Contracts.Admin;
 
-public class DccConst
+public static class DccConst
 {
     public const string BizConfigSuffix = "-$biz";
+
+    public const string DEFAULT_PUBLIC_ID = "public-$Config";
+
+    public const string DEFAULT_CONFIG_NAME = "$public.DefaultConfig";
+
+    public const string DEFAULT_CLUSTER = "Default";
 }

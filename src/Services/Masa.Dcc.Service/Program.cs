@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 ValidatorOptions.Global.LanguageManager = new MasaLanguageManager();
 GlobalValidationOptions.SetDefaultCulture("zh-CN");
 
-await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service,init:true);
+await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service);
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING);
 var dbModel = JsonSerializer.Deserialize<DbModel>(connStr)!;

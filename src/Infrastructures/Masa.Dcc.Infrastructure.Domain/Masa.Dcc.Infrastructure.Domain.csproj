@@ -17,7 +17,6 @@
     <ProjectReference Include="..\..\Contracts\Masa.Dcc.Contracts.Admin\Masa.Dcc.Contracts.Admin.csproj" />
     <ProjectReference Include="..\Masa.Dcc.Infrastructure.Domain.Shared\Masa.Dcc.Infrastructure.Domain.Shared.csproj" />
     <ProjectReference Include="..\Masa.Dcc.Infrastructure.Repository\Masa.Dcc.Infrastructure.Repository.csproj" />
-    <ProjectReference Include="..\Masa.Pm.Infrastructure.EFCore\Masa.Pm.Infrastructure.EFCore.csproj" />
   </ItemGroup>
 
 </Project>

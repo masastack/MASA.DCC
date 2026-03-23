@@ -168,8 +168,7 @@ builder.Services
                                                                             (isPgsql ? dbOptions.UsePgsql(connStr, options => options.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.PostgreSql")) :
                                                                                             dbOptions.UseSqlServer(connStr, options => options.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.SqlServer"))).UseFilter())
                      .UseRepository<DccDbContext>();
-    })
-    .AddMasaDbContext<PmDbConText>(dbOptions => (isPgsql ? dbOptions.UsePgsql(pmConnStr) : dbOptions.UseSqlServer(pmConnStr)).UseFilter());
+    });
 
 builder.Services.AddAutoInject([typeof(IAppConfigObjectRepository).Assembly, typeof(LabelDomainService).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly]);
 

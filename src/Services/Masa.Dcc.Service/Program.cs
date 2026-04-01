@@ -128,6 +128,8 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
 builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
 builder.Services.AddAuthClient(authServiceBaseAddress: masaStackConfig.GetAuthServiceDomain(), redisOption, connectConfig: connect => redisInstrumentation.AddConnection(connect));
 
+
+var pmConnStr = masaStackConfig.GetConnectionString(MasaStackProject.PM.Name);
 builder.Services
 #if DEBUG
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -176,9 +178,7 @@ builder.Services
                      .UseRepository<DccDbContext>();
     });
 
-
 builder.Services.AddAutoInject([typeof(IAppConfigObjectRepository).Assembly, typeof(LabelDomainService).Assembly, typeof(Masa.Dcc.Service.Admin.Services.AppService).Assembly]);
-
 
 builder.Services.AddI18n(Path.Combine("Assets", "I18n"));
 

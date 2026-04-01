@@ -38,9 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Masa.Dcc.Infrastructure.Domain\Masa.Dcc.Infrastructure.Domain.csproj" />
-    <ProjectReference Include="..\..\..\Masa.Dcc.Infrastructure.EFCore.PostgreSql\Masa.Dcc.Infrastructure.EFCore.PostgreSql.csproj" />
-    <ProjectReference Include="..\..\..\Masa.Dcc.Infrastructure.EFCore.SqlServer\Masa.Dcc.Infrastructure.EFCore.SqlServer.csproj" />
+    <ProjectReference Include="..\..\Infrastructures\Masa.Dcc.Infrastructure.EFCore.PostgreSql\Masa.Dcc.Infrastructure.EFCore.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\Infrastructures\Masa.Dcc.Infrastructure.EFCore.SqlServer\Masa.Dcc.Infrastructure.EFCore.SqlServer.csproj" />
+    <ProjectReference Include="..\..\Infrastructures\Masa.Dcc.Infrastructure.Domain\Masa.Dcc.Infrastructure.Domain.csproj" />
   </ItemGroup>
 
 </Project>

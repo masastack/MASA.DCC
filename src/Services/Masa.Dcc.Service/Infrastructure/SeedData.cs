@@ -1,21 +1,30 @@
 ﻿// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
+using System.Text.Encodings.Web;
+using Npgsql.Internal;
+
 namespace Masa.Dcc.Service.Admin.Infrastructure;
 
 public static class IHostExtensions
 {
+    static readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
+    {
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        WriteIndented = true
+    };
+
+
     public static async Task SeedDataAsync(this WebApplicationBuilder builder)
     {
         var services = builder.Services.BuildServiceProvider().CreateScope().ServiceProvider;
         var context = services.GetRequiredService<DccDbContext>();
         var labelDomainService = services.GetRequiredService<LabelDomainService>();
-        var configObjectDomainService = services.GetRequiredService<ConfigObjectDomainService>();
+        var configObjectDomainService = services.GetRequiredService<InitConfigObjectDomainService>();
         var unitOfWork = services.GetRequiredService<IUnitOfWork>();
         var env = services.GetRequiredService<IWebHostEnvironment>();
         var contentRootPath = env.ContentRootPath;
         var masaConfig = builder.Services.GetMasaStackConfig();
-        var pmClient = services.GetRequiredService<IPmClient>();
 
         string system = "system";
         var userSetter = services.GetService<IUserSetter>();
@@ -27,22 +36,21 @@ public static class IHostExtensions
         unitOfWork.UseTransaction = false;
 
         await InitDccDataAsync(context, labelDomainService);
-        await InitPublicConfigAsync(context, masaConfig, contentRootPath, pmClient, configObjectDomainService);
+        await InitPublicConfigAsync(services, context, masaConfig, contentRootPath, configObjectDomainService);
 
         userSetterHandle.Dispose();
     }
 
     private static async Task MigrateAsync(DccDbContext context)
     {
-        if (context.Database.GetPendingMigrations().Any())
-        {
+        var pendings = await context.Database.GetPendingMigrationsAsync();
+        if (pendings != null && pendings.Any())
             await context.Database.MigrateAsync();
-        }
     }
 
     private static async Task InitDccDataAsync(DccDbContext context, LabelDomainService labelDomainService)
     {
-        if (!context.Set<Label>().Any())
+        if (!await context.Set<Label>().AnyAsync())
         {
             var labels = new List<UpdateLabelDto>
             {
@@ -117,9 +125,9 @@ public static class IHostExtensions
             }
         }
 
-        if (!context.Set<PublicConfig>().Any())
+        if (!await context.Set<PublicConfig>().AnyAsync())
         {
-            var publicConfig = new PublicConfig("Public", "public-$Config", "Public config");
+            var publicConfig = new PublicConfig("Public", DccConst.DEFAULT_PUBLIC_ID, "Public config");
             await context.Set<PublicConfig>().AddAsync(publicConfig);
         }
 
@@ -127,41 +135,52 @@ public static class IHostExtensions
     }
 
     public static async Task InitPublicConfigAsync(
+        IServiceProvider service,
         DccDbContext context,
         IMasaStackConfig masaConfig,
         string contentRootPath,
-        IPmClient pmClient,
-        ConfigObjectDomainService configObjectDomainService)
+        InitConfigObjectDomainService configObjectDomainService)
     {
-        if (context.Set<ConfigObject>().Any())
+        var pmClient = service.GetRequiredService<IPmClient>();
+        var envClusters = await pmClient.ClusterService.GetEnvironmentClustersAsync();
+        if (envClusters == null || envClusters.Count == 0)
+            throw new UserFriendlyException("pm环境数据未初始化");
+        foreach (var environment in envClusters)
+        {
+            await InitEnvConfigObjects(environment.Id, environment.EnvironmentName, service, context, masaConfig, contentRootPath, configObjectDomainService);
+        }
+    }
+
+    private static async Task InitEnvConfigObjects(int envClusterId, string environment, IServiceProvider service, DccDbContext context,
+        IMasaStackConfig masaConfig,
+        string contentRootPath,
+        InitConfigObjectDomainService configObjectDomainService)
+    {
+        if (await context.Set<ConfigObject>().AnyAsync())
         {
             return;
         }
-        //TODO:InitConfigObjectAsync method repeat call pmClient.EnvironmentService.GetListAsync,should be optimized
-        var environments = await pmClient.EnvironmentService.GetListAsync();
-        foreach (var environment in environments)
-        {
-            var publicConfigs = new Dictionary<string, string>
+
+        var publicConfigs = new Dictionary<string, string>
             {
-                { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,environment.Name) },
-                { "$public.Email",GetEmail(contentRootPath,environment.Name) },
-                { "$public.Sms",GetSms(contentRootPath,environment.Name) },
-                { "$public.Cdn",GetCdn(contentRootPath,environment.Name) },
-                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,environment.Name) },
-                { "$public.i18n.en-us",GetI8nUs(contentRootPath,environment.Name) },
-                { "$public.i18n.zh-cn",GetI8nCn(contentRootPath,environment.Name) }
+                { DccConst.DEFAULT_CONFIG_NAME,JsonSerializer.Serialize(GetConfigMap(service),_serializerOptions)},
+                { "$public.AliyunPhoneNumberLogin",GetAliyunPhoneNumberLogin(contentRootPath,environment) },
+                { "$public.Email",GetEmail(contentRootPath,environment) },
+                { "$public.Sms",GetSms(contentRootPath,environment) },
+                { "$public.Cdn",GetCdn(contentRootPath,environment) },
+                { "$public.WhiteListOptions",GetWhiteListOptions(contentRootPath,environment) },
+                { "$public.i18n.en-us",GetI8nUs(contentRootPath,environment) },
+                { "$public.i18n.zh-cn",GetI8nCn(contentRootPath,environment) }
             };
+        await configObjectDomainService.InitConfigObjectAsync(environment, masaConfig.Cluster, envClusterId, DccConst.DEFAULT_PUBLIC_ID, publicConfigs, ConfigObjectType.Public, false);
 
-            await configObjectDomainService.InitConfigObjectAsync(environment.Name, masaConfig.Cluster, "public-$Config", publicConfigs, ConfigObjectType.Public, false);
-
-            var encryptionPublicConfigs = new Dictionary<string, string>
+        var encryptionPublicConfigs = new Dictionary<string, string>
             {
-                { "$public.Oss",GetOss(contentRootPath, environment.Name) }
+                { "$public.Oss",GetOss(contentRootPath, environment) }
             };
-            await configObjectDomainService.InitConfigObjectAsync(environment.Name, masaConfig.Cluster, "public-$Config", encryptionPublicConfigs, ConfigObjectType.Public, true);
+        await configObjectDomainService.InitConfigObjectAsync(environment, masaConfig.Cluster, envClusterId, DccConst.DEFAULT_PUBLIC_ID, encryptionPublicConfigs, ConfigObjectType.Public, true);
 
-            await context.SaveChangesAsync();
-        }
+        await context.SaveChangesAsync();
     }
 
     private static string GetI8nUs(string contentRootPath, string environment)
@@ -223,5 +242,31 @@ public static class IHostExtensions
             return environmentFilePath;
         }
         return Path.Combine(contentRootPath, "Setup", fileName);
+    }
+
+    private static Dictionary<string, string> GetConfigMap(IServiceProvider services)
+    {
+        var configuration = services.GetRequiredService<IConfiguration>();
+        string environment = configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT)!;
+        environment = string.IsNullOrWhiteSpace(environment) ? configuration["ASPNETCORE_ENVIRONMENT"]! : environment;
+
+        var configs = new Dictionary<string, string>()
+        {
+            { MasaStackConfigConstant.VERSION, configuration.GetValue<string>(MasaStackConfigConstant.VERSION)! },
+            { MasaStackConfigConstant.IS_DEMO, configuration.GetValue<bool>(MasaStackConfigConstant.IS_DEMO).ToString() },
+            { MasaStackConfigConstant.DOMAIN_NAME, configuration.GetValue<string>(MasaStackConfigConstant.DOMAIN_NAME)! },
+            { MasaStackConfigConstant.NAMESPACE, configuration.GetValue<string>(MasaStackConfigConstant.NAMESPACE)! },
+            { MasaStackConfigConstant.CLUSTER, configuration.GetValue<string>(MasaStackConfigConstant.CLUSTER)! },
+            { MasaStackConfigConstant.OTLP_URL, configuration.GetValue < string >(MasaStackConfigConstant.OTLP_URL)! },
+            { MasaStackConfigConstant.REDIS, configuration.GetValue<string>(MasaStackConfigConstant.REDIS)! },
+            { MasaStackConfigConstant.CONNECTIONSTRING, configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING)! },
+            { MasaStackConfigConstant.MASA_STACK, configuration.GetValue<string>(MasaStackConfigConstant.MASA_STACK)! },
+            { MasaStackConfigConstant.ELASTIC, configuration.GetValue<string>(MasaStackConfigConstant.ELASTIC)! },
+            { MasaStackConfigConstant.ENVIRONMENT, environment },
+            { MasaStackConfigConstant.ADMIN_PWD, configuration.GetValue<string>(MasaStackConfigConstant.ADMIN_PWD)! },
+            { MasaStackConfigConstant.DCC_SECRET, configuration.GetValue<string>(MasaStackConfigConstant.DCC_SECRET)! },
+            { MasaStackConfigConstant.SUFFIX_IDENTITY, configuration.GetValue<string>(MasaStackConfigConstant.SUFFIX_IDENTITY)! }
+        };
+        return configs;
     }
 }

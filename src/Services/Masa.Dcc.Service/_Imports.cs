@@ -33,6 +33,7 @@ global using Masa.Contrib.StackSdks.Config;
 global using Masa.Contrib.StackSdks.Middleware;
 global using Masa.Contrib.StackSdks.Tsc;
 global using Masa.Contrib.Storage.ObjectStorage.Aliyun;
+global using Masa.Dcc.Contracts.Admin;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;

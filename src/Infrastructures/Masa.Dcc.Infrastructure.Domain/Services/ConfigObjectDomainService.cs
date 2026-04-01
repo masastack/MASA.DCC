@@ -569,6 +569,8 @@ public class ConfigObjectDomainService : DomainService
                     }
                 }
             }
+
+
             var objectId = await _configObjectRepository.GetIdAsync(newConfigObject.Name, newConfigObject.Type);
             if (objectId == 0)
             {

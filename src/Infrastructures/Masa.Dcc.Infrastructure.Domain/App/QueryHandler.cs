@@ -308,12 +308,20 @@ internal class QueryHandler
     [EventHandler]
     public async Task GetI18NConfigAsync(I18NConfigQuery query)
     {
-        var i18nConfig = await _configurationApiClient.GetAsync<Dictionary<string, string>>(
+        var result = await _configurationApiClient.GetAsync<Dictionary<string, object>>(
            query.Environment,
            query.Cluster,
            "public-$Config",
            $"$public.i18n.{query.Culture}");
 
-        query.Result = i18nConfig;
+        query.Result = new();
+        foreach (var key in result.Keys)
+        {
+            var value = result[key];
+            if (value is JsonSerializerExtensions.JsonDynamicString jsonString)
+            {
+                query.Result.Add(key, jsonString.GetValue<string>());
+            }
+        }
     }
 }

@@ -5,15 +5,18 @@ namespace Masa.Dcc.Infrastructure.EFCore.SqlServer;
 
 internal class DccDbSqlServerContextFactory : IDesignTimeDbContextFactory<DccDbContext>
 {
+    const string ConnectionStringKey = "MasaDccMssqlStaging";
+
     public DccDbContext CreateDbContext(string[] args)
     {
         DccDbContext.RegistAssembly(typeof(DccDbSqlServerContextFactory).Assembly);
+        var configuration = new ConfigurationBuilder()
+             .AddUserSecrets(typeof(DccDbSqlServerContextFactory).Assembly, optional: true)
+             .Build();
+
+        var connectionString = configuration[ConnectionStringKey]!;
         var optionsBuilder = new MasaDbContextOptionsBuilder<DccDbContext>();
-        var configurationBuilder = new ConfigurationBuilder();
-        var configuration = configurationBuilder
-            .AddJsonFile("migration-sqlserver.json")
-            .Build();
-        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), mbox => mbox.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.SqlServer"));
+        optionsBuilder.UseSqlServer(connectionString, mbox => mbox.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.SqlServer"));
 
         return new DccDbContext(optionsBuilder.MasaOptions);
     }

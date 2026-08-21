@@ -5,15 +5,18 @@ namespace Masa.Dcc.Service.Admin.Infrastructure;
 
 internal class DccDbPostGreSqlContextFactory : IDesignTimeDbContextFactory<DccDbContext>
 {
+    const string ConnectionStringKey = "MasaDccPgsqlStaging";
+
     public DccDbContext CreateDbContext(string[] args)
     {
         DccDbContext.RegistAssembly(typeof(DccDbPostGreSqlContextFactory).Assembly);
-        var optionsBuilder = new MasaDbContextOptionsBuilder<DccDbContext>();
-        var configurationBuilder = new ConfigurationBuilder();
-        var configuration = configurationBuilder
-            .AddJsonFile("migration-pgsql.json")
+        var configuration = new ConfigurationBuilder()
+            .AddUserSecrets(typeof(DccDbPostGreSqlContextFactory).Assembly, optional: true)
             .Build();
-        optionsBuilder.DbContextOptionsBuilder.UseNpgsql(configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.PostgreSql"));
+
+        var connectionString = configuration[ConnectionStringKey]!;
+        var optionsBuilder = new MasaDbContextOptionsBuilder<DccDbContext>();
+        optionsBuilder.DbContextOptionsBuilder.UseNpgsql(connectionString, b => b.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.PostgreSql"));
 
         return new DccDbContext(optionsBuilder.MasaOptions);
     }

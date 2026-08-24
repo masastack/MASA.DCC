@@ -14,7 +14,7 @@ internal class DccDbPostGreSqlContextFactory : IDesignTimeDbContextFactory<DccDb
             .AddUserSecrets(typeof(DccDbPostGreSqlContextFactory).Assembly, optional: true)
             .Build();
 
-        var connectionString = configuration[ConnectionStringKey]!;
+        var connectionString = configuration[ConnectionStringKey];
         var optionsBuilder = new MasaDbContextOptionsBuilder<DccDbContext>();
         optionsBuilder.DbContextOptionsBuilder.UseNpgsql(connectionString, b => b.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.PostgreSql"));
 

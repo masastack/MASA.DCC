@@ -14,9 +14,9 @@ internal class DccDbSqlServerContextFactory : IDesignTimeDbContextFactory<DccDbC
              .AddUserSecrets(typeof(DccDbSqlServerContextFactory).Assembly, optional: true)
              .Build();
 
-        var connectionString = configuration[ConnectionStringKey]!;
+        var connectionString = configuration[ConnectionStringKey];
         var optionsBuilder = new MasaDbContextOptionsBuilder<DccDbContext>();
-        optionsBuilder.UseSqlServer(connectionString, mbox => mbox.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.SqlServer"));
+        optionsBuilder.UseSqlServer(connectionString!, mbox => mbox.MigrationsAssembly("Masa.Dcc.Infrastructure.EFCore.SqlServer"));
 
         return new DccDbContext(optionsBuilder.MasaOptions);
     }

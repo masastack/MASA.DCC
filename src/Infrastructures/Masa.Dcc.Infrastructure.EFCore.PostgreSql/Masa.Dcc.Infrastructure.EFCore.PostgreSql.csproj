@@ -3,11 +3,13 @@
   <PropertyGroup>   
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>lonsid-secrets</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(DotnetVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools"  Version="$(DotnetVersion)">
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="$(DotnetVersion)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="$(DotnetVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -15,12 +17,6 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Masa.Dcc.Infrastructure.EFCore\Masa.Dcc.Infrastructure.EFCore.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="migration-pgsql.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,7 @@ var redisKey = "REDIS";
 if (string.IsNullOrEmpty(builder.Configuration.GetValue<string>(redisKey)))
 {
     var redis = builder.Configuration["MasaDccRedisStaging"];
+
     if (!string.IsNullOrEmpty(redis))
     {
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -14,10 +15,70 @@ if (string.IsNullOrEmpty(builder.Configuration.GetValue<string>(redisKey)))
         });
     }
 }
+
 ValidatorOptions.Global.LanguageManager = new MasaLanguageManager();
 GlobalValidationOptions.SetDefaultCulture("zh-CN");
 
-await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service);
+var configPublishSection = builder.Configuration.GetSection(ConfigPublishOptions.SectionName);
+var configPublishOptions = configPublishSection.Get<ConfigPublishOptions>() ?? new ConfigPublishOptions();
+var storageTypeRaw = configPublishSection["StorageType"];
+if (!string.IsNullOrWhiteSpace(storageTypeRaw) &&
+    Enum.TryParse<ConfigPublishStorageType>(storageTypeRaw, ignoreCase: true, out var storageType))
+{
+    configPublishOptions.StorageType = storageType;
+}
+
+string defaultDccStoreName = builder.Configuration.GetValue<string>(MasaStackConfigConstant.DCC_STORE_NAME)!;
+ArgumentNullException.ThrowIfNullOrWhiteSpace(defaultDccStoreName);
+var dccStoreNameCandidates = new[]
+{
+    builder.Configuration[MasaStackConfigConstant.DCC_STORE_NAME],
+    configPublishOptions.ConfigurationStoreName,
+    defaultDccStoreName
+};
+var dccStoreName = dccStoreNameCandidates.First(v => !string.IsNullOrWhiteSpace(v))!;
+configPublishOptions.ConfigurationStoreName = dccStoreName;
+if (!string.Equals(builder.Configuration[MasaStackConfigConstant.DCC_STORE_NAME], dccStoreName, StringComparison.Ordinal))
+{
+    builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+    {
+        [MasaStackConfigConstant.DCC_STORE_NAME] = dccStoreName
+    });
+}
+
+var publishRedisSection = configPublishSection.GetSection(nameof(ConfigPublishOptions.Redis));
+var hasExplicitPublishRedis = publishRedisSection.Exists() && publishRedisSection.GetChildren().Any();
+if (!hasExplicitPublishRedis)
+{
+    var redisBootstrap = builder.Configuration.GetValue<string>(MasaStackConfigConstant.REDIS);
+    if (!string.IsNullOrWhiteSpace(redisBootstrap))
+    {
+        try
+        {
+            var redisModel = JsonSerializer.Deserialize<RedisModel>(redisBootstrap);
+            if (redisModel is not null)
+            {
+                configPublishOptions.Redis.Host = redisModel.RedisHost;
+                configPublishOptions.Redis.Port = redisModel.RedisPort;
+                configPublishOptions.Redis.Db = redisModel.RedisDb;
+                configPublishOptions.Redis.Password = redisModel.RedisPassword ?? string.Empty;
+            }
+        }
+        catch (JsonException)
+        {
+            // Keep defaults when REDIS is invalid json.
+        }
+    }
+}
+
+Console.WriteLine($"[ConfigPublish] raw={storageTypeRaw}, StorageType={configPublishOptions.StorageType}, DCC_STORE_NAME={dccStoreName}, ConfigurationStoreName={configPublishOptions.ConfigurationStoreName}, Redis={configPublishOptions.Redis.Host}:{configPublishOptions.Redis.Port}/{configPublishOptions.Redis.Db}");
+
+builder.Services.AddDaprClient();
+if (configPublishOptions.StorageType == ConfigPublishStorageType.Redis)
+    await builder.Services.AddMasaStackConfigAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service);
+else
+    await builder.Services.AddMasaStackConfigDaprAsync(project: MasaStackProject.DCC, app: MasaStackApp.Service);
+
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING);
 var dbModel = JsonSerializer.Deserialize<DbModel>(connStr)!;
@@ -136,9 +197,18 @@ builder.Services.AddMultilevelCache(distributedCacheAction: distributedCacheOpti
     options.SubscribeKeyType = SubscribeKeyType.SpecificPrefix;
 });
 
+builder.Services.AddSingleton(Microsoft.Extensions.Options.Options.Create(configPublishOptions));
+if (configPublishOptions.StorageType == ConfigPublishStorageType.Dapr)
+{
+    builder.Services.AddSingleton<IConfigPublishStore, DccConfigPublishStore>();
+}
+else
+{
+    builder.Services.AddSingleton<IConfigPublishStore, RedisConfigPublishStore>();
+}
+
 builder.Services.AddPmClient(masaStackConfig.GetPmServiceDomain());
 builder.Services.AddAuthClient(authServiceBaseAddress: masaStackConfig.GetAuthServiceDomain(), redisOption, connectConfig: connect => redisInstrumentation.AddConnection(connect));
-
 
 var pmConnStr = masaStackConfig.GetConnectionString(MasaStackProject.PM.Name);
 builder.Services

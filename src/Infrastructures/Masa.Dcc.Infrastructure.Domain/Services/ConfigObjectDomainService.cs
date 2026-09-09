@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Dcc.Infrastructure.Domain.Services;
@@ -13,7 +13,7 @@ public class ConfigObjectDomainService : DomainService
     private readonly IBizConfigRepository _bizConfigRepository;
     private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
     private readonly IPublicConfigRepository _publicConfigRepository;
-    private readonly IMultilevelCacheClient _memoryCacheClient;
+    private readonly IConfigPublishStore _configPublishStore;
     private readonly IPmClient _pmClient;
     private readonly IMasaStackConfig _masaStackConfig;
     private readonly IUnitOfWork _unitOfWork;
@@ -33,7 +33,7 @@ public class ConfigObjectDomainService : DomainService
         IBizConfigRepository bizConfigRepository,
         IPublicConfigObjectRepository publicConfigObjectRepository,
         IPublicConfigRepository publicConfigRepository,
-        IMultilevelCacheClient memoryCacheClient,
+        IConfigPublishStore configPublishStore,
         IPmClient pmClient,
         IMasaStackConfig masaStackConfig,
         IUnitOfWork unitOfWork) : base(eventBus)
@@ -46,7 +46,7 @@ public class ConfigObjectDomainService : DomainService
         _bizConfigRepository = bizConfigRepository;
         _publicConfigObjectRepository = publicConfigObjectRepository;
         _publicConfigRepository = publicConfigRepository;
-        _memoryCacheClient = memoryCacheClient;
+        _configPublishStore = configPublishStore;
         _pmClient = pmClient;
         _masaStackConfig = masaStackConfig;
         _unitOfWork = unitOfWork;
@@ -93,8 +93,7 @@ public class ConfigObjectDomainService : DomainService
 
         await _configObjectRepository.RemoveAsync(configObjectEntity);
 
-        var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.AppId}-{configObjectEntity.Name}";
-        await _memoryCacheClient.RemoveAsync<PublishReleaseModel>(key.ToLower());
+        await RemoveConfigAsync(dto.EnvironmentName, dto.ClusterName, dto.AppId, configObjectEntity.Name);
     }
 
     public async Task UpdateConfigObjectContentAsync(UpdateConfigObjectContentDto dto)
@@ -322,14 +321,13 @@ public class ConfigObjectDomainService : DomainService
                 var envCluster = allEnvClusters.FirstOrDefault(c => c.Id == item.EnvironmentClusterId) ?? new();
                 var app = apps.FirstOrDefault(a => a.Id == item.AppId) ?? new();
                 var relationConfigObject = relationConfigObjects.First(c => c.Id == item.ConfigObjectId);
-                var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{relationConfigObject.Name}";
 
                 if (relationConfigObject.FormatLabelCode.ToLower() == "properties")
                 {
                     var appRelease = relationConfigObject.ConfigObjectRelease.OrderByDescending(c => c.Id).FirstOrDefault();
                     if (appRelease == null)
                     {
-                        await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
+                        await PublishConfigAsync(envCluster.EnvironmentName, envCluster.ClusterName, app.Identity, relationConfigObject.Name, new PublishReleaseModel
                         {
                             Content = dto.Content,
                             FormatLabelCode = configObject.FormatLabelCode,
@@ -351,7 +349,7 @@ public class ConfigObjectDomainService : DomainService
                             FormatLabelCode = configObject.FormatLabelCode,
                             Encryption = configObject.Encryption
                         };
-                        await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
+                        await PublishConfigAsync(envCluster.EnvironmentName, envCluster.ClusterName, app.Identity, relationConfigObject.Name, releaseContent);
                     }
                 }
                 else
@@ -362,14 +360,12 @@ public class ConfigObjectDomainService : DomainService
                         FormatLabelCode = configObject.FormatLabelCode,
                         Encryption = configObject.Encryption
                     };
-                    await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
+                    await PublishConfigAsync(envCluster.EnvironmentName, envCluster.ClusterName, app.Identity, relationConfigObject.Name, releaseContent);
                 }
             }
         }
         else
         {
-            //add redis cache
-            var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
             if (configObject.Encryption)
             {
                 dto.Content = EncryptContent(dto.Content);
@@ -380,7 +376,7 @@ public class ConfigObjectDomainService : DomainService
                 FormatLabelCode = configObject.FormatLabelCode,
                 Encryption = configObject.Encryption
             };
-            await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
+            await PublishConfigAsync(dto.EnvironmentName, dto.ClusterName, dto.Identity, configObject.Name, releaseContent);
         }
     }
 
@@ -428,28 +424,36 @@ public class ConfigObjectDomainService : DomainService
         configObject.AddContent(configObject.Content, rollbackToEntity.Content);
         await _configObjectRepository.UpdateAsync(configObject);
 
-        string key = string.Empty;
+        string environmentName = string.Empty;
+        string clusterName = string.Empty;
+        string appId = string.Empty;
         var envClusters = await _pmClient.ClusterService.GetEnvironmentClustersAsync();
         if (configObject.Type == ConfigObjectType.Public)
         {
             var publicConfigObject = await _publicConfigObjectRepository.GetByConfigObjectIdAsync(configObject.Id);
             var publicConfig = await _publicConfigRepository.FindAsync(c => c.Id == publicConfigObject.PublicConfigId) ?? throw new MasaException();
             var envCluster = envClusters.First(e => e.Id == publicConfigObject.EnvironmentClusterId);
-            key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{publicConfig.Identity}-{configObject.Name}";
+            environmentName = envCluster.EnvironmentName;
+            clusterName = envCluster.ClusterName;
+            appId = publicConfig.Identity;
         }
         else if (configObject.Type == ConfigObjectType.Biz)
         {
             var bizConfigObject = await _bizConfigObjectRepository.GetByConfigObjectIdAsync(configObject.Id);
             var bizConfig = await _bizConfigRepository.FindAsync(c => c.Id == bizConfigObject.BizConfigId) ?? throw new MasaException();
             var envCluster = envClusters.First(e => e.Id == bizConfigObject.EnvironmentClusterId);
-            key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{bizConfig.Identity}-{configObject.Name}";
+            environmentName = envCluster.EnvironmentName;
+            clusterName = envCluster.ClusterName;
+            appId = bizConfig.Identity;
         }
         else if (configObject.Type == ConfigObjectType.App)
         {
             var appConfigObject = await _appConfigObjectRepository.GetbyConfigObjectIdAsync(configObject.Id);
             var app = await _pmClient.AppService.GetAsync(appConfigObject.AppId) ?? throw new MasaException(); ;
             var envCluster = envClusters.First(e => e.Id == appConfigObject.EnvironmentClusterId);
-            key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{configObject.Name}";
+            environmentName = envCluster.EnvironmentName;
+            clusterName = envCluster.ClusterName;
+            appId = app.Identity;
         }
 
         var releaseContent = new PublishReleaseModel
@@ -458,7 +462,7 @@ public class ConfigObjectDomainService : DomainService
             FormatLabelCode = configObject.FormatLabelCode,
             Encryption = configObject.Encryption
         };
-        await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
+        await PublishConfigAsync(environmentName, clusterName, appId, configObject.Name, releaseContent);
     }
 
     public async Task UpdateConfigObjectAsync(
@@ -579,9 +583,8 @@ public class ConfigObjectDomainService : DomainService
                 objectId = newConfigObject.Id;
             }
 
-            var key = $"{environmentName}-{clusterName}-{appId}-{configObjectName}".ToLower();
-            var redisData = await _memoryCacheClient.GetAsync<PublishReleaseModel?>(key);
-            if (redisData != null)
+            var publishedConfig = await _configPublishStore.GetAsync(environmentName, clusterName, appId, configObjectName);
+            if (publishedConfig != null)
             {
                 continue;
             }
@@ -618,8 +621,7 @@ public class ConfigObjectDomainService : DomainService
                     {
                         if (envCluster.Id == config.EnvironmentClusterId)
                         {
-                            var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{app.Identity}-{config.ConfigObject.Name}";
-                            await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
+                            await PublishConfigAsync(envCluster.EnvironmentName, envCluster.ClusterName, app.Identity, config.ConfigObject.Name, new PublishReleaseModel
                             {
                                 Content = config.ConfigObject.Content,
                                 FormatLabelCode = config.ConfigObject.FormatLabelCode,
@@ -633,8 +635,7 @@ public class ConfigObjectDomainService : DomainService
             {
                 envClusters.Where(ec => ec.Id == config.EnvironmentClusterId).ToList().ForEach(async envCluster =>
                 {
-                    var key = $"{envCluster.EnvironmentName}-{envCluster.ClusterName}-{publicConfig.Identity}-{config.ConfigObject.Name}";
-                    await _memoryCacheClient.SetAsync(key.ToLower(), new PublishReleaseModel
+                    await PublishConfigAsync(envCluster.EnvironmentName, envCluster.ClusterName, publicConfig.Identity, config.ConfigObject.Name, new PublishReleaseModel
                     {
                         Content = config.ConfigObject.Content,
                         FormatLabelCode = config.ConfigObject.FormatLabelCode,
@@ -687,4 +688,19 @@ public class ConfigObjectDomainService : DomainService
 
         return resultDic;
     }
+
+    private Task PublishConfigAsync(
+        string environment,
+        string cluster,
+        string appId,
+        string configObjectName,
+        PublishReleaseModel model)
+        => _configPublishStore.SetAsync(environment, cluster, appId, configObjectName, model);
+
+    private Task RemoveConfigAsync(
+        string environment,
+        string cluster,
+        string appId,
+        string configObjectName)
+        => _configPublishStore.RemoveAsync(environment, cluster, appId, configObjectName);
 }

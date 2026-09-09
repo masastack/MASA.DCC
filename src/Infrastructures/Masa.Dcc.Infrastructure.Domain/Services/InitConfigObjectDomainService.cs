@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 namespace Masa.Dcc.Infrastructure.Domain.Services;
@@ -8,7 +8,7 @@ public class InitConfigObjectDomainService : DomainService
     private readonly IConfigObjectReleaseRepository _configObjectReleaseRepository;
     private readonly IConfigObjectRepository _configObjectRepository;
     private readonly IPublicConfigRepository _publicConfigRepository;
-    private readonly IMultilevelCacheClient _memoryCacheClient;
+    private readonly IConfigPublishStore _configPublishStore;
     private readonly IMasaStackConfig _masaStackConfig;
     private readonly IUnitOfWork _unitOfWork;
 
@@ -17,14 +17,14 @@ public class InitConfigObjectDomainService : DomainService
         IConfigObjectReleaseRepository configObjectReleaseRepository,
         IConfigObjectRepository configObjectRepository,
         IPublicConfigRepository publicConfigRepository,
-        IMultilevelCacheClient memoryCacheClient,
+        IConfigPublishStore configPublishStore,
         IMasaStackConfig masaStackConfig,
         IUnitOfWork unitOfWork) : base(eventBus)
     {
         _configObjectReleaseRepository = configObjectReleaseRepository;
         _configObjectRepository = configObjectRepository;
         _publicConfigRepository = publicConfigRepository;
-        _memoryCacheClient = memoryCacheClient;
+        _configPublishStore = configPublishStore;
         _masaStackConfig = masaStackConfig;
         _unitOfWork = unitOfWork;
     }
@@ -50,8 +50,6 @@ public class InitConfigObjectDomainService : DomainService
                configObject.Content);
         await _configObjectReleaseRepository.AddAsync(configObjectRelease);
 
-        //add redis cache
-        var key = $"{dto.EnvironmentName}-{dto.ClusterName}-{dto.Identity}-{configObject.Name}";
         if (configObject.Encryption)
         {
             dto.Content = EncryptContent(dto.Content);
@@ -62,7 +60,7 @@ public class InitConfigObjectDomainService : DomainService
             FormatLabelCode = configObject.FormatLabelCode,
             Encryption = configObject.Encryption
         };
-        await _memoryCacheClient.SetAsync(key.ToLower(), releaseContent);
+        await _configPublishStore.SetAsync(dto.EnvironmentName, dto.ClusterName, dto.Identity, configObject.Name, releaseContent);
     }
 
     public async Task InitConfigObjectAsync(
@@ -115,9 +113,8 @@ public class InitConfigObjectDomainService : DomainService
                 await _configObjectRepository.UpdateAsync(existsConfigObject);
             }
 
-            var key = $"{environmentName}-{clusterName}-{appId}-{configObjectName}".ToLower();
-            var redisData = await _memoryCacheClient.GetAsync<PublishReleaseModel?>(key);
-            if (redisData != null)
+            var publishedConfig = await _configPublishStore.GetAsync(environmentName, clusterName, appId, configObjectName);
+            if (publishedConfig != null)
             {
                 continue;
             }

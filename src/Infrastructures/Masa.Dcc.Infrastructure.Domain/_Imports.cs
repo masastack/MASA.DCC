@@ -1,4 +1,4 @@
-﻿// Copyright (c) MASA Stack All rights reserved.
+// Copyright (c) MASA Stack All rights reserved.
 // Licensed under the Apache License. See LICENSE.txt in the project root for license information.
 
 global using System.Linq.Expressions;
@@ -19,6 +19,7 @@ global using Masa.BuildingBlocks.StackSdks.Middleware;
 global using Masa.BuildingBlocks.StackSdks.Pm;
 global using Masa.BuildingBlocks.StackSdks.Pm.Model;
 global using Masa.Contrib.Dispatcher.Events;
+global using Masa.Dcc.Contracts.Admin;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;

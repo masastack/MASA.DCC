@@ -20,7 +20,8 @@ public static class IHostExtensions
         var services = builder.Services.BuildServiceProvider().CreateScope().ServiceProvider;
         var context = services.GetRequiredService<DccDbContext>();
         var labelDomainService = services.GetRequiredService<LabelDomainService>();
-        var configObjectDomainService = services.GetRequiredService<InitConfigObjectDomainService>();
+        var initConfigObjectDomainService = services.GetRequiredService<InitConfigObjectDomainService>();
+        var configPublishStore = services.GetRequiredService<IConfigPublishStore>();
         var unitOfWork = services.GetRequiredService<IUnitOfWork>();
         var env = services.GetRequiredService<IWebHostEnvironment>();
         var contentRootPath = env.ContentRootPath;
@@ -36,7 +37,13 @@ public static class IHostExtensions
         unitOfWork.UseTransaction = false;
 
         await InitDccDataAsync(context, labelDomainService);
-        await InitPublicConfigAsync(services, context, masaConfig, contentRootPath, configObjectDomainService);
+        await InitPublicConfigAsync(
+            services,
+            context,
+            masaConfig,
+            contentRootPath,
+            initConfigObjectDomainService,
+            configPublishStore);
 
         userSetterHandle.Dispose();
     }
@@ -139,16 +146,169 @@ public static class IHostExtensions
         DccDbContext context,
         IMasaStackConfig masaConfig,
         string contentRootPath,
-        InitConfigObjectDomainService configObjectDomainService)
+        InitConfigObjectDomainService initConfigObjectDomainService,
+        IConfigPublishStore configPublishStore)
     {
-        var pmClient = service.GetRequiredService<IPmClient>();
-        var envClusters = await pmClient.ClusterService.GetEnvironmentClustersAsync();
-        if (envClusters == null || envClusters.Count == 0)
-            throw new UserFriendlyException("pm环境数据未初始化");
-        foreach (var environment in envClusters)
+        var configuration = service.GetRequiredService<IConfiguration>();
+        var environmentName = configuration.GetValue<string>("MASA_ENVIRONMENT");
+        if (string.IsNullOrWhiteSpace(environmentName))
+            environmentName = configuration.GetValue<string>(MasaStackConfigConstant.ENVIRONMENT);
+        if (string.IsNullOrWhiteSpace(environmentName))
+            environmentName = configuration["ASPNETCORE_ENVIRONMENT"] ?? "Development";
+
+        var clusterName = configuration.GetValue<string>("MASA_CLUSTER");
+        if (string.IsNullOrWhiteSpace(clusterName))
+            clusterName = masaConfig.Cluster;
+
+        var environmentClusterId = await ResolveEnvironmentClusterIdAsync(service, context, configuration, environmentName, clusterName);
+
+        // 1) Check DB initialization.
+        var hasAnyConfigObject = await context.Set<ConfigObject>().AnyAsync();
+        if (!hasAnyConfigObject)
         {
-            await InitEnvConfigObjects(environment.Id, environment.EnvironmentName, service, context, masaConfig, contentRootPath, configObjectDomainService);
+            Console.WriteLine($"[ConfigPublish] DB 未初始化，开始初始化: env={environmentName}, cluster={clusterName}, envClusterId={environmentClusterId}");
+            await InitEnvConfigObjects(
+                environmentClusterId,
+                environmentName,
+                service,
+                context,
+                masaConfig,
+                contentRootPath,
+                initConfigObjectDomainService);
         }
+
+        // 2) Check publish store initialization by current storage type (Redis/Dapr),
+        // and only initialize missing entries.
+        Console.WriteLine($"[ConfigPublish] 开始检查并回填发布存储: env={environmentName}, cluster={clusterName}, envClusterId={environmentClusterId}");
+        await BackfillPublicConfigToPublishStoreAsync(
+            context,
+            configPublishStore,
+            environmentName,
+            clusterName,
+            environmentClusterId);
+    }
+
+    private static async Task<int> ResolveEnvironmentClusterIdAsync(
+        IServiceProvider service,
+        DccDbContext context,
+        IConfiguration configuration,
+        string environmentName,
+        string clusterName)
+    {
+        try
+        {
+            var pmClient = service.GetRequiredService<IPmClient>();
+            var envClusters = await pmClient.ClusterService.GetEnvironmentClustersAsync();
+            var envCluster = envClusters?
+                .FirstOrDefault(ec =>
+                    string.Equals(ec.EnvironmentName, environmentName, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(ec.ClusterName, clusterName, StringComparison.OrdinalIgnoreCase));
+            if (envCluster != null && envCluster.Id > 0)
+            {
+                Console.WriteLine($"[ConfigPublish] 使用 PM 环境集群ID: env={environmentName}, cluster={clusterName}, envClusterId={envCluster.Id}");
+                return envCluster.Id;
+            }
+
+            Console.WriteLine($"[ConfigPublish] 未在 PM 找到环境集群，转本地兜底: env={environmentName}, cluster={clusterName}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ConfigPublish] 调用 PM 获取环境集群ID失败，转本地兜底: {ex.Message}");
+        }
+
+        var configuredEnvironmentClusterId = configuration.GetValue<int?>("MASA_ENVIRONMENT_CLUSTER_ID");
+        if (configuredEnvironmentClusterId.HasValue && configuredEnvironmentClusterId.Value > 0)
+        {
+            Console.WriteLine($"[ConfigPublish] 使用配置环境集群ID: envClusterId={configuredEnvironmentClusterId.Value}");
+            return configuredEnvironmentClusterId.Value;
+        }
+
+        var existedEnvironmentClusterId = await context.Set<PublicConfigObject>()
+            .AsNoTracking()
+            .Select(pco => (int?)pco.EnvironmentClusterId)
+            .FirstOrDefaultAsync();
+        if (existedEnvironmentClusterId.HasValue && existedEnvironmentClusterId.Value > 0)
+        {
+            Console.WriteLine($"[ConfigPublish] 使用数据库已有环境集群ID: envClusterId={existedEnvironmentClusterId.Value}");
+            return existedEnvironmentClusterId.Value;
+        }
+
+        Console.WriteLine("[ConfigPublish] 未配置 MASA_ENVIRONMENT_CLUSTER_ID，且数据库无环境集群记录，默认使用 envClusterId=1");
+        return 1;
+    }
+
+    private static async Task BackfillPublicConfigToPublishStoreAsync(
+        DccDbContext context,
+        IConfigPublishStore configPublishStore,
+        string environmentName,
+        string clusterName,
+        int? environmentClusterId)
+    {
+        var publicConfigObjectsQuery = context.Set<PublicConfigObject>().AsNoTracking().AsQueryable();
+        if (environmentClusterId.HasValue)
+        {
+            publicConfigObjectsQuery = publicConfigObjectsQuery.Where(pco => pco.EnvironmentClusterId == environmentClusterId.Value);
+        }
+
+        var publicConfigObjects = await publicConfigObjectsQuery.ToListAsync();
+        List<ConfigObject> configObjects;
+        if (publicConfigObjects.Any())
+        {
+            var configObjectIds = publicConfigObjects.Select(pco => pco.ConfigObjectId).ToList();
+            configObjects = await context.Set<ConfigObject>()
+                .AsNoTracking()
+                .Where(co => configObjectIds.Contains(co.Id))
+                .ToListAsync();
+        }
+        else
+        {
+            // Fallback for historical data where relation rows may be missing.
+            configObjects = await context.Set<ConfigObject>()
+                .AsNoTracking()
+                .Where(co => co.Name == DccConst.DEFAULT_CONFIG_NAME || EF.Functions.Like(co.Name, "$public.%"))
+                .ToListAsync();
+        }
+
+        if (!configObjects.Any())
+        {
+            Console.WriteLine($"[ConfigPublish] 未找到可回填的 ConfigObject: env={environmentName}, cluster={clusterName}, envClusterId={environmentClusterId}");
+            return;
+        }
+
+        var writeCount = 0;
+        Console.WriteLine($"configPublishStore type:{configPublishStore.GetType().FullName}");
+        foreach (var configObject in configObjects)
+        {
+            var existing = await configPublishStore.GetAsync(
+                environmentName,
+                clusterName,
+                DccConst.DEFAULT_PUBLIC_ID,
+                configObject.Name);
+            if (existing != null)
+            {
+                Console.WriteLine($"[ConfigPublish] 已存在发布存储记录，跳过回填: env={environmentName}, cluster={clusterName}, configObjectName={configObject.Name}");
+
+                continue;
+            }
+
+
+            var model = new PublishReleaseModel
+            {
+                Content = configObject.Content,
+                FormatLabelCode = configObject.FormatLabelCode,
+                Encryption = configObject.Encryption
+            };
+
+            await configPublishStore.SetAsync(
+                environmentName,
+                clusterName,
+                DccConst.DEFAULT_PUBLIC_ID,
+                configObject.Name,
+                model);
+            writeCount++;
+        }
+
+        Console.WriteLine($"[ConfigPublish] 回填完成: env={environmentName}, cluster={clusterName}, 写入数量={writeCount}");
     }
 
     private static async Task InitEnvConfigObjects(int envClusterId, string environment, IServiceProvider service, DccDbContext context,
@@ -156,11 +316,6 @@ public static class IHostExtensions
         string contentRootPath,
         InitConfigObjectDomainService configObjectDomainService)
     {
-        if (await context.Set<ConfigObject>().AnyAsync())
-        {
-            return;
-        }
-
         var publicConfigs = new Dictionary<string, string>
             {
                 { DccConst.DEFAULT_CONFIG_NAME,JsonSerializer.Serialize(GetConfigMap(service),_serializerOptions)},

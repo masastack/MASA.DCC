@@ -6,7 +6,7 @@ var redisKey = "REDIS";
 if (string.IsNullOrEmpty(builder.Configuration.GetValue<string>(redisKey)))
 {
     var redis = builder.Configuration["MasaDccRedisStaging"];
-
+    redis = "{\"RedisHost\": \"localhost\", \"RedisPort\": 6379, \"RedisDb\": 1}";
     if (!string.IsNullOrEmpty(redis))
     {
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -81,12 +81,33 @@ else
 
 var masaStackConfig = builder.Services.GetMasaStackConfig();
 var connStr = masaStackConfig.GetValue(MasaStackConfigConstant.CONNECTIONSTRING);
-var dbModel = JsonSerializer.Deserialize<DbModel>(connStr)!;
+if (string.IsNullOrWhiteSpace(connStr))
+    connStr = builder.Configuration.GetValue<string>(MasaStackConfigConstant.CONNECTIONSTRING);
+if (string.IsNullOrWhiteSpace(connStr))
+{
+    throw new UserFriendlyException(
+        $"{MasaStackConfigConstant.CONNECTIONSTRING} 为空，Dapr 首次初始化请先在本地配置中提供数据库连接串");
+}
+
+DbModel dbModel;
+try
+{
+    dbModel = JsonSerializer.Deserialize<DbModel>(connStr!) ?? throw new JsonException("CONNECTIONSTRING json 反序列化结果为空");
+}
+catch (JsonException ex)
+{
+    throw new UserFriendlyException($"{MasaStackConfigConstant.CONNECTIONSTRING} 格式错误: {ex.Message}");
+}
+
 bool isPgsql = string.Equals(dbModel.DbType, "postgresql", StringComparison.CurrentCultureIgnoreCase);
 var publicConfiguration = builder.Services.GetMasaConfiguration().ConfigurationApi.GetPublic();
 StackExchangeRedisInstrumentation redisInstrumentation = default!;
 
-var ossSptions = publicConfiguration.GetSection(DccConstants.OssKey).Get<OssOptions>()!;
+var ossSptions = publicConfiguration.GetSection(DccConstants.OssKey).Get<OssOptions>() ?? new OssOptions();
+if (string.IsNullOrWhiteSpace(ossSptions.Endpoint))
+{
+    Console.WriteLine($"[ConfigPublish] 警告: 未读取到 {DccConstants.OssKey} 配置，首次初始化场景将跳过有效 OSS 配置，请初始化完成后重启服务");
+}
 builder.Services.AddObjectStorage(option => option.UseAliyunStorage(options =>
 {
     options.AccessKeyId = ossSptions.AccessId;

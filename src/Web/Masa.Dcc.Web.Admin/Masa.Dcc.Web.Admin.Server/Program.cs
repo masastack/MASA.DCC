@@ -30,18 +30,6 @@ builder.Services.AddDccApiGateways(option =>
 
 StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configuration);
 
-if (!builder.Environment.IsDevelopment())
-{
-    builder.WebHost.UseKestrel(option =>
-    {
-        option.ConfigureHttpsDefaults(options =>
-        {
-            options.ServerCertificate = X509Certificate2.CreateFromPemFile("./ssl/tls.crt", "./ssl/tls.key");
-            options.CheckCertificateRevocation = false;
-        });
-    });
-}
-
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 

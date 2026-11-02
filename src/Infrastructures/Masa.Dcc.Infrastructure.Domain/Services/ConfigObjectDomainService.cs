@@ -13,6 +13,7 @@ public class ConfigObjectDomainService : DomainService
     private readonly IBizConfigRepository _bizConfigRepository;
     private readonly IPublicConfigObjectRepository _publicConfigObjectRepository;
     private readonly IPublicConfigRepository _publicConfigRepository;
+    private readonly ILabelRepository _labelRepository;
     private readonly IMultilevelCacheClient _memoryCacheClient;
     private readonly IPmClient _pmClient;
     private readonly IMasaStackConfig _masaStackConfig;
@@ -33,6 +34,7 @@ public class ConfigObjectDomainService : DomainService
         IBizConfigRepository bizConfigRepository,
         IPublicConfigObjectRepository publicConfigObjectRepository,
         IPublicConfigRepository publicConfigRepository,
+        ILabelRepository labelRepository,
         IMultilevelCacheClient memoryCacheClient,
         IPmClient pmClient,
         IMasaStackConfig masaStackConfig,
@@ -46,6 +48,7 @@ public class ConfigObjectDomainService : DomainService
         _bizConfigRepository = bizConfigRepository;
         _publicConfigObjectRepository = publicConfigObjectRepository;
         _publicConfigRepository = publicConfigRepository;
+        _labelRepository = labelRepository;
         _memoryCacheClient = memoryCacheClient;
         _pmClient = pmClient;
         _masaStackConfig = masaStackConfig;
@@ -686,5 +689,155 @@ public class ConfigObjectDomainService : DomainService
         }
 
         return resultDic;
+    }
+
+    public async Task<PaginatedListDto<ConfigObjectSearchItemDto>> SearchConfigObjectsAsync(SearchConfigObjectDto dto)
+    {
+        var page = Math.Max(dto.Page, 1);
+        var pageSize = Math.Clamp(dto.PageSize, 1, 200);
+        var empty = new PaginatedListDto<ConfigObjectSearchItemDto>(page, pageSize, 0, new());
+
+        var condition = new ConfigObjectSearchCondition
+        {
+            Name = dto.ConfigObjectName,
+            Content = dto.Content,
+            ContentDecryptor = DecryptContent
+        };
+
+        var envClusters = await _pmClient.ClusterService.GetEnvironmentClustersAsync();
+
+        // Environment / cluster (ids are converted to environment cluster ids stored in DB)
+        if (dto.EnvironmentId.HasValue || dto.ClusterId.HasValue)
+        {
+            var environmentIds = dto.EnvironmentId.HasValue
+                ? new List<int> { dto.EnvironmentId.Value }
+                : (await _pmClient.EnvironmentService.GetListAsync()).Select(e => e.Id).ToList();
+
+            var matched = new List<int>();
+            foreach (var environmentId in environmentIds)
+            {
+                var clusters = await _pmClient.ClusterService.GetListByEnvIdAsync(environmentId);
+                matched.AddRange(clusters
+                    .Where(c => !dto.ClusterId.HasValue || c.Id == dto.ClusterId.Value)
+                    .Select(c => c.EnvironmentClusterId));
+            }
+
+            matched = matched.Distinct().ToList();
+            if (matched.Count == 0)
+                return empty;
+
+            condition.EnvironmentClusterIds = matched;
+        }
+
+        // Project / app
+        var apps = await _pmClient.AppService.GetListAsync();
+        var projects = await _pmClient.ProjectService.GetListAsync();
+        if (dto.AppId.HasValue)
+        {
+            var app = apps.FirstOrDefault(a => a.Id == dto.AppId.Value);
+            if (app == null || (dto.ProjectId.HasValue && app.ProjectId != dto.ProjectId.Value))
+                return empty;
+
+            condition.AppIds = new List<int> { app.Id };
+        }
+        else if (dto.ProjectId.HasValue)
+        {
+            var project = projects.FirstOrDefault(p => p.Id == dto.ProjectId.Value);
+            if (project == null)
+                return empty;
+
+            condition.AppIds = apps.Where(a => a.ProjectId == project.Id).Select(a => a.Id).ToList();
+            condition.BizIdentity = (project.Identity + DccConst.BizConfigSuffix).ToLower();
+        }
+
+        var (total, configObjects) = await _configObjectRepository.GetPaginatedListAsync(condition, page, pageSize);
+
+        var labels = (await _labelRepository.GetListAsync()).ToList();
+        var items = new List<ConfigObjectSearchItemDto>();
+        foreach (var configObject in configObjects)
+        {
+            var item = new ConfigObjectSearchItemDto
+            {
+                Id = configObject.Id,
+                Name = configObject.Name,
+                FormatLabelCode = configObject.FormatLabelCode,
+                FormatName = labels.FirstOrDefault(label => label.Code == configObject.FormatLabelCode)?.Name ?? "",
+                RelationConfigObjectId = configObject.RelationConfigObjectId,
+                FromRelation = configObject.FromRelation,
+                Encryption = configObject.Encryption,
+                Content = SafeDecryptContent(configObject.Content, configObject.Encryption),
+                TempContent = SafeDecryptContent(configObject.TempContent, configObject.Encryption),
+                Creator = configObject.Creator,
+                CreationTime = configObject.CreationTime,
+                Modifier = configObject.Modifier,
+                ModificationTime = configObject.ModificationTime
+            };
+
+            if (configObject.PublicConfigObject != null)
+            {
+                item.Type = ConfigObjectType.Public;
+                item.EnvironmentClusterId = configObject.PublicConfigObject.EnvironmentClusterId;
+            }
+            else if (configObject.BizConfigObject != null)
+            {
+                item.Type = ConfigObjectType.Biz;
+                item.EnvironmentClusterId = configObject.BizConfigObject.EnvironmentClusterId;
+
+                var bizIdentity = configObject.BizConfigObject.BizConfig?.Identity ?? "";
+                var project = projects.FirstOrDefault(p =>
+                    string.Equals(p.Identity + DccConst.BizConfigSuffix, bizIdentity, StringComparison.OrdinalIgnoreCase));
+                if (project != null)
+                {
+                    item.ProjectId = project.Id;
+                    item.ProjectName = project.Name;
+                    item.ProjectIdentity = project.Identity;
+                }
+            }
+            else if (configObject.AppConfigObject != null)
+            {
+                item.Type = ConfigObjectType.App;
+                item.EnvironmentClusterId = configObject.AppConfigObject.EnvironmentClusterId;
+
+                var app = apps.FirstOrDefault(a => a.Id == configObject.AppConfigObject.AppId);
+                if (app != null)
+                {
+                    item.AppId = app.Id;
+                    item.AppName = app.Name;
+                    item.AppIdentity = app.Identity;
+
+                    var project = projects.FirstOrDefault(p => p.Id == app.ProjectId);
+                    item.ProjectId = app.ProjectId;
+                    item.ProjectName = project?.Name ?? "";
+                    item.ProjectIdentity = project?.Identity ?? "";
+                }
+            }
+            else
+            {
+                item.Type = configObject.Type;
+            }
+
+            var envCluster = envClusters.FirstOrDefault(ec => ec.Id == item.EnvironmentClusterId);
+            item.EnvironmentName = envCluster?.EnvironmentName ?? "";
+            item.ClusterName = envCluster?.ClusterName ?? "";
+
+            items.Add(item);
+        }
+
+        return new PaginatedListDto<ConfigObjectSearchItemDto>(page, pageSize, total, items);
+    }
+
+    private string SafeDecryptContent(string content, bool encryption)
+    {
+        if (!encryption || string.IsNullOrEmpty(content) || content == "{}" || content == "[]")
+            return content;
+
+        try
+        {
+            return DecryptContent(content);
+        }
+        catch
+        {
+            return content;
+        }
     }
 }

@@ -101,6 +101,78 @@ internal class ConfigObjectRepository : EFBaseRepository<DccDbContext, ConfigObj
         return await Context.Set<ConfigObject>().Include(configObject => configObject.ConfigObjectRelease).Where(item => ids.Contains(item.Id)).ToListAsync();
     }
 
+    public async Task<(long Total, List<ConfigObject> Items)> GetPaginatedListAsync(ConfigObjectSearchCondition condition, int page, int pageSize)
+    {
+        var query = Context.Set<ConfigObject>().AsNoTracking().AsQueryable();
+
+        if (condition.EnvironmentClusterIds != null)
+        {
+            var envClusterIds = condition.EnvironmentClusterIds;
+            query = query.Where(x =>
+                (x.PublicConfigObject != null && envClusterIds.Contains(x.PublicConfigObject.EnvironmentClusterId)) ||
+                (x.BizConfigObject != null && envClusterIds.Contains(x.BizConfigObject.EnvironmentClusterId)) ||
+                (x.AppConfigObject != null && envClusterIds.Contains(x.AppConfigObject.EnvironmentClusterId)));
+        }
+
+        if (condition.AppIds != null || condition.BizIdentity != null)
+        {
+            var appIds = condition.AppIds ?? new List<int>();
+            var bizIdentity = condition.BizIdentity;
+            query = bizIdentity == null
+                ? query.Where(x => x.AppConfigObject != null && appIds.Contains(x.AppConfigObject.AppId))
+                : query.Where(x =>
+                    (x.AppConfigObject != null && appIds.Contains(x.AppConfigObject.AppId)) ||
+                    (x.BizConfigObject != null && x.BizConfigObject.BizConfig.Identity.ToLower() == bizIdentity));
+        }
+
+        if (!string.IsNullOrWhiteSpace(condition.Name))
+        {
+            var name = condition.Name.Trim().ToLower();
+            query = query.Where(x => x.Name.ToLower().Contains(name));
+        }
+
+        if (!string.IsNullOrWhiteSpace(condition.Content))
+        {
+            var keyword = condition.Content.Trim().ToLower();
+
+            // Encrypted content is stored as cipher text, so it has to be decrypted and matched in memory.
+            var encryptedIds = new List<int>();
+            if (condition.ContentDecryptor != null)
+            {
+                var encrypted = await query.Where(x => x.Encryption).Select(x => new { x.Id, x.Content }).ToListAsync();
+                foreach (var item in encrypted)
+                {
+                    try
+                    {
+                        if (condition.ContentDecryptor(item.Content).Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                            encryptedIds.Add(item.Id);
+                    }
+                    catch
+                    {
+                        // Content can not be decrypted (e.g. empty placeholder), treat as not matched.
+                    }
+                }
+            }
+
+            query = query.Where(x =>
+                (!x.Encryption && x.Content.ToLower().Contains(keyword)) ||
+                (x.Encryption && encryptedIds.Contains(x.Id)));
+        }
+
+        var total = await query.LongCountAsync();
+        var items = await query
+            .Include(x => x.PublicConfigObject).ThenInclude(x => x.PublicConfig)
+            .Include(x => x.BizConfigObject).ThenInclude(x => x.BizConfig)
+            .Include(x => x.AppConfigObject)
+            .OrderByDescending(x => x.ModificationTime)
+            .ThenByDescending(x => x.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (total, items);
+    }
+
     public async Task<int> GetIdAsync(string Name, ConfigObjectType Type)
     {
         var names = await Context.Set<ConfigObject>().Where(item => item.Type == Type).Select(configObject => new { configObject.Id, configObject.Name }).ToListAsync();

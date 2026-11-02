@@ -36,6 +36,7 @@ global using Masa.Contrib.Storage.ObjectStorage.Aliyun;
 global using Masa.Dcc.Contracts.Admin;
 global using Masa.Dcc.Contracts.Admin.App.Dtos;
 global using Masa.Dcc.Contracts.Admin.App.Enums;
+global using Masa.Dcc.Contracts.Admin.Infrastructure.Dtos;
 global using Masa.Dcc.Contracts.Admin.Label.Dtos;
 global using Masa.Dcc.Contracts.Admin.PublicConfig;
 global using Masa.Dcc.Infrastructure.Domain.App.Queries;

@@ -219,6 +219,12 @@ internal class QueryHandler
     }
 
     [EventHandler]
+    public async Task SearchConfigObjectsAsync(ConfigObjectSearchQuery query)
+    {
+        query.Result = await _configObjectDomainService.SearchConfigObjectsAsync(query.Condition);
+    }
+
+    [EventHandler]
     public async Task GetConfigObjectsByIdsAsync(ConfigObjectListQuery query)
     {
         var result = await _configObjectRepository.GetListAsync(c => query.Ids.Contains(c.Id));

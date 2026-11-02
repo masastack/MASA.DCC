@@ -19,6 +19,32 @@ public static class DccHelper
         return data;
     }
 
+    public static async Task FillCreatorAndModifierNameAsync<T>(this IAuthClient authClient, List<T> data) where T : BaseDto
+    {
+        if (data.Count == 0)
+            return;
+
+        var ids = data.SelectMany(t => new[] { t.Creator, t.Modifier })
+            .Where(id => id != Guid.Empty)
+            .Distinct()
+            .ToArray();
+        if (ids.Length == 0)
+            return;
+
+        var users = await authClient.UserService.GetListByIdsAsync(ids);
+        string? GetName(Guid id)
+        {
+            var user = users.FirstOrDefault(x => x.Id == id);
+            return user?.StaffDisplayName ?? user?.DisplayName;
+        }
+
+        foreach (var t in data)
+        {
+            t.CreatorName = GetName(t.Creator);
+            t.ModifierName = GetName(t.Modifier);
+        }
+    }
+
     public static async Task<List<ConfigObjectDto>> FillUserNameAsync(this IAuthClient authClient,
         List<ConfigObjectDto> data)
     {

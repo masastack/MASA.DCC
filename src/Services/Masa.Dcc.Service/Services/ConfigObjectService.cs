@@ -14,6 +14,7 @@ public class ConfigObjectService : ServiceBase
         this.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}", GetListAsync);
         this.MapGet("api/v1/configObjects/{envClusterId}/{objectId}/{type}/{getLatestRelease}/{configObjectName}", GetListAsync);
         this.MapPost("api/v1/configObjects/getListByIds", GetListByIdsAsync);
+        this.MapGet("api/v1/configObjects/list", SearchAsync);
         this.MapPut("api/v1/configObject", UpdateConfigObjectContentAsync);
         this.MapPost("api/v1/configObject/release", AddConfigObjectReleaseAsync);
         this.MapPut("api/v1/configObject/revoke/{id}", RevokeConfigObjectAsync);
@@ -39,6 +40,15 @@ public class ConfigObjectService : ServiceBase
         var query = new ConfigObjectsQuery(envClusterId, objectId, type, configObjectName, getLatestRelease);
         await eventBus.PublishAsync(query);
         query.Result = await authClient.FillUserNameAsync(query.Result);
+        return query.Result;
+    }
+
+    public async Task<PaginatedListDto<ConfigObjectSearchItemDto>> SearchAsync(
+        IEventBus eventBus, IAuthClient authClient, [AsParameters] SearchConfigObjectDto dto)
+    {
+        var query = new ConfigObjectSearchQuery(dto);
+        await eventBus.PublishAsync(query);
+        await authClient.FillCreatorAndModifierNameAsync(query.Result.Result);
         return query.Result;
     }
 
